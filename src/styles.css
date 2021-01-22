@@ -1,23 +1,39 @@
 body {
-  min-height: 100vh;
+  height: 100vh;
   padding: 0;
+  margin: 0;
+  background-color: #252525;
 }
 
 #root {
   /* background-color: #e8e0fd; */
-  color: #111;
+  color: #64dfdf;
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 100px 90%;
+  grid-template-rows: 50px 100px auto 75px;
   align-items: stretch;
   font-family: Roboto, system-ui;
   font-size: 16px;
   line-height: 1.5;
   margin: 0;
-  height: 100vh;
+  height: 100%;
 }
 
-.grid {
+a {
+  color: #80ffdb;
+}
+
+.nav-bar {
+  background-color: #6930c3;
+  display: flex;
+  align-items: center;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .map {
@@ -29,4 +45,9 @@ body {
 .mapboxgl-canvas {
   width: 100%;
   height: 100%;
+}
+
+.title {
+  padding: 8px;
+  font-size: 26px;
 }

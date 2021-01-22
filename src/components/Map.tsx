@@ -1,20 +1,20 @@
-import React from 'react'
-import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl'
-import { useData } from '../hooks/useData'
+import React from 'react';
+import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl';
+import { useData } from '../hooks/useData';
 
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface MapContainerProps {
-  year: string
+  year: string;
 }
 
 const Map = ReactMapboxGl({
   accessToken:
     'pk.eyJ1IjoibnJnYXBwbGUiLCJhIjoiY2trN2E1YnVvMGJ4OTJwbWptM25waHVmNyJ9.UxvOXdAatpV-H1AXQQ23Kg',
-})
+});
 
 const MapContainer = ({ year }: MapContainerProps) => {
-  const [isLoading, data] = useData(year)
+  const [isLoading, data] = useData(year);
 
   return (
     <Map
@@ -22,7 +22,7 @@ const MapContainer = ({ year }: MapContainerProps) => {
       style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
       zoom={[2]}
       onStyleLoad={(map) => {
-        map.resize()
+        map.resize();
       }}
     >
       {data && (
@@ -32,7 +32,6 @@ const MapContainer = ({ year }: MapContainerProps) => {
             fillPaint={{
               'fill-color': ['get', 'COLOR'],
               'fill-opacity': 0.5,
-              'fill-outline-color': '#f00',
             }}
           />
           <GeoJSONLayer
@@ -56,7 +55,7 @@ const MapContainer = ({ year }: MapContainerProps) => {
         </>
       )}
     </Map>
-  )
-}
+  );
+};
 
-export default MapContainer
+export default MapContainer;

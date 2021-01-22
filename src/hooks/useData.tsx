@@ -21,7 +21,8 @@ export const useData = (value: string) => {
 
   const processData = (data: FeatureCollection) => {
     const featureParts = data.features.map((feature) => {
-      const color = stc(feature.properties!.NAME);
+      const name = feature.properties?.NAME ?? 'unclaimed';
+      const color = stc(name);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x) => polylabel(x))
         .map((x) => ({
@@ -31,6 +32,7 @@ export const useData = (value: string) => {
           } as Point,
           properties: {
             ...feature.properties,
+            NAME: name,
             COLOR: color,
           } as GeoJsonProperties,
         })) as Feature[];
@@ -40,6 +42,7 @@ export const useData = (value: string) => {
         properties: {
           ...feature.properties,
           COLOR: color,
+          NAME: name,
         } as GeoJsonProperties,
       } as Feature;
       return {
