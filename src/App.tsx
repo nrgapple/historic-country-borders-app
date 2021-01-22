@@ -1,10 +1,13 @@
 import './styles.css'
 import MapContainer from './components/Map'
-import React from 'react'
+import React, { useState } from 'react'
 //@ts-ignore
 import HorizontalTimeline from 'react-horizontal-timeline'
+import { dates } from './util/constants'
 
 export default function App() {
+  const [index, setIndex] = useState(0)
+
   return (
     <>
       <div className="grid">
@@ -21,15 +24,17 @@ export default function App() {
               foreground: '#1A79AD',
               outline: '#dfdfdf',
             }}
-            index={0}
-            indexClick={(index: any) => {}}
-            getLabel={(date: any, index: any) => new Date(date).getFullYear()}
-            values={['1520']}
+            index={index}
+            indexClick={(newIndex: number) => {
+              setIndex(newIndex)
+            }}
+            getLabel={(date: any) => new Date(date, 0).getFullYear()}
+            values={dates}
           />
         </div>
       </div>
       <div className="grid">
-        <MapContainer />
+        <MapContainer year={dates[index].toString()} />
       </div>
     </>
   )
