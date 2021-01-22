@@ -4,25 +4,24 @@ import {
   Feature,
   MultiPolygon,
   Point,
-  Geometry,
-} from 'geojson'
-import { useEffect, useState } from 'react'
-import stc from 'string-to-color'
-import polylabel from 'polylabel'
+} from 'geojson';
+import { useEffect, useState } from 'react';
+import stc from 'string-to-color';
+import polylabel from 'polylabel';
 
 export interface CountryData {
-  labels: FeatureCollection
-  borders: FeatureCollection
+  labels: FeatureCollection;
+  borders: FeatureCollection;
 }
 
 export const useData = (value: string) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [url, setUrl] = useState<string | undefined>(undefined)
-  const [data, setData] = useState<CountryData | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(true);
+  const [url, setUrl] = useState<string | undefined>(undefined);
+  const [data, setData] = useState<CountryData | undefined>(undefined);
 
   const processData = (data: FeatureCollection) => {
     const featureParts = data.features.map((feature) => {
-      const color = stc(feature.properties!.NAME)
+      const color = stc(feature.properties!.NAME);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x) => polylabel(x))
         .map((x) => ({
@@ -34,7 +33,7 @@ export const useData = (value: string) => {
             ...feature.properties,
             COLOR: color,
           } as GeoJsonProperties,
-        })) as Feature[]
+        })) as Feature[];
 
       const bounds = {
         geometry: feature.geometry,
@@ -42,54 +41,54 @@ export const useData = (value: string) => {
           ...feature.properties,
           COLOR: color,
         } as GeoJsonProperties,
-      } as Feature
+      } as Feature;
       return {
         bounds,
         labels,
-      }
-    })
+      };
+    });
     const labelCol = {
       ...data,
       features: featureParts.map((x) => x.labels).flat(1),
-    } as FeatureCollection
+    } as FeatureCollection;
     const boundCol = {
       ...data,
       features: featureParts.map((x) => x.bounds),
-    } as FeatureCollection
+    } as FeatureCollection;
     return {
       labels: labelCol,
       borders: boundCol,
-    } as CountryData
-  }
+    } as CountryData;
+  };
 
   useEffect(() => {
     if (value) {
-      setIsLoading(true)
+      setIsLoading(true);
       setUrl(
         `https://raw.githubusercontent.com/aourednik/historical-basemaps/master/world_${value}.geojson`,
-      )
+      );
     }
-  }, [value])
+  }, [value]);
 
   useEffect(() => {
     if (url) {
-      ;(async () => {
+      (async () => {
         try {
-          const resp = await fetch(url)
-          const mapData = await resp.json()
-          setData(processData(mapData as FeatureCollection))
+          const resp = await fetch(url);
+          const mapData = await resp.json();
+          setData(processData(mapData as FeatureCollection));
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
-      })()
+      })();
     }
-  }, [url])
+  }, [url]);
 
   useEffect(() => {
     if (data) {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [data])
+  }, [data]);
 
-  return [isLoading, data] as const
-}
+  return [isLoading, data] as const;
+};
