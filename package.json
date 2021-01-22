@@ -1,7 +1,7 @@
 {
-  "name": "historic-country-borders",
+  "name": "historic-country-borders-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is map with a timeline to show what country borders were like in the past",
   "keywords": [],
   "main": "src/index.tsx",
   "dependencies": {
