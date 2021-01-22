@@ -8,7 +8,7 @@ body {
   color: #111;
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 10% 90%;
+  grid-template-rows: 100px 90%;
   align-items: stretch;
   font-family: Roboto, system-ui;
   font-size: 16px;
