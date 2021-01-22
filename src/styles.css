@@ -1,4 +1,32 @@
-.App {
-  font-family: sans-serif;
-  text-align: center;
+body {
+  min-height: 100vh;
+  padding: 0;
+}
+
+#root {
+  /* background-color: #e8e0fd; */
+  color: #111;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 10% 90%;
+  align-items: stretch;
+  font-family: Roboto, system-ui;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  height: 100vh;
+}
+
+.grid {
+}
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.mapboxgl-canvas {
+  width: 100%;
+  height: 100%;
 }

@@ -10,7 +10,7 @@ const Map = ReactMapboxGl({
 })
 
 const MapContainer = () => {
-  const [isLoading, data] = useData('1920')
+  const [isLoading, data] = useData('400')
 
   if (isLoading) return <h1>Loading</h1>
 
@@ -18,12 +18,12 @@ const MapContainer = () => {
 
   return (
     <Map
+      className="map"
       style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
-      containerStyle={{
-        height: '100vh',
-        width: '100vw',
-      }}
       zoom={[2]}
+      onStyleLoad={(map) => {
+        map.resize()
+      }}
     >
       <GeoJSONLayer
         data={data.borders}
