@@ -1,34 +1,14 @@
 {
+    "include": [
+        "./src/**/*"
+    ],
     "compilerOptions": {
-        "baseUrl": ".",
-        "outDir": "build/dist",
-        "module": "esnext",
-        "target": "ES2019",
+        "strict": true,
+        "esModuleInterop": true,
         "lib": [
-            "ES2019",
-            "dom"
+            "dom",
+            "es2019"
         ],
-        "sourceMap": true,
-        "allowJs": true,
-        "jsx": "react",
-        "moduleResolution": "node",
-        "rootDir": "src",
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "noImplicitAny": true,
-        "importHelpers": true,
-        "strictNullChecks": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "noUnusedLocals": true
-    },
-    "exclude": [
-        "node_modules",
-        "build",
-        "scripts",
-        "acceptance-tests",
-        "webpack",
-        "jest",
-        "src/setupTests.ts"
-    ]
+        "jsx": "react-jsx"
+    }
 }
