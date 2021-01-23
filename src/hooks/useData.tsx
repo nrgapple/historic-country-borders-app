@@ -1,4 +1,4 @@
-import {
+import type {
   FeatureCollection,
   GeoJsonProperties,
   Feature,

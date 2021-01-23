@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import HorizontalTimeline from 'react-horizontal-timeline';
 import {
   convertYearString,
-  convertYearToMapString,
   dates,
   mapBCFormat,
   timelineBCFormat,
