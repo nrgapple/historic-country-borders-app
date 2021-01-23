@@ -9,6 +9,7 @@
             "dom",
             "es2019"
         ],
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "noFallthroughCasesInSwitch": false
     }
 }
