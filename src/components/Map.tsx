@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl';
+import MapboxGl from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -20,8 +21,8 @@ const MapContainer = ({ year }: MapContainerProps) => {
     <Map
       className="map"
       style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
-      zoom={[2]}
-      onStyleLoad={(map) => {
+      onStyleLoad={(map: MapboxGl.Map) => {
+        map.setZoom(2);
         map.resize();
       }}
     >
