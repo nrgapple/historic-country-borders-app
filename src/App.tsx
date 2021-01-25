@@ -11,6 +11,7 @@ import ReactTooltip from 'react-tooltip';
 export default function App() {
   const [index, setIndex] = useState(0);
   const [hide, setHide] = useState(false);
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   return (
     <>
@@ -24,10 +25,11 @@ export default function App() {
       >
         <div className="noselect">🔭</div>
         <ReactTooltip
-          resizeHide={true}
+          resizeHide={false}
           id="fullscreenTip"
           place="left"
           effect="solid"
+          globalEventOff={isMobile ? 'click' : undefined}
         >
           {hide ? 'Show Timeline' : 'Hide Timeline'}
         </ReactTooltip>

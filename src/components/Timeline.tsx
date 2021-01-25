@@ -32,6 +32,11 @@ const Timeline = ({ index, onChange }: TimelineProps) => (
           convertYearString(timelineBCFormat, new Date(date, 0).getFullYear())
         }
         values={dates}
+        linePadding={50}
+        isOpenEnding={false}
+        isOpenBeginning={false}
+        minEventPadding={5}
+        maxEventPadding={10}
       />
     </div>
   </div>
