@@ -21,7 +21,7 @@ export default function App() {
         onClick={() => setHide(!hide)}
         style={{ top: hide ? '16px' : '165px' }}
       >
-        <div>🔭</div>
+        <div className="noselect">🔭</div>
       </div>
       <ReactTooltip id="fullscreenTip" place="top" effect="solid">
         {hide ? 'Show Timeline' : 'Hide Timeline'}
