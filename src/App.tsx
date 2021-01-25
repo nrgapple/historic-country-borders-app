@@ -17,15 +17,21 @@ export default function App() {
       <div
         data-tip
         data-for="fullscreenTip"
+        data-delay-show="300"
         className="fullscreen"
         onClick={() => setHide(!hide)}
         style={{ top: hide ? '16px' : '165px' }}
       >
         <div className="noselect">🔭</div>
+        <ReactTooltip
+          resizeHide={true}
+          id="fullscreenTip"
+          place="left"
+          effect="solid"
+        >
+          {hide ? 'Show Timeline' : 'Hide Timeline'}
+        </ReactTooltip>
       </div>
-      <ReactTooltip id="fullscreenTip" place="top" effect="solid">
-        {hide ? 'Show Timeline' : 'Hide Timeline'}
-      </ReactTooltip>
       <div className={`${hide ? 'app-large' : 'app'}`}>
         {!hide && (
           <>
