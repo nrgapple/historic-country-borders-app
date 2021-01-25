@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { GeoJSONLayer } from 'react-mapbox-gl';
 import { workerSet } from '../util/ReactMapBoxGl';
 import MapboxGl from 'mapbox-gl';
@@ -17,16 +17,19 @@ const Map = React.lazy(() =>
 
 const MapContainer = ({ year }: MapContainerProps) => {
   const [isLoading, data] = useData(year);
-
+  const [zoomValue, setZoomValue] = useState(2);
   return (
     <div className="map-grid">
       <Suspense fallback={<div></div>}>
         <Map
           className="map"
+          zoom={[zoomValue]}
           style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
           onStyleLoad={(map: MapboxGl.Map) => {
-            map.setZoom(2);
             map.resize();
+          }}
+          onZoomEnd={(map) => {
+            setZoomValue(map.getZoom());
           }}
         >
           {data && (
