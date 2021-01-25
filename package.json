@@ -16,6 +16,7 @@
     "react-horizontal-timeline": "1.5.3",
     "react-mapbox-gl": "5.1.1",
     "react-scripts": "4.0.1",
+    "react-tooltip": "^4.2.13",
     "string-to-color": "2.2.2"
   },
   "devDependencies": {

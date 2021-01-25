@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { GeoJSONLayer } from 'react-mapbox-gl';
 import { workerSet } from '../util/ReactMapBoxGl';
 import MapboxGl from 'mapbox-gl';
@@ -8,6 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface MapContainerProps {
   year: string;
+  fullscreen?: boolean;
 }
 
 //@ts-ignore
@@ -15,9 +16,17 @@ const Map = React.lazy(() =>
   workerSet().then(() => import('../util/ReactMapBoxGl')),
 );
 
-const MapContainer = ({ year }: MapContainerProps) => {
+const MapContainer = ({ year, fullscreen }: MapContainerProps) => {
   const [isLoading, data] = useData(year);
   const [zoomValue, setZoomValue] = useState(2);
+  const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.resize();
+    }
+  }, [fullscreen]);
+
   return (
     <div className="map-grid">
       <Suspense fallback={<div></div>}>
@@ -26,10 +35,14 @@ const MapContainer = ({ year }: MapContainerProps) => {
           zoom={[zoomValue]}
           style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
           onStyleLoad={(map: MapboxGl.Map) => {
+            mapRef.current = map;
             map.resize();
           }}
           onZoomEnd={(map) => {
             setZoomValue(map.getZoom());
+          }}
+          onResize={(map) => {
+            console.log('here');
           }}
         >
           {data && (
