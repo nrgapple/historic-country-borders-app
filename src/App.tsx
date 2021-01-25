@@ -9,13 +9,22 @@ import Timeline from './components/Timeline';
 
 export default function App() {
   const [index, setIndex] = useState(0);
+  const [hide, setHide] = useState(false);
 
   return (
     <>
-      <NavBar />
-      <Timeline index={index} onChange={setIndex} />
+      {
+        !hide &&
+        <>
+          <NavBar />
+          <Timeline index={index} onChange={setIndex} />
+        </>
+      }
       <MapContainer year={convertYearString(mapBCFormat, dates[index])} />
-      <Footer />
+      {
+        !hide &&
+        <Footer />
+      }
     </>
   );
 }
