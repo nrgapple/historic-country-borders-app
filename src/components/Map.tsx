@@ -1,5 +1,6 @@
 import React from 'react';
-import ReactMapboxGl, { GeoJSONLayer } from 'react-mapbox-gl';
+import { GeoJSONLayer } from 'react-mapbox-gl';
+import Map from '../util/ReactMapBoxGl'
 import MapboxGl from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 
@@ -8,11 +9,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 interface MapContainerProps {
   year: string;
 }
-
-const Map = ReactMapboxGl({
-  accessToken:
-    'pk.eyJ1IjoibnJnYXBwbGUiLCJhIjoiY2trN2E1YnVvMGJ4OTJwbWptM25waHVmNyJ9.UxvOXdAatpV-H1AXQQ23Kg',
-});
 
 const MapContainer = ({ year }: MapContainerProps) => {
   const [isLoading, data] = useData(year);

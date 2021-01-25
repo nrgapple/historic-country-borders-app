@@ -9,14 +9,15 @@
     "@types/geojson": "7946.0.7",
     "@types/mapbox-gl": "2.0.3",
     "@types/polylabel": "1.0.5",
-    "mapbox-gl": "2.0.1",
+    "mapbox-gl": "^2.0.1",
     "polylabel": "1.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-horizontal-timeline": "1.5.3",
     "react-mapbox-gl": "5.1.1",
     "react-scripts": "4.0.1",
-    "string-to-color": "2.2.2"
+    "string-to-color": "2.2.2",
+    "worker-loader": "^3.0.7"
   },
   "devDependencies": {
     "@types/react": "17.0.0",
