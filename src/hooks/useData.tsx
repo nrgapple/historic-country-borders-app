@@ -20,7 +20,13 @@ export const useData = (value: string) => {
   const [data, setData] = useState<CountryData | undefined>(undefined);
 
   const processData = (data: FeatureCollection) => {
-    const featureParts = data.features.map((feature) => {
+    const dataNoUnclaimed = {
+      ...data,
+      features: data.features.filter(
+        (f) => f.properties?.NAME != null && f.properties?.NAME != 'unclaimed',
+      ),
+    };
+    const featureParts = dataNoUnclaimed.features.map((feature) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
       const color = stc(name);
       const labels = (feature.geometry as MultiPolygon).coordinates
