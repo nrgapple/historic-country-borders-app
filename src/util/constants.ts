@@ -38,3 +38,7 @@ export const mapBCFormat = (value: number) => `bc${(value * -1).toString()}`;
 
 export const timelineBCFormat = (value: number) =>
   `${(value * -1).toString()} BC`;
+
+export const mod = (n: number, m: number) => {
+  return ((n % m) + m) % m;
+};

@@ -3,22 +3,38 @@ import MapContainer from './components/Map';
 import React, { useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 
-import { convertYearString, dates, mapBCFormat } from './util/constants';
+import { convertYearString, dates, mapBCFormat, mod } from './util/constants';
 import Footer from './components/Footer';
 import NavBar from './components/NavBar';
 import Timeline from './components/Timeline';
 import ReactTooltip from 'react-tooltip';
+import useKeyPress from './hooks/useKeyPress';
 
 ReactGA.initialize('UA-188190791-1');
 
 export default function App() {
   const [index, setIndex] = useState(0);
   const [hide, setHide] = useState(false);
+  const [help, setHelp] = useState(false);
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const aPress = useKeyPress('a');
+  const dPress = useKeyPress('d');
 
   useEffect(() => {
     ReactGA.pageview('/home');
   }, []);
+
+  useEffect(() => {
+    if (dPress) {
+      setIndex(mod(index + 1, dates.length));
+    }
+  }, [dPress]);
+
+  useEffect(() => {
+    if (aPress) {
+      setIndex(mod(index - 1, dates.length));
+    }
+  }, [aPress]);
 
   return (
     <>
@@ -44,7 +60,7 @@ export default function App() {
       <div className={`${hide ? 'app-large' : 'app'}`}>
         {!hide && (
           <>
-            <NavBar />
+            <NavBar onHelp={() => setHelp(!help)} showHelp={help} />
             <Timeline index={index} onChange={setIndex} />
           </>
         )}

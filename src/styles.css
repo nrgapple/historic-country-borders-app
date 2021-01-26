@@ -38,6 +38,22 @@ body {
   text-shadow: 2px 2px 4px #252525;
 }
 
+.help {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 51px;
+  right: 16px;
+  z-index: 1500;
+  background-color: #6930c3;
+  box-shadow: 2px 2px 4px #252525;
+}
+
+.help div {
+  padding: 8px;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -64,6 +80,12 @@ a {
   background-color: #6930c3;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.help-icon {
+  padding: 16px;
+  cursor: pointer;
 }
 
 .footer {
