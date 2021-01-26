@@ -9,7 +9,7 @@ import NavBar from './components/NavBar';
 import Timeline from './components/Timeline';
 import ReactTooltip from 'react-tooltip';
 
-ReactGA.initialize('G-P1R4GR83SN');
+ReactGA.initialize('UA-188190791-1');
 
 export default function App() {
   const [index, setIndex] = useState(0);
