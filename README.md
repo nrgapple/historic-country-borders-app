@@ -1,6 +1,6 @@
 # [Historic Borders](https://historicborders.app/)
 
-Visualize counrty borders from different times in history (2000 BC-1994)
+Visualize country borders from different times in history (2000 BC-1994)
 
 As seen on [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments/l52krh/an_app_i_made_for_visualizing_country_borders/).
 
