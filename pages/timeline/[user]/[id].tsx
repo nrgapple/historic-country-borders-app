@@ -1,0 +1,143 @@
+import MapContainer from '../../../components/ViewerMap';
+import React, { useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
+import {
+  convertYearString,
+  dates,
+  getYearFromFile,
+  mapBCFormat,
+  mod,
+} from '../../../util/constants';
+import Footer from '../../../components/Footer';
+import NavBar from '../../../components/NavBar';
+import Timeline from '../../../components/Timeline';
+import ReactTooltip from 'react-tooltip';
+import useKeyPress from '../../../hooks/useKeyPress';
+import { GetServerSideProps } from 'next';
+import { Octokit } from '@octokit/core';
+import { ConfigType, GithubFileInfoType } from '../../../util/types';
+
+ReactGA.initialize('UA-188190791-1');
+
+interface DataProps {
+  years: number[];
+  user: string;
+  id: string;
+  config: ConfigType;
+}
+
+const Viewer = ({ years, user, id, config }: DataProps) => {
+  const [index, setIndex] = useState(0);
+  const [hide, setHide] = useState(false);
+  const [help, setHelp] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const isMobile =
+    typeof window !== 'undefined'
+      ? /Mobi|Android/i.test(navigator.userAgent)
+      : false;
+  const aPress = useKeyPress('a');
+  const dPress = useKeyPress('d');
+
+  useEffect(() => {
+    ReactGA.pageview('/home');
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (dPress) {
+      setIndex(mod(index + 1, years.length));
+    }
+  }, [dPress]);
+
+  useEffect(() => {
+    if (aPress) {
+      setIndex(mod(index - 1, years.length));
+    }
+  }, [aPress]);
+
+  return (
+    <>
+      {mounted && (
+        <ReactTooltip
+          resizeHide={false}
+          id="fullscreenTip"
+          place="left"
+          effect="solid"
+          globalEventOff={isMobile ? 'click' : undefined}
+        >
+          {hide ? 'Show Timeline' : 'Hide Timeline'}
+        </ReactTooltip>
+      )}
+      <div
+        data-tip
+        data-for="fullscreenTip"
+        data-delay-show="300"
+        className="fullscreen"
+        onClick={() => setHide(!hide)}
+        style={{ top: hide ? '16px' : '165px' }}
+      >
+        <div className="noselect">🔭</div>
+      </div>
+      <div className={`${hide ? 'app-large' : 'app'}`}>
+        {!hide && (
+          <>
+            <NavBar
+              onHelp={() => setHelp(!help)}
+              showHelp={help}
+              title={config.name}
+            />
+            <Timeline index={index} onChange={setIndex} years={years} />
+          </>
+        )}
+        <MapContainer
+          year={convertYearString(mapBCFormat, dates[index])}
+          fullscreen={hide}
+          user={user}
+          id={id}
+        />
+        {!hide && <Footer />}
+      </div>
+    </>
+  );
+};
+
+export default Viewer;
+
+export const getServerSideProps: GetServerSideProps<DataProps> = async (
+  context,
+) => {
+  if (context.params && context.params.user && context.params.id) {
+    try {
+      const octokit = new Octokit();
+      const configRes = await fetch(
+        `https://raw.githubusercontent.com/${context.params.user}/historicborders-${context.params.id}/main/config.json`,
+      );
+      const config: ConfigType = await configRes.json();
+      const fileResp = await octokit.request(
+        `/repos/${context.params.user}/historicborders-${context.params.id}/contents/years`,
+      );
+      const files: GithubFileInfoType[] = fileResp.data;
+      const years = files.map((x) => getYearFromFile(x.name));
+      // const years = files.find(x => x.name === 'years' && x.type === FileType.Dir)
+      // const resp = await octokit.request(
+      //   `/repos/${context.params.user}/historicborders-${context.params.id}/contents`
+      // );
+      // const file = gist.files[Object.keys(gist.files)[0]];
+      // if (isSnipFile(file.filename)) {
+      return {
+        props: {
+          years,
+          user: context.params.user,
+          id: context.params.id,
+          config,
+        } as DataProps,
+      };
+      // }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  return {
+    props: {} as DataProps,
+  };
+};

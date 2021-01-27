@@ -1,13 +1,15 @@
-import Help from './Help';
+import Help from "./Help";
 
 interface NavBarProps {
+  title: string;
+  author?: string;
   onHelp?: () => void;
   showHelp?: boolean;
 }
 
-const NavBar = ({ onHelp, showHelp }: NavBarProps) => (
+const NavBar = ({ onHelp, showHelp, title }: NavBarProps) => (
   <div className="nav-bar">
-    <div className="title drop">🌍 Historic Country Borders</div>
+    <div className="title drop">🌍 {title}</div>
     <div className="help-icon noselect" onClick={onHelp}>
       ❔
     </div>

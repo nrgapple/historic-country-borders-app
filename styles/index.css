@@ -1,11 +1,11 @@
 body {
-  height: 100vh;
+  height: 100%;
   padding: 0;
   margin: 0;
   background-color: #252525;
 }
 
-#root {
+body {
   /* background-color: #e8e0fd; */
   color: #64dfdf;
   font-family: Roboto, system-ui;
@@ -13,6 +13,10 @@ body {
   line-height: 1.5;
   margin: 0;
   height: 100%;
+}
+
+#__next {
+  height: 100vh;
 }
 
 .app {

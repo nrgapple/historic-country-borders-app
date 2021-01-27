@@ -4,17 +4,18 @@ import type {
   Feature,
   MultiPolygon,
   Point,
-} from 'geojson';
-import { useEffect, useState } from 'react';
-import stc from 'string-to-color';
-import polylabel from 'polylabel';
+} from "geojson";
+import { useEffect, useState } from "react";
+import stc from "string-to-color";
+import polylabel from "polylabel";
+import { yearPrefix } from "../util/constants";
 
 export interface CountryData {
   labels: FeatureCollection;
   borders: FeatureCollection;
 }
 
-export const useData = (value: string) => {
+export const useData = (year: string, user: string, id: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [url, setUrl] = useState<string | undefined>(undefined);
   const [data, setData] = useState<CountryData | undefined>(undefined);
@@ -23,17 +24,17 @@ export const useData = (value: string) => {
     const dataNoUnclaimed = {
       ...data,
       features: data.features.filter(
-        (f) => f.properties?.NAME != null && f.properties?.NAME != 'unclaimed',
+        (f) => f.properties?.NAME != null && f.properties?.NAME != "unclaimed"
       ),
     };
     const featureParts = dataNoUnclaimed.features.map((feature) => {
-      const name = feature.properties?.NAME ?? 'unclaimed';
+      const name = feature.properties?.NAME ?? "unclaimed";
       const color = stc(name);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x) => polylabel(x))
         .map((x) => ({
           geometry: {
-            type: 'Point',
+            type: "Point",
             coordinates: x,
           } as Point,
           properties: {
@@ -71,13 +72,13 @@ export const useData = (value: string) => {
   };
 
   useEffect(() => {
-    if (value) {
+    if (year) {
       setIsLoading(true);
       setUrl(
-        `https://raw.githubusercontent.com/aourednik/historical-basemaps/master/world_${value}.geojson`,
+        `https://raw.githubusercontent.com/${user}/${yearPrefix}${id}/main/years/${year}.geojson`
       );
     }
-  }, [value]);
+  }, [year]);
 
   useEffect(() => {
     if (url) {
