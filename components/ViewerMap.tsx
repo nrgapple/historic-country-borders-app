@@ -1,10 +1,10 @@
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import { GeoJSONLayer } from "react-mapbox-gl";
-import MapboxGl from "mapbox-gl";
-import { useData } from "../hooks/useData";
-import Map from "../util/ReactMapBoxGl";
+import React, { useEffect, useRef, useState } from 'react';
+import { GeoJSONLayer } from 'react-mapbox-gl';
+import MapboxGl from 'mapbox-gl';
+import { useData } from '../hooks/useData';
+import Map from '../util/ReactMapBoxGl';
 
-import "mapbox-gl/dist/mapbox-gl.css";
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface MapContainerProps {
   year: string;
@@ -14,7 +14,7 @@ interface MapContainerProps {
 }
 
 const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
-  const [isLoading, data] = useData(year, user, id);
+  const [, data] = useData(year, user, id);
   const [zoomValue, setZoomValue] = useState(2);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
 
@@ -43,26 +43,26 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
             <GeoJSONLayer
               data={data.borders}
               fillPaint={{
-                "fill-color": ["get", "COLOR"],
-                "fill-opacity": 0.5,
+                'fill-color': ['get', 'COLOR'],
+                'fill-opacity': 0.5,
               }}
             />
             <GeoJSONLayer
               data={data.labels}
               symbolLayout={{
-                "text-field": "{NAME}",
-                "text-font": ["Lato Bold"],
-                "text-size": {
+                'text-field': '{NAME}',
+                'text-font': ['Lato Bold'],
+                'text-size': {
                   base: 1,
                   stops: [
                     [12, 12],
                     [16, 16],
                   ],
                 },
-                "text-padding": 3,
-                "text-letter-spacing": 0.1,
-                "text-max-width": 7,
-                "text-transform": "uppercase",
+                'text-padding': 3,
+                'text-letter-spacing': 0.1,
+                'text-max-width': 7,
+                'text-transform': 'uppercase',
               }}
             />
           </>

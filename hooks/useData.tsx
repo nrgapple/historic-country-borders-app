@@ -4,11 +4,11 @@ import type {
   Feature,
   MultiPolygon,
   Point,
-} from "geojson";
-import { useEffect, useState } from "react";
-import stc from "string-to-color";
-import polylabel from "polylabel";
-import { yearPrefix } from "../util/constants";
+} from 'geojson';
+import { useEffect, useState } from 'react';
+import stc from 'string-to-color';
+import polylabel from 'polylabel';
+import { yearPrefix } from '../util/constants';
 
 export interface CountryData {
   labels: FeatureCollection;
@@ -24,17 +24,17 @@ export const useData = (year: string, user: string, id: string) => {
     const dataNoUnclaimed = {
       ...data,
       features: data.features.filter(
-        (f) => f.properties?.NAME != null && f.properties?.NAME != "unclaimed"
+        (f) => f.properties?.NAME != null && f.properties?.NAME != 'unclaimed',
       ),
     };
     const featureParts = dataNoUnclaimed.features.map((feature) => {
-      const name = feature.properties?.NAME ?? "unclaimed";
+      const name = feature.properties?.NAME ?? 'unclaimed';
       const color = stc(name);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x) => polylabel(x))
         .map((x) => ({
           geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: x,
           } as Point,
           properties: {
@@ -59,6 +59,7 @@ export const useData = (year: string, user: string, id: string) => {
     });
     const labelCol = {
       ...data,
+      //@ts-ignore
       features: featureParts.map((x) => x.labels).flat(1),
     } as FeatureCollection;
     const boundCol = {
@@ -75,7 +76,7 @@ export const useData = (year: string, user: string, id: string) => {
     if (year) {
       setIsLoading(true);
       setUrl(
-        `https://raw.githubusercontent.com/${user}/${yearPrefix}${id}/main/years/${year}.geojson`
+        `https://raw.githubusercontent.com/${user}/${yearPrefix}${id}/main/years/${year}.geojson`,
       );
     }
   }, [year]);
