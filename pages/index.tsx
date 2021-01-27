@@ -1,8 +1,8 @@
-import { Octokit } from "@octokit/core";
-import { GetServerSideProps } from "next";
-import { getYearFromFile } from "../util/constants";
-import { ConfigType, GithubFileInfoType } from "../util/types";
-import Viewer from "./timeline/[user]/[id]";
+import { Octokit } from '@octokit/core';
+import { GetServerSideProps } from 'next';
+import { getYearFromFile } from '../util/constants';
+import { ConfigType, GithubFileInfoType } from '../util/types';
+import Viewer from './timeline/[user]/[id]';
 
 interface DataProps {
   years: number[];
@@ -14,8 +14,8 @@ interface DataProps {
 const IndexPage = ({ years, user, id, config }: DataProps) => {
   return (
     <Viewer
-      user={"nrgapple"}
-      id={"timeline-example"}
+      user={'nrgapple'}
+      id={'timeline-example'}
       config={config}
       years={years}
     />
@@ -23,19 +23,21 @@ const IndexPage = ({ years, user, id, config }: DataProps) => {
 };
 
 export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
-  const user = "nrgapple";
-  const id = "timeline-example";
+  const user = 'nrgapple';
+  const id = 'timeline-example';
   try {
     const octokit = new Octokit();
     const configRes = await fetch(
-      `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`
+      `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`,
     );
     const config: ConfigType = await configRes.json();
     const fileResp = await octokit.request(
-      `/repos/${user}/historicborders-${id}/contents/years`
+      `/repos/${user}/historicborders-${id}/contents/years`,
     );
     const files: GithubFileInfoType[] = fileResp.data;
-    const years = files.map((x) => getYearFromFile(x.name));
+    const years = files
+      .map((x) => getYearFromFile(x.name))
+      .sort((a, b) => a - b);
     return {
       props: {
         years,

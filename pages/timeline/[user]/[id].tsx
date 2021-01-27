@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import {
   convertYearString,
-  dates,
   getYearFromFile,
   mapBCFormat,
   mod,
@@ -90,7 +89,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
           </>
         )}
         <MapContainer
-          year={convertYearString(mapBCFormat, dates[index])}
+          year={convertYearString(mapBCFormat, years[index])}
           fullscreen={hide}
           user={user}
           id={id}
@@ -117,13 +116,9 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async (
         `/repos/${context.params.user}/historicborders-${context.params.id}/contents/years`,
       );
       const files: GithubFileInfoType[] = fileResp.data;
-      const years = files.map((x) => getYearFromFile(x.name));
-      // const years = files.find(x => x.name === 'years' && x.type === FileType.Dir)
-      // const resp = await octokit.request(
-      //   `/repos/${context.params.user}/historicborders-${context.params.id}/contents`
-      // );
-      // const file = gist.files[Object.keys(gist.files)[0]];
-      // if (isSnipFile(file.filename)) {
+      const years = files
+        .map((x) => getYearFromFile(x.name))
+        .sort((a, b) => a - b);
       return {
         props: {
           years,
