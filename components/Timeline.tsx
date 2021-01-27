@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 //@ts-ignore
-import HorizontalTimeline from "react-horizontal-timeline";
-import { convertYearString, dates, timelineBCFormat } from "../util/constants";
+import HorizontalTimeline from 'react-horizontal-timeline';
+import { convertYearString, timelineBCFormat } from '../util/constants';
 
 interface TimelineProps {
   index: number;
@@ -13,17 +13,17 @@ const Timeline = ({ index, onChange, years }: TimelineProps) => (
   <div className="timeline">
     <div
       style={{
-        width: "100%",
-        height: "100px",
-        fontSize: "15px",
+        width: '100%',
+        height: '100px',
+        fontSize: '15px',
       }}
       className="timeline"
     >
       <HorizontalTimeline
         styles={{
-          background: "#252525",
-          foreground: "#64dfdf",
-          outline: "#6930c3",
+          background: '#252525',
+          foreground: '#64dfdf',
+          outline: '#6930c3',
         }}
         index={index}
         indexClick={(newIndex: number) => {
