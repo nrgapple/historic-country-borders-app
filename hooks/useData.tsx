@@ -8,13 +8,14 @@ import type {
 import { useEffect, useState } from 'react';
 import stc from 'string-to-color';
 import polylabel from 'polylabel';
+import { yearPrefix } from '../util/constants';
 
 export interface CountryData {
   labels: FeatureCollection;
   borders: FeatureCollection;
 }
 
-export const useData = (value: string) => {
+export const useData = (year: string, user: string, id: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [url, setUrl] = useState<string | undefined>(undefined);
   const [data, setData] = useState<CountryData | undefined>(undefined);
@@ -58,6 +59,7 @@ export const useData = (value: string) => {
     });
     const labelCol = {
       ...data,
+      //@ts-ignore
       features: featureParts.map((x) => x.labels).flat(1),
     } as FeatureCollection;
     const boundCol = {
@@ -71,13 +73,13 @@ export const useData = (value: string) => {
   };
 
   useEffect(() => {
-    if (value) {
+    if (year) {
       setIsLoading(true);
       setUrl(
-        `https://raw.githubusercontent.com/aourednik/historical-basemaps/master/world_${value}.geojson`,
+        `https://raw.githubusercontent.com/${user}/${yearPrefix}${id}/main/years/${year}.geojson`,
       );
     }
-  }, [value]);
+  }, [year]);
 
   useEffect(() => {
     if (url) {

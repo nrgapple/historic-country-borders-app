@@ -1,14 +1,15 @@
 import React from 'react';
 //@ts-ignore
 import HorizontalTimeline from 'react-horizontal-timeline';
-import { convertYearString, dates, timelineBCFormat } from '../util/constants';
+import { convertYearString, timelineBCFormat } from '../util/constants';
 
 interface TimelineProps {
   index: number;
   onChange: (value: number) => void;
+  years: number[];
 }
 
-const Timeline = ({ index, onChange }: TimelineProps) => (
+const Timeline = ({ index, onChange, years }: TimelineProps) => (
   <div className="timeline">
     <div
       style={{
@@ -31,7 +32,7 @@ const Timeline = ({ index, onChange }: TimelineProps) => (
         getLabel={(date: any) =>
           convertYearString(timelineBCFormat, new Date(date, 0).getFullYear())
         }
-        values={dates}
+        values={years}
         linePadding={50}
         isOpenEnding={false}
         isOpenBeginning={false}

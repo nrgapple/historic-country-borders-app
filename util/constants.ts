@@ -1,3 +1,5 @@
+import { parse } from "path";
+
 export const dates = [
   -2000,
   -1000,
@@ -24,9 +26,11 @@ export const dates = [
   1994,
 ];
 
+export const yearPrefix = "historicborders-";
+
 export const convertYearString = (
   format: (value: number) => string,
-  year: number,
+  year: number
 ) => {
   if (year < 0) {
     return format(year);
@@ -42,3 +46,6 @@ export const timelineBCFormat = (value: number) =>
 export const mod = (n: number, m: number) => {
   return ((n % m) + m) % m;
 };
+
+export const getYearFromFile = (fileName: string) =>
+  parseInt(fileName.replace(/.geojson/g, "").replace(/bc/g, "-"));

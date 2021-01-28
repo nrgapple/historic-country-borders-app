@@ -12,6 +12,10 @@ As seen on [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments
 
 The data is pulled from [aourednik's](https://github.com/aourednik/historical-basemaps) historical basemaps repo.
 
+## Load your own data
+
+Follow [instructions here to load your own country borders data](https://github.com/nrgapple/historicborders-timeline-example)
+
 ## Keep in Mind
 
 1. historical boundaries are even more disputed than contemporary ones, that
@@ -20,4 +24,3 @@ The data is pulled from [aourednik's](https://github.com/aourednik/historical-ba
 4. overlaying these ancient vector maps on contemporary physical maps can be misleading; rivers, lakes, shorelines _do_ change very much over millenia; think for instance about the evolution of the [Aral sea](https://en.wikipedia.org/wiki/Aral_Sea) since the 1980s.
 
 Finally, note that overlapping areas are useally dealt with as topological errors in traditional GIS. Fuzzy borders are difficult to handle. Certainly a field to investigate...
-
