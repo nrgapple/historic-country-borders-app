@@ -12,14 +12,7 @@ interface DataProps {
 }
 
 const IndexPage = ({ years, user, id, config }: DataProps) => {
-  return (
-    <Viewer
-      user={'nrgapple'}
-      id={'timeline-example'}
-      config={config}
-      years={years}
-    />
-  );
+  return <Viewer user={user} id={id} config={config} years={years} />;
 };
 
 export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
