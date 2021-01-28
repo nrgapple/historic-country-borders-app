@@ -8,10 +8,11 @@ export interface GithubFileInfoType {
 }
 
 export enum FileType {
-  Dir = "dir",
-  File = "file",
+  Dir = 'dir',
+  File = 'file',
 }
 
 export interface ConfigType {
   name: string;
+  description?: string;
 }
