@@ -103,7 +103,11 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
             user={user}
             id={id}
           />
-          {!hide && <Footer />}
+          {!hide && (
+            <Footer
+              dataUrl={`https://github.com/${user}/historicborders-${id}`}
+            />
+          )}
         </div>
       </Layout>
     </>

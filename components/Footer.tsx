@@ -2,13 +2,13 @@ interface FooterProps {
   dataUrl?: string;
 }
 
-const Footer = (
-  url = 'https://github.com/nrgapple/historicborders-timeline-example',
-) => (
+const Footer = ({
+  dataUrl = 'https://github.com/nrgapple/historicborders-timeline-example',
+}: FooterProps) => (
   <div className="footer">
     <div>
-      🗺 This map uses data from <a href={url}>here</a> to show country borders
-      over history. Create your own data{' '}
+      🗺 This map uses data from <a href={dataUrl}>here</a> to show country
+      borders over history. Create your own data{' '}
       <a href="https://github.com/nrgapple/historicborders-timeline-example">
         here
       </a>{' '}
