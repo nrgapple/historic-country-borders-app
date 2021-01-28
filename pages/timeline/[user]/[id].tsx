@@ -39,7 +39,11 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   const dPress = useKeyPress('d');
 
   useEffect(() => {
-    ReactGA.pageview('/home');
+    if ([user, id].some((x) => !x)) {
+      ReactGA.pageview(`/no-data`);
+    } else {
+      ReactGA.pageview(`/timeline/${user}/${id}`);
+    }
     setMounted(true);
   }, []);
 
