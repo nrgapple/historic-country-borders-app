@@ -15,7 +15,6 @@ import useKeyPress from '../../../hooks/useKeyPress';
 import { GetServerSideProps } from 'next';
 import { Octokit } from '@octokit/core';
 import { ConfigType, GithubFileInfoType } from '../../../util/types';
-import Head from 'next/head';
 import Layout from '../../../components/Layout';
 
 ReactGA.initialize('UA-188190791-1');
