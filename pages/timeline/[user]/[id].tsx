@@ -4,6 +4,7 @@ import ReactGA from 'react-ga';
 import {
   convertYearString,
   getYearFromFile,
+  githubToken,
   mapBCFormat,
   mod,
 } from '../../../util/constants';
@@ -129,7 +130,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async (
 ) => {
   if (context.params && context.params.user && context.params.id) {
     try {
-      const octokit = new Octokit();
+      const octokit = new Octokit({ auth: githubToken });
       const configRes = await fetch(
         `https://raw.githubusercontent.com/${context.params.user}/historicborders-${context.params.id}/main/config.json`,
       );

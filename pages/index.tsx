@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/core';
 import { GetServerSideProps } from 'next';
-import { getYearFromFile } from '../util/constants';
+import { getYearFromFile, githubToken } from '../util/constants';
 import { ConfigType, GithubFileInfoType } from '../util/types';
 import Viewer from './timeline/[user]/[id]';
 
@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
   const user = 'nrgapple';
   const id = 'timeline-example';
   try {
-    const octokit = new Octokit();
+    const octokit = new Octokit({ auth: githubToken });
     const configRes = await fetch(
       `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`,
     );

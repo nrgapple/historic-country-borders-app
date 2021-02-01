@@ -1,4 +1,4 @@
-import { parse } from "path";
+import { parse } from 'path';
 
 export const dates = [
   -2000,
@@ -26,11 +26,11 @@ export const dates = [
   1994,
 ];
 
-export const yearPrefix = "historicborders-";
+export const yearPrefix = 'historicborders-';
 
 export const convertYearString = (
   format: (value: number) => string,
-  year: number
+  year: number,
 ) => {
   if (year < 0) {
     return format(year);
@@ -48,4 +48,6 @@ export const mod = (n: number, m: number) => {
 };
 
 export const getYearFromFile = (fileName: string) =>
-  parseInt(fileName.replace(/.geojson/g, "").replace(/bc/g, "-"));
+  parseInt(fileName.replace(/.geojson/g, '').replace(/bc/g, '-'));
+
+export const githubToken = '71adbf12c9ad3b43fa4557f45dfba44cf6362249';
