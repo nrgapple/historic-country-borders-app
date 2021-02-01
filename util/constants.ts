@@ -1,5 +1,3 @@
-import { parse } from 'path';
-
 export const dates = [
   -2000,
   -1000,
@@ -50,4 +48,4 @@ export const mod = (n: number, m: number) => {
 export const getYearFromFile = (fileName: string) =>
   parseInt(fileName.replace(/.geojson/g, '').replace(/bc/g, '-'));
 
-export const githubToken = '71adbf12c9ad3b43fa4557f45dfba44cf6362249';
+export const githubToken = process.env.NEXT_PUBLIC_GITHUB_API;
