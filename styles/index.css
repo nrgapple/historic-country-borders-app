@@ -21,7 +21,7 @@ body {
 .app {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 50px 100px auto 75px;
+  grid-template-rows: 50px 100px auto 50px;
   align-items: stretch;
   height: 100%;
 }
@@ -96,6 +96,7 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  font-size: 12px;
 }
 
 .map {
@@ -111,5 +112,5 @@ a {
 
 .title {
   padding: 8px;
-  font-size: 26px;
+  font-size: 20px;
 }

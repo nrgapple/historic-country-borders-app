@@ -63,7 +63,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
     console.log({ years, user, id, config });
   }, [years, user, id, config]);
 
-  if ([years, user, id, config].some((x) => !x))
+  if (!(years && user && id && config))
     return <div>Not a valid timeline. Check your url.</div>;
 
   return (
