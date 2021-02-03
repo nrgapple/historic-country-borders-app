@@ -13,7 +13,7 @@ import NavBar from '../../../components/NavBar';
 import Timeline from '../../../components/Timeline';
 import ReactTooltip from 'react-tooltip';
 import useKeyPress from '../../../hooks/useKeyPress';
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { Octokit } from '@octokit/core';
 import {
   ConfigType,
@@ -22,7 +22,7 @@ import {
 } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { FeatureCollection } from 'geojson';
-import { getMapEvents } from '../../../util/util';
+import { getEventsForYear } from '../../../util/util';
 import { useRouter } from 'next/dist/client/router';
 import Detail from '../../../components/Detail';
 
@@ -194,7 +194,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
         const paramYear = parseInt(params.year as string);
         if (years.some((x) => x === paramYear)) {
           currentYear = paramYear;
-          mapEvents = await getMapEvents(currentYear);
+          mapEvents = await getEventsForYear(currentYear);
         }
       }
     }

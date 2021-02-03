@@ -1,9 +1,9 @@
 import { Octokit } from '@octokit/core';
 import { FeatureCollection } from 'geojson';
-import { GetServerSideProps, GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { githubToken, getYearFromFile } from '../../../util/constants';
 import { ConfigType, GithubFileInfoType } from '../../../util/types';
-import { getMapEvents } from '../../../util/util';
+import { getEventsForYear } from '../../../util/util';
 import Viewer from '../[year]/[id]';
 
 interface DataProps {
@@ -56,7 +56,9 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     const currentYear = params?.year
       ? parseInt(params.year as string)
       : years[0];
-    const mapEvents: FeatureCollection | null = await getMapEvents(currentYear);
+    const mapEvents: FeatureCollection | null = await getEventsForYear(
+      currentYear,
+    );
     console.log('events', mapEvents);
     return {
       props: {

@@ -25,3 +25,15 @@ export interface mapEventPropertiesType {
   flagged: boolean;
   actualDate: Date;
 }
+
+export interface YearEventsRowType {
+  id: number;
+  title: string;
+  content: string;
+  year: number;
+  lat: number;
+  long: number;
+  author: { name: string };
+  flagged: boolean;
+  actualDate: Date;
+}
