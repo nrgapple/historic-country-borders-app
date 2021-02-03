@@ -26,6 +26,7 @@ import { FeatureCollection } from 'geojson';
 import { getEventsForYear } from '../../../util/util';
 import { useRouter } from 'next/dist/client/router';
 import Detail from '../../../components/Detail';
+import { MapEvent } from 'react-mapbox-gl/lib/map-events';
 
 ReactGA.initialize('UA-188190791-1');
 
@@ -61,6 +62,14 @@ const Viewer = ({
   const [details, setDetails] = useState<mapEventPropertiesType | undefined>();
   const router = useRouter();
   const [eventId, setEventId] = useState(currentEventId);
+
+  const getCurrentEventProps = (
+    mapEvents: FeatureCollection,
+    currentEventId: number,
+  ) => {
+    return mapEvents.features.find((x) => x.properties!.id == currentEventId)
+      ?.properties as mapEventPropertiesType;
+  };
 
   useEffect(() => {
     if ([user, id].some((x) => !x)) {
@@ -116,13 +125,19 @@ const Viewer = ({
     <>
       <Layout
         title={
-          details?.title ??
-          `Year ${convertYearString(timelineBCFormat, currentYear)}`
+          typeof window === 'undefined' && mapEvents && currentEventId
+            ? getCurrentEventProps(mapEvents, currentEventId).title
+            : details?.title ??
+              `Year ${convertYearString(timelineBCFormat, currentYear)}`
         }
         url={`https://historyborders.app/events/${currentYear}/${
-          eventId ?? 'none'
+          currentEventId ?? 'none'
         }`}
-        description={details?.content ?? config.description}
+        description={
+          typeof window === 'undefined' && mapEvents && currentEventId
+            ? getCurrentEventProps(mapEvents, currentEventId).content
+            : details?.content ?? config.description
+        }
       >
         {details && (
           <Detail
