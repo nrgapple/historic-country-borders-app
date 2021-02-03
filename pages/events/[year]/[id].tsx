@@ -23,7 +23,7 @@ import {
 } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { FeatureCollection } from 'geojson';
-import { getEventsForYear } from '../../../util/util';
+import { getCurrentEventProps, getEventsForYear } from '../../../util/util';
 import { useRouter } from 'next/dist/client/router';
 import Detail from '../../../components/Detail';
 import { MapEvent } from 'react-mapbox-gl/lib/map-events';
@@ -62,14 +62,6 @@ const Viewer = ({
   const [details, setDetails] = useState<mapEventPropertiesType | undefined>();
   const router = useRouter();
   const [eventId, setEventId] = useState(currentEventId);
-
-  const getCurrentEventProps = (
-    mapEvents: FeatureCollection,
-    currentEventId: number,
-  ) => {
-    return mapEvents.features.find((x) => x.properties!.id == currentEventId)
-      ?.properties as mapEventPropertiesType;
-  };
 
   useEffect(() => {
     if ([user, id].some((x) => !x)) {

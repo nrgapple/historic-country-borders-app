@@ -1,6 +1,6 @@
 import { Feature, FeatureCollection, GeoJsonProperties, Point } from 'geojson';
 import prisma from '../lib/prisma';
-import { YearEventsRowType } from './types';
+import { mapEventPropertiesType, YearEventsRowType } from './types';
 
 export const fetchMapEvents = async (year: number) => {
   const resp = await fetch(`/api/events/${year}`);
@@ -52,4 +52,12 @@ const rowToFeature = (row: YearEventsRowType) => {
     } as GeoJsonProperties,
   } as Feature<Point>;
   return feature;
+};
+
+export const getCurrentEventProps = (
+  mapEvents: FeatureCollection,
+  currentEventId: number,
+) => {
+  return mapEvents.features.find((x) => x.properties!.id == currentEventId)
+    ?.properties as mapEventPropertiesType;
 };
