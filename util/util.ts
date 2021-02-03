@@ -31,6 +31,7 @@ export const getEventsForYear = async (year: number) => {
     } as FeatureCollection;
     return collection;
   } catch (e) {
+    console.log(e);
     return null;
   }
 };
