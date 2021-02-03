@@ -16,3 +16,12 @@ export interface ConfigType {
   name: string;
   description?: string;
 }
+
+export interface mapEventPropertiesType {
+  id: number;
+  title: string;
+  content: string;
+  author: string;
+  flagged: boolean;
+  actualDate: Date;
+}

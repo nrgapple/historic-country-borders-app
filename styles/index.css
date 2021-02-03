@@ -53,6 +53,47 @@ body {
   box-shadow: 2px 2px 4px #252525;
 }
 
+.details {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  top: 158px;
+  right: 16px;
+  bottom: 58px;
+  z-index: 1500;
+  width: 30%;
+  background-color: #6930c3;
+  opacity: 0.9;
+  box-shadow: 2px 2px 4px #252525;
+}
+
+.details-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.details-nav div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.details-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 8px;
+}
+
+.details-body h1 {
+  margin: 0px;
+  font-size: 25px;
+}
+
 .help div {
   padding: 8px;
 }

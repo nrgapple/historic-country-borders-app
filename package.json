@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@octokit/core": "^3.2.5",
+    "@prisma/client": "^2.15.0",
     "@react-hook/window-size": "3.0.7",
     "@types/geojson": "7946.0.7",
     "@types/mapbox-gl": "2.0.3",
@@ -27,6 +28,7 @@
     "worker-loader": "^3.0.7"
   },
   "devDependencies": {
+    "@prisma/cli": "2.15.0",
     "@types/node": "^12.12.21",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
