@@ -5,8 +5,7 @@ import { useData } from '../hooks/useData';
 import Map from '../util/ReactMapBoxGl';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { events } from 'react-mapbox-gl/lib/map-events';
-import { FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection, Geometry, Point } from 'geojson';
 import { mapEventPropertiesType } from '../util/types';
 
 interface MapContainerProps {
@@ -15,6 +14,7 @@ interface MapContainerProps {
   id: string;
   fullscreen?: boolean;
   mapEvents?: FeatureCollection;
+  currentMapEventId?: number;
   onClickMapEvent?: (props: mapEventPropertiesType | undefined) => void;
 }
 
@@ -24,17 +24,36 @@ const MapContainer = ({
   user,
   id,
   mapEvents,
+  currentMapEventId,
   onClickMapEvent,
 }: MapContainerProps) => {
   const [, data] = useData(year, user, id);
   const [zoomValue, setZoomValue] = useState(2);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
 
+  const flyToEvent = (eventId: number | undefined) => {
+    const feature = mapEvents?.features.find(
+      (x) => x.properties!.id == eventId,
+    );
+    if (feature) {
+      mapRef.current?.flyTo({
+        center: (feature?.geometry as Point).coordinates as [number, number],
+        zoom: 7,
+      });
+    }
+  };
+
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.resize();
     }
   }, [fullscreen]);
+
+  useEffect(() => {
+    if (currentMapEventId) {
+      flyToEvent(currentMapEventId);
+    }
+  }, [mapRef.current, currentMapEventId]);
 
   return (
     <div className="map-grid">
@@ -45,6 +64,9 @@ const MapContainer = ({
         onStyleLoad={(map: MapboxGl.Map) => {
           mapRef.current = map;
           map.resize();
+          if (currentMapEventId) {
+            flyToEvent(currentMapEventId);
+          }
         }}
         onZoomEnd={(map) => {
           setZoomValue(map.getZoom());

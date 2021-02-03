@@ -40,10 +40,10 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
   const id = 'timeline-example';
   try {
     const octokit = new Octokit({ auth: githubToken });
-    const configRes = await fetch(
-      `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`,
-    );
-    const config: ConfigType = await configRes.json();
+    // const configRes = await fetch(
+    //   `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`,
+    // );
+    // const config: ConfigType = await configRes.json();
     const fileResp = await octokit.request(
       `/repos/${user}/historicborders-${id}/contents/years`,
     );
@@ -52,19 +52,11 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
       .map((x) => getYearFromFile(x.name))
       .sort((a, b) => a - b);
     const currentYear = years[0];
-    const mapEvents: FeatureCollection | null = await getEventsForYear(
-      currentYear,
-    );
-    console.log('events', mapEvents);
     return {
-      props: {
-        years,
-        mapEvents,
-        currentYear,
-        user: user,
-        id: id,
-        config,
-      } as DataProps,
+      redirect: {
+        permanent: true,
+        destination: `/events/${currentYear}`,
+      },
     };
   } catch (e) {
     console.log(e);

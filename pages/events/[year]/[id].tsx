@@ -7,6 +7,7 @@ import {
   githubToken,
   mapBCFormat,
   mod,
+  timelineBCFormat,
 } from '../../../util/constants';
 import Footer from '../../../components/Footer';
 import NavBar from '../../../components/NavBar';
@@ -35,6 +36,7 @@ interface DataProps {
   user: string;
   id: string;
   config: ConfigType;
+  currentEventId?: number;
 }
 
 const Viewer = ({
@@ -44,6 +46,7 @@ const Viewer = ({
   config,
   mapEvents,
   currentYear,
+  currentEventId,
 }: DataProps) => {
   const [index, setIndex] = useState(0);
   const [hide, setHide] = useState(false);
@@ -57,6 +60,7 @@ const Viewer = ({
   const dPress = useKeyPress('d');
   const [details, setDetails] = useState<mapEventPropertiesType | undefined>();
   const router = useRouter();
+  const [eventId, setEventId] = useState(currentEventId);
 
   useEffect(() => {
     if ([user, id].some((x) => !x)) {
@@ -69,13 +73,17 @@ const Viewer = ({
 
   useEffect(() => {
     if (dPress) {
-      setIndex(mod(index + 1, years.length));
+      const newIndex = mod(index + 1, years.length);
+      router.push(`/events/${years[newIndex]}/none`);
+      setEventId(undefined);
     }
   }, [dPress]);
 
   useEffect(() => {
     if (aPress) {
-      setIndex(mod(index - 1, years.length));
+      const newIndex = mod(index - 1, years.length);
+      router.push(`/events/${years[newIndex]}/none`);
+      setEventId(undefined);
     }
   }, [aPress]);
 
@@ -88,15 +96,33 @@ const Viewer = ({
     setDetails(undefined);
   }, [currentYear]);
 
+  useEffect(() => {
+    if (eventId) {
+      const newMapEvent = mapEvents?.features.find(
+        (x) => x.properties!.id == eventId,
+      )?.properties as mapEventPropertiesType;
+      setDetails(newMapEvent);
+    }
+  }, [eventId]);
+
+  useEffect(() => {
+    setEventId(currentEventId);
+  }, [currentEventId]);
+
   if (!(years && user && id && config))
     return <div>Not a valid timeline. Check your url.</div>;
 
   return (
     <>
       <Layout
-        title={config.name}
-        url={`https://historyborders.app/timeline/${user}/${id}`}
-        description={config.description}
+        title={
+          details?.title ??
+          `Year ${convertYearString(timelineBCFormat, currentYear)}`
+        }
+        url={`https://historyborders.app/events/${currentYear}/${
+          eventId ?? 'none'
+        }`}
+        description={details?.content ?? config.description}
       >
         {details && (
           <Detail
@@ -106,7 +132,13 @@ const Viewer = ({
             flagged={details.flagged}
             actualDate={details.actualDate}
             onFlag={() => {}}
-            onClose={() => setDetails(undefined)}
+            onClose={() => {
+              setDetails(undefined);
+              router.push(`/events/${currentYear}/none`, undefined, {
+                shallow: true,
+              });
+              setEventId(undefined);
+            }}
             id={details.id}
           />
         )}
@@ -141,7 +173,7 @@ const Viewer = ({
               />
               <Timeline
                 index={index}
-                onChange={(i) => router.push(`/events/${years[i]}`)}
+                onChange={(i) => router.push(`/events/${years[i]}/none`)}
                 years={years}
               />
             </>
@@ -153,8 +185,15 @@ const Viewer = ({
             id={id}
             mapEvents={mapEvents}
             onClickMapEvent={(props) => {
-              setDetails(props ?? undefined);
+              if (props) {
+                setDetails(props);
+                router.push(`/events/${currentYear}/${props.id}`, undefined, {
+                  shallow: true,
+                });
+                setEventId(props.id);
+              }
             }}
+            currentMapEventId={eventId}
           />
           {!hide && (
             <Footer
@@ -198,6 +237,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
         }
       }
     }
+    const currentEventId = parseFloat(params?.id as string);
     return {
       props: {
         years,
@@ -206,6 +246,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
         user: user,
         id: id,
         config,
+        currentEventId,
       } as DataProps,
     };
   } catch (e) {

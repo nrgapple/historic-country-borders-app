@@ -61,14 +61,10 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     );
     console.log('events', mapEvents);
     return {
-      props: {
-        years,
-        mapEvents,
-        currentYear,
-        user: user,
-        id: id,
-        config,
-      } as DataProps,
+      redirect: {
+        permanent: true,
+        destination: `/events/${currentYear}/none`,
+      },
     };
   } catch (e) {
     console.log(e);
