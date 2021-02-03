@@ -23,10 +23,10 @@ import {
 } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { FeatureCollection } from 'geojson';
-import { getCurrentEventProps, getEventsForYear } from '../../../util/util';
+import { getEventsForYear } from '../../../util/severUtil';
 import { useRouter } from 'next/dist/client/router';
 import Detail from '../../../components/Detail';
-import { MapEvent } from 'react-mapbox-gl/lib/map-events';
+import { getCurrentEventProps } from '../../../util/clientUtil';
 
 ReactGA.initialize('UA-188190791-1');
 

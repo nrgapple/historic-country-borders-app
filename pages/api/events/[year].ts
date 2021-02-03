@@ -1,6 +1,6 @@
 import { FeatureCollection } from 'geojson';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getEventsForYear } from '../../../util/util';
+import { getEventsForYear } from '../../../util/severUtil';
 
 export default async function handle(
   req: NextApiRequest,
