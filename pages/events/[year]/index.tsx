@@ -3,7 +3,7 @@ import { FeatureCollection } from 'geojson';
 import { GetServerSideProps, GetStaticProps } from 'next';
 import { githubToken, getYearFromFile } from '../../../util/constants';
 import { ConfigType, GithubFileInfoType } from '../../../util/types';
-import { getMapEvents } from '../util';
+import { getMapEvents } from '../../../util/util';
 import Viewer from '../[year]/[id]';
 
 interface DataProps {

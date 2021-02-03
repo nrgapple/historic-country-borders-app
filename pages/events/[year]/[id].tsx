@@ -22,7 +22,7 @@ import {
 } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { FeatureCollection } from 'geojson';
-import { getMapEvents } from '../util';
+import { getMapEvents } from '../../../util/util';
 import { useRouter } from 'next/dist/client/router';
 import Detail from '../../../components/Detail';
 
