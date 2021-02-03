@@ -125,7 +125,7 @@ const Viewer = ({
     <>
       <Layout
         title={
-          typeof window === 'undefined' && mapEvents && currentEventId
+          mapEvents && currentEventId
             ? getCurrentEventProps(mapEvents, currentEventId).title
             : details?.title ??
               `Year ${convertYearString(timelineBCFormat, currentYear)}`
@@ -134,7 +134,7 @@ const Viewer = ({
           currentEventId ?? 'none'
         }`}
         description={
-          typeof window === 'undefined' && mapEvents && currentEventId
+          mapEvents && currentEventId
             ? getCurrentEventProps(mapEvents, currentEventId).content
             : details?.content ?? config.description
         }
