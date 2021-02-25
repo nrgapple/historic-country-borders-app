@@ -12,6 +12,7 @@ body {
   line-height: 1.5;
   margin: 0;
   height: 100%;
+  overflow-y: hidden;
 }
 
 #__next {
@@ -32,6 +33,21 @@ body {
   justify-content: center;
   align-items: center;
   top: 165px;
+  right: 15px;
+  height: 50px;
+  width: 50px;
+  font-size: 45px;
+  z-index: 1000;
+  cursor: pointer;
+  text-shadow: 2px 2px 4px #252525;
+}
+
+.globe {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 222px;
   right: 15px;
   height: 50px;
   width: 50px;
@@ -113,4 +129,8 @@ a {
 .title {
   padding: 8px;
   font-size: 20px;
+}
+
+.globe-label {
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }

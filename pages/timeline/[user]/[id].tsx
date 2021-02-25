@@ -17,6 +17,7 @@ import { GetServerSideProps } from 'next';
 import { Octokit } from '@octokit/core';
 import { ConfigType, GithubFileInfoType } from '../../../util/types';
 import Layout from '../../../components/Layout';
+import { useRouter } from 'next/router';
 
 ReactGA.initialize('UA-188190791-1');
 
@@ -32,12 +33,14 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   const [hide, setHide] = useState(false);
   const [help, setHelp] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isGlobe, setIsGlobe] = useState(false);
   const isMobile =
     typeof window !== 'undefined'
       ? /Mobi|Android/i.test(navigator.userAgent)
       : false;
   const aPress = useKeyPress('a');
   const dPress = useKeyPress('d');
+  const router = useRouter();
 
   useEffect(() => {
     if ([user, id].some((x) => !x)) {
@@ -64,6 +67,13 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
     console.log({ years, user, id, config });
   }, [years, user, id, config]);
 
+  useEffect(() => {
+    if (router.query && router.query.view) {
+      const { view } = router.query;
+      setIsGlobe(view === 'globe');
+    }
+  }, [router]);
+
   if (!(years && user && id && config))
     return <div>Not a valid timeline. Check your url.</div>;
 
@@ -75,15 +85,26 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
         description={config.description}
       >
         {mounted && (
-          <ReactTooltip
-            resizeHide={false}
-            id="fullscreenTip"
-            place="left"
-            effect="solid"
-            globalEventOff={isMobile ? 'click' : undefined}
-          >
-            {hide ? 'Show Timeline' : 'Hide Timeline'}
-          </ReactTooltip>
+          <>
+            <ReactTooltip
+              resizeHide={false}
+              id="fullscreenTip"
+              place="left"
+              effect="solid"
+              globalEventOff={isMobile ? 'click' : undefined}
+            >
+              {hide ? 'Show Timeline' : 'Hide Timeline'}
+            </ReactTooltip>
+            <ReactTooltip
+              resizeHide={false}
+              id="globeTip"
+              place="left"
+              effect="solid"
+              globalEventOff={isMobile ? 'click' : undefined}
+            >
+              {isGlobe ? 'Switch to Map View' : 'Switch to Globe View'}
+            </ReactTooltip>
+          </>
         )}
         <div
           data-tip
@@ -94,6 +115,22 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
           style={{ top: hide ? '16px' : '165px' }}
         >
           <div className="noselect">🔭</div>
+        </div>
+        <div
+          data-tip
+          data-for="globeTip"
+          data-delay-show="300"
+          className="globe"
+          onClick={() => {
+            setIsGlobe(!isGlobe);
+            router.replace({
+              path: '',
+              query: { view: !isGlobe ? 'globe' : 'map' },
+            });
+          }}
+          style={{ top: hide ? '73px' : '222px' }}
+        >
+          <div className="noselect">{isGlobe ? '🗺' : '🌎'}</div>
         </div>
         <div className={`${hide ? 'app-large' : 'app'}`}>
           {!hide && (
@@ -111,6 +148,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
             fullscreen={hide}
             user={user}
             id={id}
+            threeD={isGlobe}
           />
           {!hide && (
             <Footer

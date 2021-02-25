@@ -69,6 +69,11 @@ const Layout = ({
         key="twitter-height"
       />
       <meta property="twitter:image:width" content="1200" key="twitter-width" />
+      <link
+        href="http://fonts.googleapis.com/css?family=Roboto:400,300,700,700italic&subset=latin,latin-ext"
+        rel="stylesheet"
+        type="text/css"
+      />
     </Head>
     {children}
   </>

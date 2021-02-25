@@ -24,7 +24,10 @@ export const useData = (year: string, user: string, id: string) => {
     const dataNoUnclaimed = {
       ...data,
       features: data.features.filter(
-        (f) => f.properties?.NAME != null && f.properties?.NAME != 'unclaimed',
+        (f) =>
+          f.properties?.NAME != null &&
+          f.properties?.NAME != 'unclaimed' &&
+          f.properties?.NAME != 'Antarctica',
       ),
     };
     const featureParts = dataNoUnclaimed.features.map((feature) => {
