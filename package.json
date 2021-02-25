@@ -11,6 +11,7 @@
   "dependencies": {
     "@octokit/core": "^3.2.5",
     "@react-hook/window-size": "3.0.7",
+    "@turf/area": "^6.3.0",
     "@turf/polygonize": "^6.3.0",
     "@types/geojson": "7946.0.7",
     "@types/mapbox-gl": "2.0.3",

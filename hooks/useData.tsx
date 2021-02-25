@@ -4,11 +4,13 @@ import type {
   Feature,
   MultiPolygon,
   Point,
+  Polygon,
 } from 'geojson';
 import { useEffect, useState } from 'react';
 import stc from 'string-to-color';
 import polylabel from 'polylabel';
 import { yearPrefix } from '../util/constants';
+import PolygonArea from '@turf/area';
 
 export interface CountryData {
   labels: FeatureCollection;
@@ -34,16 +36,29 @@ export const useData = (year: string, user: string, id: string) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
       const color = stc(name);
       const labels = (feature.geometry as MultiPolygon).coordinates
-        .map((x) => polylabel(x))
-        .map((x) => ({
+        .map((x, i) => {
+          const polyFeat = {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: x,
+            } as Polygon,
+          } as Feature<Polygon>;
+          return {
+            labelCords: polylabel(x),
+            area: PolygonArea(polyFeat),
+          };
+        })
+        .map(({ labelCords, area }) => ({
           geometry: {
             type: 'Point',
-            coordinates: x,
+            coordinates: labelCords,
           } as Point,
           properties: {
             ...feature.properties,
             NAME: name,
             COLOR: color,
+            AREA: area,
           } as GeoJsonProperties,
         })) as Feature[];
 
