@@ -76,6 +76,33 @@ const MapContainer = ({
     }
   }, [globeRef.current, start]);
 
+  const average = (array: any) =>
+    array.reduce((a: any, b: any) => a + b) / array.length;
+
+  const maxArea = useMemo(() => {
+    if (data) {
+      const values = data?.labels.features.map((x) =>
+        parseFloat(x.properties?.AREA),
+      );
+      return average(values!);
+    }
+    return undefined;
+  }, [data]);
+
+  const size = (value: number) => {
+    if (maxArea) {
+      const ratio = value / maxArea;
+      if (ratio > 1) {
+        return 0.7;
+      }
+      if (ratio < 0.1) {
+        return 0.1;
+      }
+      return ratio;
+    }
+    return 0.5;
+  };
+
   return (
     <div className="map-grid" ref={parentRef}>
       {threeD ? (
@@ -107,6 +134,11 @@ const MapContainer = ({
                 labelColor={(d) =>
                   invertColor((d as Feature<Point>).properties?.COLOR, true)
                 }
+                labelSize={(d) => {
+                  return size(
+                    parseFloat((d as Feature<Point>).properties?.AREA),
+                  );
+                }}
                 labelAltitude={0.015}
                 labelIncludeDot={false}
                 labelsTransitionDuration={0}

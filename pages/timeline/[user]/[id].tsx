@@ -1,5 +1,5 @@
 import MapContainer from '../../../components/ViewerMap';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ReactGA from 'react-ga';
 import {
   convertYearString,
