@@ -26,14 +26,21 @@ interface DataProps {
   user: string;
   id: string;
   config: ConfigType;
+  isGlobe: boolean;
 }
 
-const Viewer = ({ years, user, id, config }: DataProps) => {
+const Viewer = ({
+  years,
+  user,
+  id,
+  config,
+  isGlobe: isGlobeProp,
+}: DataProps) => {
   const [index, setIndex] = useState(0);
   const [hide, setHide] = useState(false);
   const [help, setHelp] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isGlobe, setIsGlobe] = useState(false);
+  const [isGlobe, setIsGlobe] = useState(isGlobeProp);
   const isMobile =
     typeof window !== 'undefined'
       ? /Mobi|Android/i.test(navigator.userAgent)
@@ -64,15 +71,8 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   }, [aPress]);
 
   useEffect(() => {
-    console.log({ years, user, id, config });
-  }, [years, user, id, config]);
-
-  useEffect(() => {
-    if (router.query && router.query.view) {
-      const { view } = router.query;
-      setIsGlobe(view === 'globe');
-    }
-  }, [router]);
+    ReactGA.pageview(`/?view=${isGlobe ? 'globe' : 'map'}`);
+  }, [isGlobe]);
 
   if (!(years && user && id && config))
     return <div>Not a valid timeline. Check your url.</div>;
@@ -163,18 +163,21 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
 
 export default Viewer;
 
-export const getServerSideProps: GetServerSideProps<DataProps> = async (
-  context,
-) => {
-  if (context.params && context.params.user && context.params.id) {
+export const getServerSideProps: GetServerSideProps<DataProps> = async ({
+  query,
+  params,
+}) => {
+  const isGlobe = query?.view === 'globe' ? true : false;
+  console.log('isglobe', isGlobe);
+  if (params && params.user && params.id) {
     try {
       const octokit = new Octokit({ auth: githubToken });
       const configRes = await fetch(
-        `https://raw.githubusercontent.com/${context.params.user}/historicborders-${context.params.id}/main/config.json`,
+        `https://raw.githubusercontent.com/${params.user}/historicborders-${context.params.id}/main/config.json`,
       );
       const config: ConfigType = await configRes.json();
       const fileResp = await octokit.request(
-        `/repos/${context.params.user}/historicborders-${context.params.id}/contents/years`,
+        `/repos/${params.user}/historicborders-${params.id}/contents/years`,
       );
       const files: GithubFileInfoType[] = fileResp.data;
       const years = files
@@ -183,9 +186,10 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async (
       return {
         props: {
           years,
-          user: context.params.user,
-          id: context.params.id,
+          user: params.user,
+          id: params.id,
           config,
+          isGlobe,
         } as DataProps,
       };
       // }
@@ -194,6 +198,8 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async (
     }
   }
   return {
-    props: {} as DataProps,
+    props: {
+      isGlobe,
+    } as DataProps,
   };
 };

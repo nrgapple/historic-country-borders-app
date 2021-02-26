@@ -46,13 +46,24 @@ const MapContainer = ({
   const [zoomValue, setZoomValue] = useState(2);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const globeRef = useRef<any>(undefined);
-  const [start, setStart] = useState(true);
   const parentRef = useRef<HTMLDivElement>(null);
   const { height, width, refresh } = useParentSize(parentRef);
+  const [hasSetStartPosition, setHasSetStartPosition] = useState(false);
 
   const setColors = (d: {}) => {
     const feature = d as Feature;
     return hexToRgba(feature.properties!.COLOR, 70);
+  };
+
+  const resetGlobePosition = () => {
+    if (globeRef.current && threeD) {
+      globeRef.current.pointOfView({
+        lat: 46.71109,
+        lng: 1.7191036,
+        altitude: 1,
+      });
+      setHasSetStartPosition(true);
+    }
   };
 
   useEffect(() => {
@@ -60,21 +71,24 @@ const MapContainer = ({
       mapRef.current.resize();
     }
     if (globeRef.current) {
-      console.log('here');
       refresh();
     }
   }, [fullscreen]);
 
   useEffect(() => {
-    if (globeRef.current && start) {
-      globeRef.current.pointOfView({
-        lat: 46.71109,
-        lng: 1.7191036,
-        altitude: 1,
-      });
-      setStart(false);
+    if (!hasSetStartPosition) {
+      if (!globeRef.current) {
+        setTimeout(() => {
+          resetGlobePosition();
+        }, 400);
+      }
+      resetGlobePosition();
     }
-  }, [globeRef.current, start]);
+  }, [globeRef.current, threeD]);
+
+  useEffect(() => {
+    if (!threeD) setHasSetStartPosition(false);
+  }, [threeD]);
 
   const average = (array: any) =>
     array.reduce((a: any, b: any) => a + b) / array.length;
@@ -126,7 +140,6 @@ const MapContainer = ({
                 polygonCapColor={setColors}
                 polygonSideColor={() => 'rgba(0, 100, 0, 0.15)'}
                 polygonsTransitionDuration={0}
-                onPolygonClick={(d) => console.log(d)}
                 labelsData={data.labels.features}
                 labelLat={(d) => (d as Feature<Point>).geometry.coordinates[1]}
                 labelLng={(d) => (d as Feature<Point>).geometry.coordinates[0]}

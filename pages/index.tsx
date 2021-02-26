@@ -9,15 +9,27 @@ interface DataProps {
   user: string;
   id: string;
   config: ConfigType;
+  isGlobe: boolean;
 }
 
-const IndexPage = ({ years, user, id, config }: DataProps) => {
-  return <Viewer user={user} id={id} config={config} years={years} />;
+const IndexPage = ({ years, user, id, config, isGlobe }: DataProps) => {
+  return (
+    <Viewer
+      user={user}
+      id={id}
+      config={config}
+      years={years}
+      isGlobe={isGlobe}
+    />
+  );
 };
 
-export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
+export const getServerSideProps: GetServerSideProps<DataProps> = async ({
+  query,
+}) => {
   const user = 'nrgapple';
   const id = 'timeline-example';
+  const isGlobe = query?.view === 'globe' ? true : false;
   try {
     const octokit = new Octokit({ auth: githubToken });
     const configRes = await fetch(
@@ -37,13 +49,16 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async () => {
         user: user,
         id: id,
         config,
+        isGlobe,
       } as DataProps,
     };
   } catch (e) {
     console.log(e);
   }
   return {
-    props: {} as DataProps,
+    props: {
+      isGlobe,
+    } as DataProps,
   };
 };
 
