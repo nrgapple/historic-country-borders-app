@@ -168,7 +168,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     try {
       const octokit = new Octokit({ auth: githubToken });
       const configRes = await fetch(
-        `https://raw.githubusercontent.com/${params.user}/historicborders-${context.params.id}/main/config.json`,
+        `https://raw.githubusercontent.com/${params.user}/historicborders-${params.id}/main/config.json`,
       );
       const config: ConfigType = await configRes.json();
       const fileResp = await octokit.request(
