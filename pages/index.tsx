@@ -27,22 +27,23 @@ const IndexPage = ({ years, user, id, config, isGlobe }: DataProps) => {
 export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   query,
 }) => {
-  const user = 'nrgapple';
-  const id = 'timeline-example';
+  const user = 'aourednik';
+  const id = 'historical-basemaps';
   const isGlobe = query?.view === 'globe' ? true : false;
   try {
     const octokit = new Octokit({ auth: githubToken });
-    const configRes = await fetch(
-      `https://raw.githubusercontent.com/${user}/historicborders-${id}/main/config.json`,
-    );
-    const config: ConfigType = await configRes.json();
-    const fileResp = await octokit.request(
-      `/repos/${user}/historicborders-${id}/contents/years`,
-    );
+    const config: ConfigType = {
+      name: 'Historic Borders',
+      description: 'example.',
+    };
+    const fileResp = await octokit.request(`/repos/${user}/${id}/contents`);
     const files: GithubFileInfoType[] = fileResp.data;
+    console.log(files);
     const years = files
       .map((x) => getYearFromFile(x.name))
-      .sort((a, b) => a - b);
+      .sort((a, b) => a - b)
+      .filter((x) => !isNaN(x));
+    console.log(years);
     return {
       props: {
         years,

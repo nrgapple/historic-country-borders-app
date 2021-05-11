@@ -74,11 +74,7 @@ const Viewer = ({
 
   return (
     <>
-      <Layout
-        title={config.name}
-        url={`https://historyborders.app/timeline/${user}/${id}`}
-        description={config.description}
-      >
+      <Layout title={config.name} url={`https://historyborders.app`}>
         {mounted && (
           <>
             <ReactTooltip
@@ -147,7 +143,7 @@ const Viewer = ({
           />
           {!hide && (
             <Footer
-              dataUrl={`https://github.com/${user}/historicborders-${id}`}
+              dataUrl={`https://github.com/aourednik/historical-basemaps`}
             />
           )}
         </div>
@@ -170,7 +166,8 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
       const configRes = await fetch(
         `https://raw.githubusercontent.com/${params.user}/historicborders-${params.id}/main/config.json`,
       );
-      const config: ConfigType = await configRes.json();
+      var config: ConfigType = await configRes.json();
+      config.default = false;
       const fileResp = await octokit.request(
         `/repos/${params.user}/historicborders-${params.id}/contents/years`,
       );
@@ -187,7 +184,6 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
           isGlobe,
         } as DataProps,
       };
-      // }
     } catch (e) {
       console.log(e);
     }

@@ -15,4 +15,5 @@ export enum FileType {
 export interface ConfigType {
   name: string;
   description?: string;
+  default?: boolean;
 }

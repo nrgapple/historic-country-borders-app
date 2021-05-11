@@ -94,13 +94,14 @@ export const useData = (year: string, user: string, id: string) => {
     if (year) {
       setIsLoading(true);
       setUrl(
-        `https://raw.githubusercontent.com/${user}/${yearPrefix}${id}/main/years/${year}.geojson`,
+        `https://raw.githubusercontent.com/${user}/${id}/master/world_${year}.geojson`,
       );
     }
   }, [year]);
 
   useEffect(() => {
     if (url) {
+      console.log(url);
       (async () => {
         try {
           const resp = await fetch(url);

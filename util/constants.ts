@@ -48,7 +48,12 @@ export const mod = (n: number, m: number) => {
 };
 
 export const getYearFromFile = (fileName: string) =>
-  parseInt(fileName.replace(/.geojson/g, '').replace(/bc/g, '-'));
+  parseInt(
+    fileName
+      .replace(/.geojson/g, '')
+      .replace(/world_/g, '')
+      .replace(/bc/g, '-'),
+  );
 
 export const githubToken = process.env.NEXT_PUBLIC_GITHUB_API;
 
