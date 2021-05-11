@@ -12,10 +12,6 @@ As seen on [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments
 
 The data is pulled from [aourednik's](https://github.com/aourednik/historical-basemaps) historical basemaps repo.
 
-## Load your own data
-
-Follow [instructions here to load your own country borders data](https://github.com/nrgapple/historicborders-timeline-example)
-
 ## Keep in Mind
 
 1. historical boundaries are even more disputed than contemporary ones, that
