@@ -159,7 +159,6 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   params,
 }) => {
   const isGlobe = query?.view === 'globe' ? true : false;
-  console.log('isglobe', isGlobe);
   if (params && params.user && params.id) {
     try {
       const octokit = new Octokit({ auth: githubToken });

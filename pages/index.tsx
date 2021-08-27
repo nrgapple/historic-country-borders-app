@@ -38,13 +38,11 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     };
     const fileResp = await octokit.request(`/repos/${user}/${id}/contents`);
     const files: GithubFileInfoType[] = fileResp.data;
-    console.log(files);
     const years = files
       .filter((x) => x.name.endsWith('.geojson'))
       .map((x) => getYearFromFile(x.name))
       .sort((a, b) => a - b)
       .filter((x) => !isNaN(x));
-    console.log(years);
     return {
       props: {
         years,

@@ -101,7 +101,6 @@ export const useData = (year: string, user: string, id: string) => {
 
   useEffect(() => {
     if (url) {
-      console.log(url);
       (async () => {
         try {
           const resp = await fetch(url);
