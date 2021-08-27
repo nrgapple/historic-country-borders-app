@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   MutableRefObject,
 } from 'react';
-import { GeoJSONLayer } from 'react-mapbox-gl';
+import { GeoJSONLayer, Popup } from 'react-mapbox-gl';
 import MapboxGl from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import Map from '../util/ReactMapBoxGl';
@@ -18,6 +18,8 @@ import hexToRgba from 'hex-rgba';
 import { GlobeProps } from 'react-globe.gl';
 import { useParentSize } from '../hooks/useParentSize';
 import text from '../util/Roboto_Regular.json';
+import { MapEvent } from 'react-mapbox-gl/lib/map-events';
+import { useWikiData } from '../hooks/useWiki';
 
 const GlobeTmpl = dynamic(() => import('../util/GlobeWrapper'), {
   ssr: false,
@@ -49,6 +51,9 @@ const MapContainer = ({
   const parentRef = useRef<HTMLDivElement>(null);
   const { height, width, refresh } = useParentSize(parentRef);
   const [hasSetStartPosition, setHasSetStartPosition] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState('');
+  const [popupPos, setPopupPos] = useState([0, 0]);
+  const wikiInfo = useWikiData(selectedPlace);
 
   const setColors = (d: {}) => {
     const feature = d as Feature;
@@ -174,14 +179,40 @@ const MapContainer = ({
           onZoomEnd={(map) => {
             setZoomValue(map.getZoom());
           }}
+          onClick={(e) => setSelectedPlace('')}
         >
           {data && (
             <>
+              {selectedPlace && (
+                <Popup
+                  style={{
+                    width: '250px',
+                    height: '250px',
+                  }}
+                  coordinates={popupPos}
+                >
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      color: 'black',
+                      overflow: 'scroll',
+                    }}
+                  >
+                    {wikiInfo}
+                  </div>
+                </Popup>
+              )}
               <GeoJSONLayer
                 data={data.borders}
                 fillPaint={{
                   'fill-color': ['get', 'COLOR'],
                   'fill-opacity': 0.5,
+                }}
+                fillOnClick={(e: any) => {
+                  console.log(e);
+                  setSelectedPlace(e.features[0]?.properties.NAME);
+                  setPopupPos((curr) => [...(Object.values(e.lngLat) as any)]);
                 }}
               />
               <GeoJSONLayer
