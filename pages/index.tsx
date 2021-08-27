@@ -40,6 +40,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     const files: GithubFileInfoType[] = fileResp.data;
     console.log(files);
     const years = files
+      .filter((x) => x.name.endsWith('.geojson'))
       .map((x) => getYearFromFile(x.name))
       .sort((a, b) => a - b)
       .filter((x) => !isNaN(x));
