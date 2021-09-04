@@ -7,8 +7,7 @@ const Footer = ({
 }: FooterProps) => (
   <div className="footer">
     <div>
-      🗺 This map uses data from <a href={dataUrl}>here</a> to show country
-      borders over history.
+      🗺 This map uses data from <a href={dataUrl}>here</a>.
       {/* Create your own data{' '}
       <a href="https://github.com/nrgapple/historicborders-timeline-example">
         here

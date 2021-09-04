@@ -121,7 +121,7 @@ const Viewer = ({ theaters }: DataProps) => {
           <RomeMap layers={data} fullscreen={hide} />
           {!hide && (
             <Footer
-              dataUrl={`https://github.com/aourednik/historical-basemaps`}
+              dataUrl={`https://githubhttps://github.com/sfsheath/roman-amphitheaters.com/aourednik/historical-basemaps`}
             />
           )}
         </div>
