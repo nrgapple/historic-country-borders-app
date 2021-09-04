@@ -1,29 +1,9 @@
 import { FeatureCollection, MultiPolygon, Polygon, Feature } from 'geojson';
+import { Theater } from './types';
 
 export const dates = [
-  -2000,
-  -1000,
-  -500,
-  -323,
-  -200,
-  -1,
-  400,
-  600,
-  800,
-  1000,
-  1279,
-  1492,
-  1530,
-  1650,
-  1715,
-  1783,
-  1815,
-  1880,
-  1914,
-  1920,
-  1938,
-  1945,
-  1994,
+  -2000, -1000, -500, -323, -200, -1, 400, 600, 800, 1000, 1279, 1492, 1530,
+  1650, 1715, 1783, 1815, 1880, 1914, 1920, 1938, 1945, 1994,
 ];
 
 export const yearPrefix = 'historicborders-';
@@ -108,4 +88,24 @@ export const invertColor = (hex: string, bw: boolean) => {
   b = (255 - b).toString(16);
   // pad each with zeros and return
   return '#' + padZero(r) + padZero(g) + padZero(b);
+};
+
+export const amphitheaterDataSetup = (data: FeatureCollection) => {
+  return data.features.map((f, i) => {
+    return {
+      id: i,
+      feature: f,
+      title: f.properties?.label ?? null,
+      lastUse: f.properties?.lastUse?.date ?? null,
+      created: f.properties?.created
+        ? cleanDateErrors(f.properties?.created)
+        : null,
+      capacity: f.properties?.capacity?.quantity ?? null,
+      emperor: f.properties?.emperor ?? null,
+    } as Theater;
+  });
+};
+
+export const cleanDateErrors = (date: number) => {
+  return date > 1000 ? date / 10 : date;
 };

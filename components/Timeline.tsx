@@ -30,7 +30,10 @@ const Timeline = ({ index, onChange, years }: TimelineProps) => (
           onChange(newIndex);
         }}
         getLabel={(date: any) =>
-          convertYearString(timelineBCFormat, new Date(date, 0).getFullYear())
+          convertYearString(
+            timelineBCFormat,
+            date < 100 ? date : new Date(date, 0).getFullYear(),
+          )
         }
         values={years}
         linePadding={50}
