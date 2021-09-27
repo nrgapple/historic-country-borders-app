@@ -103,7 +103,7 @@ const Viewer = ({
           data-delay-show="300"
           className="fullscreen"
           onClick={() => setHide(!hide)}
-          style={{ top: hide ? '16px' : '165px' }}
+          style={{ top: hide ? '16px' : '95px' }}
         >
           <div className="noselect">🔭</div>
         </div>
@@ -119,19 +119,21 @@ const Viewer = ({
               query: { view: !isGlobe ? 'globe' : 'map' },
             });
           }}
-          style={{ top: hide ? '73px' : '222px' }}
+          style={{ top: hide ? '73px' : '155px' }}
         >
           <div className="noselect">{isGlobe ? '🗺' : '🌎'}</div>
         </div>
         <div className={`${hide ? 'app-large' : 'app'}`}>
           {!hide && (
             <>
-              <NavBar
-                onHelp={() => setHelp(!help)}
-                showHelp={help}
-                title={config.name}
-              />
-              <Timeline index={index} onChange={setIndex} years={years} />
+              <div className="timeline-container">
+                <Timeline
+                  globe={isGlobe}
+                  index={index}
+                  onChange={setIndex}
+                  years={years}
+                />
+              </div>
             </>
           )}
           <MapContainer

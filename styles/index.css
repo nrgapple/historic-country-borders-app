@@ -22,7 +22,7 @@ body {
 .app {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 50px 100px auto 50px;
+  grid-template-rows: auto 0px;
   align-items: stretch;
   height: 100%;
 }
@@ -34,12 +34,20 @@ body {
   align-items: center;
   top: 165px;
   right: 15px;
-  height: 50px;
-  width: 50px;
-  font-size: 45px;
+  height: 40px;
+  width: 40px;
+  font-size: 35px;
   z-index: 1000;
   cursor: pointer;
   text-shadow: 2px 2px 4px #252525;
+}
+
+.logo {
+  color: #64dfdf;
+  font-weight: 500;
+  font-size: larger;
+  text-shadow: 2px 2px 4px #252525;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 .globe {
@@ -49,9 +57,9 @@ body {
   align-items: center;
   top: 222px;
   right: 15px;
-  height: 50px;
-  width: 50px;
-  font-size: 45px;
+  height: 40px;
+  width: 40px;
+  font-size: 35px;
   z-index: 1000;
   cursor: pointer;
   text-shadow: 2px 2px 4px #252525;
@@ -108,11 +116,26 @@ a {
 }
 
 .footer {
+  position: absolute;
+  display: flex;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1000;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 5px;
+}
+
+.footer-right {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   font-size: 12px;
+  text-shadow: 2px 2px 4px #252525;
 }
 
 .map {
@@ -133,4 +156,84 @@ a {
 
 .globe-label {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+.button-forward {
+  top: 48% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 25px !important;
+  width: 25px !important;
+  margin-right: 11px;
+}
+
+.button-forward svg {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.button-back {
+  top: 48% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 25px !important;
+  width: 25px !important;
+  margin-left: 11px;
+}
+
+.button-back svg {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.timeline-container {
+  position: absolute !important;
+  top: 0px !important;
+  left: 0px !important;
+  right: 0px !important;
+  width: 100% !important;
+  height: 70px !important;
+  z-index: 1000;
+}
+
+.timeline {
+  color: black;
+  text-shadow: 0px 0px 2px #6930c3;
+  font-weight: 500;
+  height: 70px !important;
+}
+
+.timeline .timeline div div ul li {
+  background-image: none !important;
+}
+
+.events {
+  top: 48% !important;
+}
+
+.dot-label {
+  padding-bottom: 10px !important;
+}
+
+.dot-label span {
+  bottom: -6px !important;
+}
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-bottom-right {
+  display: none !important;
+}
+
+svg {
+  filter: drop-shadow(-5px 0 black), drop-shadow(0 5px black),
+    drop-shadow(5px 0 black), drop-shadow(0 -5px black);
 }

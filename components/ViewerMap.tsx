@@ -100,9 +100,11 @@ const MapContainer = ({
 
   const maxArea = useMemo(() => {
     if (data) {
-      const values = data?.labels.features.map((x) =>
-        parseFloat(x.properties?.AREA),
-      );
+      const values = data?.labels.features.map((x) => {
+        if (x) return parseFloat(x.properties?.AREA);
+        console.log(x);
+        return 0;
+      });
       return average(values!);
     }
     return undefined;
