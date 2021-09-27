@@ -225,8 +225,8 @@ const MapContainer = ({
                   'text-size': {
                     base: 1,
                     stops: [
-                      [12, 12],
-                      [16, 16],
+                      [4, 7],
+                      [8, 18],
                     ],
                   },
                   'text-padding': 3,
