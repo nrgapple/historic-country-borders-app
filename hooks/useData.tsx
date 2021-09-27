@@ -94,7 +94,7 @@ export const useData = (year: string, user: string, id: string) => {
     if (year) {
       setIsLoading(true);
       setUrl(
-        `https://raw.githubusercontent.com/${user}/${id}/master/world_${year}.geojson`,
+        `https://raw.githubusercontent.com/${user}/${id}/master/geojson/world_${year}.geojson`,
       );
     }
   }, [year]);
