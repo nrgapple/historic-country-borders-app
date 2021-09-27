@@ -36,7 +36,10 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
       name: 'Historic Borders',
       description: 'example.',
     };
-    const fileResp = await octokit.request(`/repos/${user}/${id}/contents`);
+    const fileResp = await octokit.request(
+      `/repos/${user}/${id}/contents/geojson`,
+    );
+    console.log('fileresp', fileResp);
     const files: GithubFileInfoType[] = fileResp.data;
     const years = files
       .filter((x) => x.name.endsWith('.geojson'))
