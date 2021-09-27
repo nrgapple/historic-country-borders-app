@@ -8,7 +8,7 @@ interface TimelineProps {
   index: number;
   onChange: (value: number) => void;
   years: number[];
-  globe: boolean;
+  globe?: boolean;
 }
 
 const Timeline = ({ index, onChange, years, globe }: TimelineProps) => (
