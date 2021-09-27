@@ -8,7 +8,6 @@ import type {
 } from 'geojson';
 import { useEffect, useState } from 'react';
 import stc from 'string-to-color';
-import { stringToColor } from '@davidcmeier/string-to-color';
 import polylabel from 'polylabel';
 import { yearPrefix } from '../util/constants';
 import PolygonArea from '@turf/area';
