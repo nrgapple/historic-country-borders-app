@@ -3,8 +3,9 @@ import { GetServerSideProps } from 'next';
 import { getYearFromFile, githubToken } from '../util/constants';
 import { ConfigType, GithubFileInfoType } from '../util/types';
 import Viewer from './timeline/[user]/[id]';
+import { Endpoints } from '@octokit/types';
 
-interface DataProps {
+export interface DataProps {
   years: number[];
   user: string;
   id: string;
@@ -12,17 +13,15 @@ interface DataProps {
   isGlobe: boolean;
 }
 
-const IndexPage = ({ years, user, id, config, isGlobe }: DataProps) => {
-  return (
-    <Viewer
-      user={user}
-      id={id}
-      config={config}
-      years={years}
-      isGlobe={isGlobe}
-    />
-  );
+const IndexPage = (props: DataProps) => {
+  return <Viewer {...props} />;
 };
+
+type GetGithubFilesResp =
+  Endpoints['GET /repos/{owner}/{repo}/contents/{path}']['response'];
+
+type GetBranchResp =
+  Endpoints['GET /repos/{owner}/{repo}/branches/{branch}']['response'];
 
 export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   query,
@@ -32,15 +31,18 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   const isGlobe = query?.view === 'globe' ? true : false;
   try {
     const octokit = new Octokit({ auth: githubToken });
+    const fileResp = (await octokit.request(
+      `/repos/${user}/${id}/contents/geojson`,
+    )) as GetGithubFilesResp;
+    const { data: branch } = (await octokit.request(
+      `/repos/${user}/${id}/branches/master`,
+    )) as GetBranchResp;
     const config: ConfigType = {
       name: 'Historic Borders',
       description: 'example.',
+      commitDate: branch.commit.commit.committer?.date,
     };
-    const fileResp = await octokit.request(
-      `/repos/${user}/${id}/contents/geojson`,
-    );
-    console.log('fileresp', fileResp);
-    const files: GithubFileInfoType[] = fileResp.data;
+    const files = fileResp.data as GithubFileInfoType[];
     const years = files
       .filter((x) => x.name.endsWith('.geojson'))
       .map((x) => getYearFromFile(x.name))

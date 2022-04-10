@@ -18,16 +18,9 @@ import { Octokit } from '@octokit/core';
 import { ConfigType, GithubFileInfoType } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { useRouter } from 'next/router';
+import { DataProps } from '../..';
 
 ReactGA.initialize('UA-188190791-1');
-
-interface DataProps {
-  years: number[];
-  user: string;
-  id: string;
-  config: ConfigType;
-  isGlobe: boolean;
-}
 
 const Viewer = ({
   years,
@@ -146,6 +139,9 @@ const Viewer = ({
           {!hide && (
             <Footer
               dataUrl={`https://github.com/aourednik/historical-basemaps`}
+              lastCommit={
+                config.commitDate ? new Date(config.commitDate) : undefined
+              }
             />
           )}
         </div>

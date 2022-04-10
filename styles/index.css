@@ -237,3 +237,12 @@ svg {
   filter: drop-shadow(-5px 0 black), drop-shadow(0 5px black),
     drop-shadow(5px 0 black), drop-shadow(0 -5px black);
 }
+
+.last-commit {
+  display: flex;
+  direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  text-shadow: 2px 2px 4px #252525;
+}

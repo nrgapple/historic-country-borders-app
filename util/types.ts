@@ -10,15 +10,13 @@ export interface GithubFileInfoType {
   download_url: string;
 }
 
-export enum FileType {
-  Dir = 'dir',
-  File = 'file',
-}
+type FileType = 'dir' | 'file';
 
 export interface ConfigType {
   name: string;
   description?: string;
   default?: boolean;
+  commitDate?: string;
 }
 
 export interface Theater {
