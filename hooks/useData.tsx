@@ -1,15 +1,15 @@
 import type {
   FeatureCollection,
   GeoJsonProperties,
-  Feature,
   MultiPolygon,
   Point,
   Polygon,
+  Feature,
 } from 'geojson';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import stc from 'string-to-color';
 import polylabel from 'polylabel';
-import { yearPrefix } from '../util/constants';
+import { convertYearString, mapBCFormat, yearPrefix } from '../util/constants';
 import PolygonArea from '@turf/area';
 
 export interface CountryData {
@@ -21,6 +21,31 @@ export const useData = (year: string, user: string, id: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [url, setUrl] = useState<string | undefined>(undefined);
   const [data, setData] = useState<CountryData | undefined>(undefined);
+  const [placesData, setPlacesData] = useState<FeatureCollection | undefined>(
+    undefined,
+  );
+
+  const places = useMemo(
+    () =>
+      placesData
+        ? ({
+            type: 'FeatureCollection',
+            features: placesData.features.filter((f) => {
+              const since = f.properties?.inhabitedSince;
+              const done = f.properties?.inhabitedUntil;
+              const yearNumber = Number(year.replace(/bc/g, '-'));
+              if (since) {
+                if (done) {
+                  return yearNumber >= since && yearNumber <= done;
+                }
+                return yearNumber >= since;
+              }
+              return false;
+            }) as Feature[],
+          } as FeatureCollection)
+        : ({ type: 'FeatureCollection' } as FeatureCollection),
+    [year, placesData],
+  );
 
   const processData = (data: FeatureCollection) => {
     const dataNoUnclaimed = {
@@ -32,6 +57,7 @@ export const useData = (year: string, user: string, id: string) => {
           f.properties?.NAME != 'Antarctica',
       ),
     };
+
     const featureParts = dataNoUnclaimed.features
       .filter((x) => (x.geometry as MultiPolygon).coordinates.length)
       .map((feature) => {
@@ -110,7 +136,12 @@ export const useData = (year: string, user: string, id: string) => {
       (async () => {
         try {
           const resp = await fetch(url);
+          const placesResp = await fetch(
+            `https://raw.githubusercontent.com/${user}/${id}/master/geojson/places.geojson`,
+          );
           const mapData = await resp.json();
+          const pd = await placesResp.json();
+          setPlacesData(pd);
           setData(processData(mapData as FeatureCollection));
         } catch (error) {
           console.error(error);
@@ -125,5 +156,5 @@ export const useData = (year: string, user: string, id: string) => {
     }
   }, [data]);
 
-  return [isLoading, data] as const;
+  return [isLoading, data, places] as const;
 };

@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   MutableRefObject,
 } from 'react';
-import { GeoJSONLayer, Popup } from 'react-mapbox-gl';
+import { GeoJSONLayer, Popup, Image } from 'react-mapbox-gl';
 import MapboxGl from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import Map from '../util/ReactMapBoxGl';
@@ -44,7 +44,7 @@ const MapContainer = ({
   id,
   threeD = true,
 }: MapContainerProps) => {
-  const [, data] = useData(year, user, id);
+  const [, data, places] = useData(year, user, id);
   const [zoomValue, setZoomValue] = useState(2);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const globeRef = useRef<any>(undefined);
@@ -235,8 +235,42 @@ const MapContainer = ({
                   'text-transform': 'uppercase',
                 }}
               />
+              {places && (
+                <GeoJSONLayer
+                  data={places}
+                  symbolPaint={{
+                    'text-color': '#3d3d3d',
+                  }}
+                  symbolLayout={{
+                    'text-field': '{name}',
+                    'text-font': ['Lato Bold'],
+                    'text-size': {
+                      base: 1,
+                      stops: [
+                        [3, 0.02],
+                        [6, 12],
+                      ],
+                    },
+                    'text-padding': 3,
+                    'text-letter-spacing': 0.1,
+                    'text-max-width': 7,
+                    'text-transform': 'uppercase',
+                    'text-offset': [0, 2],
+                    'icon-allow-overlap': true,
+                    'icon-image': 'circle',
+                    'icon-size': {
+                      base: 1,
+                      stops: [
+                        [3, 0.02],
+                        [8, 0.8],
+                      ],
+                    },
+                  }}
+                />
+              )}
             </>
           )}
+          <Image id={'circle'} url={'/circle.png'} />
         </Map>
       )}
     </div>
