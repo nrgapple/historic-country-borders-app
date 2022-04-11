@@ -19,6 +19,7 @@ import { ConfigType, GithubFileInfoType } from '../../../util/types';
 import Layout from '../../../components/Layout';
 import { useRouter } from 'next/router';
 import { DataProps } from '../..';
+import toast, { Toaster } from 'react-hot-toast';
 
 ReactGA.initialize('UA-188190791-1');
 
@@ -71,6 +72,18 @@ const Viewer = ({
 
   useEffect(() => {
     ReactGA.pageview(`/?year=${query?.year}`);
+  }, []);
+
+  useEffect(() => {
+    toast(
+      (t) => (
+        <span>
+          If you enjoy using Historic Boarders please share it with your
+          friends!
+        </span>
+      ),
+      { icon: '📲', duration: 3000, position: 'bottom-right' },
+    );
   }, []);
 
   if (!(years && user && id && config))
@@ -138,6 +151,7 @@ const Viewer = ({
           )}
         </div>
       </Layout>
+      <Toaster />
     </>
   );
 };
