@@ -13,7 +13,7 @@ const Footer = ({
       {!!lastCommit && (
         <div className="last-commit">
           <span>
-            Last Updated:{' '}
+            Maps Updated:{' '}
             {lastCommit.toLocaleDateString('en-us', {
               year: 'numeric',
               month: 'short',

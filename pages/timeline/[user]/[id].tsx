@@ -29,11 +29,9 @@ const Viewer = ({
   config,
   isGlobe: isGlobeProp,
 }: DataProps) => {
-  const [index, setIndex] = useState(0);
   const [hide, setHide] = useState(false);
   const [help, setHelp] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isGlobe, setIsGlobe] = useState(isGlobeProp);
   const isMobile =
     typeof window !== 'undefined'
       ? /Mobi|Android/i.test(navigator.userAgent)
@@ -41,6 +39,11 @@ const Viewer = ({
   const aPress = useKeyPress('a');
   const dPress = useKeyPress('d');
   const router = useRouter();
+  const { query } = router;
+  const index = useMemo(() => {
+    const i = years.findIndex((y) => y.toString() === query?.year);
+    return i === -1 ? 0 : i;
+  }, [years, query]);
 
   useEffect(() => {
     setMounted(true);
@@ -48,19 +51,27 @@ const Viewer = ({
 
   useEffect(() => {
     if (dPress) {
-      setIndex(mod(index + 1, years.length));
+      router.push({
+        query: {
+          year: years[mod(index + 1, years.length)],
+        },
+      });
     }
   }, [dPress]);
 
   useEffect(() => {
     if (aPress) {
-      setIndex(mod(index - 1, years.length));
+      router.push({
+        query: {
+          year: years[mod(index - 1, years.length)],
+        },
+      });
     }
   }, [aPress]);
 
   useEffect(() => {
-    ReactGA.pageview(`/?view=${isGlobe ? 'globe' : 'map'}`);
-  }, [isGlobe]);
+    ReactGA.pageview(`/?year=${query?.year}`);
+  }, []);
 
   if (!(years && user && id && config))
     return <div>Not a valid timeline. Check your url.</div>;
@@ -79,15 +90,6 @@ const Viewer = ({
             >
               {hide ? 'Show Timeline' : 'Hide Timeline'}
             </ReactTooltip>
-            <ReactTooltip
-              resizeHide={false}
-              id="globeTip"
-              place="left"
-              effect="solid"
-              globalEventOff={isMobile ? 'click' : undefined}
-            >
-              {isGlobe ? 'Switch to Map View' : 'Switch to Globe View'}
-            </ReactTooltip>
           </>
         )}
         <div
@@ -100,30 +102,20 @@ const Viewer = ({
         >
           <div className="noselect">🔭</div>
         </div>
-        <div
-          data-tip
-          data-for="globeTip"
-          data-delay-show="300"
-          className="globe"
-          onClick={() => {
-            setIsGlobe(!isGlobe);
-            router.replace({
-              path: '',
-              query: { view: !isGlobe ? 'globe' : 'map' },
-            });
-          }}
-          style={{ top: hide ? '73px' : '155px' }}
-        >
-          <div className="noselect">{isGlobe ? '🗺' : '🌎'}</div>
-        </div>
         <div className={`${hide ? 'app-large' : 'app'}`}>
           {!hide && (
             <>
               <div className="timeline-container">
                 <Timeline
-                  globe={isGlobe}
+                  globe={false}
                   index={index}
-                  onChange={setIndex}
+                  onChange={(v) =>
+                    router.push({
+                      query: {
+                        year: years[v],
+                      },
+                    })
+                  }
                   years={years}
                 />
               </div>
@@ -134,7 +126,7 @@ const Viewer = ({
             fullscreen={hide}
             user={user}
             id={id}
-            threeD={isGlobe}
+            threeD={false}
           />
           {!hide && (
             <Footer

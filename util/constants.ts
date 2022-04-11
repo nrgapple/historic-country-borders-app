@@ -120,3 +120,8 @@ export const groupBy = <T, K extends keyof any>(
     previous[group].push(currentItem);
     return previous;
   }, {} as Record<K, T[]>);
+
+export const closest = (numbers: number[], target: number) =>
+  numbers.reduce(function (prev, curr) {
+    return Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev;
+  });
