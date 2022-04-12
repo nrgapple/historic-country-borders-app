@@ -44,3 +44,13 @@ export interface MapImage {
   url: string;
   id: string;
 }
+
+export interface CountryData {
+  labels: FeatureCollection;
+  borders: FeatureCollection;
+}
+
+export interface BordersEndpointData {
+  data: CountryData;
+  places: FeatureCollection;
+}

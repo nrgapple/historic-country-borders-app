@@ -20,6 +20,7 @@ import { useParentSize } from '../hooks/useParentSize';
 import text from '../util/Roboto_Regular.json';
 import { MapEvent } from 'react-mapbox-gl/lib/map-events';
 import { useWikiData } from '../hooks/useWiki';
+import toast from 'react-hot-toast';
 
 const GlobeTmpl = dynamic(() => import('../util/GlobeWrapper'), {
   ssr: false,
@@ -44,7 +45,7 @@ const MapContainer = ({
   id,
   threeD = true,
 }: MapContainerProps) => {
-  const [, data, places] = useData(year, user, id);
+  const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const [zoomValue, setZoomValue] = useState(2);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const globeRef = useRef<any>(undefined);
@@ -54,6 +55,15 @@ const MapContainer = ({
   const [selectedPlace, setSelectedPlace] = useState('');
   const [popupPos, setPopupPos] = useState([0, 0]);
   const wikiInfo = useWikiData(selectedPlace);
+
+  useEffect(() => {
+    const id = 'loading';
+    if (isLoading) {
+      toast.loading('Loading Borders...', { id, position: 'bottom-right' });
+    } else {
+      toast.dismiss(id);
+    }
+  }, [isLoading]);
 
   const setColors = (d: {}) => {
     const feature = d as Feature;
