@@ -14,7 +14,7 @@ import { CountryData } from '../../../util/types';
 
 const handler: NextApiHandler = async (req, res) => {
   const { slug } = req.query;
-  console.log('slug:', slug);
+
   const [user, id, year] = slug;
   const url = `https://raw.githubusercontent.com/${user}/${id}/master/geojson/world_${year}.geojson`;
 
