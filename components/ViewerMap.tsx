@@ -14,16 +14,9 @@ interface MapContainerProps {
   user: string;
   id: string;
   fullscreen?: boolean;
-  threeD: boolean;
 }
 
-const MapContainer = ({
-  year,
-  fullscreen,
-  user,
-  id,
-  threeD = true,
-}: MapContainerProps) => {
+const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const globeRef = useRef<any>(undefined);

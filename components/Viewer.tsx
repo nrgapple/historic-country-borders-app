@@ -125,7 +125,6 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
             fullscreen={hide}
             user={user}
             id={id}
-            threeD={false}
           />
           {!hide && (
             <Footer
