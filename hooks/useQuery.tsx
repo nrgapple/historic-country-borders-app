@@ -17,7 +17,7 @@ export const useQuery = (onlyOnMount: boolean = false) => {
 };
 
 export const QueryProvider = ({ children }: { children: ReactNode }) => {
-  const { query, push } = useRouter();
+  const { query, replace } = useRouter();
   const [queries, queriesActions] = useMap();
 
   useEffectOnce(() => {
@@ -34,7 +34,7 @@ export const QueryProvider = ({ children }: { children: ReactNode }) => {
   useDebounce(
     () => {
       if (queries) {
-        push({
+        replace({
           query: Object.fromEntries(queries),
         });
       }
