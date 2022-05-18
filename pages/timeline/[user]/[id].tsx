@@ -68,11 +68,20 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
     toast(
       (t) => (
         <span>
+          You can now share your position, zoom and year with friends by copying
+          the url!
+        </span>
+      ),
+      { icon: '🚀', duration: 5000, position: 'bottom-right' },
+    );
+    toast(
+      (t) => (
+        <span>
           If you enjoy using Historic Boarders please share it with your
           friends!
         </span>
       ),
-      { icon: '📲', duration: 3000, position: 'bottom-right' },
+      { icon: '❤️', duration: 3000, position: 'bottom-right' },
     );
   }, []);
 
