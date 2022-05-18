@@ -10,16 +10,16 @@ import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
 import { DataProps } from '../pages';
+import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
+import { ConfigType } from '../util/types';
+import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 
 ReactGA.initialize('UA-188190791-1');
 
 const Viewer = ({ years, user, id, config }: DataProps) => {
   const [hide, setHide] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const isMobile =
-    typeof window !== 'undefined'
-      ? /Mobi|Android/i.test(navigator.userAgent)
-      : false;
+
   const aPress = useKeyPress('a');
   const dPress = useKeyPress('d');
   const { query, setQuery } = useQuery();
@@ -80,63 +80,175 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   return (
     <>
       <Layout title={config.name} url={`https://historyborders.app`}>
-        {mounted && (
-          <>
-            <ReactTooltip
-              resizeHide={false}
-              id="fullscreenTip"
-              place="left"
-              effect="solid"
-              globalEventOff={isMobile ? 'click' : undefined}
-            >
-              {hide ? 'Show Timeline' : 'Hide Timeline'}
-            </ReactTooltip>
-          </>
-        )}
-        <div
-          data-tip
-          data-for="fullscreenTip"
-          data-delay-show="300"
-          className="fullscreen"
-          onClick={() => setHide(!hide)}
-          style={{ top: hide ? '16px' : '95px' }}
-        >
-          <div className="noselect">🔭</div>
-        </div>
-        <div className={`${hide ? 'app-large' : 'app'}`}>
-          {!hide && (
-            <>
-              <div className="timeline-container">
-                <Timeline
-                  globe={false}
-                  index={index}
-                  onChange={(v) => {
-                    const year = years[v].toString();
-                    setQuery({ year });
-                    setYear(year);
-                  }}
-                  years={years}
-                />
-              </div>
-            </>
-          )}
-          <MapContainer
-            year={convertYearString(mapBCFormat, years[index])}
-            fullscreen={hide}
-            user={user}
-            id={id}
-          />
-          {!hide && (
-            <Footer
-              dataUrl={`https://github.com/aourednik/historical-basemaps`}
-              lastCommit={
-                config.commitDate ? new Date(config.commitDate) : undefined
-              }
-            />
-          )}
-        </div>
+        <Viewer.MenuItem mounted={mounted} vPos={95} />
+        {/* <Viewer.Projection mounted={mounted} vPos={150} /> */}
+        <Viewer.Timeline
+          index={index}
+          years={years}
+          onChange={(y) => {
+            setQuery({ y });
+            setYear(y);
+          }}
+        />
+        <Viewer.Map
+          user={user}
+          id={id}
+          config={config}
+          year={convertYearString(mapBCFormat, years[index])}
+        />
       </Layout>
       <Toaster />
+    </>
+  );
+};
+
+Viewer.Map = (props: {
+  user: string;
+  id: string;
+  config: ConfigType;
+  year: string;
+}) => {
+  const hide = useAppStateValue('hide');
+  const { config, user, id, year } = props;
+  return (
+    <div className={`${hide ? 'app-large' : 'app'}`}>
+      <MapContainer year={year} fullscreen={hide} user={user} id={id} />
+      <Viewer.Footer config={config} />
+    </div>
+  );
+};
+
+Viewer.Footer = (props: { config: ConfigType }) => {
+  const hide = useAppStateValue('hide');
+  const { config } = props;
+  return (
+    <>
+      {!hide && (
+        <Footer
+          dataUrl={`https://github.com/aourednik/historical-basemaps`}
+          lastCommit={
+            config.commitDate ? new Date(config.commitDate) : undefined
+          }
+        />
+      )}
+    </>
+  );
+};
+
+Viewer.Timeline = (props: {
+  index: number;
+  years: number[];
+  onChange: (year: string) => void;
+}) => {
+  const hide = useAppStateValue('hide');
+  return (
+    <>
+      {!hide && (
+        <>
+          <div className="timeline-container">
+            <Timeline
+              globe={false}
+              index={props.index}
+              onChange={(v) => {
+                const year = props.years[v].toString();
+                props.onChange(year);
+              }}
+              years={props.years}
+            />
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
+Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
+  const { mounted, vPos } = props;
+  const hide = useAppStateValue('hide');
+  const setState = useAppStateSetter();
+  const isMobile =
+    typeof window !== 'undefined'
+      ? /Mobi|Android/i.test(navigator.userAgent)
+      : false;
+  return (
+    <>
+      {mounted && (
+        <>
+          <ReactTooltip
+            resizeHide={false}
+            id="fullscreenTip"
+            place="left"
+            effect="solid"
+            globalEventOff={isMobile ? 'click' : undefined}
+          >
+            {hide ? 'Show Timeline' : 'Hide Timeline'}
+          </ReactTooltip>
+        </>
+      )}
+      <div
+        data-tip
+        data-for="fullscreenTip"
+        data-delay-show="300"
+        className="fullscreen"
+        onClick={() => setState((c) => void (c.hide = !hide))}
+        style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
+      >
+        <div className="noselect">🔭</div>
+      </div>
+    </>
+  );
+};
+
+Viewer.Projection = (props: { mounted: boolean; vPos: number }) => {
+  const { mounted, vPos } = props;
+  const hide = useAppStateValue('hide');
+  const setState = useAppStateSetter();
+  const [open, setOpen] = useState(false);
+  const isMobile =
+    typeof window !== 'undefined'
+      ? /Mobi|Android/i.test(navigator.userAgent)
+      : false;
+  return (
+    <>
+      {mounted && (
+        <>
+          <ReactTooltip
+            resizeHide={false}
+            id="projectionTip"
+            place="left"
+            effect="solid"
+            globalEventOff={isMobile ? 'click' : undefined}
+          >
+            Projection
+          </ReactTooltip>
+        </>
+      )}
+      <div
+        data-tip
+        data-for="projectionTip"
+        data-delay-show="300"
+        className="fullscreen"
+        onClick={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
+      >
+        <Menu
+          menuButton={
+            <MenuButton className="menu-button">
+              <div
+                style={{ width: '100%', height: '100%' }}
+                className="noselect"
+              >
+                🗺
+              </div>
+            </MenuButton>
+          }
+          className="menu"
+        >
+          <MenuItem className="menu-item">Map</MenuItem>
+          <MenuItem className="menu-item">Globe</MenuItem>
+        </Menu>
+      </div>
     </>
   );
 };

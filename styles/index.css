@@ -246,3 +246,16 @@ svg {
   font-size: 12px;
   text-shadow: 2px 2px 4px #252525;
 }
+
+.menu-item {
+  font-size: 12px;
+  text-shadow: none;
+}
+
+.menu-button {
+  border: none !important;
+  background: none;
+  height: 40px;
+  width: 100%;
+  box-shadow: none;
+}

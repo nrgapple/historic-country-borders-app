@@ -4,6 +4,9 @@ import { AppProps } from 'next/app';
 import { disableBodyScroll } from 'body-scroll-lock';
 import { useEffect, useRef } from 'react';
 import { QueryProvider } from '../hooks/useQuery';
+import { StateProvider } from '../hooks/useState';
+import '@szhsin/react-menu/dist/index.css';
+import '@szhsin/react-menu/dist/transitions/slide.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -11,7 +14,9 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
   return (
     <QueryProvider>
-      <Component {...pageProps} />;
+      <StateProvider>
+        <Component {...pageProps} />;
+      </StateProvider>
     </QueryProvider>
   );
 }
