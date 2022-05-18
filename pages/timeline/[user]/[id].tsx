@@ -9,7 +9,6 @@ import {
   mod,
 } from '../../../util/constants';
 import Footer from '../../../components/Footer';
-import NavBar from '../../../components/NavBar';
 import Timeline from '../../../components/Timeline';
 import ReactTooltip from 'react-tooltip';
 import useKeyPress from '../../../hooks/useKeyPress';
@@ -20,16 +19,11 @@ import Layout from '../../../components/Layout';
 import { useRouter } from 'next/router';
 import { DataProps } from '../..';
 import toast, { Toaster } from 'react-hot-toast';
+import { useQuery } from '../../../hooks/useQuery';
 
 ReactGA.initialize('UA-188190791-1');
 
-const Viewer = ({
-  years,
-  user,
-  id,
-  config,
-  isGlobe: isGlobeProp,
-}: DataProps) => {
+const Viewer = ({ years, user, id, config }: DataProps) => {
   const [hide, setHide] = useState(false);
   const [help, setHelp] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -39,12 +33,12 @@ const Viewer = ({
       : false;
   const aPress = useKeyPress('a');
   const dPress = useKeyPress('d');
-  const router = useRouter();
-  const { query } = router;
+  const { query, setQuery } = useQuery();
+  const [year, setYear] = useState(query?.year);
   const index = useMemo(() => {
-    const i = years.findIndex((y) => y.toString() === query?.year);
+    const i = years.findIndex((y) => y.toString() === year);
     return i === -1 ? 0 : i;
-  }, [years, query]);
+  }, [years]);
 
   useEffect(() => {
     setMounted(true);
@@ -52,23 +46,19 @@ const Viewer = ({
 
   useEffect(() => {
     if (dPress) {
-      router.push({
-        query: {
-          year: years[mod(index + 1, years.length)],
-        },
-      });
+      const year = years[mod(index + 1, years.length)].toString();
+      setQuery({ year });
+      setYear(year);
     }
-  }, [dPress]);
+  }, [dPress, query]);
 
   useEffect(() => {
     if (aPress) {
-      router.push({
-        query: {
-          year: years[mod(index - 1, years.length)],
-        },
-      });
+      const year = years[mod(index - 1, years.length)].toString();
+      setQuery({ year });
+      setYear(year);
     }
-  }, [aPress]);
+  }, [aPress, query]);
 
   useEffect(() => {
     ReactGA.pageview(`/?year=${query?.year}`);
@@ -122,13 +112,11 @@ const Viewer = ({
                 <Timeline
                   globe={false}
                   index={index}
-                  onChange={(v) =>
-                    router.push({
-                      query: {
-                        year: years[v],
-                      },
-                    })
-                  }
+                  onChange={(v) => {
+                    const year = years[v].toString();
+                    setQuery({ year });
+                    setYear(year);
+                  }}
                   years={years}
                 />
               </div>

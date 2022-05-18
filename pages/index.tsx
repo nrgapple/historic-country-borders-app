@@ -62,7 +62,13 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   }
   return {
     props: {
+      years: [-500],
+      user,
+      id,
       isGlobe,
+      config: {
+        name: 'Error',
+      },
     } as DataProps,
   };
 };
