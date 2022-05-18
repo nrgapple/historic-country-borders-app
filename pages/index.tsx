@@ -1,10 +1,12 @@
 import { Octokit } from '@octokit/core';
+import { throttling } from '@octokit/plugin-throttling';
 import { GetServerSideProps } from 'next';
 import { getYearFromFile, githubToken } from '../util/constants';
 import { ConfigType, GithubFileInfoType } from '../util/types';
 import { Endpoints } from '@octokit/types';
 import Viewer from '../components/Viewer';
 
+const OctokitThrottled = Octokit.plugin(throttling);
 export interface DataProps {
   years: number[];
   user: string;
@@ -23,6 +25,29 @@ type GetGithubFilesResp =
 type GetBranchResp =
   Endpoints['GET /repos/{owner}/{repo}/branches/{branch}']['response'];
 
+const octokit = new OctokitThrottled({
+  auth: githubToken,
+  throttle: {
+    onRateLimit: (retryAfter: any, options: any, octokit: any) => {
+      console.warn(
+        `Request quota exhausted for request ${options.method} ${options.url}`,
+      );
+
+      if (options.request.retryCount === 0) {
+        // only retries once
+        console.info(`Retrying after ${retryAfter} seconds!`);
+        return true;
+      }
+    },
+    onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
+      // does not retry, only logs a warning
+      console.warn(
+        `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
+      );
+    },
+  },
+});
+
 export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   query,
 }) => {
@@ -30,7 +55,6 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   const id = 'historical-basemaps';
   const isGlobe = query?.view === 'globe' ? true : false;
   try {
-    const octokit = new Octokit({ auth: githubToken });
     const fileResp = (await octokit.request(
       `/repos/${user}/${id}/contents/geojson`,
     )) as GetGithubFilesResp;

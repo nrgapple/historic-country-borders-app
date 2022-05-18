@@ -61,9 +61,9 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
   useEffect(() => {
     const [lng, lat] = centerValue;
     setQuery({
-      lng: lng.toString(),
-      lat: lat.toString(),
-      zoom: zoomValue.toString(),
+      lng: lng.toFixed(7),
+      lat: lat.toFixed(7),
+      zoom: zoomValue.toFixed(7),
     });
   }, [zoomValue, centerValue]);
 
