@@ -2,8 +2,8 @@ import { Octokit } from '@octokit/core';
 import { GetServerSideProps } from 'next';
 import { getYearFromFile, githubToken } from '../util/constants';
 import { ConfigType, GithubFileInfoType } from '../util/types';
-import Viewer from './timeline/[user]/[id]';
 import { Endpoints } from '@octokit/types';
+import Viewer from '../components/Viewer';
 
 export interface DataProps {
   years: number[];

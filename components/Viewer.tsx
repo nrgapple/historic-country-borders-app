@@ -1,31 +1,20 @@
-import MapContainer from '../../../components/ViewerMap';
+import MapContainer from '../components/ViewerMap';
 import React, { useEffect, useMemo, useState } from 'react';
 import ReactGA from 'react-ga';
-import {
-  convertYearString,
-  getYearFromFile,
-  githubToken,
-  mapBCFormat,
-  mod,
-} from '../../../util/constants';
-import Footer from '../../../components/Footer';
-import Timeline from '../../../components/Timeline';
+import { convertYearString, mapBCFormat, mod } from '../util/constants';
+import Footer from '../components/Footer';
+import Timeline from '../components/Timeline';
 import ReactTooltip from 'react-tooltip';
-import useKeyPress from '../../../hooks/useKeyPress';
-import { GetServerSideProps } from 'next';
-import { Octokit } from '@octokit/core';
-import { ConfigType, GithubFileInfoType } from '../../../util/types';
-import Layout from '../../../components/Layout';
-import { useRouter } from 'next/router';
-import { DataProps } from '../..';
+import useKeyPress from '../hooks/useKeyPress';
+import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
-import { useQuery } from '../../../hooks/useQuery';
+import { useQuery } from '../hooks/useQuery';
+import { DataProps } from '../pages';
 
 ReactGA.initialize('UA-188190791-1');
 
 const Viewer = ({ years, user, id, config }: DataProps) => {
   const [hide, setHide] = useState(false);
-  const [help, setHelp] = useState(false);
   const [mounted, setMounted] = useState(false);
   const isMobile =
     typeof window !== 'undefined'
@@ -36,7 +25,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   const { query, setQuery } = useQuery();
   const [year, setYear] = useState(query?.year);
   const index = useMemo(() => {
-    const i = years.findIndex((y) => y.toString() === year);
+    const i = years?.findIndex((y) => y.toString() === year) ?? -1;
     return i === -1 ? 0 : i;
   }, [years]);
 
