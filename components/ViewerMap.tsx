@@ -114,6 +114,7 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
               fillPaint={{
                 'fill-color': ['get', 'COLOR'],
                 'fill-opacity': 0.5,
+                'fill-outline-color': '#000000',
               }}
               fillOnClick={(e: any) => {
                 console.log(e);
