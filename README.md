@@ -6,7 +6,8 @@ As seen on [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments
 
 ## Screenshot
 
-![image](https://user-images.githubusercontent.com/10817537/105884887-6eb61980-5fd6-11eb-94d0-0bbf53bb5d73.png)
+<img width="1023" alt="screen-shot-of-app" src="https://user-images.githubusercontent.com/10817537/175097196-e746778d-241a-4bee-b406-aac294849597.png">
+
 
 ## Data
 
