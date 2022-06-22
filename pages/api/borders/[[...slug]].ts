@@ -71,7 +71,9 @@ const processData = (data: FeatureCollection) => {
     .filter((x) => (x.geometry as MultiPolygon).coordinates.length)
     .map((feature) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
-      const color = stc('a' + name + 'p');
+      const coord = (feature.geometry as MultiPolygon).coordinates?.[0]?.[0];
+      const color = stc(coord[1] + name + coord[0]);
+      console.log('props', feature.properties);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x, i) => {
           const polyFeat = {

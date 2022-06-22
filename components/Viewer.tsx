@@ -86,7 +86,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
           index={index}
           years={years}
           onChange={(y) => {
-            setQuery({ y });
+            setQuery({ year: y });
             setYear(y);
           }}
         />
