@@ -57,8 +57,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
     toast(
       (t) => (
         <span>
-          You can now share your position, zoom and year with friends by copying
-          the url!
+          Territories subject to another will now show the same color!
         </span>
       ),
       { icon: '🚀', duration: 5000, position: 'bottom-right' },
