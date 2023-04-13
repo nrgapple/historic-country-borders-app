@@ -19,9 +19,8 @@ interface MapContainerProps {
 const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
-  const globeRef = useRef<any>(undefined);
   const parentRef = useRef<HTMLDivElement>(null);
-  const { height, width, refresh } = useParentSize(parentRef);
+  const { refresh } = useParentSize(parentRef);
   const [selectedPlace, setSelectedPlace] = useState('');
   const [popupPos, setPopupPos] = useState([0, 0]);
   const wikiInfo = useWikiData(selectedPlace);
@@ -53,9 +52,6 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
     if (mapRef.current) {
       mapRef.current.resize();
     }
-    if (globeRef.current) {
-      refresh();
-    }
   }, [fullscreen]);
 
   useEffect(() => {
@@ -71,11 +67,12 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
     <div className="map-grid" ref={parentRef}>
       <Map
         className="map"
-        zoom={[zoomValue]}
+        // zoom={[zoomValue]}
         style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
         onStyleLoad={(map: MapboxGl.Map) => {
           mapRef.current = map;
           map.resize();
+          map.setZoom(zoomValue);
         }}
         onZoomEnd={(map) => {
           const zoom = map.getZoom();
