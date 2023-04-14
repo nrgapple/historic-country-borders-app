@@ -8,6 +8,8 @@ import { useParentSize } from '../hooks/useParentSize';
 import { useWikiData } from '../hooks/useWiki';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
+import ReactGA4 from 'react-ga4';
+import { LngLat } from 'mapbox-gl';
 
 interface MapContainerProps {
   year: string;
@@ -80,9 +82,24 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
         }}
         center={centerValue}
         onClick={(e) => setSelectedPlace('')}
-        onMoveEnd={(map) =>
-          setCenterValue([map.getCenter().lng, map.getCenter().lat])
-        }
+        onMoveEnd={(map) => {
+          const lngLat = [map.getCenter().lng, map.getCenter().lat] as [
+            number,
+            number,
+          ];
+          setCenterValue(lngLat);
+          try {
+            ReactGA4.event({
+              category: 'Move',
+              action: `${
+                lngLat ? `moved to ${lngLat.toString()}` : 'moved to unknown'
+              }`,
+              label: 'location',
+            });
+          } catch (e) {
+            console.error(`ga error: ${e}`);
+          }
+        }}
       >
         {data && (
           <>
@@ -114,9 +131,18 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
                 'fill-outline-color': '#000000',
               }}
               fillOnClick={(e: any) => {
-                console.log(e);
-                setSelectedPlace(e.features[0]?.properties.NAME);
-                setPopupPos((curr) => [...(Object.values(e.lngLat) as any)]);
+                const place = e.features[0]?.properties.NAME;
+                setSelectedPlace(place);
+                setPopupPos(() => [...(Object.values(e.lngLat) as any)]);
+                try {
+                  ReactGA4.event({
+                    category: 'Country',
+                    action: `${place ? `clicked ${place}` : 'clicked unknown'}`,
+                    label: 'place',
+                  });
+                } catch (e) {
+                  console.error(`ga error: ${e}`);
+                }
               }}
             />
             <GeoJSONLayer

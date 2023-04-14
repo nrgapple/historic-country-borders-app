@@ -3,6 +3,7 @@ import React from 'react';
 //@ts-ignore
 import HorizontalTimeline from 'react-horizontal-timeline';
 import { convertYearString, timelineBCFormat } from '../util/constants';
+import ReactGA4 from 'react-ga4';
 
 interface TimelineProps {
   index: number;
@@ -31,6 +32,15 @@ const Timeline = ({ index, onChange, years, globe }: TimelineProps) => (
         index={index}
         indexClick={(newIndex: number) => {
           onChange(newIndex);
+          try {
+            ReactGA4.event({
+              category: 'UI',
+              action: `clicked timeline: ${years[newIndex]}}`,
+              label: 'timeline',
+            });
+          } catch (e) {
+            console.error(`ga error: ${e}`);
+          }
         }}
         getLabel={(date: any) =>
           convertYearString(

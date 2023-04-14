@@ -73,7 +73,6 @@ const processData = (data: FeatureCollection) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
       const { NAME, SUBJECTO } = feature.properties as Record<string, string>;
       const color = stc(SUBJECTO ?? NAME);
-      console.log('props', feature.properties);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x, i) => {
           const polyFeat = {
@@ -102,9 +101,6 @@ const processData = (data: FeatureCollection) => {
         })) as Feature[];
       const maxArea = Math.max(...labels.map((x) => x.properties!.AREA));
       const label = labels.find((x) => x.properties!.AREA === maxArea);
-      if (!label) {
-        console.log(feature);
-      }
       const bounds = {
         geometry: feature.geometry,
         properties: {

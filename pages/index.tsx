@@ -82,7 +82,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
       } as DataProps,
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
   return {
     props: {

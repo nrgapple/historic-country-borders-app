@@ -12,9 +12,11 @@ import { useQuery } from '../hooks/useQuery';
 import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import { ConfigType } from '../util/types';
-import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
+import ReactGA4 from 'react-ga4';
 
 ReactGA.initialize('UA-188190791-1');
+
+ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR as string);
 
 const Viewer = ({ years, user, id, config }: DataProps) => {
   const [hide, setHide] = useState(false);
@@ -38,6 +40,15 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
       const year = years[mod(index + 1, years.length)].toString();
       setQuery({ year });
       setYear(year);
+      try {
+        ReactGA4.event({
+          category: 'Button Press',
+          action: 'd press',
+          label: 'year',
+        });
+      } catch (e) {
+        console.error(`ga error: ${e}`);
+      }
     }
   }, [dPress, query]);
 
@@ -46,11 +57,25 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
       const year = years[mod(index - 1, years.length)].toString();
       setQuery({ year });
       setYear(year);
+      try {
+        ReactGA4.event({
+          category: 'Button Press',
+          action: 'a press',
+          label: 'year',
+        });
+      } catch (e) {
+        console.error(`ga error: ${e}`);
+      }
     }
   }, [aPress, query]);
 
   useEffect(() => {
     ReactGA.pageview(`/?year=${query?.year}`);
+    ReactGA4.send({
+      hitType: 'pageview',
+      page: `${query?.year ? `/?year=${query?.year}` : '/'}`,
+      title: `${query?.year ? `Year ${query?.year}` : 'Home'}`,
+    });
   }, []);
 
   useEffect(() => {
@@ -80,7 +105,6 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
     <>
       <Layout title={config.name} url={`https://historyborders.app`}>
         <Viewer.MenuItem mounted={mounted} vPos={95} />
-        {/* <Viewer.Projection mounted={mounted} vPos={150} /> */}
         <Viewer.Timeline
           index={index}
           years={years}
@@ -189,64 +213,21 @@ Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
         data-for="fullscreenTip"
         data-delay-show="300"
         className="fullscreen"
-        onClick={() => setState((c) => void (c.hide = !hide))}
+        onClick={() => {
+          setState((c) => void (c.hide = !hide));
+          try {
+            ReactGA4.event({
+              category: 'UI',
+              action: `${hide ? `clicked fullscreen` : 'off fullscreen'}`,
+              label: 'fullscreen',
+            });
+          } catch (e) {
+            console.error(`ga error: ${e}`);
+          }
+        }}
         style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
       >
         <div className="noselect">🔭</div>
-      </div>
-    </>
-  );
-};
-
-Viewer.Projection = (props: { mounted: boolean; vPos: number }) => {
-  const { mounted, vPos } = props;
-  const hide = useAppStateValue('hide');
-  const setState = useAppStateSetter();
-  const [open, setOpen] = useState(false);
-  const isMobile =
-    typeof window !== 'undefined'
-      ? /Mobi|Android/i.test(navigator.userAgent)
-      : false;
-  return (
-    <>
-      {mounted && (
-        <>
-          <ReactTooltip
-            resizeHide={false}
-            id="projectionTip"
-            place="left"
-            effect="solid"
-            globalEventOff={isMobile ? 'click' : undefined}
-          >
-            Projection
-          </ReactTooltip>
-        </>
-      )}
-      <div
-        data-tip
-        data-for="projectionTip"
-        data-delay-show="300"
-        className="fullscreen"
-        onClick={() => setOpen(true)}
-        onBlur={() => setOpen(false)}
-        style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
-      >
-        <Menu
-          menuButton={
-            <MenuButton className="menu-button">
-              <div
-                style={{ width: '100%', height: '100%' }}
-                className="noselect"
-              >
-                🗺
-              </div>
-            </MenuButton>
-          }
-          className="menu"
-        >
-          <MenuItem className="menu-item">Map</MenuItem>
-          <MenuItem className="menu-item">Globe</MenuItem>
-        </Menu>
       </div>
     </>
   );

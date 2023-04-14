@@ -7,10 +7,8 @@ export const useWikiData = (name: string) => {
     const resp = await fetch(
       `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
     );
-    console.log(resp);
     if (resp.ok) {
       const info = await resp.json();
-      console.log(info);
       const bit = info.extract;
       return bit;
     }
