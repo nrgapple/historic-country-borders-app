@@ -15,7 +15,7 @@ import { CountryData } from '../../../util/types';
 const handler: NextApiHandler = async (req, res) => {
   const { slug } = req.query;
 
-  const [user, id, year] = slug;
+  const [user, id, year] = slug ?? [];
   const url = `https://raw.githubusercontent.com/${user}/${id}/master/geojson/world_${year}.geojson`;
 
   try {
@@ -68,7 +68,7 @@ const processData = (data: FeatureCollection) => {
   };
 
   const featureParts = dataNoUnclaimed.features
-    .filter((x) => (x.geometry as MultiPolygon).coordinates.length)
+    .filter((x) => (x.geometry as MultiPolygon).coordinates?.length)
     .map((feature) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
       const { NAME, SUBJECTO } = feature.properties as Record<string, string>;
