@@ -1,6 +1,5 @@
 import MapContainer from '../components/ViewerMap';
 import React, { useEffect, useMemo, useState } from 'react';
-import ReactGA from 'react-ga';
 import { convertYearString, mapBCFormat, mod } from '../util/constants';
 import Footer from '../components/Footer';
 import Timeline from '../components/Timeline';
@@ -13,12 +12,11 @@ import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
-
-ReactGA.initialize('UA-188190791-1');
+import { toastMessages } from '../config/toasts';
 
 ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR as string);
 
-const Viewer = ({ years, user, id, config }: DataProps) => {
+export default function Viewer({ years, user, id, config }: DataProps) {
   const [hide, setHide] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -70,7 +68,6 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   }, [aPress, query]);
 
   useEffect(() => {
-    ReactGA.pageview(`/?year=${query?.year}`);
     ReactGA4.send({
       hitType: 'pageview',
       page: `${query?.year ? `/?year=${query?.year}` : '/'}`,
@@ -79,23 +76,9 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
   }, []);
 
   useEffect(() => {
-    toast(
-      (t) => (
-        <span>
-          Territories subject to another will now show the same color!
-        </span>
-      ),
-      { icon: '🚀', duration: 5000, position: 'bottom-right' },
-    );
-    toast(
-      (t) => (
-        <span>
-          If you enjoy using Historic Boarders please share it with your
-          friends!
-        </span>
-      ),
-      { icon: '❤️', duration: 3000, position: 'bottom-right' },
-    );
+    toastMessages.forEach(({ message, opts }) => {
+      toast(message, opts);
+    });
   }, []);
 
   if (!(years && user && id && config))
@@ -123,7 +106,7 @@ const Viewer = ({ years, user, id, config }: DataProps) => {
       <Toaster />
     </>
   );
-};
+}
 
 Viewer.Map = (props: {
   user: string;
@@ -232,5 +215,3 @@ Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
     </>
   );
 };
-
-export default Viewer;
