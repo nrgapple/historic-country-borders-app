@@ -18,7 +18,12 @@ interface MapContainerProps {
   fullscreen?: boolean;
 }
 
-const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
+export default function MapContainer({
+  year,
+  fullscreen,
+  user,
+  id,
+}: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -202,6 +207,4 @@ const MapContainer = ({ year, fullscreen, user, id }: MapContainerProps) => {
       </Map>
     </div>
   );
-};
-
-export default MapContainer;
+}

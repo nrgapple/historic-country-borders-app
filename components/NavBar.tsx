@@ -1,4 +1,4 @@
-import Help from "./Help";
+import Help from './Help';
 
 interface NavBarProps {
   title: string;
@@ -7,14 +7,14 @@ interface NavBarProps {
   showHelp?: boolean;
 }
 
-const NavBar = ({ onHelp, showHelp, title }: NavBarProps) => (
-  <div className="nav-bar">
-    <div className="title drop">🌍 {title}</div>
-    <div className="help-icon noselect" onClick={onHelp}>
-      ❔
+export default function NavBar({ onHelp, showHelp, title }: NavBarProps) {
+  return (
+    <div className="nav-bar">
+      <div className="title drop">🌍 {title}</div>
+      <div className="help-icon noselect" onClick={onHelp}>
+        ❔
+      </div>
+      {showHelp && <Help />}
     </div>
-    {showHelp && <Help />}
-  </div>
-);
-
-export default NavBar;
+  );
+}

@@ -1,5 +1,6 @@
 import { Feature, FeatureCollection } from 'geojson';
 import { Layout } from 'mapbox-gl';
+import { Toast } from 'react-hot-toast';
 
 export interface GithubFileInfoType {
   name: string;
@@ -53,4 +54,23 @@ export interface CountryData {
 export interface BordersEndpointData {
   data: CountryData;
   places: FeatureCollection;
+}
+
+export interface ToastMessage {
+  message: JSX.Element | string;
+  opts?:
+    | Partial<
+        Pick<
+          Toast,
+          | 'id'
+          | 'style'
+          | 'className'
+          | 'icon'
+          | 'duration'
+          | 'ariaProps'
+          | 'position'
+          | 'iconTheme'
+        >
+      >
+    | undefined;
 }
