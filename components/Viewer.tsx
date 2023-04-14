@@ -12,6 +12,7 @@ import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
+import { toastMessages } from '../config/toasts';
 
 ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR as string);
 
@@ -75,23 +76,9 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   }, []);
 
   useEffect(() => {
-    toast(
-      (t) => (
-        <span>
-          Territories subject to another will now show the same color!
-        </span>
-      ),
-      { icon: '🚀', duration: 5000, position: 'bottom-right' },
-    );
-    toast(
-      (t) => (
-        <span>
-          If you enjoy using Historic Boarders please share it with your
-          friends!
-        </span>
-      ),
-      { icon: '❤️', duration: 3000, position: 'bottom-right' },
-    );
+    toastMessages.forEach(({ message, opts }) => {
+      toast(message, opts);
+    });
   }, []);
 
   if (!(years && user && id && config))
