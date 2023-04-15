@@ -11,6 +11,11 @@ import polylabel from 'polylabel';
 import stc from 'string-to-color';
 import PolygonArea from '@turf/area';
 import { CountryData } from '../../../util/types';
+import {
+  stringToBrightHexColor,
+  stringToVibrantHexColor,
+  stringToVibrantHexColor2,
+} from '../../../util/stringToColor';
 
 const handler: NextApiHandler = async (req, res) => {
   const { slug } = req.query;
@@ -72,7 +77,7 @@ const processData = (data: FeatureCollection) => {
     .map((feature) => {
       const name = feature.properties?.NAME ?? 'unclaimed';
       const { NAME, SUBJECTO } = feature.properties as Record<string, string>;
-      const color = stc(SUBJECTO ?? NAME);
+      const color = stringToVibrantHexColor(`${SUBJECTO ?? NAME}`);
       const labels = (feature.geometry as MultiPolygon).coordinates
         .map((x, i) => {
           const polyFeat = {
