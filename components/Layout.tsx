@@ -12,7 +12,7 @@ type Props = {
 export default function Layout({
   children,
   title = 'History Borders',
-  description = 'Visualize country borders from different times in history (2000 BC-1994)',
+  description = 'Visualize country borders from different times in history (123,000 BC - 1994)',
   url = 'https://historicborders.app',
 }: Props) {
   return (

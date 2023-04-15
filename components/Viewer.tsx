@@ -4,7 +4,7 @@ import { convertYearString, mapBCFormat, mod } from '../util/constants';
 import Footer from '../components/Footer';
 import Timeline from '../components/Timeline';
 import ReactTooltip from 'react-tooltip';
-import useKeyPress from '../hooks/useKeyPress';
+// import useKeyPress from '../hooks/useKeyPress';
 import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -20,8 +20,8 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   const [hide, setHide] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  const aPress = useKeyPress('a');
-  const dPress = useKeyPress('d');
+  // const aPress = useKeyPress('a');
+  // const dPress = useKeyPress('d');
   const { query, setQuery } = useQuery();
   const [year, setYear] = useState(query?.year);
   const index = useMemo(() => {
@@ -33,39 +33,39 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (dPress) {
-      const year = years[mod(index + 1, years.length)].toString();
-      setQuery({ year });
-      setYear(year);
-      try {
-        ReactGA4.event({
-          category: 'Button Press',
-          action: 'd press',
-          label: 'year',
-        });
-      } catch (e) {
-        console.error(`ga error: ${e}`);
-      }
-    }
-  }, [dPress, query]);
+  // useEffect(() => {
+  //   if (dPress) {
+  //     const year = years[mod(index + 1, years.length)].toString();
+  //     setQuery({ year });
+  //     setYear(year);
+  //     try {
+  //       ReactGA4.event({
+  //         category: 'Button Press',
+  //         action: 'd press',
+  //         label: 'year',
+  //       });
+  //     } catch (e) {
+  //       console.error(`ga error: ${e}`);
+  //     }
+  //   }
+  // }, [dPress, query]);
 
-  useEffect(() => {
-    if (aPress) {
-      const year = years[mod(index - 1, years.length)].toString();
-      setQuery({ year });
-      setYear(year);
-      try {
-        ReactGA4.event({
-          category: 'Button Press',
-          action: 'a press',
-          label: 'year',
-        });
-      } catch (e) {
-        console.error(`ga error: ${e}`);
-      }
-    }
-  }, [aPress, query]);
+  // useEffect(() => {
+  //   if (aPress) {
+  //     const year = years[mod(index - 1, years.length)].toString();
+  //     setQuery({ year });
+  //     setYear(year);
+  //     try {
+  //       ReactGA4.event({
+  //         category: 'Button Press',
+  //         action: 'a press',
+  //         label: 'year',
+  //       });
+  //     } catch (e) {
+  //       console.error(`ga error: ${e}`);
+  //     }
+  //   }
+  // }, [aPress, query]);
 
   useEffect(() => {
     ReactGA4.send({

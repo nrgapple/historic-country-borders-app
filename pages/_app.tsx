@@ -7,6 +7,8 @@ import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider } from '../hooks/useState';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
+import '@upstash/feedback/index.css';
+import FeedbackWidget from '@upstash/feedback';
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -15,6 +17,15 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryProvider>
       <StateProvider>
+        <FeedbackWidget
+          title="Hey There 👋"
+          description="Let me know how I can make this better or just give me a 😊."
+          themeColor="#6930c3"
+          textColor="white"
+          customIcon={<div style={{ fontSize: 30 }}>👋</div>}
+          type="full"
+          user="anon"
+        />
         <Component {...pageProps} />;
       </StateProvider>
     </QueryProvider>
