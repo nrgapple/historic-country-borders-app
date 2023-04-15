@@ -8,7 +8,7 @@ export function createFeedbackAPI(options: { webhook: string }) {
     if (method !== 'POST') throw new Error('Method not allowed');
 
     const username = 'HB Feedback';
-    const ratingEmote = rate === 'nice' ? '😃' : 'meh' ? '😐' : '😡';
+    const ratingEmote = rate === 'nice' ? '😃' : rate === 'meh' ? '😐' : '😡';
 
     try {
       await fetch(webhook, {
