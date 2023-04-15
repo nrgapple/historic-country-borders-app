@@ -259,11 +259,3 @@ svg {
   width: 100%;
   box-shadow: none;
 }
-
-.feedback-widget-trigger-button {
-  width: 40px !important;
-  height: 40px !important;
-  background: transparent !important;
-  bottom: 30px !important;
-  box-shadow: none !important;
-}

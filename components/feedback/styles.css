@@ -1,0 +1,147 @@
+.feedback-widget {
+  --color-primary: #1f5a68;
+  --color-text: white;
+  --input-height: 46px;
+
+  z-index: 99999;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 100vw;
+  height: 0;
+  font-size: 15px;
+  line-height: 1.4;
+
+  -webkit-text-size-adjust: 100%;
+  font-family: system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.feedback-widget * {
+  box-sizing: border-box;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  background-color: transparent;
+}
+
+.feedback-widget-trigger-button {
+  cursor: pointer;
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  bottom: 30px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 60px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.feedback-widget-modal {
+  overflow: hidden;
+  z-index: 2;
+  position: absolute;
+  bottom: calc(100% + 60px + 20px);
+  right: 0;
+  width: 300px;
+  max-width: 100%;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0 5px 40px;
+}
+
+.feedback-widget-header {
+  background-color: var(--color-primary);
+  margin: -30px -30px 30px;
+  padding: 20px 30px;
+  color: var(--color-text);
+}
+
+.feedback-widget-modal-title {
+  flex-grow: 1;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.feedback-widget-modal-title + * {
+  margin-top: 10px;
+}
+
+.feedback-widget-form {
+}
+
+.feedback-widget-form > * + * {
+  margin-top: 20px;
+}
+
+.feedback-widget-form-control {
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: normal;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  height: var(--input-height);
+  border-radius: 4px;
+  transition: 160ms;
+  border: 1px solid rgba(209, 213, 219, 1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.feedback-widget-form-control:focus {
+  outline-color: var(--color-primary);
+}
+
+textarea.feedback-widget-form-control {
+  resize: none;
+  height: auto;
+}
+
+button.feedback-widget-form-control {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  cursor: pointer;
+  border: 0;
+}
+
+button.feedback-widget-form-control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.feedback-widget-form-rate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.feedback-widget-form-rate-label {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px;
+  transition: 160ms;
+}
+
+.feedback-widget-form-rate-label.selected {
+  background-color: rgb(0 0 0 / 8%);
+}
+
+.feedback-widget-form-rate-control {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}

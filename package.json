@@ -9,6 +9,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^3.4.1",
     "@octokit/core": "^3.6.0",
     "@octokit/plugin-throttling": "^3.6.2",
     "@react-hook/window-size": "3.0.7",
@@ -16,6 +17,7 @@
     "@turf/area": "^6.3.0",
     "@upstash/feedback": "^2.0.0",
     "body-scroll-lock": "^3.1.5",
+    "classnames": "^2.3.2",
     "hex-rgba": "^1.0.2",
     "immer": "^9.0.14",
     "mapbox-gl": "^2.14.0",

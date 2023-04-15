@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export function createFeedbackAPI(options: { webhook: string }) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
     const { webhook } = options;
-    const { user, message, rate, metadata } = req.body;
+    const { user, message, rate, metadata, visitorId } = req.body;
     const method = req.method;
     if (method !== 'POST') throw new Error('Method not allowed');
 
@@ -20,6 +20,10 @@ export function createFeedbackAPI(options: { webhook: string }) {
             {
               fields: [
                 {
+                  name: 'Visitor ID',
+                  value: visitorId,
+                },
+                message && {
                   name: 'Message',
                   value: message,
                 },
@@ -27,7 +31,11 @@ export function createFeedbackAPI(options: { webhook: string }) {
                   name: 'Rating',
                   value: ratingEmote,
                 },
-              ],
+                metadata.dev && {
+                  name: 'Dev',
+                  value: true,
+                },
+              ].filter(Boolean),
             },
           ],
         }),

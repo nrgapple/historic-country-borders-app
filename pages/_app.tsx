@@ -8,7 +8,8 @@ import { StateProvider } from '../hooks/useState';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import '@upstash/feedback/index.css';
-import FeedbackWidget from '@upstash/feedback';
+import FeedbackWidget from '../components/feedback';
+import '../components/feedback/styles.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
           textColor="white"
           customIcon={<div style={{ fontSize: 30 }}>👋</div>}
           type="full"
-          user="anon"
+          metadata={process.env.NODE_ENV === 'development' ? { dev: true } : {}}
         />
         <Component {...pageProps} />;
       </StateProvider>
