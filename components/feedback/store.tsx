@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react';
 import { useFingerPrint } from '../../hooks/useFingerPrint';
 
 export type TypeRate = '' | 'bad' | 'meh' | 'nice';
+import ReactGA4 from 'react-ga4';
 
 const defaultState = {
   isModalShow: false,
@@ -11,7 +12,7 @@ const defaultState = {
   onChangeFormUser: (value: string) => {},
   formMessage: '',
   onChangeFormMessage: (value: string) => {},
-  formRate: '',
+  formRate: '' as TypeRate,
   onChangeFormRate: (value: TypeRate) => {},
 
   isSending: false,
@@ -72,6 +73,15 @@ export function FeedbackProvider({
           metadata,
         }),
       });
+
+      try {
+        ReactGA4.event({
+          category: 'Feedback',
+          action: `${formRate}`,
+        });
+      } catch (e) {
+        console.error(`ga error: ${e}`);
+      }
 
       setFormUser('');
       setFormMessage('');

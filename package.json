@@ -15,7 +15,6 @@
     "@react-hook/window-size": "3.0.7",
     "@szhsin/react-menu": "^3.0.1",
     "@turf/area": "^6.3.0",
-    "@upstash/feedback": "^2.0.0",
     "body-scroll-lock": "^3.1.5",
     "classnames": "^2.3.2",
     "hex-rgba": "^1.0.2",

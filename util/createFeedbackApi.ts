@@ -1,14 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
+interface Payload {
+  user: string;
+  message: string;
+  rate: 'nice' | 'meh' | 'bad' | '';
+  visitorId: string;
+  metadata?: {
+    dev?: boolean;
+  };
+}
+
 export function createFeedbackAPI(options: { webhook: string }) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
     const { webhook } = options;
-    const { user, message, rate, metadata, visitorId } = req.body;
+    const { user, message, rate, metadata, visitorId } = req.body as Payload;
     const method = req.method;
     if (method !== 'POST') throw new Error('Method not allowed');
 
     const username = 'HB Feedback';
-    const ratingEmote = rate === 'nice' ? '😃' : rate === 'meh' ? '😐' : '😡';
+    const ratingEmote =
+      rate === 'nice'
+        ? '😃'
+        : rate === 'meh'
+        ? '😐'
+        : rate === 'bad'
+        ? '😡'
+        : '🤷‍♂️';
 
     try {
       await fetch(webhook, {
@@ -23,6 +40,10 @@ export function createFeedbackAPI(options: { webhook: string }) {
                   name: 'Visitor ID',
                   value: visitorId,
                 },
+                user && {
+                  name: 'User',
+                  value: user,
+                },
                 message && {
                   name: 'Message',
                   value: message,
@@ -31,7 +52,7 @@ export function createFeedbackAPI(options: { webhook: string }) {
                   name: 'Rating',
                   value: ratingEmote,
                 },
-                metadata.dev && {
+                metadata?.dev && {
                   name: 'Dev',
                   value: true,
                 },

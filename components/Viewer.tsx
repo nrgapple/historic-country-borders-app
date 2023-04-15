@@ -14,8 +14,6 @@ import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
 
-ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR as string);
-
 export default function Viewer({ years, user, id, config }: DataProps) {
   const [hide, setHide] = useState(false);
   const [mounted, setMounted] = useState(false);
