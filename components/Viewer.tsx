@@ -1,6 +1,11 @@
 import MapContainer from '../components/ViewerMap';
 import React, { useEffect, useMemo, useState } from 'react';
-import { convertYearString, mapBCFormat, mod } from '../util/constants';
+import {
+  convertYearString,
+  isMobile,
+  mapBCFormat,
+  mod,
+} from '../util/constants';
 import Footer from '../components/Footer';
 import Timeline from '../components/Timeline';
 import ReactTooltip from 'react-tooltip';
@@ -13,10 +18,11 @@ import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
+import { useMounted } from '../hooks/useMounted';
 
 export default function Viewer({ years, user, id, config }: DataProps) {
   const [hide, setHide] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
 
   // const aPress = useKeyPress('a');
   // const dPress = useKeyPress('d');
@@ -26,10 +32,6 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     const i = years?.findIndex((y) => y.toString() === year) ?? -1;
     return i === -1 ? 0 : i;
   }, [years]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // useEffect(() => {
   //   if (dPress) {
@@ -170,10 +172,7 @@ Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
   const { mounted, vPos } = props;
   const hide = useAppStateValue('hide');
   const setState = useAppStateSetter();
-  const isMobile =
-    typeof window !== 'undefined'
-      ? /Mobi|Android/i.test(navigator.userAgent)
-      : false;
+
   return (
     <>
       {mounted && (
@@ -193,6 +192,7 @@ Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
         data-tip
         data-for="fullscreenTip"
         data-delay-show="300"
+        data-delay-hide="300"
         className="fullscreen"
         onClick={() => {
           setState((c) => void (c.hide = !hide));

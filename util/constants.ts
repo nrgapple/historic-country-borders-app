@@ -125,3 +125,8 @@ export const closest = (numbers: number[], target: number) =>
   numbers.reduce(function (prev, curr) {
     return Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev;
   });
+
+export const isMobile =
+  typeof window !== 'undefined'
+    ? /Mobi|Android/i.test(navigator.userAgent)
+    : false;
