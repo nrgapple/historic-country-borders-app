@@ -1,11 +1,15 @@
+import Image from 'next/image';
+
 interface FooterProps {
   dataUrl?: string;
   lastCommit?: Date;
+  discordInvite?: string;
 }
 
 export default function Footer({
   dataUrl = 'https://github.com/nrgapple/historicborders-timeline-example',
   lastCommit,
+  discordInvite,
 }: FooterProps) {
   return (
     <div className="footer">
@@ -35,6 +39,17 @@ export default function Footer({
         <div>
           <a href="https://github.com/nrgapple/historic-country-borders-app">
             ⭐️ Star this on Github!
+          </a>
+        </div>
+        <div>
+          <a href={discordInvite} className="discord-link">
+            <Image
+              src={'/discord-mark-blue.svg'}
+              alt={'discord'}
+              width="10"
+              height="10"
+            />
+            Join the Discord!
           </a>
         </div>
       </div>

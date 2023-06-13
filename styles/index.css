@@ -259,3 +259,17 @@ svg {
   width: 100%;
   box-shadow: none;
 }
+
+.error-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.discord-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}

@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
           type="full"
           metadata={process.env.NODE_ENV === 'development' ? { dev: true } : {}}
         />
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
       </StateProvider>
     </QueryProvider>
   );
