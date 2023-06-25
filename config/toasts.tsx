@@ -11,8 +11,8 @@ const share: ToastMessage = {
 
 export const toastMessages: ToastMessage[] = [
   // empty for now
-  {
-    message: 'Come join the discord in the bottom right corner!',
-    opts: { icon: '💬', duration: 3000, position: 'bottom-center' },
-  },
+  // {
+  //   message: 'Come join the discord in the bottom right corner!',
+  //   opts: { icon: '💬', duration: 3000, position: 'bottom-center' },
+  // },
 ];
