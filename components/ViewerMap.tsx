@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
 import ReactGA4 from 'react-ga4';
 import { LngLat } from 'mapbox-gl';
+import PopupInfo from './PopupInfo';
+import { CoordTuple } from '../util/types';
 
 interface MapContainerProps {
   year: string;
@@ -26,11 +28,9 @@ export default function MapContainer({
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
-  const parentRef = useRef<HTMLDivElement>(null);
-  const { refresh } = useParentSize(parentRef);
   const [selectedPlace, setSelectedPlace] = useState('');
-  const [popupPos, setPopupPos] = useState([0, 0]);
-  const wikiInfo = useWikiData(selectedPlace);
+  const [popupPos, setPopupPos] = useState<CoordTuple>([0, 0]);
+  const { info: wikiInfo, title: wikiTitle } = useWikiData(selectedPlace);
   const { query, setQuery } = useQuery();
   const centerQuery: [number, number] = useMemo(() => {
     const { lng, lat } = query;
@@ -71,7 +71,7 @@ export default function MapContainer({
   }, [zoomValue, centerValue]);
 
   return (
-    <div className="map-grid" ref={parentRef}>
+    <div className="map-grid">
       <Map
         className="map"
         // zoom={[zoomValue]}
@@ -109,24 +109,11 @@ export default function MapContainer({
         {data && (
           <>
             {selectedPlace && (
-              <Popup
-                style={{
-                  width: '250px',
-                  height: '250px',
-                }}
-                coordinates={popupPos}
-              >
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    color: 'black',
-                    overflow: 'scroll',
-                  }}
-                >
-                  {wikiInfo}
-                </div>
-              </Popup>
+              <PopupInfo
+                position={popupPos}
+                title={wikiTitle}
+                description={wikiInfo}
+              />
             )}
             <GeoJSONLayer
               data={data.borders}
@@ -137,8 +124,9 @@ export default function MapContainer({
               }}
               fillOnClick={(e: any) => {
                 const place = e.features[0]?.properties.NAME;
+                const lngLat = e.lngLat as LngLat;
                 setSelectedPlace(place);
-                setPopupPos(() => [...(Object.values(e.lngLat) as any)]);
+                setPopupPos(() => [lngLat.lng, lngLat.lat]);
                 try {
                   ReactGA4.event({
                     category: 'Country',

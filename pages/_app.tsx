@@ -15,7 +15,7 @@ ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR);
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
-    disableBodyScroll(document.querySelector('body'));
+    disableBodyScroll(document.querySelector('body') as HTMLBodyElement);
   }, []);
   return (
     <QueryProvider>

@@ -32,6 +32,8 @@ export interface Theater {
   latintoponym?: string;
 }
 
+export type CoordTuple = [lng: number, lat: number];
+
 export interface FeatureCollectionOptStyle extends FeatureCollection {
   style?: MapStyle;
 }

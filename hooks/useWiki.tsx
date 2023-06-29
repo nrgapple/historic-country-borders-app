@@ -24,5 +24,5 @@ export const useWikiData = (name: string) => {
       setData('Not Found');
     }
   }, [name]);
-  return data;
+  return { title: name, info: data };
 };

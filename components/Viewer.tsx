@@ -19,6 +19,7 @@ import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
 import { useMounted } from '../hooks/useMounted';
+import { disableBodyScroll } from 'body-scroll-lock';
 
 export default function Viewer({ years, user, id, config }: DataProps) {
   const [hide, setHide] = useState(false);
@@ -33,39 +34,13 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     return i === -1 ? 0 : i;
   }, [years]);
 
-  // useEffect(() => {
-  //   if (dPress) {
-  //     const year = years[mod(index + 1, years.length)].toString();
-  //     setQuery({ year });
-  //     setYear(year);
-  //     try {
-  //       ReactGA4.event({
-  //         category: 'Button Press',
-  //         action: 'd press',
-  //         label: 'year',
-  //       });
-  //     } catch (e) {
-  //       console.error(`ga error: ${e}`);
-  //     }
-  //   }
-  // }, [dPress, query]);
-
-  // useEffect(() => {
-  //   if (aPress) {
-  //     const year = years[mod(index - 1, years.length)].toString();
-  //     setQuery({ year });
-  //     setYear(year);
-  //     try {
-  //       ReactGA4.event({
-  //         category: 'Button Press',
-  //         action: 'a press',
-  //         label: 'year',
-  //       });
-  //     } catch (e) {
-  //       console.error(`ga error: ${e}`);
-  //     }
-  //   }
-  // }, [aPress, query]);
+  useEffect(() => {
+    disableBodyScroll(document.querySelector('body') as HTMLBodyElement, {
+      allowTouchMove: (el: HTMLElement | Element) => {
+        return false;
+      },
+    });
+  }, []);
 
   useEffect(() => {
     ReactGA4.send({

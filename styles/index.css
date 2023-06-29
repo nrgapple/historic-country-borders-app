@@ -273,3 +273,43 @@ svg {
   align-items: center;
   gap: 5px;
 }
+
+/* Popup styling */
+
+.mapboxgl-popup-tip {
+  border-top-color: #eee !important;
+}
+
+.mapboxgl-popup-content {
+  box-shadow: none !important;
+  background-color: #eee !important;
+  color: black !important;
+  border-radius: 10px !important;
+  padding: 8px !important;
+  overflow: hidden;
+}
+
+.popup-container {
+  max-height: 100%;
+  overflow: auto;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+.popup-description {
+  max-height: 300px;
+  padding: 4px;
+  font-size: 13px;
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.popup-title {
+  padding: 0px 4px;
+  font-size: 14px;
+  font-weight: 400;
+}
