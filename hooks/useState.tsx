@@ -1,6 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { Updater, useImmer } from 'use-immer';
-import { useQuery } from './useQuery';
 
 export interface State {
   hide: boolean;
