@@ -1,18 +1,31 @@
 import { useState, useEffect } from 'react';
+import wiki from 'wikijs';
 
 export const useWikiData = (name: string) => {
   const [data, setData] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async (title: string) => {
-    const resp = await fetch(
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-    );
-    if (resp.ok) {
-      const info = await resp.json();
-      const bit = info.extract;
-      return bit;
+    setIsLoading(true);
+    try {
+      const wikiResp = await wiki().find(title);
+      return wikiResp.summary();
+    } catch (err) {
+      console.error(err);
+
+      // Fallback to REST API
+      const resp = await fetch(
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
+      );
+      if (resp.ok) {
+        const info = await resp.json();
+        const bit = info.extract;
+        return bit;
+      }
+      return 'Not Found';
+    } finally {
+      setIsLoading(false);
     }
-    return 'Not Found';
   };
 
   useEffect(() => {
@@ -24,5 +37,5 @@ export const useWikiData = (name: string) => {
       setData('Not Found');
     }
   }, [name]);
-  return { title: name, info: data };
+  return { title: name, info: data, isLoading } as const;
 };

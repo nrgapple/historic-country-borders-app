@@ -6,12 +6,14 @@ interface PopupInfoProps {
   position: [lng: number, lat: number];
   title: string;
   description: string;
+  isLoading?: boolean;
 }
 
 export default function PopupInfo({
   position,
   title,
   description,
+  isLoading,
 }: PopupInfoProps) {
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
@@ -32,7 +34,9 @@ export default function PopupInfo({
     >
       <div className="popup-container">
         <div className="popup-title">{title}</div>
-        {empty ? (
+        {isLoading ? (
+          <div className="popup-description">Loading...</div>
+        ) : empty ? (
           <div className="popup-description">No Info 😔</div>
         ) : (
           <div className="popup-description">{description}</div>

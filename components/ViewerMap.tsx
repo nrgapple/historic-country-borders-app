@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { GeoJSONLayer, Popup, Image } from 'react-mapbox-gl';
+import { GeoJSONLayer, Image } from 'react-mapbox-gl';
 import MapboxGl from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import Map from '../util/ReactMapBoxGl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useParentSize } from '../hooks/useParentSize';
 import { useWikiData } from '../hooks/useWiki';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -30,7 +29,11 @@ export default function MapContainer({
   const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
   const [selectedPlace, setSelectedPlace] = useState('');
   const [popupPos, setPopupPos] = useState<CoordTuple>([0, 0]);
-  const { info: wikiInfo, title: wikiTitle } = useWikiData(selectedPlace);
+  const {
+    info: wikiInfo,
+    title: wikiTitle,
+    isLoading: wikiLoading,
+  } = useWikiData(selectedPlace);
   const { query, setQuery } = useQuery();
   const centerQuery: [number, number] = useMemo(() => {
     const { lng, lat } = query;
@@ -113,6 +116,7 @@ export default function MapContainer({
                 position={popupPos}
                 title={wikiTitle}
                 description={wikiInfo}
+                isLoading={wikiLoading}
               />
             )}
             <GeoJSONLayer

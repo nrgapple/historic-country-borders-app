@@ -33,7 +33,8 @@
     "react-use": "^17.4.0",
     "string-to-color": "2.2.2",
     "swr": "^2.1.3",
-    "use-immer": "^0.7.0"
+    "use-immer": "^0.7.0",
+    "wikijs": "^6.4.1"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.8",
