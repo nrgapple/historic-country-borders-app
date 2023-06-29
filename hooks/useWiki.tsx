@@ -8,7 +8,9 @@ export const useWikiData = (name: string) => {
   const fetchData = async (title: string) => {
     setIsLoading(true);
     try {
-      const wikiResp = await wiki().find(title);
+      const wikiResp = await wiki({
+        apiUrl: 'https://en.wikipedia.org/w/api.php',
+      }).find(title);
       return wikiResp.summary();
     } catch (err) {
       console.error(err);
