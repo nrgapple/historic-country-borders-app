@@ -12,7 +12,6 @@ export interface DataProps {
   user: string;
   id: string;
   config: ConfigType;
-  isGlobe: boolean;
 }
 
 const IndexPage = (props: DataProps) => {
@@ -51,15 +50,16 @@ const octokit = new OctokitThrottled({
 export const getServerSideProps: GetServerSideProps<DataProps> = async ({
   query,
 }) => {
-  const user = 'aourednik';
-  const id = 'historical-basemaps';
-  const isGlobe = query?.view === 'globe' ? true : false;
+  const { user: customUser, repo: customRepo } =
+    (query as { user: string; repo: string }) ?? {};
+  const user = customUser ?? 'aourednik';
+  const repo = customRepo ?? 'historical-basemaps';
   try {
     const fileResp = (await octokit.request(
-      `/repos/${user}/${id}/contents/geojson`,
+      `/repos/${user}/${repo}/contents/geojson`,
     )) as GetGithubFilesResp;
     const { data: branch } = (await octokit.request(
-      `/repos/${user}/${id}/branches/master`,
+      `/repos/${user}/${repo}/branches/master`,
     )) as GetBranchResp;
     const config: ConfigType = {
       name: 'Historic Borders',
@@ -76,9 +76,8 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
       props: {
         years,
         user: user,
-        id: id,
+        id: repo,
         config,
-        isGlobe,
       } as DataProps,
     };
   } catch (e) {
@@ -88,8 +87,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
     props: {
       years: [-500],
       user,
-      id,
-      isGlobe,
+      id: repo,
       config: {
         name: 'Error',
       },
