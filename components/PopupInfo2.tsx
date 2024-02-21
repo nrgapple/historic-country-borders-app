@@ -1,5 +1,5 @@
 import { Popup } from 'react-map-gl';
-import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+import { disableBodyScroll } from 'body-scroll-lock';
 import { useEffect, useMemo } from 'react';
 import { useWikiData } from '../hooks/useWiki';
 import { CoordTuple } from '../util/types';
@@ -23,6 +23,11 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
     [description],
   );
 
+  useEffect(() => {
+    const el = document.querySelector('.popup-description') as HTMLElement;
+    disableBodyScroll(el);
+  }, []);
+
   return (
     <>
       {place && position && (
@@ -39,11 +44,6 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
           closeOnMove={false}
           onClose={() => {
             onClose?.();
-          }}
-          onOpen={() => {
-            enableBodyScroll(
-              document.querySelector('.popup-description') as HTMLElement,
-            );
           }}
         >
           <div className="popup-title">{title}</div>
