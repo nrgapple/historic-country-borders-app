@@ -1,9 +1,8 @@
 import { Popup } from 'react-map-gl';
-import { disableBodyScroll } from 'body-scroll-lock';
+import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
 import { useEffect, useMemo } from 'react';
 import { useWikiData } from '../hooks/useWiki';
 import { CoordTuple } from '../util/types';
-import { on } from 'events';
 
 export interface Info {
   position: CoordTuple;
@@ -25,7 +24,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
 
   useEffect(() => {
     const el = document.querySelector('.popup-description') as HTMLElement;
-    disableBodyScroll(el);
+    enableBodyScroll(el);
+    return () => {
+      disableBodyScroll(el);
+    };
   }, []);
 
   return (
