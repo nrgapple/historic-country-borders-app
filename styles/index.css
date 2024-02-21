@@ -287,28 +287,36 @@ svg {
   border-radius: 10px !important;
   padding: 8px !important;
   overflow: hidden;
+  max-height: 100% !important;
 }
 
-.popup-container {
-  max-height: 100%;
-  overflow: auto;
+.mapboxgl-popup-content > div {
+  height: 100%;
+  color: black;
+  display: grid;
+  grid-template-rows: 1fr 7fr;
+}
+
+/* .popup-container {
+  height: 100%;
   color: black;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-}
+  overflow: hidden;
+} */
 
 .popup-description {
-  max-height: 300px;
   padding: 4px;
   font-size: 13px;
   height: 100%;
-  overflow: auto;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
 
 .popup-title {
+  width: 100%;
   padding: 0px 4px;
   font-size: 14px;
   font-weight: 400;
