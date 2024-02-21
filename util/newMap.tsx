@@ -6,6 +6,7 @@ export default function NewMap(props: ComponentProps<typeof Map>) {
   return (
     <Map
       {...props}
+      reuseMaps
       minZoom={1}
       maxZoom={15}
       mapboxAccessToken={

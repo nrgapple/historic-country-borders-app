@@ -4,10 +4,10 @@ import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
 import { CoordTuple } from '../util/types';
-import NewMap from '../util/newMap';
-import { Source, Layer, FullscreenControl } from 'react-map-gl';
+import { Source, Layer } from 'react-map-gl';
 import PopupInfo, { Info } from './PopupInfo2';
 import ReactGA4 from 'react-ga4';
+import NewMap from '../util/newMap';
 
 interface MapContainerProps {
   year: string;
