@@ -36,7 +36,7 @@ function FeedbackWrapper() {
       {!hide && (
         <FeedbackWidget
           title="Hey There 👋"
-          description="Let me know how I can make this better or just give me a 😊."
+          description="Let me know how I can make this better or just give me a 😊. You can also click the link in the bottom right to join the community."
           themeColor="#6930c3"
           textColor="white"
           customIcon={<div style={{ fontSize: 30 }}>👋</div>}

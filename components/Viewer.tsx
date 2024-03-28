@@ -110,7 +110,7 @@ Viewer.Footer = (props: { config: ConfigType }) => {
           lastCommit={
             config.commitDate ? new Date(config.commitDate) : undefined
           }
-          discordInvite={'https://discord.gg/bjwtZ4YKHn'}
+          discussionUrl={`https://github.com/nrgapple/historic-country-borders-app/discussions`}
         />
       )}
     </>
