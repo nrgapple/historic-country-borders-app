@@ -322,3 +322,7 @@ svg {
   font-size: 14px;
   font-weight: 400;
 }
+
+.toast-link {
+  color: #6930c3;
+}
