@@ -22,13 +22,14 @@ import { useMounted } from '../hooks/useMounted';
 import { disableBodyScroll } from 'body-scroll-lock';
 
 export default function Viewer({ years, user, id, config }: DataProps) {
-  const [hide, setHide] = useState(false);
   const mounted = useMounted();
 
   // const aPress = useKeyPress('a');
   // const dPress = useKeyPress('d');
   const { query, setQuery } = useQuery();
-  const [year, setYear] = useState(query?.year);
+  const [year, setYear] = useState(
+    query?.year ?? years[Math.floor(Math.random() * years.length)].toString(),
+  );
   const index = useMemo(() => {
     const i = years?.findIndex((y) => y.toString() === year) ?? -1;
     return i === -1 ? 0 : i;
