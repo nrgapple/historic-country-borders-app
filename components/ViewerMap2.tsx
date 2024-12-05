@@ -39,6 +39,7 @@ export default function MapContainer({
   );
   const [zoomValue, setZoomValue] = useState(zoomQuery);
   const [centerValue, setCenterValue] = useState<[number, number]>(centerQuery);
+  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     const id = 'loading';
@@ -72,6 +73,9 @@ export default function MapContainer({
           onStyleData={({ target }) => {
             target.resize();
             target.setZoom(zoomValue);
+          }}
+          onLoad={() => {
+            setMapReady(true);
           }}
           onZoomEnd={({ target }) => {
             setZoomValue(target.getZoom());
@@ -124,78 +128,85 @@ export default function MapContainer({
             info={selectedInfo}
             onClose={() => setSelectedInfo(undefined)}
           />
-          <Source id="borders" type="geojson" data={data?.borders}>
-            <Layer
-              {...{
-                id: 'borders',
-                type: 'fill',
-                paint: {
-                  'fill-color': ['get', 'COLOR'],
-                  'fill-opacity': 0.5,
-                  'fill-outline-color': '#000000',
-                },
-              }}
-            />
-          </Source>
-          <Source id="labels" type="geojson" data={data?.labels}>
-            <Layer
-              {...{
-                id: 'labels',
-                type: 'symbol',
-                layout: {
-                  'text-field': '{NAME}',
-                  'text-font': ['Lato Bold'],
-                  'text-size': {
-                    base: 1,
-                    stops: [
-                      [4, 7],
-                      [8, 18],
-                    ],
-                  },
-                  'text-padding': 3,
-                  'text-letter-spacing': 0.1,
-                  'text-max-width': 7,
-                  'text-transform': 'uppercase',
-                },
-              }}
-            />
-          </Source>
-          <Source id="places" type="geojson" data={places}>
-            <Layer
-              {...{
-                id: 'places',
-                type: 'symbol',
-                paint: {
-                  'text-color': '#3d3d3d',
-                },
-                layout: {
-                  'text-field': '{name}',
-                  'text-font': ['Lato Bold'],
-                  'text-size': {
-                    base: 1,
-                    stops: [
-                      [3, 0.02],
-                      [6, 12],
-                    ],
-                  },
-                },
-                'text-padding': 3,
-                'text-letter-spacing': 0.1,
-                'text-max-width': 7,
-                'text-transform': 'uppercase',
-                'text-offset': [0, 2],
-                'icon-allow-overlap': true,
-                'icon-image': 'circle',
-                'icon-size': {
-                  base: 1,
-                  stops: [
-                    [3, 0.02],
-                    [8, 0.8],
-                  ],
-                },
-              }}
-            />
-          </Source>
+          {/* NOTE: this is needed or you will get `Error: Style is not done loading`
+              SEE: https://github.com/visgl/react-map-gl/issues/2254#issuecomment-2043069319
+          */}
+          {mapReady && (
+            <>
+              <Source id="borders" type="geojson" data={data?.borders}>
+                <Layer
+                  {...{
+                    id: 'borders',
+                    type: 'fill',
+                    paint: {
+                      'fill-color': ['get', 'COLOR'],
+                      'fill-opacity': 0.5,
+                      'fill-outline-color': '#000000',
+                    },
+                  }}
+                />
+              </Source>
+              <Source id="labels" type="geojson" data={data?.labels}>
+                <Layer
+                  {...{
+                    id: 'labels',
+                    type: 'symbol',
+                    layout: {
+                      'text-field': '{NAME}',
+                      'text-font': ['Lato Bold'],
+                      'text-size': {
+                        base: 1,
+                        stops: [
+                          [4, 7],
+                          [8, 18],
+                        ],
+                      },
+                      'text-padding': 3,
+                      'text-letter-spacing': 0.1,
+                      'text-max-width': 7,
+                      'text-transform': 'uppercase',
+                    },
+                  }}
+                />
+              </Source>
+              <Source id="places" type="geojson" data={places}>
+                <Layer
+                  {...{
+                    id: 'places',
+                    type: 'symbol',
+                    paint: {
+                      'text-color': '#3d3d3d',
+                    },
+                    layout: {
+                      'text-field': '{name}',
+                      'text-font': ['Lato Bold'],
+                      'text-size': {
+                        base: 1,
+                        stops: [
+                          [3, 0.02],
+                          [6, 12],
+                        ],
+                      },
+                    },
+                    'text-padding': 3,
+                    'text-letter-spacing': 0.1,
+                    'text-max-width': 7,
+                    'text-transform': 'uppercase',
+                    'text-offset': [0, 2],
+                    'icon-allow-overlap': true,
+                    'icon-image': 'circle',
+                    'icon-size': {
+                      base: 1,
+                      stops: [
+                        [3, 0.02],
+                        [8, 0.8],
+                      ],
+                    },
+                  }}
+                />
+              </Source>
+            </>
+          )}
         </NewMap>
       )}
     </div>
