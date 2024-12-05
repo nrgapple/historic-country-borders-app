@@ -1,5 +1,5 @@
 import { Feature, FeatureCollection } from 'geojson';
-import { Layout } from 'mapbox-gl';
+import { FillLayerSpecification } from 'mapbox-gl';
 import { Toast } from 'react-hot-toast';
 
 export interface GithubFileInfoType {
@@ -39,7 +39,7 @@ export interface FeatureCollectionOptStyle extends FeatureCollection {
 }
 
 export interface MapStyle {
-  layout?: Layout;
+  layout?: FillLayerSpecification['layout'];
   image?: MapImage;
 }
 

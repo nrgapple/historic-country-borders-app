@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import MapboxGl from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -23,7 +23,7 @@ export default function MapContainer({
   id,
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
-  const mapRef = useRef<MapboxGl.Map | undefined>(undefined);
+  const mapRef = useRef<Map | undefined>(undefined);
   const [selectedInfo, setSelectedInfo] = useState<Info | undefined>();
   const { query, setQuery } = useQuery();
   const centerQuery: [number, number] = useMemo(() => {
