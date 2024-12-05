@@ -37,6 +37,8 @@ export const getYearFromFile = (fileName: string) =>
 
 export const githubToken = process.env.NEXT_PUBLIC_GITHUB_API;
 
+export const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
 export const multiPolygonToPolygon = (
   collection: FeatureCollection<MultiPolygon>,
 ): FeatureCollection<Polygon> => ({

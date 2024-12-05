@@ -1,5 +1,6 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import ReactMapboxGl from 'react-mapbox-gl';
+import { mapboxToken } from './constants';
 
 /**
  * Configuration values for Mapbox Component.
@@ -8,8 +9,7 @@ import ReactMapboxGl from 'react-mapbox-gl';
  */
 
 export default ReactMapboxGl({
-  accessToken:
-    'pk.eyJ1IjoibnJnYXBwbGUiLCJhIjoiY2trN2E1YnVvMGJ4OTJwbWptM25waHVmNyJ9.UxvOXdAatpV-H1AXQQ23Kg',
+  accessToken: mapboxToken,
   minZoom: 1,
   maxZoom: 15,
 });

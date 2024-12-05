@@ -1,6 +1,7 @@
 import Map from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ComponentProps } from 'react';
+import { mapboxToken } from './constants';
 
 export default function NewMap(props: ComponentProps<typeof Map>) {
   return (
@@ -9,10 +10,8 @@ export default function NewMap(props: ComponentProps<typeof Map>) {
       reuseMaps
       minZoom={1}
       maxZoom={15}
-      mapboxAccessToken={
-        'pk.eyJ1IjoibnJnYXBwbGUiLCJhIjoiY2trN2E1YnVvMGJ4OTJwbWptM25waHVmNyJ9.UxvOXdAatpV-H1AXQQ23Kg'
-      }
-      mapStyle="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
+      mapboxAccessToken={mapboxToken}
+      mapStyle="mapbox://styles/nrgapple1/cm4awphea01dn01s3ajotcscl"
     />
   );
 }

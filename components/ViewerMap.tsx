@@ -78,7 +78,7 @@ export default function MapContainer({
       <Map
         className="map"
         // zoom={[zoomValue]}
-        style="mapbox://styles/nrgapple/ckk7nff4z0jzj17pitiuejlvt"
+        style="mapbox://styles/nrgapple1/cm4avjqgr01ax01qrdvr4gp8c"
         onStyleLoad={(map: MapboxGl.Map) => {
           mapRef.current = map;
           map.resize();
