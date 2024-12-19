@@ -9,6 +9,7 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@fingerprintjs/fingerprintjs": "^3.4.1",
     "@octokit/core": "^3.6.0",
     "@octokit/plugin-throttling": "^3.6.2",
@@ -45,6 +46,7 @@
     "@types/polylabel": "^1.0.5",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "webpack": "^5.97.1"
   }
 }
