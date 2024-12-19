@@ -1,4 +1,4 @@
-import MapContainer from '../components/ViewerMap';
+import MapContainer from './MapContainer';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   convertYearString,

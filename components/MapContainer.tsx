@@ -70,6 +70,10 @@ export default function MapContainer({
     });
   }, [zoomValue, centerValue]);
 
+  useEffect(() => {
+    setSelectedInfo(undefined);
+  }, [data]);
+
   const handleStyleData = useCallback(
     ({ target }) => {
       target.resize();
