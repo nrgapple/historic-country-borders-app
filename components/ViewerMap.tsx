@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
 import { CoordTuple } from '../util/types';
 import { Source, Layer } from 'react-map-gl';
-import PopupInfo, { Info } from './PopupInfo2';
+import PopupInfo, { Info } from './PopupInfo';
 import ReactGA4 from 'react-ga4';
 import NewMap from '../util/newMap';
 
