@@ -1,13 +1,20 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { Map } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
-import { CoordTuple } from '../util/types';
+import { CoordTuple, BordersEndpointData } from '../util/types';
 import { Source, Layer } from 'react-map-gl';
 import PopupInfo, { Info } from './PopupInfo';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
+import MapSources from './MapSources';
 
 interface MapContainerProps {
   year: string;
@@ -63,150 +70,100 @@ export default function MapContainer({
     });
   }, [zoomValue, centerValue]);
 
-  return (
-    <div className="map-grid">
-      {data && (
-        <MapboxDefaultMap
-          interactiveLayerIds={['borders']}
-          onStyleData={({ target }) => {
-            target.resize();
-            target.setZoom(zoomValue);
-          }}
-          onLoad={() => {
-            setMapReady(true);
-          }}
-          onZoomEnd={({ target }) => {
-            setZoomValue(target.getZoom());
-          }}
-          onClick={({ originalEvent, features, lngLat }) => {
-            if (!features?.length) {
-              setSelectedInfo(undefined);
-              return;
-            }
-            const feature = features[0];
-            const place = feature.properties?.NAME;
-            originalEvent.stopPropagation();
-            setSelectedInfo(() => ({
-              place,
-              position: lngLat.toArray() as CoordTuple,
-            }));
-            try {
-              ReactGA4.event({
-                category: 'Country',
-                action: `${place ? `clicked ${place}` : 'clicked unknown'}`,
-                label: 'place',
-              });
-            } catch (e) {
-              console.error(`ga error: ${e}`);
-            }
-          }}
-          initialViewState={{
-            latitude: centerValue[1],
-            longitude: centerValue[0],
-            zoom: zoomValue,
-          }}
-          onMoveEnd={({ target }) => {
-            const lngLat = target.getCenter().toArray();
-            const [lng, lat] = lngLat;
-            setCenterValue([lng, lat]);
-            try {
-              ReactGA4.event({
-                category: 'Move',
-                action: `${
-                  lngLat ? `moved to ${lngLat.toString()}` : 'moved to unknown'
-                }`,
-                label: 'location',
-              });
-            } catch (e) {
-              console.error(`ga error: ${e}`);
-            }
-          }}
-        >
-          <PopupInfo
-            info={selectedInfo}
-            onClose={() => setSelectedInfo(undefined)}
-          />
-          {/* NOTE: this is needed or you will get `Error: Style is not done loading`
-              SEE: https://github.com/visgl/react-map-gl/issues/2254#issuecomment-2043069319
-          */}
-          {mapReady && (
-            <>
-              <Source id="borders" type="geojson" data={data?.borders}>
-                <Layer
-                  {...{
-                    id: 'borders',
-                    type: 'fill',
-                    paint: {
-                      'fill-color': ['get', 'COLOR'],
-                      'fill-opacity': 0.5,
-                      'fill-outline-color': '#000000',
-                    },
-                  }}
-                />
-              </Source>
-              <Source id="labels" type="geojson" data={data?.labels}>
-                <Layer
-                  {...{
-                    id: 'labels',
-                    type: 'symbol',
-                    layout: {
-                      'text-field': '{NAME}',
-                      'text-font': ['Lato Bold'],
-                      'text-size': {
-                        base: 1,
-                        stops: [
-                          [4, 7],
-                          [8, 18],
-                        ],
-                      },
-                      'text-padding': 3,
-                      'text-letter-spacing': 0.1,
-                      'text-max-width': 7,
-                      'text-transform': 'uppercase',
-                    },
-                  }}
-                />
-              </Source>
-              <Source id="places" type="geojson" data={places}>
-                <Layer
-                  {...{
-                    id: 'places',
-                    type: 'symbol',
-                    paint: {
-                      'text-color': '#3d3d3d',
-                    },
-                    layout: {
-                      'text-field': '{name}',
-                      'text-font': ['Lato Bold'],
-                      'text-size': {
-                        base: 1,
-                        stops: [
-                          [3, 0.02],
-                          [6, 12],
-                        ],
-                      },
-                    },
-                    'text-padding': 3,
-                    'text-letter-spacing': 0.1,
-                    'text-max-width': 7,
-                    'text-transform': 'uppercase',
-                    'text-offset': [0, 2],
-                    'icon-allow-overlap': true,
-                    'icon-image': 'circle',
-                    'icon-size': {
-                      base: 1,
-                      stops: [
-                        [3, 0.02],
-                        [8, 0.8],
-                      ],
-                    },
-                  }}
-                />
-              </Source>
-            </>
-          )}
-        </MapboxDefaultMap>
-      )}
-    </div>
+  const handleStyleData = useCallback(
+    ({ target }) => {
+      target.resize();
+      target.setZoom(zoomValue);
+    },
+    [zoomValue],
   );
+
+  const handleLoad = useCallback(() => {
+    setMapReady(true);
+  }, []);
+
+  const handleZoomEnd = useCallback(({ target }) => {
+    setZoomValue(target.getZoom());
+  }, []);
+
+  const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
+    if (!features?.length) {
+      setSelectedInfo(undefined);
+      return;
+    }
+    const feature = features[0];
+    const place = feature.properties?.NAME;
+    originalEvent.stopPropagation();
+    setSelectedInfo(() => ({
+      place,
+      position: lngLat.toArray() as CoordTuple,
+    }));
+    try {
+      ReactGA4.event({
+        category: 'Country',
+        action: `${place ? `clicked ${place}` : 'clicked unknown'}`,
+        label: 'place',
+      });
+    } catch (e) {
+      console.error(`ga error: ${e}`);
+    }
+  }, []);
+
+  const handleMoveEnd = useCallback(({ target }) => {
+    const lngLat = target.getCenter().toArray();
+    const [lng, lat] = lngLat;
+    setCenterValue([lng, lat]);
+    try {
+      ReactGA4.event({
+        category: 'Move',
+        action: `${
+          lngLat ? `moved to ${lngLat.toString()}` : 'moved to unknown'
+        }`,
+        label: 'location',
+      });
+    } catch (e) {
+      console.error(`ga error: ${e}`);
+    }
+  }, []);
+
+  const mapComponent = useMemo(
+    () => (
+      <MapboxDefaultMap
+        interactiveLayerIds={['borders']}
+        onStyleData={handleStyleData}
+        onLoad={handleLoad}
+        onZoomEnd={handleZoomEnd}
+        onClick={handleClick}
+        initialViewState={{
+          latitude: centerValue[1],
+          longitude: centerValue[0],
+          zoom: zoomValue,
+        }}
+        onMoveEnd={handleMoveEnd}
+      >
+        <PopupInfo
+          info={selectedInfo}
+          onClose={() => setSelectedInfo(undefined)}
+        />
+        {mapReady && places && data && (
+          <MapSources data={data} places={places} />
+        )}
+      </MapboxDefaultMap>
+    ),
+    [
+      handleStyleData,
+      handleLoad,
+      handleZoomEnd,
+      handleClick,
+      handleMoveEnd,
+      centerValue,
+      zoomValue,
+      selectedInfo,
+      mapReady,
+      data,
+      places,
+    ],
+  );
+
+  return <div className="map-grid">{mapComponent}</div>;
 }
