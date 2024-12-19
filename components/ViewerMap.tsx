@@ -7,7 +7,7 @@ import { CoordTuple } from '../util/types';
 import { Source, Layer } from 'react-map-gl';
 import PopupInfo, { Info } from './PopupInfo';
 import ReactGA4 from 'react-ga4';
-import NewMap from '../util/newMap';
+import MapboxDefaultMap from '../util/MapboxDefaultMap';
 
 interface MapContainerProps {
   year: string;
@@ -48,13 +48,11 @@ export default function MapContainer({
     } else {
       toast.dismiss(id);
     }
-  }, [isLoading]);
 
-  useEffect(() => {
     if (mapRef.current) {
       mapRef.current.resize();
     }
-  }, [fullscreen]);
+  }, [isLoading, fullscreen]);
 
   useEffect(() => {
     const [lng, lat] = centerValue;
@@ -68,7 +66,7 @@ export default function MapContainer({
   return (
     <div className="map-grid">
       {data && (
-        <NewMap
+        <MapboxDefaultMap
           interactiveLayerIds={['borders']}
           onStyleData={({ target }) => {
             target.resize();
@@ -207,7 +205,7 @@ export default function MapContainer({
               </Source>
             </>
           )}
-        </NewMap>
+        </MapboxDefaultMap>
       )}
     </div>
   );
