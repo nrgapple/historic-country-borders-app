@@ -10,6 +10,7 @@ import '@szhsin/react-menu/dist/transitions/slide.css';
 import FeedbackWidget from '../components/feedback';
 import '../components/feedback/styles.css';
 import ReactGA4 from 'react-ga4';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR);
 
@@ -22,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <StateProvider>
         <FeedbackWrapper />
         <Component {...pageProps} />
+        <SpeedInsights />
       </StateProvider>
     </QueryProvider>
   );

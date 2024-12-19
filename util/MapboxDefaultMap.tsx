@@ -3,7 +3,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { ComponentProps } from 'react';
 import { mapboxToken } from './constants';
 
-export default function NewMap(props: ComponentProps<typeof Map>) {
+export default function MapboxDefaultMap(props: ComponentProps<typeof Map>) {
   return (
     <Map
       {...props}

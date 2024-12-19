@@ -19,12 +19,10 @@ export default function Layout({
     <>
       <Head>
         <title>{title}</title>
-        {/* <link rel="manifest" href="/manifest.json" /> */}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
-        {/* <link rel="apple-touch-icon" sizes="192x192" href="/logo-bg-192.png" /> */}
         <meta name="theme-color" content="#6930c3" />
         <meta property="og:title" content={title} key="og-title" />
         <meta property="og:type" content="article" />
@@ -33,11 +31,6 @@ export default function Layout({
           content={description}
           key="og-description"
         />
-        {/* <meta
-              property="og:image"
-              content={image ?? defaultImage}
-              key="og-image"
-            /> */}
         <meta property="og:url" content={url} key="og-url" />
         <meta
           name="title"
@@ -45,7 +38,6 @@ export default function Layout({
           key="title"
         />
         <meta name="description" content={description} key="description" />
-        {/* <meta name="image" content={image ?? defaultImage} key="image" /> */}
         <meta name="url" content={url} key="url" />
         <meta name="twitter:card" content="summary" />
         <meta property="twitter:title" content={title} key="twitter-title" />
@@ -54,11 +46,6 @@ export default function Layout({
           content={description}
           key="twitter-description"
         />
-        {/* <meta
-              property="twitter:image:src"
-              content={image ?? defaultImage}
-              key="twitter-image"
-            /> */}
         <meta
           property="twitter:site"
           content="Historic Borders"
@@ -73,6 +60,65 @@ export default function Layout({
           property="twitter:image:width"
           content="1200"
           key="twitter-width"
+        />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
+        <link rel="apple-touch-icon" href="/icons/ios/57.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="152x152"
+          href="/icons/ios/152.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/icons/ios/180.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="167x167"
+          href="/icons/ios/167.png"
+        />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="twitter:url" content="https://historicborders.app" />
+        <meta name="twitter:image" content="/icons/twitter.png" />
+        <meta name="twitter:creator" content="@DavidWShadow" />
+        <meta property="og:site_name" content="HistoricBorders" />
+        <meta property="og:image" content="/icons/og.png" />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_2048.png"
+          sizes="2048x2732"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_1668.png"
+          sizes="1668x2224"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_1536.png"
+          sizes="1536x2048"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_1125.png"
+          sizes="1125x2436"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_1242.png"
+          sizes="1242x2208"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_750.png"
+          sizes="750x1334"
+        />
+        <link
+          rel="apple-touch-startup-image"
+          href="/images/apple_splash_640.png"
+          sizes="640x1136"
         />
       </Head>
       {children}

@@ -1,4 +1,4 @@
-import MapContainer from '../components/ViewerMap';
+import MapContainer from './MapContainer';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   convertYearString,
@@ -49,7 +49,7 @@ export default function Viewer({ years, user, id, config }: DataProps) {
       page: `${query?.year ? `/?year=${query?.year}` : '/'}`,
       title: `${query?.year ? `Year ${query?.year}` : 'Home'}`,
     });
-  }, []);
+  }, [query?.year]);
 
   useEffect(() => {
     toastMessages.forEach(({ message, opts }) => {
@@ -70,6 +70,11 @@ export default function Viewer({ years, user, id, config }: DataProps) {
           onChange={(y) => {
             setQuery({ year: y });
             setYear(y);
+            ReactGA4.event({
+              category: 'Timeline',
+              action: 'Year Changed',
+              label: `Year ${y}`,
+            });
           }}
         />
         <Viewer.Map
@@ -77,6 +82,13 @@ export default function Viewer({ years, user, id, config }: DataProps) {
           id={id}
           config={config}
           year={convertYearString(mapBCFormat, years[index])}
+          onInteraction={() => {
+            ReactGA4.event({
+              category: 'Map',
+              action: 'Interaction',
+              label: `Year ${years[index]}`,
+            });
+          }}
         />
       </Layout>
       <Toaster />
@@ -89,11 +101,12 @@ Viewer.Map = (props: {
   id: string;
   config: ConfigType;
   year: string;
+  onInteraction: () => void;
 }) => {
   const hide = useAppStateValue('hide');
-  const { config, user, id, year } = props;
+  const { config, user, id, year, onInteraction } = props;
   return (
-    <div className={`${hide ? 'app-large' : 'app'}`}>
+    <div className={`${hide ? 'app-large' : 'app'}`} onClick={onInteraction}>
       <MapContainer year={year} fullscreen={hide} user={user} id={id} />
       <Viewer.Footer config={config} />
     </div>
@@ -173,15 +186,11 @@ Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
         className="fullscreen"
         onClick={() => {
           setState((c) => void (c.hide = !hide));
-          try {
-            ReactGA4.event({
-              category: 'UI',
-              action: `${hide ? `clicked fullscreen` : 'off fullscreen'}`,
-              label: 'fullscreen',
-            });
-          } catch (e) {
-            console.error(`ga error: ${e}`);
-          }
+          ReactGA4.event({
+            category: 'UI',
+            action: `${hide ? `clicked fullscreen` : 'off fullscreen'}`,
+            label: 'fullscreen',
+          });
         }}
         style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
       >
