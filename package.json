@@ -17,6 +17,7 @@
     "@szhsin/react-menu": "^3.0.1",
     "@turf/area": "^6.3.0",
     "@types/body-scroll-lock": "^3.1.0",
+    "@vercel/speed-insights": "^1.1.0",
     "body-scroll-lock": "^3.1.5",
     "classnames": "^2.3.2",
     "hex-rgba": "^1.0.2",
