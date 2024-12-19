@@ -84,10 +84,23 @@ export default function MapContainer({
 
   const handleLoad = useCallback(() => {
     setMapReady(true);
+    ReactGA4.event({
+      category: 'Map',
+      action: 'load',
+      label: 'map loaded',
+      value: 1,
+    });
   }, []);
 
   const handleZoomEnd = useCallback(({ target }) => {
-    setZoomValue(target.getZoom());
+    const zoom = target.getZoom();
+    setZoomValue(zoom);
+    ReactGA4.event({
+      category: 'Map',
+      action: 'zoom',
+      label: `zoomed to ${zoom}`,
+      value: 1,
+    });
   }, []);
 
   const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
@@ -102,32 +115,24 @@ export default function MapContainer({
       place,
       position: lngLat.toArray() as CoordTuple,
     }));
-    try {
-      ReactGA4.event({
-        category: 'Country',
-        action: `${place ? `clicked ${place}` : 'clicked unknown'}`,
-        label: 'place',
-      });
-    } catch (e) {
-      console.error(`ga error: ${e}`);
-    }
+    ReactGA4.event({
+      category: 'Country',
+      action: 'click',
+      label: place || 'unknown',
+      value: 1,
+    });
   }, []);
 
   const handleMoveEnd = useCallback(({ target }) => {
     const lngLat = target.getCenter().toArray();
     const [lng, lat] = lngLat;
     setCenterValue([lng, lat]);
-    try {
-      ReactGA4.event({
-        category: 'Move',
-        action: `${
-          lngLat ? `moved to ${lngLat.toString()}` : 'moved to unknown'
-        }`,
-        label: 'location',
-      });
-    } catch (e) {
-      console.error(`ga error: ${e}`);
-    }
+    ReactGA4.event({
+      category: 'Map',
+      action: 'move',
+      label: `moved to ${lngLat.toString()}`,
+      value: 1,
+    });
   }, []);
 
   const mapComponent = useMemo(
