@@ -1,6 +1,22 @@
 import { FeatureCollection, MultiPolygon, Polygon, Feature } from 'geojson';
 import { Theater } from './types';
 
+export const MILESTONES = [
+  { points: 100, adFreeMinutes: 5 },
+  { points: 200, adFreeMinutes: 20 },
+  { points: 500, adFreeMinutes: 60 },
+];
+
+export const POINT_WEIGHTS = {
+  dateClick: 10,
+  zoomEnd: 5,
+  mapMove: 3,
+  countryClick: 15,
+};
+
+export const ENV_KEY = process.env.REACT_APP_STORAGE_KEY || 'default_key';
+export const DEBUG_MODE = process.env.REACT_APP_DEBUG_ADS === 'true';
+
 export const dates = [
   -2000, -1000, -500, -323, -200, -1, 400, 600, 800, 1000, 1279, 1492, 1530,
   1650, 1715, 1783, 1815, 1880, 1914, 1920, 1938, 1945, 1994,

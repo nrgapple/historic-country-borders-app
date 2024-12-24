@@ -11,6 +11,14 @@ import FeedbackWidget from '../components/feedback';
 import '../components/feedback/styles.css';
 import ReactGA4 from 'react-ga4';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { AdManagerProvider } from '../hooks/AdManagerContext';
+import {
+  DEBUG_MODE,
+  ENV_KEY,
+  MILESTONES,
+  POINT_WEIGHTS,
+} from '../util/constants';
+import { GoogleAdContainer } from '../components/GoogleAdContainer';
 
 ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR);
 
@@ -21,9 +29,18 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryProvider>
       <StateProvider>
-        <FeedbackWrapper />
-        <Component {...pageProps} />
-        <SpeedInsights />
+        <AdManagerProvider
+          milestones={MILESTONES}
+          pointWeights={POINT_WEIGHTS}
+          storageKey="user_ad_milestones"
+          envKey={ENV_KEY}
+          debugMode={DEBUG_MODE}
+        >
+          <FeedbackWrapper />
+          <Component {...pageProps} />
+          <SpeedInsights />
+          <GoogleAdContainer />
+        </AdManagerProvider>
       </StateProvider>
     </QueryProvider>
   );
