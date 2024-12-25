@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Map } from 'mapbox-gl';
+import { Map, StyleSpecification } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -14,6 +14,8 @@ import PopupInfo, { Info } from './PopupInfo';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
+import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
+import { sources } from '@fingerprintjs/fingerprintjs';
 
 interface MapContainerProps {
   year: string;
@@ -46,6 +48,7 @@ export default function MapContainer({
   const [zoomValue, setZoomValue] = useState(zoomQuery);
   const [centerValue, setCenterValue] = useState<[number, number]>(centerQuery);
   const [mapReady, setMapReady] = useState(false);
+  const [hasSetStyle, setHasSetStyle] = useState(false);
 
   useEffect(() => {
     const id = 'loading';
@@ -53,10 +56,6 @@ export default function MapContainer({
       toast.loading('Loading Borders...', { id, position: 'bottom-right' });
     } else {
       toast.dismiss(id);
-    }
-
-    if (mapRef.current) {
-      mapRef.current.resize();
     }
   }, [isLoading, fullscreen]);
 
@@ -74,21 +73,55 @@ export default function MapContainer({
   }, [data]);
 
   const handleStyleData = useCallback(
-    ({ target }) => {
+    ({ target }: MapStyleDataEvent) => {
       target.resize();
       target.setZoom(zoomValue);
     },
-    [zoomValue],
+    [zoomValue, hasSetStyle],
   );
 
-  const handleLoad = useCallback(() => {
+  const handleLoad = useCallback(({ target }: MapboxEvent) => {
     setMapReady(true);
+    target.resize();
     ReactGA4.event({
       category: 'Map',
       action: 'load',
       label: 'map loaded',
       value: 1,
     });
+    if (hasSetStyle) {
+      return;
+    }
+    if (!target.isStyleLoaded) {
+      return;
+    }
+    const style = target.getStyle();
+    if (!style) {
+      console.error('No style found');
+      return;
+    }
+
+    // this removes the current borders of countries.
+    const filterDefaultBorderLayers = (l: any) => !l.id.includes('admin');
+    setHasSetStyle(true);
+    const newStyle = {
+      ...style,
+      imports: [
+        {
+          //@ts-ignore
+          ...style.imports[0],
+          data: {
+            //@ts-ignore
+            ...style.imports[0].data,
+            //@ts-ignore
+            layers: style.imports[0].data.layers.filter(
+              filterDefaultBorderLayers,
+            ),
+          },
+        },
+      ],
+    };
+    target.setStyle(newStyle);
   }, []);
 
   const handleZoomEnd = useCallback(({ target }) => {
