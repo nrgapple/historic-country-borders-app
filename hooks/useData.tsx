@@ -17,7 +17,9 @@ const fetcher: Fetcher<BordersEndpointData, FetcherProps> = ({
     .catch((e) => e);
 
 export const useData = (year: string, user: string, id: string) => {
-  const { data, error } = useSWR({ year, user, id }, fetcher);
+  const { data, error } = useSWR({ year, user, id }, fetcher, {
+    dedupingInterval: 60000, // 1 minute TTL
+  });
 
   return {
     data,

@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Map, StyleSpecification } from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -15,7 +15,6 @@ import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
 import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
-import { sources } from '@fingerprintjs/fingerprintjs';
 
 interface MapContainerProps {
   year: string;
@@ -31,7 +30,6 @@ export default function MapContainer({
   id,
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
-  const mapRef = useRef<Map | undefined>(undefined);
   const [selectedInfo, setSelectedInfo] = useState<Info | undefined>();
   const { query, setQuery } = useQuery();
   const centerQuery: [number, number] = useMemo(() => {
