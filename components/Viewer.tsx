@@ -197,7 +197,6 @@ Viewer.Timeline = (props: {
         <>
           <div className="timeline-container">
             <Timeline
-              globe={false}
               index={props.index}
               onChange={(v) => {
                 const year = props.years[v].toString();

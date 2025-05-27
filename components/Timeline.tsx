@@ -6,14 +6,12 @@ interface TimelineProps {
   index: number;
   onChange: (value: number) => void;
   years: number[];
-  globe?: boolean;
 }
 
 export default function Timeline({
   index,
   onChange,
   years,
-  globe,
 }: TimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeItemRef = useRef<HTMLButtonElement>(null);
@@ -62,10 +60,8 @@ export default function Timeline({
     }
   }, [index, years.length, onChange]);
 
-
-
-  const primaryColor = !globe ? '#6930c3' : '#64dfdf';
-  const secondaryColor = !globe ? '#64dfdf' : '#6930c3';
+  const primaryColor = '#6930c3';
+  const secondaryColor = '#64dfdf';
 
   return (
     <div className="timeline-discrete">
