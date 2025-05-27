@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Map, StyleSpecification } from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -15,7 +15,6 @@ import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
 import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
-import { sources } from '@fingerprintjs/fingerprintjs';
 
 interface MapContainerProps {
   year: string;
@@ -127,12 +126,6 @@ export default function MapContainer({
   const handleZoomEnd = useCallback(({ target }) => {
     const zoom = target.getZoom();
     setZoomValue(zoom);
-    ReactGA4.event({
-      category: 'Map',
-      action: 'zoom',
-      label: `zoomed to ${zoom}`,
-      value: 1,
-    });
   }, []);
 
   const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
@@ -159,12 +152,6 @@ export default function MapContainer({
     const lngLat = target.getCenter().toArray();
     const [lng, lat] = lngLat;
     setCenterValue([lng, lat]);
-    ReactGA4.event({
-      category: 'Map',
-      action: 'move',
-      label: `moved to ${lngLat.toString()}`,
-      value: 1,
-    });
   }, []);
 
   const mapComponent = useMemo(
