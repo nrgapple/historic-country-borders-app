@@ -82,7 +82,7 @@ export default function Timeline({
           }}
           aria-label="Previous year"
         >
-          ◀
+          <span className="timeline-nav-arrow">‹</span>
         </button>
 
         {/* Scrollable Years Container */}
@@ -127,7 +127,7 @@ export default function Timeline({
           }}
           aria-label="Next year"
         >
-          ▶
+          <span className="timeline-nav-arrow">›</span>
         </button>
 
 
