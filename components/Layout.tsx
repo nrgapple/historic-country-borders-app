@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import Link from 'next/link';
 import Head from 'next/head';
 
 type Props = {
@@ -34,7 +33,7 @@ export default function Layout({
         <meta property="og:url" content={url} key="og-url" />
         <meta
           name="title"
-          content={title ?? 'Progressive App Store'}
+          content={title ?? 'Historic Borders'}
           key="title"
         />
         <meta name="description" content={description} key="description" />
@@ -61,65 +60,8 @@ export default function Layout({
           content="1200"
           key="twitter-width"
         />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
-        <link rel="apple-touch-icon" href="/icons/ios/57.png" />
-        <link
-          rel="apple-touch-icon"
-          sizes="152x152"
-          href="/icons/ios/152.png"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/ios/180.png"
-        />
-        <link
-          rel="apple-touch-icon"
-          sizes="167x167"
-          href="/icons/ios/167.png"
-        />
-        <link rel="manifest" href="/manifest.json" />
         <meta name="twitter:url" content="https://historicborders.app" />
-        <meta name="twitter:image" content="/icons/twitter.png" />
-        <meta name="twitter:creator" content="@DavidWShadow" />
         <meta property="og:site_name" content="HistoricBorders" />
-        <meta property="og:image" content="/icons/og.png" />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_2048.png"
-          sizes="2048x2732"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_1668.png"
-          sizes="1668x2224"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_1536.png"
-          sizes="1536x2048"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_1125.png"
-          sizes="1125x2436"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_1242.png"
-          sizes="1242x2208"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_750.png"
-          sizes="750x1334"
-        />
-        <link
-          rel="apple-touch-startup-image"
-          href="/images/apple_splash_640.png"
-          sizes="640x1136"
-        />
       </Head>
       {children}
     </>
