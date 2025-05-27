@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
+import React from 'react'
+
+// Make React available globally for JSX
+global.React = React
 
 // Mock Mapbox GL JS
 Object.defineProperty(window, 'matchMedia', {
