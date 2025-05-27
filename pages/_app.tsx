@@ -7,8 +7,7 @@ import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
-import FeedbackWidget from '../components/feedback';
-import '../components/feedback/styles.css';
+import CompactFeedbackWidget from '../components/CompactFeedbackWidget';
 import ReactGA4 from 'react-ga4';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -36,14 +35,11 @@ function FeedbackWrapper() {
   return (
     <>
       {!hide && (
-        <FeedbackWidget
+        <CompactFeedbackWidget
           title="Hey There 👋"
           description="Let me know how I can make this better or just give me a 😊. (Map data is not mine. Please create an issue from the github link in the bottom right to help them fix any issues.)"
           themeColor="#6930c3"
           textColor="white"
-          customIcon={<div style={{ fontSize: 30 }}>👋</div>}
-          type="full"
-          metadata={process.env.NODE_ENV === 'development' ? { dev: true } : {}}
         />
       )}
     </>

@@ -62,6 +62,8 @@ export default function Timeline({
     }
   }, [index, years.length, onChange]);
 
+
+
   const primaryColor = !globe ? '#6930c3' : '#64dfdf';
   const secondaryColor = !globe ? '#64dfdf' : '#6930c3';
 
@@ -127,6 +129,8 @@ export default function Timeline({
         >
           ▶
         </button>
+
+
       </div>
 
       {/* Current Year Display */}

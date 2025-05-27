@@ -8,6 +8,7 @@ import {
 } from '../util/constants';
 import Footer from '../components/Footer';
 import Timeline from '../components/Timeline';
+import PersistentUIToggle from '../components/PersistentUIToggle';
 import ReactTooltip from 'react-tooltip';
 // import useKeyPress from '../hooks/useKeyPress';
 import Layout from '../components/Layout';
@@ -23,6 +24,8 @@ import { disableBodyScroll } from 'body-scroll-lock';
 
 export default function Viewer({ years, user, id, config }: DataProps) {
   const mounted = useMounted();
+  const hide = useAppStateValue('hide');
+  const setState = useAppStateSetter();
 
   // const aPress = useKeyPress('a');
   // const dPress = useKeyPress('d');
@@ -34,6 +37,10 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     const i = years?.findIndex((y) => y.toString() === year) ?? -1;
     return i === -1 ? 0 : i;
   }, [years, year]);
+
+  const handleToggleUI = () => {
+    setState((c) => void (c.hide = !hide));
+  };
 
   useEffect(() => {
     disableBodyScroll(document.querySelector('body') as HTMLBodyElement, {
@@ -63,7 +70,6 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   return (
     <>
       <Layout title={config.name} url={`https://historyborders.app`}>
-        <Viewer.MenuItem mounted={mounted} vPos={95} />
         <Viewer.Timeline
           index={index}
           years={years}
@@ -91,6 +97,10 @@ export default function Viewer({ years, user, id, config }: DataProps) {
           }}
         />
       </Layout>
+      <PersistentUIToggle 
+        isUIHidden={hide}
+        onToggle={handleToggleUI}
+      />
       <Toaster />
     </>
   );
@@ -116,6 +126,7 @@ Viewer.Map = (props: {
 Viewer.Footer = (props: { config: ConfigType }) => {
   const hide = useAppStateValue('hide');
   const { config } = props;
+
   return (
     <>
       {!hide && (
@@ -158,44 +169,4 @@ Viewer.Timeline = (props: {
   );
 };
 
-Viewer.MenuItem = (props: { mounted: boolean; vPos: number }) => {
-  const { mounted, vPos } = props;
-  const hide = useAppStateValue('hide');
-  const setState = useAppStateSetter();
 
-  return (
-    <>
-      {mounted && (
-        <>
-          <ReactTooltip
-            resizeHide={false}
-            id="fullscreenTip"
-            place="left"
-            effect="solid"
-            globalEventOff={isMobile ? 'click' : undefined}
-          >
-            {hide ? 'Show Timeline' : 'Hide Timeline'}
-          </ReactTooltip>
-        </>
-      )}
-      <div
-        data-tip
-        data-for="fullscreenTip"
-        data-delay-show="300"
-        data-delay-hide="300"
-        className="fullscreen"
-        onClick={() => {
-          setState((c) => void (c.hide = !hide));
-          ReactGA4.event({
-            category: 'UI',
-            action: `${hide ? `clicked fullscreen` : 'off fullscreen'}`,
-            label: 'fullscreen',
-          });
-        }}
-        style={{ top: hide ? `${vPos - 79}px` : `${vPos}px` }}
-      >
-        <div className="noselect">🔭</div>
-      </div>
-    </>
-  );
-};
