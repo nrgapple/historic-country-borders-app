@@ -8,6 +8,40 @@ As seen on [r/dataisbeautiful](https://www.reddit.com/r/dataisbeautiful/comments
 
 <img width="1023" alt="screen-shot-of-app" src="https://user-images.githubusercontent.com/10817537/175097196-e746778d-241a-4bee-b406-aac294849597.png">
 
+## Development
+
+### Getting Started
+
+```bash
+# Install dependencies
+yarn install
+
+# Start development server
+yarn dev
+
+# Build for production
+yarn build
+```
+
+### Testing
+
+This project uses [Vitest](https://vitest.dev/) for testing with React Testing Library.
+
+```bash
+# Run tests in watch mode
+yarn test
+
+# Run tests once
+yarn test:run
+
+# Run tests with UI
+yarn test:ui
+
+# Run tests with coverage
+yarn test:coverage
+```
+
+For more details about testing, see [test/README.md](test/README.md).
 
 ## Data
 
