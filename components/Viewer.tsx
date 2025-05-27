@@ -28,12 +28,12 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   // const dPress = useKeyPress('d');
   const { query, setQuery } = useQuery();
   const [year, setYear] = useState(
-    query?.year ?? years[Math.floor(Math.random() * years.length)].toString(),
+    query?.year ?? years[0]?.toString() ?? '',
   );
   const index = useMemo(() => {
     const i = years?.findIndex((y) => y.toString() === year) ?? -1;
     return i === -1 ? 0 : i;
-  }, [years]);
+  }, [years, year]);
 
   useEffect(() => {
     disableBodyScroll(document.querySelector('body') as HTMLBodyElement, {

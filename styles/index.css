@@ -198,19 +198,201 @@ a {
   left: 0px !important;
   right: 0px !important;
   width: 100% !important;
-  height: 70px !important;
+  height: auto !important;
+  min-height: 70px !important;
   z-index: 1000;
+  pointer-events: none;
 }
 
-.timeline {
-  color: black;
-  text-shadow: 0px 0px 2px #6930c3;
-  font-weight: 500;
-  height: 70px !important;
+/* Timeline Textbook Style */
+.timeline-discrete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 8px;
+  font-family: 'Times New Roman', serif;
+  pointer-events: none;
 }
 
-.timeline .timeline div div ul li {
-  background-image: none !important;
+.timeline-current-year {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 4px;
+  color: #8B4513;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  pointer-events: none;
+}
+
+.timeline-nav-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  position: relative;
+  pointer-events: none;
+}
+
+.timeline-nav-btn {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Times New Roman', serif;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: 40px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8B4513;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: auto;
+}
+
+.timeline-nav-btn:hover:not(:disabled) {
+  color: #654321;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+}
+
+.timeline-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  color: #999;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.timeline-years-container {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  padding: 4px;
+  pointer-events: none;
+}
+
+.timeline-years-container::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-years-scroll {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px;
+  min-width: min-content;
+  position: relative;
+}
+
+/* Textbook-style timeline line */
+.timeline-years-scroll::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    to right,
+    #8B4513 0px,
+    #8B4513 10px,
+    transparent 10px,
+    transparent 15px
+  );
+  transform: translateY(-50%);
+  z-index: 1;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.8));
+}
+
+.timeline-year-btn {
+  background: #F5F5DC;
+  border: 2px solid #8B4513;
+  border-radius: 0;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: 'Times New Roman', serif;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 55px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  margin: 0 1px;
+  color: #8B4513;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
+  pointer-events: auto;
+}
+
+.timeline-year-btn:hover {
+  background: #FFFACD;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+  border-color: #654321;
+}
+
+.timeline-year-btn.active {
+  background: #DEB887;
+  border-color: #654321;
+  border-width: 3px;
+  font-weight: bold;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+  color: #654321;
+}
+
+
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .timeline-discrete {
+    padding: 8px 12px;
+    gap: 6px;
+    margin: 6px;
+  }
+  
+  .timeline-current-year {
+    font-size: 16px;
+    padding: 3px 6px;
+  }
+  
+  .timeline-nav-container {
+    gap: 6px;
+    padding: 6px 4px;
+  }
+  
+  .timeline-nav-btn {
+    padding: 4px 8px;
+    font-size: 14px;
+    min-width: 32px;
+    height: 32px;
+  }
+  
+  .timeline-year-btn {
+    min-width: 45px;
+    height: 24px;
+    font-size: 10px;
+    padding: 3px 6px;
+    margin: 0 1px;
+  }
+  
+  .timeline-years-scroll {
+    padding: 4px 2px;
+  }
 }
 
 .events {
@@ -325,4 +507,28 @@ svg {
 
 .toast-link {
   color: #6930c3;
+}
+
+/* Legacy timeline styles - can be removed if not used elsewhere */
+.timeline {
+  color: black;
+  text-shadow: 0px 0px 2px #6930c3;
+  font-weight: 500;
+  height: 70px !important;
+}
+
+.timeline .timeline div div ul li {
+  background-image: none !important;
+}
+
+.events {
+  top: 48% !important;
+}
+
+.dot-label {
+  padding-bottom: 10px !important;
+}
+
+.dot-label span {
+  bottom: -6px !important;
 }
