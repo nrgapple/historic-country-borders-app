@@ -107,7 +107,7 @@ Viewer.Map = (props: {
   const { config, user, id, year, onInteraction } = props;
   return (
     <div className={`${hide ? 'app-large' : 'app'}`} onClick={onInteraction}>
-      <MapContainer year={year} fullscreen={hide} user={user} id={id} />
+      <MapContainer year={year} user={user} id={id} />
       <Viewer.Footer config={config} />
     </div>
   );

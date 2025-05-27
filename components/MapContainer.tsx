@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Map } from 'mapbox-gl';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -20,35 +19,32 @@ interface MapContainerProps {
   year: string;
   user: string;
   id: string;
-  fullscreen?: boolean;
 }
 
 export default function MapContainer({
   year,
-  fullscreen,
   user,
   id,
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
-  const mapRef = useRef<Map | undefined>(undefined);
   const [selectedInfo, setSelectedInfo] = useState<Info | undefined>();
   const { query, setQuery } = useQuery();
-  const centerQuery: [number, number] = useMemo(() => {
-    const { lng, lat } = query;
-    if (lng && lat) {
-      return [Number(lng), Number(lat)];
-    }
-    return [0, 0];
-  }, [query]);
-  const zoomQuery = useMemo(
-    () => (!!query.zoom && !isNaN(Number(query.zoom)) ? Number(query.zoom) : 2),
-    [query],
-  );
-  const [zoomValue, setZoomValue] = useState(zoomQuery);
-  const [centerValue, setCenterValue] = useState<[number, number]>(centerQuery);
-  const [mapReady, setMapReady] = useState(false);
-  const [hasSetStyle, setHasSetStyle] = useState(false);
+  const hasSetStyleRef = useRef(false);
 
+  // Parse query values once and memoize
+  const viewState = useMemo(() => {
+    const lng = query.lng ? Number(query.lng) : 0;
+    const lat = query.lat ? Number(query.lat) : 0;
+    const zoom = query.zoom && !isNaN(Number(query.zoom)) ? Number(query.zoom) : 2;
+    
+    return {
+      longitude: lng,
+      latitude: lat,
+      zoom,
+    };
+  }, [query.lng, query.lat, query.zoom]);
+
+  // Handle loading toast
   useEffect(() => {
     const id = 'loading';
     if (isLoading) {
@@ -56,31 +52,26 @@ export default function MapContainer({
     } else {
       toast.dismiss(id);
     }
-  }, [isLoading, fullscreen]);
+  }, [isLoading]);
 
-  useEffect(() => {
-    const [lng, lat] = centerValue;
-    setQuery({
-      lng: lng.toFixed(7),
-      lat: lat.toFixed(7),
-      zoom: zoomValue.toFixed(7),
-    });
-  }, [zoomValue, centerValue]);
-
+  // Clear selected info when data changes
   useEffect(() => {
     setSelectedInfo(undefined);
   }, [data]);
 
-  const handleStyleData = useCallback(
-    ({ target }: MapStyleDataEvent) => {
-      target.resize();
-      target.setZoom(zoomValue);
-    },
-    [zoomValue, hasSetStyle],
-  );
+  const updateQuery = useCallback((lng: number, lat: number, zoom: number) => {
+    setQuery({
+      lng: lng.toFixed(7),
+      lat: lat.toFixed(7),
+      zoom: zoom.toFixed(7),
+    });
+  }, [setQuery]);
+
+  const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
+    target.resize();
+  }, []);
 
   const handleLoad = useCallback(({ target }: MapboxEvent) => {
-    setMapReady(true);
     target.resize();
     ReactGA4.event({
       category: 'Map',
@@ -88,21 +79,21 @@ export default function MapContainer({
       label: 'map loaded',
       value: 1,
     });
-    if (hasSetStyle) {
+    
+    if (hasSetStyleRef.current || !target.isStyleLoaded()) {
       return;
     }
-    if (!target.isStyleLoaded) {
-      return;
-    }
+    
     const style = target.getStyle();
     if (!style) {
       console.error('No style found');
       return;
     }
 
-    // this removes the current borders of countries.
+    // Remove default country borders
     const filterDefaultBorderLayers = (l: any) => !l.id.includes('admin');
-    setHasSetStyle(true);
+    hasSetStyleRef.current = true;
+    
     const newStyle = {
       ...style,
       imports: [
@@ -123,23 +114,25 @@ export default function MapContainer({
     target.setStyle(newStyle);
   }, []);
 
-  const handleZoomEnd = useCallback(({ target }) => {
-    const zoom = target.getZoom();
-    setZoomValue(zoom);
-  }, []);
+  const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
+    updateQuery(newViewState.longitude, newViewState.latitude, newViewState.zoom);
+  }, [updateQuery]);
 
   const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
     if (!features?.length) {
       setSelectedInfo(undefined);
       return;
     }
+    
     const feature = features[0];
     const place = feature.properties?.NAME;
     originalEvent.stopPropagation();
-    setSelectedInfo(() => ({
+    
+    setSelectedInfo({
       place,
       position: lngLat.toArray() as CoordTuple,
-    }));
+    });
+    
     ReactGA4.event({
       category: 'Country',
       action: 'click',
@@ -148,50 +141,23 @@ export default function MapContainer({
     });
   }, []);
 
-  const handleMoveEnd = useCallback(({ target }) => {
-    const lngLat = target.getCenter().toArray();
-    const [lng, lat] = lngLat;
-    setCenterValue([lng, lat]);
+  const closePopup = useCallback(() => {
+    setSelectedInfo(undefined);
   }, []);
 
-  const mapComponent = useMemo(
-    () => (
+  return (
+    <div className="map-grid">
       <MapboxDefaultMap
         interactiveLayerIds={['borders']}
         onStyleData={handleStyleData}
         onLoad={handleLoad}
-        onZoomEnd={handleZoomEnd}
         onClick={handleClick}
-        initialViewState={{
-          latitude: centerValue[1],
-          longitude: centerValue[0],
-          zoom: zoomValue,
-        }}
-        onMoveEnd={handleMoveEnd}
+        initialViewState={viewState}
+        onMove={handleViewStateChange}
       >
-        <PopupInfo
-          info={selectedInfo}
-          onClose={() => setSelectedInfo(undefined)}
-        />
-        {mapReady && places && data && (
-          <MapSources data={data} places={places} />
-        )}
+        <PopupInfo info={selectedInfo} onClose={closePopup} />
+        {places && data && <MapSources data={data} places={places} />}
       </MapboxDefaultMap>
-    ),
-    [
-      handleStyleData,
-      handleLoad,
-      handleZoomEnd,
-      handleClick,
-      handleMoveEnd,
-      centerValue,
-      zoomValue,
-      selectedInfo,
-      mapReady,
-      data,
-      places,
-    ],
+    </div>
   );
-
-  return <div className="map-grid">{mapComponent}</div>;
 }
