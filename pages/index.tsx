@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { getYearFromFile, githubToken } from '../util/constants';
 import { ConfigType, GithubFileInfoType } from '../util/types';
 import { Endpoints } from '@octokit/types';
@@ -47,13 +47,9 @@ const octokit = new OctokitThrottled({
   },
 });
 
-export const getServerSideProps: GetServerSideProps<DataProps> = async ({
-  query,
-}) => {
-  const { user: customUser, repo: customRepo } =
-    (query as { user: string; repo: string }) ?? {};
-  const user = customUser ?? 'aourednik';
-  const repo = customRepo ?? 'historical-basemaps';
+export const getStaticProps: GetStaticProps<DataProps> = async () => {
+  const user = 'aourednik';
+  const repo = 'historical-basemaps';
   try {
     const fileResp = (await octokit.request(
       `/repos/${user}/${repo}/contents/geojson`,
@@ -79,6 +75,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
         id: repo,
         config,
       } as DataProps,
+      revalidate: 86400, // Revalidate once per day (24 hours)
     };
   } catch (e) {
     console.error(e);
@@ -92,6 +89,7 @@ export const getServerSideProps: GetServerSideProps<DataProps> = async ({
         name: 'Error',
       },
     } as DataProps,
+    revalidate: 86400, // Revalidate once per day (24 hours)
   };
 };
 
