@@ -12,37 +12,34 @@ export default function Footer({
   discussionUrl,
 }: FooterProps) {
   return (
-    <div className="footer">
-      <div>
-        <div className="logo">🌎 HistoricBorders.app</div>
-        {!!lastCommit && (
-          <div className="last-commit">
-            <span>
-              Maps Updated:{' '}
-              {lastCommit.toLocaleDateString('en-us', {
-                year: 'numeric',
+    <div className="footer-compact">
+      {/* Always visible compact version */}
+      <div className="footer-compact-trigger">
+        <span className="footer-compact-logo">🌎</span>
+        <span className="footer-compact-text">HistoricBorders</span>
+      </div>
+
+      {/* Expanded content */}
+      <div className="footer-compact-expanded">
+        <div className="footer-compact-section">
+          <div className="footer-compact-title">🌎 HistoricBorders.app</div>
+          {!!lastCommit && (
+            <div className="footer-compact-update">
+              Updated: {lastCommit.toLocaleDateString('en-us', {
                 month: 'short',
                 day: 'numeric',
+                year: 'numeric',
               })}
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="footer-right">
-        <div>
-          Data from <a href={dataUrl}>here</a>.
-          {/* Create your own data{' '}
-          <a href="https://github.com/nrgapple/historicborders-timeline-example">
-            here
-          </a>{' '} */}
+            </div>
+          )}
         </div>
-        <div>
-          <a href="https://github.com/nrgapple/historic-country-borders-app">
-            ⭐️ Star this on Github!
+        
+        <div className="footer-compact-links">
+          <a href={dataUrl} className="footer-compact-link">📊 Data Source</a>
+          <a href="https://github.com/nrgapple/historic-country-borders-app" className="footer-compact-link">
+            ⭐️ Star on GitHub
           </a>
-        </div>
-        <div>
-          <a href={discussionUrl}>💬 Join the community!</a>
+          <a href={discussionUrl} className="footer-compact-link">💬 Community</a>
         </div>
       </div>
     </div>

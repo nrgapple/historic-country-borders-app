@@ -138,6 +138,163 @@ a {
   text-shadow: 2px 2px 4px #252525;
 }
 
+/* Compact Corner Footer */
+.footer-compact {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 1000;
+  font-family: 'Times New Roman', serif;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-compact-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(245, 245, 220, 0.9);
+  border: 1px solid #8B4513;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  transition: all 0.3s ease;
+}
+
+.footer-compact-logo {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.footer-compact-text {
+  font-size: 10px;
+  font-weight: bold;
+  color: #8B4513;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.footer-compact-expanded {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 12px;
+  background: rgba(245, 245, 220, 0.95);
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+/* Create a hover bridge between trigger and expanded content */
+.footer-compact-expanded::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+}
+
+.footer-compact:hover .footer-compact-expanded,
+.footer-compact.expanded .footer-compact-expanded {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.footer-compact:hover .footer-compact-trigger,
+.footer-compact.expanded .footer-compact-trigger {
+  background: rgba(245, 245, 220, 1);
+  border-color: #654321;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.footer-compact-section {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #8B4513;
+}
+
+.footer-compact-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #8B4513;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 4px;
+}
+
+.footer-compact-update {
+  font-size: 9px;
+  color: #654321;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.footer-compact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-compact-link {
+  font-size: 10px;
+  color: #654321;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  padding: 2px 4px;
+  border-radius: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.footer-compact-link:hover {
+  color: #8B4513;
+  background: rgba(139, 69, 19, 0.1);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Responsive for Compact Footer */
+@media (max-width: 768px) {
+  .footer-compact {
+    bottom: 6px;
+    left: 6px;
+  }
+  
+  .footer-compact-trigger {
+    padding: 4px 8px;
+  }
+  
+  .footer-compact-text {
+    font-size: 9px;
+  }
+  
+  .footer-compact-expanded {
+    min-width: 180px;
+    max-width: 240px;
+    padding: 10px;
+  }
+  
+  .footer-compact-title {
+    font-size: 11px;
+  }
+  
+  .footer-compact-update,
+  .footer-compact-link {
+    font-size: 9px;
+  }
+}
+
 .map {
   position: relative;
   width: 100%;
@@ -209,8 +366,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px 16px;
-  margin: 8px;
+  padding: 12px 0px;
+
   font-family: 'Times New Roman', serif;
   pointer-events: none;
 }
