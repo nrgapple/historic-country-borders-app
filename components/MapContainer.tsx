@@ -2,18 +2,17 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useMemo,
   useCallback,
 } from 'react';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
-import { useQuery } from '../hooks/useQuery';
 import { CoordTuple } from '../util/types';
 import PopupInfo, { Info } from './PopupInfo';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
 import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
+import { useMapQuery } from '../hooks/useMapQuery';
 
 interface MapContainerProps {
   year: string;
@@ -28,21 +27,8 @@ export default function MapContainer({
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const [selectedInfo, setSelectedInfo] = useState<Info | undefined>();
-  const { query, setQuery } = useQuery();
+  const { viewState, updateMapView, isReady } = useMapQuery();
   const hasSetStyleRef = useRef(false);
-
-  // Parse query values once and memoize
-  const viewState = useMemo(() => {
-    const lng = query.lng ? Number(query.lng) : 0;
-    const lat = query.lat ? Number(query.lat) : 0;
-    const zoom = query.zoom && !isNaN(Number(query.zoom)) ? Number(query.zoom) : 2;
-    
-    return {
-      longitude: lng,
-      latitude: lat,
-      zoom,
-    };
-  }, [query.lng, query.lat, query.zoom]);
 
   // Handle loading toast
   useEffect(() => {
@@ -59,20 +45,13 @@ export default function MapContainer({
     setSelectedInfo(undefined);
   }, [data]);
 
-  const updateQuery = useCallback((lng: number, lat: number, zoom: number) => {
-    setQuery({
-      lng: lng.toFixed(7),
-      lat: lat.toFixed(7),
-      zoom: zoom.toFixed(7),
-    });
-  }, [setQuery]);
-
   const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
     target.resize();
   }, []);
 
   const handleLoad = useCallback(({ target }: MapboxEvent) => {
     target.resize();
+    
     ReactGA4.event({
       category: 'Map',
       action: 'load',
@@ -115,8 +94,13 @@ export default function MapContainer({
   }, []);
 
   const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
-    updateQuery(newViewState.longitude, newViewState.latitude, newViewState.zoom);
-  }, [updateQuery]);
+    // Use debounced update for smooth map movement
+    updateMapView(
+      newViewState.longitude, 
+      newViewState.latitude, 
+      newViewState.zoom
+    );
+  }, [updateMapView]);
 
   const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
     if (!features?.length) {
@@ -148,6 +132,7 @@ export default function MapContainer({
   return (
     <div className="map-grid">
       <MapboxDefaultMap
+        key={isReady ? 'ready' : 'loading'}
         interactiveLayerIds={['borders']}
         onStyleData={handleStyleData}
         onLoad={handleLoad}
