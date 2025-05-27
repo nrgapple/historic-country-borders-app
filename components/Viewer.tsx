@@ -1,34 +1,24 @@
-import MapContainer from './MapContainer';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   convertYearString,
-  isMobile,
   mapBCFormat,
-  mod,
 } from '../util/constants';
-import Footer from '../components/Footer';
-import Timeline from '../components/Timeline';
 import PersistentUIToggle from '../components/PersistentUIToggle';
-import ReactTooltip from 'react-tooltip';
-// import useKeyPress from '../hooks/useKeyPress';
 import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
 import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
-import { ConfigType } from '../util/types';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
-import { useMounted } from '../hooks/useMounted';
 import { disableBodyScroll } from 'body-scroll-lock';
+import ViewerMap from './viewer/ViewerMap';
+import ViewerTimeline from './viewer/ViewerTimeline';
 
 export default function Viewer({ years, user, id, config }: DataProps) {
-  const mounted = useMounted();
   const hide = useAppStateValue('hide');
   const setState = useAppStateSetter();
 
-  // const aPress = useKeyPress('a');
-  // const dPress = useKeyPress('d');
   const { query, setQuery } = useQuery();
   const [year, setYear] = useState(
     query?.year ?? years[0]?.toString() ?? '',
@@ -70,10 +60,10 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   return (
     <>
       <Layout title={config.name} url={`https://historyborders.app`}>
-        <Viewer.Timeline
+        <ViewerTimeline
           index={index}
           years={years}
-          onChange={(y) => {
+          onChange={(y: string) => {
             setQuery({ year: y });
             setYear(y);
             ReactGA4.event({
@@ -83,7 +73,7 @@ export default function Viewer({ years, user, id, config }: DataProps) {
             });
           }}
         />
-        <Viewer.Map
+        <ViewerMap
           user={user}
           id={id}
           config={config}
@@ -148,67 +138,5 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     </>
   );
 }
-
-Viewer.Map = (props: {
-  user: string;
-  id: string;
-  config: ConfigType;
-  year: string;
-  onInteraction: () => void;
-}) => {
-  const hide = useAppStateValue('hide');
-  const { config, user, id, year, onInteraction } = props;
-  return (
-    <div className={`${hide ? 'app-large' : 'app'}`} onClick={onInteraction}>
-      <MapContainer year={year} user={user} id={id} />
-      <Viewer.Footer config={config} />
-    </div>
-  );
-};
-
-Viewer.Footer = (props: { config: ConfigType }) => {
-  const hide = useAppStateValue('hide');
-  const { config } = props;
-
-  return (
-    <>
-      {!hide && (
-        <Footer
-          dataUrl={`https://github.com/aourednik/historical-basemaps`}
-          lastCommit={
-            config.commitDate ? new Date(config.commitDate) : undefined
-          }
-          discussionUrl={`https://github.com/nrgapple/historic-country-borders-app/discussions`}
-        />
-      )}
-    </>
-  );
-};
-
-Viewer.Timeline = (props: {
-  index: number;
-  years: number[];
-  onChange: (year: string) => void;
-}) => {
-  const hide = useAppStateValue('hide');
-  return (
-    <>
-      {!hide && (
-        <>
-          <div className="timeline-container">
-            <Timeline
-              index={props.index}
-              onChange={(v) => {
-                const year = props.years[v].toString();
-                props.onChange(year);
-              }}
-              years={props.years}
-            />
-          </div>
-        </>
-      )}
-    </>
-  );
-};
 
 
