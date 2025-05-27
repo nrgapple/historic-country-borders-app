@@ -101,7 +101,50 @@ export default function Viewer({ years, user, id, config }: DataProps) {
         isUIHidden={hide}
         onToggle={handleToggleUI}
       />
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          className: 'react-hot-toast',
+          style: {
+            background: 'rgba(245, 245, 220, 0.95)',
+            border: '2px solid #8B4513',
+            borderRadius: '4px',
+            color: '#654321',
+            fontFamily: "'Times New Roman', serif",
+            fontSize: '12px',
+            fontWeight: 'normal',
+            boxShadow: '2px 2px 8px rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(4px)',
+            padding: '12px 16px',
+            maxWidth: '350px',
+            textShadow: '1px 1px 2px rgba(0, 0, 0, 0.1)',
+            lineHeight: '1.4',
+          },
+          success: {
+            className: 'react-hot-toast success',
+            style: {
+              background: 'rgba(240, 248, 240, 0.95)',
+              borderColor: '#5A7C5A',
+              color: '#2D4A2D',
+            },
+          },
+          error: {
+            className: 'react-hot-toast error',
+            style: {
+              background: 'rgba(248, 240, 240, 0.95)',
+              borderColor: '#8B4A4A',
+              color: '#5A2D2D',
+            },
+          },
+          loading: {
+            className: 'react-hot-toast loading',
+            style: {
+              background: 'rgba(245, 245, 220, 0.95)',
+              borderColor: '#8B4513',
+              color: '#654321',
+            },
+          },
+        }}
+      />
     </>
   );
 }
