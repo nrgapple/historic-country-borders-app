@@ -93,18 +93,23 @@ export default function Timeline({
           <div className="timeline-years-scroll">
             {years.map((year, i) => {
               const isActive = i === index;
+              const isPast = i < index;
               const yearLabel = convertYearString(timelineBCFormat, year);
+              
+              let buttonClass = 'timeline-year-btn';
+              if (isActive) buttonClass += ' active';
+              if (isPast) buttonClass += ' past';
               
               return (
                 <button
                   key={i}
                   ref={isActive ? activeItemRef : null}
-                  className={`timeline-year-btn ${isActive ? 'active' : ''}`}
+                  className={buttonClass}
                   onClick={() => handleYearClick(i)}
                   style={{
-                    color: isActive ? '#654321' : '#8B4513',
-                    borderColor: isActive ? '#654321' : '#8B4513',
-                    backgroundColor: isActive ? '#DEB887' : '#F5F5DC',
+                    color: isActive ? '#654321' : isPast ? '#5A4A3A' : '#8B4513',
+                    borderColor: isActive ? '#654321' : isPast ? '#5A4A3A' : '#8B4513',
+                    backgroundColor: isActive ? '#DEB887' : isPast ? '#D2B48C' : '#F5F5DC',
                     borderWidth: isActive ? '3px' : '2px',
                   }}
                   aria-label={`Go to year ${yearLabel}`}
