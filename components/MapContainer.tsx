@@ -46,17 +46,17 @@ export default function MapContainer({
     setSelectedInfo(undefined);
   }, [data]);
 
-  // Reset style loading state when map key changes
+  // Reset style loading state when map key changes or data changes
   useEffect(() => {
     setIsWaitingForStyleLoad(false);
     hasSetStyleRef.current = false;
-  }, [isReady]);
+  }, [isReady, year, user, id]);
 
   const handleStyleLoad = useCallback(({ target }: MapboxEvent) => {
     // Use style.load event for reliable style loading detection
     setIsWaitingForStyleLoad(false);
     target.resize();
-  }, []);
+  }, [year]);
 
   // Cleanup effect to remove event listeners
   useEffect(() => {
@@ -71,43 +71,52 @@ export default function MapContainer({
   const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
     target.resize();
     
-    // Only proceed if this is the final style load event and we haven't set the style yet
-    if (hasSetStyleRef.current || !target.isStyleLoaded()) {
-      return;
-    }
-    
-    const style = target.getStyle();
-    if (!style) {
-      console.error('No style found');
-      return;
-    }
+    // If style is loaded but we haven't set our custom style yet, proceed
+    if (!hasSetStyleRef.current && target.isStyleLoaded()) {
+      const style = target.getStyle();
+      if (!style) {
+        console.error('No style found');
+        return;
+      }
 
-    // Remove default country borders
-    const filterDefaultBorderLayers = (l: any) => !l.id.includes('admin');
-    hasSetStyleRef.current = true;
-    
-    const newStyle = {
-      ...style,
-      imports: [
-        {
-          //@ts-ignore
-          ...style.imports[0],
-          data: {
+      // Remove default country borders
+      const filterDefaultBorderLayers = (l: any) => !l.id.includes('admin');
+      hasSetStyleRef.current = true;
+      
+      const newStyle = {
+        ...style,
+        imports: [
+          {
             //@ts-ignore
-            ...style.imports[0].data,
-            //@ts-ignore
-            layers: style.imports[0].data.layers.filter(
-              filterDefaultBorderLayers,
-            ),
+            ...style.imports[0],
+            data: {
+              //@ts-ignore
+              ...style.imports[0].data,
+              //@ts-ignore
+              layers: style.imports[0].data.layers.filter(
+                filterDefaultBorderLayers,
+              ),
+            },
           },
-        },
-      ],
-    };
+        ],
+      };
+      
+      // Set the new style and wait for it to load
+      target.setStyle(newStyle);
+      setIsWaitingForStyleLoad(true);
+      
+      // Add a fallback timeout in case style.load event doesn't fire
+      setTimeout(() => {
+        setIsWaitingForStyleLoad(false);
+      }, 1000);
+    }
     
-    // Set the new style and wait for it to load
-    target.setStyle(newStyle);
-    setIsWaitingForStyleLoad(true); // Wait until the new style loads
-  }, []);
+    // If we've already set the style and this is a subsequent styledata event,
+    // it means the new style has loaded, so we can allow MapSources to render
+    if (hasSetStyleRef.current && target.isStyleLoaded()) {
+      setIsWaitingForStyleLoad(false);
+    }
+  }, [year]);
 
   const handleLoad = useCallback(({ target }: MapboxEvent) => {
     target.resize();
@@ -158,7 +167,7 @@ export default function MapContainer({
   return (
     <div className="map-grid">
       <MapboxDefaultMap
-        key={isReady ? 'ready' : 'loading'}
+        key={isReady ? `ready-${year}-${user}-${id}` : 'loading'}
         interactiveLayerIds={['borders']}
         onStyleData={handleStyleData}
         onLoad={handleLoad}

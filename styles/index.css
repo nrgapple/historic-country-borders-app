@@ -903,7 +903,7 @@ a {
   color: #8B4513;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   letter-spacing: 1px;
-  padding: 4px 8px;
+
   pointer-events: none;
 }
 
@@ -1118,7 +1118,7 @@ a {
   }
   
   .timeline-discrete {
-    padding: 16px 12px;
+
     gap: 12px;
     margin: 0;
   }
@@ -1185,13 +1185,13 @@ a {
   }
   
   .timeline-discrete {
-    padding: 20px 8px;
-    gap: 16px;
+
+
   }
   
   .timeline-current-year {
     font-size: 28px;
-    padding: 10px 16px;
+
   }
   
   .timeline-nav-btn {
