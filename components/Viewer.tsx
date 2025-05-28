@@ -11,7 +11,7 @@ import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
-import { disableBodyScroll } from 'body-scroll-lock';
+import { useScrollLock } from '../hooks/useScrollLock';
 import ViewerMap from './viewer/ViewerMap';
 import ViewerTimeline from './viewer/ViewerTimeline';
 import { isValidYear, getDefaultYear } from '../utils/queryParams';
@@ -56,13 +56,8 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     }
   }, [isReady, query.year, years, setQuery]);
 
-  useEffect(() => {
-    disableBodyScroll(document.querySelector('body') as HTMLBodyElement, {
-      allowTouchMove: (el: HTMLElement | Element) => {
-        return false;
-      },
-    });
-  }, []);
+  // The scroll lock is now handled in _app.tsx globally
+  // No need for additional scroll locking here
 
   useEffect(() => {
     ReactGA4.send({

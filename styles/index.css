@@ -380,6 +380,10 @@ a {
   line-height: 1.5;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
   background: rgba(245, 245, 220, 0.95);
+  /* Ensure this element can scroll even when body scroll is locked */
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  isolation: isolate;
 }
 
 /* Custom scrollbar for country info description */
@@ -967,6 +971,8 @@ a {
   scroll-behavior: smooth;
   touch-action: pan-x;
   overscroll-behavior-x: contain;
+  /* Ensure this element can scroll even when body scroll is locked */
+  isolation: isolate;
 }
 
 .timeline-years-container::-webkit-scrollbar {
@@ -1384,6 +1390,10 @@ svg {
   line-height: 1.5;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
   background: rgba(245, 245, 220, 0.95);
+  /* Ensure this element can scroll even when body scroll is locked */
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  isolation: isolate;
 }
 
 /* Custom scrollbar for popup description */
@@ -1502,6 +1512,10 @@ svg {
 .mapboxgl-popup-content {
   max-width: 90vw !important;
   max-height: 70vh !important;
+  /* Ensure this element can scroll even when body scroll is locked */
+  touch-action: pan-y !important;
+  overscroll-behavior: contain !important;
+  isolation: isolate !important;
 }
 
 .toast-link {

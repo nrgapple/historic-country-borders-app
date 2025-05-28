@@ -8,10 +8,9 @@ vi.mock('../../hooks/useWiki', () => ({
   useWikiData: vi.fn(),
 }))
 
-// Mock body-scroll-lock
-vi.mock('body-scroll-lock', () => ({
-  disableBodyScroll: vi.fn(),
-  enableBodyScroll: vi.fn(),
+// Mock our custom scroll lock hook
+vi.mock('../../hooks/useScrollLock', () => ({
+  useAllowScroll: vi.fn(),
 }))
 
 // Mock react-map-gl Popup component

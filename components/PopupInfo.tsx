@@ -1,5 +1,5 @@
 import { Popup } from 'react-map-gl';
-import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock';
+import { useAllowScroll } from '../hooks/useScrollLock';
 import { useEffect, useMemo } from 'react';
 import { useWikiData } from '../hooks/useWiki';
 import { CoordTuple } from '../util/types';
@@ -22,15 +22,8 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
     [description],
   );
 
-  useEffect(() => {
-    const el = document.querySelector('.popup-description') as HTMLElement;
-    if (el) {
-      enableBodyScroll(el);
-      return () => {
-        disableBodyScroll(el);
-      };
-    }
-  }, []);
+  // Allow scrolling on the popup description
+  useAllowScroll('.popup-description', !!place);
 
   // Determine popup size based on content with viewport constraints
   const popupStyle = useMemo(() => {

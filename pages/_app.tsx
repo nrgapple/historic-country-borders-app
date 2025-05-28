@@ -1,8 +1,6 @@
 import '../styles/index.css';
 import { AppProps } from 'next/app';
-//@ts-ignore
-import { disableBodyScroll } from 'body-scroll-lock';
-import { useEffect } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
 import '@szhsin/react-menu/dist/index.css';
@@ -14,9 +12,16 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR);
 
 export default function App({ Component, pageProps }: AppProps) {
-  useEffect(() => {
-    disableBodyScroll(document.querySelector('body') as HTMLBodyElement);
-  }, []);
+  // Use our custom scroll lock with allowed selectors for timeline and popups
+  useScrollLock(true, {
+    allowedSelectors: [
+      '.timeline-years-container',
+      '.popup-description', 
+      '.country-info-description',
+      '.mapboxgl-popup-content'
+    ]
+  });
+  
   return (
     <QueryProvider>
       <StateProvider>
