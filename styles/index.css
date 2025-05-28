@@ -251,6 +251,56 @@ a {
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* AI Provider Toggle in Footer */
+.footer-compact-ai-toggle {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.footer-compact-ai-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(139, 69, 19, 0.1);
+  border: 1px solid rgba(139, 69, 19, 0.3);
+  border-radius: 3px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #654321;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.footer-compact-ai-button:hover {
+  background: rgba(139, 69, 19, 0.2);
+  border-color: rgba(139, 69, 19, 0.5);
+  color: #8B4513;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.footer-compact-ai-button.active {
+  background: rgba(139, 69, 19, 0.3);
+  border-color: rgba(139, 69, 19, 0.6);
+  color: #8B4513;
+  font-weight: bold;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.footer-compact-ai-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.footer-compact-ai-text {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 
 
 /* Mobile Responsive for Compact Footer */
@@ -291,6 +341,20 @@ a {
     min-height: 32px;
     display: flex;
     align-items: center;
+  }
+  
+  .footer-compact-ai-button {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 44px;
+  }
+  
+  .footer-compact-ai-icon {
+    font-size: 14px;
+  }
+  
+  .footer-compact-ai-text {
+    font-size: 11px;
   }
 }
 
@@ -490,6 +554,8 @@ a {
     min-height: 60px;
   }
 }
+
+
 
 /* Persistent UI Toggle */
 .persistent-ui-toggle {
@@ -1377,6 +1443,22 @@ svg {
   hyphens: auto;
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.provider-indicator {
+  font-size: 14px;
+  margin-left: 8px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+  cursor: help;
+}
+
+.provider-indicator:hover {
+  opacity: 1;
 }
 
 .popup-description {

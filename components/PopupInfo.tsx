@@ -1,7 +1,8 @@
 import { Popup } from 'react-map-gl';
 import { useAllowScroll } from '../hooks/useScrollLock';
 import { useEffect, useMemo } from 'react';
-import { useWikiData } from '../hooks/useWiki';
+import { useCountryInfo } from '../hooks/useCountryInfo';
+import { useInfoProvider } from '../contexts/InfoProviderContext';
 import { CoordTuple } from '../util/types';
 
 export interface Info {
@@ -16,7 +17,8 @@ interface PopupInfoProps {
 
 export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   const { position, place = '' } = info ?? {};
-  const { info: description, title: title, isLoading } = useWikiData(place);
+  const { provider } = useInfoProvider();
+  const { info: description, title: title, isLoading } = useCountryInfo(place, { provider });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],
@@ -54,6 +56,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
     return baseClass;
   }, [isLoading, empty]);
 
+  // Get provider-specific loading message and icon
+  const loadingMessage = provider === 'ai' ? '🤖 AI generating information...' : '📚 Loading information...';
+  const providerIcon = provider === 'ai' ? '🤖' : '📖';
+
   return (
     <>
       {place && position && (
@@ -70,10 +76,17 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
             onClose?.();
           }}
         >
-          <div className="popup-title">{title || place}</div>
+          <div className="popup-title">
+            {title || place}
+            {!isLoading && !empty && (
+              <span className="provider-indicator" title={provider === 'ai' ? 'AI Generated' : 'Wikipedia'}>
+                {providerIcon}
+              </span>
+            )}
+          </div>
           <div className={descriptionClass}>
             {isLoading ? (
-              <>📚 Loading information...</>
+              loadingMessage
             ) : empty ? (
               <>📖 No information available<br />for this location 😔</>
             ) : (

@@ -33,9 +33,9 @@ export const toastMessages: ToastMessage[] = [
     ),
     opts: { icon: '📀', duration: 3000, position: 'bottom-center' },
   },
-    // {
-    //   message: `Tip: Copying links will share the current year and location on the map.`,
-    //   opts: { icon: '🔗', duration: 4000, position: 'bottom-center' },
-    // },
+    {
+      message: `Check out the AI info when clicking on a country! Turn on the beta in the bottom right corner.`,
+      opts: { icon: '🤖', duration: 5000, position: 'bottom-center' },
+    },
   share,
 ];

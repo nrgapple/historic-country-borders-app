@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { useWikiData } from '../hooks/useWiki';
+import { useCountryInfo } from '../hooks/useCountryInfo';
+import { useInfoProvider } from '../contexts/InfoProviderContext';
 
 export interface CountryInfoData {
   place: string;
@@ -7,14 +8,16 @@ export interface CountryInfoData {
 
 interface CountryInfoProps {
   info: CountryInfoData | undefined;
+  year?: string;
   onClose?: () => void;
 }
 
 const noData = 'Not Found';
 
-export default function CountryInfo({ info, onClose }: CountryInfoProps) {
+export default function CountryInfo({ info, year, onClose }: CountryInfoProps) {
   const { place = '' } = info ?? {};
-  const { info: description, title: title, isLoading } = useWikiData(place);
+  const { provider } = useInfoProvider();
+  const { info: description, title: title, isLoading } = useCountryInfo(place, { provider, year });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],

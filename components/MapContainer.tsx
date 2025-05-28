@@ -191,7 +191,7 @@ export default function MapContainer({
           <MapSources data={data} places={places} selectedCountry={selectedInfo?.place} />
         )}
       </MapboxDefaultMap>
-      <CountryInfo info={selectedInfo} onClose={closeCountryInfo} />
+      <CountryInfo info={selectedInfo} year={year} onClose={closeCountryInfo} />
     </div>
   );
 }

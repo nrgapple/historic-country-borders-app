@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useInfoProvider } from '../contexts/InfoProviderContext';
 
 interface FooterProps {
   dataUrl?: string;
@@ -11,6 +12,8 @@ export default function Footer({
   lastCommit,
   discussionUrl,
 }: FooterProps) {
+  const { provider, toggleProvider } = useInfoProvider();
+
   return (
     <div className="footer-compact">
       {/* Always visible compact version */}
@@ -32,6 +35,25 @@ export default function Footer({
               })}
             </div>
           )}
+        </div>
+        
+        {/* AI Provider Toggle Section */}
+        <div className="footer-compact-section">
+          <div className="footer-compact-title">🤖 AI Information (Beta)</div>
+          <div className="footer-compact-ai-toggle">
+            <button
+              className={`footer-compact-ai-button ${provider === 'ai' ? 'active' : ''}`}
+              onClick={toggleProvider}
+              title={`Currently using ${provider === 'wikipedia' ? 'Wikipedia' : 'AI'}. Click to switch.`}
+            >
+              <span className="footer-compact-ai-icon">
+                {provider === 'wikipedia' ? '📚' : '🤖'}
+              </span>
+              <span className="footer-compact-ai-text">
+                {provider === 'wikipedia' ? 'Wikipedia' : 'AI Beta'}
+              </span>
+            </button>
+          </div>
         </div>
         
         <div className="footer-compact-links">

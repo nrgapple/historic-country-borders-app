@@ -3,6 +3,7 @@ import { AppProps } from 'next/app';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
+import { InfoProviderProvider } from '../contexts/InfoProviderContext';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import CompactFeedbackWidget from '../components/CompactFeedbackWidget';
@@ -25,9 +26,11 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryProvider>
       <StateProvider>
-        <FeedbackWrapper />
-        <Component {...pageProps} />
-        <SpeedInsights />
+        <InfoProviderProvider>
+          <FeedbackWrapper />
+          <Component {...pageProps} />
+          <SpeedInsights />
+        </InfoProviderProvider>
       </StateProvider>
     </QueryProvider>
   );

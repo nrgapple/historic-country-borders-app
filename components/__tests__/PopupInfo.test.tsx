@@ -3,9 +3,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import PopupInfo, { Info } from '../PopupInfo'
 
-// Mock the useWikiData hook
-vi.mock('../../hooks/useWiki', () => ({
-  useWikiData: vi.fn(),
+// Mock the useCountryInfo hook
+vi.mock('../../hooks/useCountryInfo', () => ({
+  useCountryInfo: vi.fn(),
+}))
+
+// Mock the InfoProviderContext
+vi.mock('../../contexts/InfoProviderContext', () => ({
+  useInfoProvider: vi.fn(),
 }))
 
 // Mock our custom scroll lock hook
@@ -29,9 +34,11 @@ vi.mock('react-map-gl', () => ({
   )),
 }))
 
-import { useWikiData } from '../../hooks/useWiki'
+import { useCountryInfo } from '../../hooks/useCountryInfo'
+import { useInfoProvider } from '../../contexts/InfoProviderContext'
 
-const mockUseWikiData = useWikiData as any
+const mockUseCountryInfo = useCountryInfo as any
+const mockUseInfoProvider = useInfoProvider as any
 
 describe('PopupInfo', () => {
   const mockInfo: Info = {
@@ -41,10 +48,15 @@ describe('PopupInfo', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: 'Test description about this historical location.',
       title: 'Test Title',
       isLoading: false,
+    })
+    mockUseInfoProvider.mockReturnValue({
+      provider: 'wikipedia',
+      setProvider: vi.fn(),
+      toggleProvider: vi.fn(),
     })
   })
 
@@ -77,8 +89,8 @@ describe('PopupInfo', () => {
     expect(popup).toHaveAttribute('data-classname', 'popup-border')
   })
 
-  it('should show loading state with proper styling', () => {
-    mockUseWikiData.mockReturnValue({
+  it('should show loading state with proper styling for Wikipedia', () => {
+    mockUseCountryInfo.mockReturnValue({
       info: '',
       title: 'Test Title',
       isLoading: true,
@@ -92,8 +104,28 @@ describe('PopupInfo', () => {
     expect(descriptionElement).toHaveClass('popup-description loading')
   })
 
+  it('should show loading state with proper styling for AI', () => {
+    mockUseInfoProvider.mockReturnValue({
+      provider: 'ai',
+      setProvider: vi.fn(),
+      toggleProvider: vi.fn(),
+    })
+    mockUseCountryInfo.mockReturnValue({
+      info: '',
+      title: 'Test Title',
+      isLoading: true,
+    })
+
+    render(<PopupInfo info={mockInfo} />)
+    
+    expect(screen.getByText(/🤖 AI generating information.../)).toBeInTheDocument()
+    
+    const descriptionElement = screen.getByText(/🤖 AI generating information.../).closest('div')
+    expect(descriptionElement).toHaveClass('popup-description loading')
+  })
+
   it('should show empty state when description is empty', () => {
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: '',
       title: 'Test Title',
       isLoading: false,
@@ -109,7 +141,7 @@ describe('PopupInfo', () => {
   })
 
   it('should show empty state when description is "Not Found"', () => {
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: 'Not Found',
       title: 'Test Title',
       isLoading: false,
@@ -124,7 +156,7 @@ describe('PopupInfo', () => {
   })
 
   it('should apply correct styles for empty content', () => {
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: '',
       title: 'Test Title',
       isLoading: false,
@@ -153,10 +185,10 @@ describe('PopupInfo', () => {
     expect(onCloseMock).toHaveBeenCalledOnce()
   })
 
-  it('should call useWikiData with correct place name', () => {
+  it('should call useCountryInfo with correct place name and provider', () => {
     render(<PopupInfo info={mockInfo} />)
     
-    expect(mockUseWikiData).toHaveBeenCalledWith('Test Place')
+    expect(mockUseCountryInfo).toHaveBeenCalledWith('Test Place', { provider: 'wikipedia' })
   })
 
   it('should handle info with empty place name', () => {
@@ -167,7 +199,7 @@ describe('PopupInfo', () => {
 
     render(<PopupInfo info={infoWithEmptyPlace} />)
     
-    expect(mockUseWikiData).toHaveBeenCalledWith('')
+    expect(mockUseCountryInfo).toHaveBeenCalledWith('', { provider: 'wikipedia' })
   })
 
   it('should render with correct CSS classes for normal state', () => {
@@ -182,7 +214,7 @@ describe('PopupInfo', () => {
   })
 
   it('should use place name as fallback title when title is empty', () => {
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: 'Test description',
       title: '',
       isLoading: false,
@@ -194,8 +226,58 @@ describe('PopupInfo', () => {
     expect(screen.getByText('Test Place')).toHaveClass('popup-title')
   })
 
+  it('should show Wikipedia provider indicator', () => {
+    render(<PopupInfo info={mockInfo} />)
+    
+    const providerIndicator = screen.getByTitle('Wikipedia')
+    expect(providerIndicator).toBeInTheDocument()
+    expect(providerIndicator).toHaveTextContent('📖')
+    expect(providerIndicator).toHaveClass('provider-indicator')
+  })
+
+  it('should show AI provider indicator when using AI', () => {
+    mockUseInfoProvider.mockReturnValue({
+      provider: 'ai',
+      setProvider: vi.fn(),
+      toggleProvider: vi.fn(),
+    })
+
+    render(<PopupInfo info={mockInfo} />)
+    
+    const providerIndicator = screen.getByTitle('AI Generated')
+    expect(providerIndicator).toBeInTheDocument()
+    expect(providerIndicator).toHaveTextContent('🤖')
+    expect(providerIndicator).toHaveClass('provider-indicator')
+  })
+
+  it('should not show provider indicator when loading', () => {
+    mockUseCountryInfo.mockReturnValue({
+      info: '',
+      title: 'Test Title',
+      isLoading: true,
+    })
+
+    render(<PopupInfo info={mockInfo} />)
+    
+    expect(screen.queryByTitle('Wikipedia')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('AI Generated')).not.toBeInTheDocument()
+  })
+
+  it('should not show provider indicator when empty', () => {
+    mockUseCountryInfo.mockReturnValue({
+      info: '',
+      title: 'Test Title',
+      isLoading: false,
+    })
+
+    render(<PopupInfo info={mockInfo} />)
+    
+    expect(screen.queryByTitle('Wikipedia')).not.toBeInTheDocument()
+    expect(screen.queryByTitle('AI Generated')).not.toBeInTheDocument()
+  })
+
   it('should handle whitespace-only descriptions as empty', () => {
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: '   \n\t   ',
       title: 'Test Title',
       isLoading: false,
@@ -212,7 +294,7 @@ describe('PopupInfo', () => {
   it('should handle long descriptions properly', () => {
     const longDescription = 'This is a very long description that should be displayed properly in the popup. '.repeat(10)
     
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: longDescription,
       title: 'Test Title',
       isLoading: false,
@@ -242,7 +324,7 @@ describe('PopupInfo', () => {
 
     render(<PopupInfo info={specialPlaceInfo} />)
     
-    expect(mockUseWikiData).toHaveBeenCalledWith('São Paulo & México-City (Test)')
+    expect(mockUseCountryInfo).toHaveBeenCalledWith('São Paulo & México-City (Test)', { provider: 'wikipedia' })
   })
 
   it('should handle coordinate edge cases', () => {
@@ -264,7 +346,7 @@ describe('PopupInfo', () => {
       place: 'Subarctic forest hunter-gatherer peoples of the northern boreal regions',
     }
 
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: 'Test description for long title',
       title: 'Subarctic forest hunter-gatherer peoples of the northern boreal regions',
       isLoading: false,
@@ -288,7 +370,7 @@ describe('PopupInfo', () => {
       place: 'Pneumonoultramicroscopicsilicovolcanoconiosisplace',
     }
 
-    mockUseWikiData.mockReturnValue({
+    mockUseCountryInfo.mockReturnValue({
       info: 'Test description',
       title: 'Pneumonoultramicroscopicsilicovolcanoconiosisplace',
       isLoading: false,
@@ -344,7 +426,7 @@ describe('PopupInfo', () => {
 
     it('should handle empty vs content popup size differences with viewport constraints', () => {
       // Test with empty content (smaller popup)
-      mockUseWikiData.mockReturnValue({
+      mockUseCountryInfo.mockReturnValue({
         info: '',
         title: 'Empty Location',
         isLoading: false,
@@ -366,7 +448,7 @@ describe('PopupInfo', () => {
       })
 
       // Test with content (larger popup)
-      mockUseWikiData.mockReturnValue({
+      mockUseCountryInfo.mockReturnValue({
         info: 'This is a long description that will make the popup larger',
         title: 'Content Location',
         isLoading: false,
