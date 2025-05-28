@@ -36,32 +36,27 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                   '#000000'  // Default black for others
                 ]
               : '#000000',
-            'line-width': selectedCountry 
-              ? [
-                  'case',
-                  ['==', ['get', 'NAME'], selectedCountry],
-                  {
-                    base: 1,
-                    stops: [
-                      [3, 5],
-                      [8, 10],
-                    ],
-                  },
-                  {
-                    base: 1,
-                    stops: [
-                      [3, 1.2],
-                      [8, 3],
-                    ],
-                  }
-                ]
-              : {
-                  base: 1,
-                  stops: [
-                    [3, 1.2],
-                    [8, 3],
-                  ],
-                },
+            'line-width': [
+              'interpolate',
+              ['exponential', 1],
+              ['zoom'],
+              3, selectedCountry 
+                ? [
+                    'case',
+                    ['==', ['get', 'NAME'], selectedCountry],
+                    5,
+                    1.2
+                  ]
+                : 1.2,
+              8, selectedCountry 
+                ? [
+                    'case',
+                    ['==', ['get', 'NAME'], selectedCountry],
+                    10,
+                    3
+                  ]
+                : 3
+            ],
             'line-opacity': 1,
           },
         }}
@@ -76,13 +71,13 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
             filter: ['==', ['get', 'NAME'], selectedCountry],
             paint: {
               'line-color': '#00FFFF', // Bright cyan for high contrast
-              'line-width': {
-                base: 1,
-                stops: [
-                  [3, 3],
-                  [8, 6],
-                ],
-              },
+              'line-width': [
+                'interpolate',
+                ['exponential', 1],
+                ['zoom'],
+                3, 3,
+                8, 6
+              ],
               'line-opacity': 1,
             },
           }}
@@ -106,13 +101,13 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
           layout: {
             'text-field': '{NAME}',
             'text-font': ['Lato Bold'],
-            'text-size': {
-              base: 1,
-              stops: [
-                [4, 9],
-                [8, 22],
-              ],
-            },
+            'text-size': [
+              'interpolate',
+              ['exponential', 1],
+              ['zoom'],
+              4, 9,
+              8, 22
+            ],
             'text-padding': 5,
             'text-letter-spacing': 0.2,
             'text-max-width': 10,
@@ -140,13 +135,13 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
           layout: {
             'text-field': '{name}',
             'text-font': ['Lato Bold'],
-            'text-size': {
-              base: 1,
-              stops: [
-                [3, 0.02],
-                [6, 12],
-              ],
-            },
+            'text-size': [
+              'interpolate',
+              ['exponential', 1],
+              ['zoom'],
+              3, 0.02,
+              6, 12
+            ],
             'text-padding': 3,
             'text-letter-spacing': 0.1,
             'text-max-width': 7,
@@ -154,13 +149,13 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
             'text-offset': [0, 2],
             'icon-allow-overlap': true,
             'icon-image': 'circle',
-            'icon-size': {
-              base: 1,
-              stops: [
-                [3, 0.02],
-                [8, 0.7],
-              ],
-            },
+            'icon-size': [
+              'interpolate',
+              ['exponential', 1],
+              ['zoom'],
+              3, 0.02,
+              8, 0.7
+            ],
           },
         }}
       />

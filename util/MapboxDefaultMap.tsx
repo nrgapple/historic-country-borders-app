@@ -1,12 +1,13 @@
 import Map from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { ComponentProps } from 'react';
+import { ComponentProps, forwardRef } from 'react';
 import { mapboxToken } from './constants';
 
-export default function MapboxDefaultMap(props: ComponentProps<typeof Map>) {
+const MapboxDefaultMap = forwardRef<any, ComponentProps<typeof Map>>((props, ref) => {
   return (
     <Map
       {...props}
+      ref={ref}
       reuseMaps
       minZoom={1}
       maxZoom={15}
@@ -14,4 +15,8 @@ export default function MapboxDefaultMap(props: ComponentProps<typeof Map>) {
       mapStyle="mapbox://styles/nrgapple1/cm4awphea01dn01s3ajotcscl"
     />
   );
-}
+});
+
+MapboxDefaultMap.displayName = 'MapboxDefaultMap';
+
+export default MapboxDefaultMap;
