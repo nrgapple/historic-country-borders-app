@@ -1,6 +1,7 @@
 import React from 'react';
 import { Source, Layer } from 'react-map-gl';
 import { BordersEndpointData } from '../util/types';
+import { invertColor } from '../util/constants';
 
 interface MapSourcesProps {
   data: BordersEndpointData['data'];
@@ -31,7 +32,7 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
               ? [
                   'case',
                   ['==', ['get', 'NAME'], selectedCountry],
-                  '#FF6B35', // Bright orange for selected country
+                  '#000000', // Black outline for selected country
                   '#000000'  // Default black for others
                 ]
               : '#000000',
@@ -42,8 +43,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                   {
                     base: 1,
                     stops: [
-                      [3, 3],
-                      [8, 6],
+                      [3, 5],
+                      [8, 10],
                     ],
                   },
                   {
@@ -65,6 +66,28 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
           },
         }}
       />
+      {/* Add a bright inner border for selected country */}
+      {selectedCountry && (
+        <Layer
+          {...{
+            id: 'borders-selected-highlight',
+            type: 'line',
+            source: 'borders',
+            filter: ['==', ['get', 'NAME'], selectedCountry],
+            paint: {
+              'line-color': '#00FFFF', // Bright cyan for high contrast
+              'line-width': {
+                base: 1,
+                stops: [
+                  [3, 3],
+                  [8, 6],
+                ],
+              },
+              'line-opacity': 1,
+            },
+          }}
+        />
+      )}
     </Source>
   );
 
