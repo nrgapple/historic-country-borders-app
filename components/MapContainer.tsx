@@ -6,8 +6,7 @@ import React, {
 } from 'react';
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
-import { CoordTuple } from '../util/types';
-import PopupInfo, { Info } from './PopupInfo';
+import CountryInfo, { CountryInfoData } from './CountryInfo';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
@@ -26,7 +25,7 @@ export default function MapContainer({
   id,
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
-  const [selectedInfo, setSelectedInfo] = useState<Info | undefined>();
+  const [selectedInfo, setSelectedInfo] = useState<CountryInfoData | undefined>();
   const { viewState, updateMapView, isReady } = useMapQuery();
   const hasSetStyleRef = useRef(false);
 
@@ -102,7 +101,7 @@ export default function MapContainer({
     );
   }, [updateMapView]);
 
-  const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
+  const handleClick = useCallback(({ originalEvent, features }) => {
     if (!features?.length) {
       setSelectedInfo(undefined);
       return;
@@ -114,7 +113,6 @@ export default function MapContainer({
     
     setSelectedInfo({
       place,
-      position: lngLat.toArray() as CoordTuple,
     });
     
     ReactGA4.event({
@@ -125,7 +123,7 @@ export default function MapContainer({
     });
   }, []);
 
-  const closePopup = useCallback(() => {
+  const closeCountryInfo = useCallback(() => {
     setSelectedInfo(undefined);
   }, []);
 
@@ -140,9 +138,9 @@ export default function MapContainer({
         initialViewState={viewState}
         onMove={handleViewStateChange}
       >
-        <PopupInfo info={selectedInfo} onClose={closePopup} />
-        {places && data && <MapSources data={data} places={places} />}
+        {places && data && <MapSources data={data} places={places} selectedCountry={selectedInfo?.place} />}
       </MapboxDefaultMap>
+      <CountryInfo info={selectedInfo} onClose={closeCountryInfo} />
     </div>
   );
 }

@@ -5,9 +5,10 @@ import { BordersEndpointData } from '../util/types';
 interface MapSourcesProps {
   data: BordersEndpointData['data'];
   places: BordersEndpointData['places'];
+  selectedCountry?: string;
 }
 
-export default function MapSources({ data, places }: MapSourcesProps) {
+export default function MapSources({ data, places, selectedCountry }: MapSourcesProps) {
   const renderBordersLayer = () => (
     <Source id="borders" type="geojson" data={data.borders}>
       <Layer
@@ -26,14 +27,40 @@ export default function MapSources({ data, places }: MapSourcesProps) {
           id: 'borders-outline',
           type: 'line',
           paint: {
-            'line-color': '#000000',
-            'line-width': {
-              base: 1,
-              stops: [
-                [3, 1.2],
-                [8, 3],
-              ],
-            },
+            'line-color': selectedCountry 
+              ? [
+                  'case',
+                  ['==', ['get', 'NAME'], selectedCountry],
+                  '#FF6B35', // Bright orange for selected country
+                  '#000000'  // Default black for others
+                ]
+              : '#000000',
+            'line-width': selectedCountry 
+              ? [
+                  'case',
+                  ['==', ['get', 'NAME'], selectedCountry],
+                  {
+                    base: 1,
+                    stops: [
+                      [3, 3],
+                      [8, 6],
+                    ],
+                  },
+                  {
+                    base: 1,
+                    stops: [
+                      [3, 1.2],
+                      [8, 3],
+                    ],
+                  }
+                ]
+              : {
+                  base: 1,
+                  stops: [
+                    [3, 1.2],
+                    [8, 3],
+                  ],
+                },
             'line-opacity': 1,
           },
         }}
