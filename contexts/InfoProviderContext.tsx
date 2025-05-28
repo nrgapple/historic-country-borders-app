@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import ReactGA4 from 'react-ga4';
 import { InfoProvider } from '../hooks/useCountryInfo';
 
 interface InfoProviderContextType {
@@ -20,11 +21,35 @@ const getInitialProvider = (defaultProvider: InfoProvider): InfoProvider => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'ai' || stored === 'wikipedia') {
+      // Track provider restoration from localStorage
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'provider_restored',
+        label: stored,
+        value: 1,
+      });
+      
       return stored as InfoProvider;
     }
   } catch (error) {
     console.warn('Failed to read info provider preference from localStorage:', error);
+    
+    // Track localStorage error
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'localstorage_read_error',
+      label: 'provider_preference',
+      value: 1,
+    });
   }
+  
+  // Track default provider usage
+  ReactGA4.event({
+    category: 'AI Feature',
+    action: 'provider_default',
+    label: defaultProvider,
+    value: 1,
+  });
   
   return defaultProvider;
 };
@@ -37,8 +62,24 @@ const saveProvider = (provider: InfoProvider) => {
   
   try {
     localStorage.setItem(STORAGE_KEY, provider);
+    
+    // Track successful localStorage save
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'provider_saved',
+      label: provider,
+      value: 1,
+    });
   } catch (error) {
     console.warn('Failed to save info provider preference to localStorage:', error);
+    
+    // Track localStorage save error
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'localstorage_save_error',
+      label: provider,
+      value: 1,
+    });
   }
 };
 
@@ -62,14 +103,35 @@ export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({
   }, [defaultProvider]);
 
   const setProvider = (newProvider: InfoProvider) => {
+    const previousProvider = provider;
     setProviderState(newProvider);
     saveProvider(newProvider);
+    
+    // Track provider change
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'provider_changed',
+      label: `${previousProvider}_to_${newProvider}`,
+      value: 1,
+    });
   };
 
   const toggleProvider = () => {
     const newProvider = provider === 'wikipedia' ? 'ai' : 'wikipedia';
     setProvider(newProvider);
   };
+
+  // Track session provider usage
+  useEffect(() => {
+    if (isInitialized) {
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'session_provider_active',
+        label: provider,
+        value: 1,
+      });
+    }
+  }, [provider, isInitialized]);
 
   // Don't render until initialized to prevent hydration mismatch
   if (!isInitialized) {

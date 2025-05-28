@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import ReactGA4 from 'react-ga4';
 import { useInfoProvider } from '../contexts/InfoProviderContext';
 
 interface FooterProps {
@@ -13,6 +14,28 @@ export default function Footer({
   discussionUrl,
 }: FooterProps) {
   const { provider, toggleProvider } = useInfoProvider();
+
+  const handleToggleProvider = () => {
+    const newProvider = provider === 'wikipedia' ? 'ai' : 'wikipedia';
+    
+    // Track AI feature toggle
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'toggle_provider',
+      label: `${provider}_to_${newProvider}`,
+      value: 1,
+    });
+
+    // Track specific provider activation
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: newProvider === 'ai' ? 'enable_ai' : 'disable_ai',
+      label: newProvider,
+      value: 1,
+    });
+
+    toggleProvider();
+  };
 
   return (
     <div className="footer-compact">
@@ -43,7 +66,7 @@ export default function Footer({
           <div className="footer-compact-ai-toggle">
             <button
               className={`footer-compact-ai-button ${provider === 'ai' ? 'active' : ''}`}
-              onClick={toggleProvider}
+              onClick={handleToggleProvider}
               title={`Currently using ${provider === 'wikipedia' ? 'Wikipedia' : 'AI'}. Click to switch.`}
             >
               <span className="footer-compact-ai-icon">

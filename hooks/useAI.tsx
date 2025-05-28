@@ -1,4 +1,5 @@
 import useSWR, { Fetcher } from 'swr';
+import ReactGA4 from 'react-ga4';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
@@ -10,6 +11,8 @@ interface FetcherProps {
 }
 
 const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: FetcherProps) => {
+  const startTime = Date.now();
+  
   if (!countryName || countryName.trim() === '') {
     return 'Not Found';
   }
@@ -24,8 +27,25 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       year,
       timestamp: new Date().toISOString(),
     });
+
+    // Track missing API key
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'api_key_missing',
+      label: `${countryName}_${year}`,
+      value: 1,
+    });
+
     return 'AI information requires Gemini API key setup. Please check the README or switch to Wikipedia.';
   }
+
+  // Track AI request initiation
+  ReactGA4.event({
+    category: 'AI Feature',
+    action: 'request_initiated',
+    label: `${countryName}_${year}`,
+    value: 1,
+  });
 
   try {
     // Create a focused prompt for Gemini
@@ -69,6 +89,8 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       }),
     });
 
+    const responseTime = Date.now() - startTime;
+
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unable to read error response');
       console.error('Gemini API HTTP error:', {
@@ -79,6 +101,23 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         errorBody: errorText,
         timestamp: new Date().toISOString(),
       });
+
+      // Track API error
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'api_error',
+        label: `${response.status}_${countryName}_${year}`,
+        value: response.status,
+      });
+
+      // Track response time for failed requests
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'response_time_error',
+        label: `${countryName}_${year}`,
+        value: Math.round(responseTime),
+      });
+
       throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
 
@@ -102,8 +141,55 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         contentLength: content.length,
         timestamp: new Date().toISOString(),
       });
+
+      const trimmedContent = content.trim();
       
-      return content.trim() || 'AI generated empty response. Please try again or switch to Wikipedia.';
+      if (trimmedContent) {
+        // Track successful AI response
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_success',
+          label: `${countryName}_${year}`,
+          value: 1,
+        });
+
+        // Track response time for successful requests
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_time_success',
+          label: `${countryName}_${year}`,
+          value: Math.round(responseTime),
+        });
+
+        // Track response quality metrics
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_length',
+          label: `${countryName}_${year}`,
+          value: trimmedContent.length,
+        });
+
+        // Track word count for content analysis
+        const wordCount = trimmedContent.split(/\s+/).length;
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_word_count',
+          label: `${countryName}_${year}`,
+          value: wordCount,
+        });
+
+        return trimmedContent;
+      } else {
+        // Track empty response
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_empty',
+          label: `${countryName}_${year}`,
+          value: 1,
+        });
+
+        return 'AI generated empty response. Please try again or switch to Wikipedia.';
+      }
     }
 
     console.warn('Unexpected API response format:', {
@@ -112,9 +198,19 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       responseData: data,
       timestamp: new Date().toISOString(),
     });
+
+    // Track unexpected response format
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'response_format_error',
+      label: `${countryName}_${year}`,
+      value: 1,
+    });
     
     return 'AI returned unexpected response format. Please try again or switch to Wikipedia.';
   } catch (error) {
+    const responseTime = Date.now() - startTime;
+    
     console.error('Gemini API error:', error);
     console.error('Error details:', {
       countryName,
@@ -122,6 +218,31 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
       errorStack: error instanceof Error ? error.stack : undefined,
       timestamp: new Date().toISOString(),
+    });
+
+    // Track request failure
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'request_failed',
+      label: `${countryName}_${year}`,
+      value: 1,
+    });
+
+    // Track error type
+    const errorType = error instanceof Error ? error.name : 'UnknownError';
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'error_type',
+      label: `${errorType}_${countryName}_${year}`,
+      value: 1,
+    });
+
+    // Track response time for failed requests
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'response_time_failed',
+      label: `${countryName}_${year}`,
+      value: Math.round(responseTime),
     });
     
     // Return error message instead of fallback

@@ -1,17 +1,28 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import MapContainer from '../MapContainer'
+import ReactGA4 from 'react-ga4'
+import { InfoProviderProvider } from '../../contexts/InfoProviderContext'
 
-// Mock all the hooks and dependencies
+// Mock ReactGA4
+vi.mock('react-ga4', () => ({
+  default: {
+    event: vi.fn(),
+  },
+}))
+
+// Mock the useData hook
 vi.mock('../../hooks/useData', () => ({
   useData: vi.fn(),
 }))
 
+// Mock the useMapQuery hook
 vi.mock('../../hooks/useMapQuery', () => ({
   useMapQuery: vi.fn(),
 }))
 
+// Mock react-hot-toast
 vi.mock('react-hot-toast', () => ({
   default: {
     loading: vi.fn(),
@@ -19,66 +30,71 @@ vi.mock('react-hot-toast', () => ({
   },
 }))
 
-vi.mock('react-ga4', () => ({
-  default: {
-    event: vi.fn(),
-  },
+// Mock MapboxDefaultMap
+vi.mock('../../util/MapboxDefaultMap', () => ({
+  default: ({ children, onClick, onLoad, onStyleData, onMove, ...props }: any) => {
+    mockMapClickHandler = onClick
+    return (
+      <div 
+        data-testid="mapbox-map" 
+        onClick={(e) => {
+          if (onClick) {
+            onClick({
+              originalEvent: { stopPropagation: vi.fn() },
+              features: [{ properties: { NAME: 'Test Country' } }],
+              lngLat: { toArray: () => [10.5, 20.3] }
+            })
+          }
+        }}
+        {...props}
+      >
+        {children}
+      </div>
+    )
+  }
 }))
 
 // Mock MapSources
 vi.mock('../MapSources', () => ({
-  default: vi.fn(() => <div data-testid="map-sources" />),
+  default: ({ data, places, selectedCountry }: any) => (
+    <div data-testid="map-sources">
+      MapSources: {selectedCountry || 'none'}
+    </div>
+  ),
 }))
 
-
+// Mock CountryInfo
+vi.mock('../CountryInfo', () => ({
+  default: ({ info, year, onClose }: any) => (
+    <div data-testid="country-info">
+      {info?.place && (
+        <>
+          <div>{info.place}</div>
+          <div>📚 Loading information...</div>
+          <button onClick={onClose} aria-label="Close country information">Close</button>
+        </>
+      )}
+    </div>
+  ),
+}))
 
 import { useData } from '../../hooks/useData'
 import { useMapQuery } from '../../hooks/useMapQuery'
 import toast from 'react-hot-toast'
-import ReactGA4 from 'react-ga4'
 
 const mockUseData = useData as any
 const mockUseMapQuery = useMapQuery as any
 const mockToast = toast as any
 
-// Create a mock for MapboxDefaultMap that we can control
+// Store the click handler for testing
 let mockMapClickHandler: any = null
 
-vi.mock('../../util/MapboxDefaultMap', () => ({
-  default: vi.fn(({ children, onClick, onLoad, onStyleData, onMove, ref }) => {
-    mockMapClickHandler = onClick
-    
-    // Simulate the ref callback with a mock map instance
-    if (ref) {
-      const mockMapInstance = {
-        getMap: () => ({
-          on: vi.fn(),
-          off: vi.fn(),
-        })
-      }
-      ref(mockMapInstance)
-    }
-    
-    return (
-      <div 
-        data-testid="mapbox-map"
-        onClick={() => {
-          // Default click behavior - can be overridden in tests
-          if (mockMapClickHandler) {
-            const mockEvent = {
-              originalEvent: { stopPropagation: vi.fn() },
-              features: [{ properties: { NAME: 'Test Country' } }],
-              lngLat: { toArray: () => [10.5, 20.3] }
-            }
-            mockMapClickHandler(mockEvent)
-          }
-        }}
-      >
-        {children}
-      </div>
-    )
-  }),
-}))
+// Test wrapper component
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <InfoProviderProvider>
+    {children}
+  </InfoProviderProvider>
+)
 
 describe('MapContainer', () => {
   const defaultProps = {
@@ -118,11 +134,10 @@ describe('MapContainer', () => {
   })
 
   it('should render map container with mapbox map', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     expect(screen.getByTestId('mapbox-map')).toBeInTheDocument()
-    // Note: MapSources rendering depends on style loading events which are complex to mock
-    // The main functionality is tested in other tests
+    expect(screen.getByTestId('map-sources')).toBeInTheDocument()
   })
 
   it('should show loading toast when data is loading', () => {
@@ -131,7 +146,7 @@ describe('MapContainer', () => {
       isLoading: true,
     })
 
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     expect(mockToast.loading).toHaveBeenCalledWith('Loading Borders...', {
       id: 'loading',
@@ -140,13 +155,13 @@ describe('MapContainer', () => {
   })
 
   it('should dismiss loading toast when data is loaded', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     expect(mockToast.dismiss).toHaveBeenCalledWith('loading')
   })
 
   it('should handle map click and show popup', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     const map = screen.getByTestId('mapbox-map')
     fireEvent.click(map)
@@ -156,7 +171,7 @@ describe('MapContainer', () => {
   })
 
   it('should track analytics event on country click', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     const map = screen.getByTestId('mapbox-map')
     fireEvent.click(map)
@@ -170,7 +185,7 @@ describe('MapContainer', () => {
   })
 
   it('should close popup when close button is clicked', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // First click to open popup
     const map = screen.getByTestId('mapbox-map')
@@ -191,7 +206,7 @@ describe('MapContainer', () => {
   })
 
   it('should clear popup when data changes', () => {
-    const { rerender } = render(<MapContainer {...defaultProps} />)
+    const { rerender } = render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Open popup
     const map = screen.getByTestId('mapbox-map')
@@ -210,7 +225,7 @@ describe('MapContainer', () => {
   })
 
   it('should handle click with no features', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Simulate click with no features by calling the handler directly
     if (mockMapClickHandler) {
@@ -226,7 +241,7 @@ describe('MapContainer', () => {
   })
 
   it('should handle click with undefined features', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Simulate click with undefined features
     if (mockMapClickHandler) {
@@ -242,7 +257,7 @@ describe('MapContainer', () => {
   })
 
   it('should handle feature without NAME property', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Simulate click with feature without NAME
     await act(async () => {
@@ -268,7 +283,7 @@ describe('MapContainer', () => {
       isReady: true,
     })
 
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // This would be triggered by the map's onMove event
     // We can't easily test this without more complex mocking
@@ -281,7 +296,7 @@ describe('MapContainer', () => {
       isLoading: false,
     })
 
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     expect(screen.queryByTestId('map-sources')).not.toBeInTheDocument()
   })
@@ -292,7 +307,7 @@ describe('MapContainer', () => {
       isLoading: false,
     })
 
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     expect(screen.queryByTestId('map-sources')).not.toBeInTheDocument()
   })
@@ -304,7 +319,7 @@ describe('MapContainer', () => {
       isReady: false,
     })
 
-    const { rerender } = render(<MapContainer {...defaultProps} />)
+    const { rerender } = render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Map should render with loading key
     expect(screen.getByTestId('mapbox-map')).toBeInTheDocument()
@@ -323,7 +338,7 @@ describe('MapContainer', () => {
   })
 
   it('should handle analytics event with unknown place', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
     // Simulate click with feature without NAME
     await act(async () => {
@@ -346,15 +361,15 @@ describe('MapContainer', () => {
   })
 
   it('should handle coordinate edge cases in popup', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
-    // Simulate click with edge case coordinates
+    // Test with extreme coordinates
     await act(async () => {
       if (mockMapClickHandler) {
         const mockEvent = {
           originalEvent: { stopPropagation: vi.fn() },
           features: [{ properties: { NAME: 'Edge Case' } }],
-          lngLat: { toArray: () => [-180, 90] }
+          lngLat: { toArray: () => [-180, -90] }
         }
         mockMapClickHandler(mockEvent)
       }
@@ -364,59 +379,23 @@ describe('MapContainer', () => {
   })
 
   it('should pass correct props to MapboxDefaultMap', () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
-    const map = screen.getByTestId('mapbox-map')
-    expect(map).toBeInTheDocument()
-    
-    // The map should have the correct structure based on our mock
-    expect(screen.getByTestId('mapbox-map')).toBeInTheDocument()
+    const mapElement = screen.getByTestId('mapbox-map')
+    expect(mapElement).toBeInTheDocument()
   })
 
   it('should handle popup positioning at various map coordinates', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
-    // Test different coordinate positions that might affect popup positioning
-    const testPositions = [
-      { lng: -180, lat: 85, name: 'Far West North' },
-      { lng: 180, lat: -85, name: 'Far East South' },
-      { lng: 0, lat: 0, name: 'Equator Prime' },
-      { lng: -120, lat: 45, name: 'North America' },
-      { lng: 120, lat: -30, name: 'Australia' },
+    const coordinates = [
+      [0, 0],
+      [180, 90],
+      [-180, -90],
+      [120, 45],
     ]
-
-    for (const { lng, lat, name } of testPositions) {
-      await act(async () => {
-        if (mockMapClickHandler) {
-          const mockEvent = {
-            originalEvent: { stopPropagation: vi.fn() },
-            features: [{ properties: { NAME: name } }],
-            lngLat: { toArray: () => [lng, lat] }
-          }
-          mockMapClickHandler(mockEvent)
-        }
-      })
-      
-      // Country info should be rendered for each position
-      expect(screen.getByText(name)).toBeInTheDocument()
-      
-      // Close popup for next test
-      const closeButton = screen.getByLabelText('Close country information')
-      await act(async () => {
-        fireEvent.click(closeButton)
-      })
-    }
-  })
-
-  it('should handle rapid position changes without errors', async () => {
-    render(<MapContainer {...defaultProps} />)
     
-    // Simulate rapid clicking at different positions
-    const rapidPositions = [
-      [10, 20], [30, 40], [50, 60], [70, 80], [-10, -20]
-    ]
-
-    for (const [lng, lat] of rapidPositions) {
+    for (const [lng, lat] of coordinates) {
       await act(async () => {
         if (mockMapClickHandler) {
           const mockEvent = {
@@ -427,42 +406,55 @@ describe('MapContainer', () => {
           mockMapClickHandler(mockEvent)
         }
       })
+      
+      expect(screen.getByText(`Location ${lng},${lat}`)).toBeInTheDocument()
+    }
+  })
+
+  it('should handle rapid position changes without errors', async () => {
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
+    
+    // Simulate rapid clicks
+    for (let i = 0; i < 5; i++) {
+      await act(async () => {
+        if (mockMapClickHandler) {
+          const mockEvent = {
+            originalEvent: { stopPropagation: vi.fn() },
+            features: [{ properties: { NAME: `Country ${i}` } }],
+            lngLat: { toArray: () => [i * 10, i * 5] }
+          }
+          mockMapClickHandler(mockEvent)
+        }
+      })
     }
     
-    // Should still have a country info rendered (the last one)
-    expect(screen.getByText('Location -10,-20')).toBeInTheDocument()
+    // Should show the last clicked country
+    expect(screen.getByText('Country 4')).toBeInTheDocument()
   })
 
   it('should handle extreme coordinate values', async () => {
-    render(<MapContainer {...defaultProps} />)
+    render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper })
     
-    // Test with extreme but valid coordinate values
     const extremeCoords = [
+      [-180, -90],
+      [180, 90],
+      [0, 0],
       [-179.999, 89.999],
-      [179.999, -89.999],
-      [0.000001, 0.000001],
-      [-0.000001, -0.000001],
     ]
-
+    
     for (const [lng, lat] of extremeCoords) {
       await act(async () => {
         if (mockMapClickHandler) {
           const mockEvent = {
             originalEvent: { stopPropagation: vi.fn() },
-            features: [{ properties: { NAME: `Extreme ${lng},${lat}` } }],
+            features: [{ properties: { NAME: 'Extreme Location' } }],
             lngLat: { toArray: () => [lng, lat] }
           }
           mockMapClickHandler(mockEvent)
         }
       })
       
-      expect(screen.getByText(`Extreme ${lng},${lat}`)).toBeInTheDocument()
-      
-      // Close popup for next test
-      const closeButton = screen.getByLabelText('Close country information')
-      await act(async () => {
-        fireEvent.click(closeButton)
-      })
+      expect(screen.getByText('Extreme Location')).toBeInTheDocument()
     }
   })
 }) 

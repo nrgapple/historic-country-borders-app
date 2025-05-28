@@ -170,7 +170,7 @@ describe('useWikiData', () => {
       renderHook(() => useWikiData('Test Place'))
 
       // Verify wikijs was called with correct parameters
-      expect(mockUseSWR).toHaveBeenCalledWith('Test Place', expect.any(Function))
+      expect(mockUseSWR).toHaveBeenCalledWith('wiki:Test Place', expect.any(Function))
     })
 
     it('should fallback to REST API when wikijs fails', async () => {

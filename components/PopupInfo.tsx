@@ -1,6 +1,7 @@
 import { Popup } from 'react-map-gl';
 import { useAllowScroll } from '../hooks/useScrollLock';
 import { useEffect, useMemo } from 'react';
+import ReactGA4 from 'react-ga4';
 import { useCountryInfo } from '../hooks/useCountryInfo';
 import { useInfoProvider } from '../contexts/InfoProviderContext';
 import { CoordTuple } from '../util/types';
@@ -26,6 +27,82 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
 
   // Allow scrolling on the popup description
   useAllowScroll('.popup-description', !!place);
+
+  // Track popup display events
+  useEffect(() => {
+    if (place && position) {
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'popup_displayed',
+        label: `${provider}_${place}`,
+        value: 1,
+      });
+    }
+  }, [place, position, provider]);
+
+  // Track content loading completion
+  useEffect(() => {
+    if (place && !isLoading && description) {
+      const isError = description.includes('Something went wrong') || 
+                     description.includes('AI information requires') ||
+                     description.includes('No information available');
+      
+      if (!isError && !empty) {
+        // Track successful content display
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'content_displayed',
+          label: `${provider}_${place}`,
+          value: 1,
+        });
+
+        // Track content quality metrics
+        const wordCount = description.trim().split(/\s+/).length;
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'content_word_count',
+          label: `${provider}_${place}`,
+          value: wordCount,
+        });
+
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'content_length',
+          label: `${provider}_${place}`,
+          value: description.length,
+        });
+      } else if (isError) {
+        // Track error content display
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'content_error_displayed',
+          label: `${provider}_${place}`,
+          value: 1,
+        });
+      } else if (empty) {
+        // Track empty content
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'content_empty_displayed',
+          label: `${provider}_${place}`,
+          value: 1,
+        });
+      }
+    }
+  }, [place, isLoading, description, provider, empty]);
+
+  // Track popup close events
+  const handleClose = () => {
+    if (place) {
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'popup_closed',
+        label: `${provider}_${place}`,
+        value: 1,
+      });
+    }
+    onClose?.();
+  };
 
   // Determine popup size based on content with viewport constraints
   const popupStyle = useMemo(() => {
@@ -72,9 +149,7 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
           longitude={position[0]}
           closeOnClick={false}
           closeOnMove={false}
-          onClose={() => {
-            onClose?.();
-          }}
+          onClose={handleClose}
         >
           <div className="popup-title">
             {title || place}

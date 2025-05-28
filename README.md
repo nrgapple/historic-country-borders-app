@@ -17,115 +17,181 @@ The app provides country information through two sources:
 1. **Wikipedia** (default) - Fetches real-time information from Wikipedia
 2. **AI-powered** - Uses Google Gemini AI to generate country information with historical context
 
-You can switch between these sources using the toggle button in the top-right corner of the app.
+You can switch between these sources using the toggle button in the footer.
 
-### AI Information Setup (Optional)
+### AI Feature Analytics
 
-To enable AI-powered country information, you can set up a free Google Gemini API key:
+The app includes comprehensive Google Analytics tracking for the AI feature to understand user engagement and performance:
 
-1. Visit [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key)
-2. Create a free Google account if you don't have one
-3. Generate your API key (no credit card required)
-4. Create a `.env.local` file in the project root:
-   ```
-   NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
-   ```
+#### Tracked Events
 
-**Benefits of Gemini API:**
-- **Generous Free Tier**: 60 requests per minute
-- **No Credit Card Required**: Completely free to get started
-- **High Quality**: Advanced AI model with excellent historical knowledge
-- **Reliable**: No rate limit issues like other providers
+**Provider Usage:**
+- `toggle_provider` - When users switch between Wikipedia and AI
+- `enable_ai` / `disable_ai` - AI feature activation/deactivation
+- `provider_restored` - When preference is loaded from localStorage
+- `session_provider_active` - Active provider per session
 
-## Development
+**AI Requests:**
+- `request_initiated` - AI request started
+- `response_success` - Successful AI response
+- `response_time_success` - Response time for successful requests
+- `response_length` - Character count of AI responses
+- `response_word_count` - Word count of AI responses
+- `request_failed` - Failed AI requests
+- `api_error` - API-specific errors with status codes
+- `api_key_missing` - Missing API key events
 
-### Getting Started
+**Content Display:**
+- `popup_displayed` - When popups show AI vs Wikipedia content
+- `content_displayed` - Successful content display
+- `content_error_displayed` - Error content shown to users
+- `content_empty_displayed` - Empty/no content scenarios
+- `popup_closed` - User closes information popups
+
+**Performance Metrics:**
+- Response times (success/failure)
+- Content quality metrics (word count, character count)
+- Error rates and types
+- User engagement patterns
+
+#### Analytics Categories
+
+All AI-related events use the category `"AI Feature"` for easy filtering in Google Analytics.
+
+#### Data Privacy
+
+Analytics tracking is anonymized and focuses on feature usage patterns rather than personal information. No API keys or sensitive data are tracked.
+
+## Setup
+
+### Prerequisites
+
+- Node.js 18+ and yarn
+- Google Gemini API key (free tier available)
+- Google Analytics 4 property (optional, for analytics)
+
+### Installation
 
 ```bash
-# Install dependencies
+git clone https://github.com/nrgapple/historic-country-borders-app.git
+cd historic-country-borders-app
 yarn install
-
-# Start development server
-yarn dev
-
-# Build for production
-yarn build
 ```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```bash
+# Required for AI features
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional for analytics
+NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
+
+# Optional for map features
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+```
+
+### Getting API Keys
+
+#### Google Gemini API (Free)
+
+1. Visit [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key)
+2. Sign in with your Google account
+3. Click **"Create API Key"**
+4. Copy the generated key to your `.env.local` file
+
+**Benefits:**
+- ✅ 60 requests per minute (generous free tier)
+- ✅ No credit card required
+- ✅ High-quality AI responses
+- ✅ Excellent historical knowledge
+
+#### Google Analytics 4 (Optional)
+
+1. Visit [Google Analytics](https://analytics.google.com/)
+2. Create a new GA4 property
+3. Get your Measurement ID (format: G-XXXXXXXXXX)
+4. Add to your `.env.local` file
+
+### Development
+
+```bash
+yarn dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ### Testing
 
-This project uses [Vitest](https://vitest.dev/) for testing with React Testing Library.
-
 ```bash
-# Run tests in watch mode
+# Run all tests
 yarn test
 
-# Run tests once
-yarn test:run
+# Run tests in watch mode
+yarn test:watch
 
-# Run tests with UI
-yarn test:ui
-
-# Run tests with coverage
-yarn test:coverage
+# Run specific test files
+yarn test hooks/__tests__/useAI.test.tsx
 ```
 
-For more details about testing, see [test/README.md](test/README.md).
+## AI Feature Troubleshooting
 
-## Data
+### Common Issues
 
-The data is pulled from [aourednik's](https://github.com/aourednik/historical-basemaps) historical basemaps repo.
+**"AI information requires Gemini API key setup"**
+- Add your Gemini API key to `.env.local`
+- Restart the development server
+- See [GEMINI_SETUP.md](./GEMINI_SETUP.md) for detailed setup
 
-## Keep in Mind
+**Slow AI responses**
+- Normal response time: 1-3 seconds
+- Check your internet connection
+- Gemini API has rate limits (60 requests/minute)
 
-1. historical boundaries are even more disputed than contemporary ones, that
-2. the actual concept of territory and national boundary becomes meaningful, in Europe, only since the [Peace of Westphalia](https://en.wikipedia.org/wiki/Peace_of_Westphalia) (1648), that
-3. areas of civilizations actually overlap, especially in ancient history, and that
-4. overlaying these ancient vector maps on contemporary physical maps can be misleading; rivers, lakes, shorelines _do_ change very much over millenia; think for instance about the evolution of the [Aral sea](https://en.wikipedia.org/wiki/Aral_Sea) since the 1980s.
+**Empty or error responses**
+- Try switching to Wikipedia temporarily
+- Check browser console for detailed error messages
+- Verify your API key is valid
 
-Finally, note that overlapping areas are useally dealt with as topological errors in traditional GIS. Fuzzy borders are difficult to handle. Certainly a field to investigate...
+### Analytics Dashboard
 
-## AI Features & Setup
+To view AI feature analytics in Google Analytics:
 
-### Getting a Google Gemini API Key
+1. Go to **Events** → **All Events**
+2. Filter by **Event Category** = "AI Feature"
+3. Key metrics to monitor:
+   - `toggle_provider` - Feature adoption
+   - `response_success` vs `request_failed` - Success rate
+   - `response_time_success` - Performance
+   - `content_displayed` - User engagement
 
-1. Go to [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key)
-2. Sign in with your Google account
-3. Click "Create API Key" 
-4. Copy your API key and add it to your `.env.local` file
+### Performance Monitoring
 
-### Why We Switched to Gemini
+The app tracks several performance metrics:
 
-We migrated from Hugging Face to Google Gemini API because:
+- **Response Times**: Average AI response time vs Wikipedia
+- **Success Rates**: AI request success/failure ratios
+- **Content Quality**: Word count and length of AI responses
+- **User Engagement**: How users interact with AI vs Wikipedia content
 
-- **No Rate Limit Issues**: Gemini offers 60 requests/minute vs HF's restrictive limits
-- **No Credit Card Required**: Completely free to get started
-- **Better Reliability**: No "exceeded credits" errors
-- **High Quality**: Advanced AI with excellent historical knowledge
-- **Easy Setup**: Simple API key generation process
+## Contributing
 
-### Troubleshooting AI Issues
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
 
-1. **"AI information requires Gemini API key setup"**
-   - Get your free API key from [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key)
-   - Add it to your `.env.local` file as `NEXT_PUBLIC_GEMINI_API_KEY=your_key`
-   - Restart your development server
+## License
 
-2. **"Something went wrong with AI information"**
-   - Check your internet connection
-   - Verify your API key is correct
-   - Use Wikipedia as fallback
+MIT License - see [LICENSE](LICENSE) for details.
 
-3. **Rate limits (rare with Gemini)**
-   - Gemini offers 60 requests/minute, which should be sufficient for most use cases
-   - If you need higher limits, consider upgrading to a paid plan
+## Acknowledgments
 
-### API Comparison
-
-| Provider | Free Requests | Credit Card Required | Rate Limit Issues |
-|----------|---------------|---------------------|-------------------|
-| **Google Gemini** | 60/minute | ❌ No | ❌ Rare |
-| Hugging Face | Variable | ❌ No | ✅ Common |
-| OpenAI | Limited | ✅ Yes | ✅ Common |
-
-**Recommendation**: Use Google Gemini for the best free AI experience.
+- Historical border data from [World Historical Gazetteer](https://whgazetteer.org/)
+- AI powered by [Google Gemini](https://ai.google.dev/)
+- Maps powered by [Mapbox](https://www.mapbox.com/)
+- Analytics by [Google Analytics 4](https://analytics.google.com/)
