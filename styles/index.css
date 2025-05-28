@@ -256,41 +256,51 @@ a {
 /* Mobile Responsive for Compact Footer */
 @media (max-width: 768px) {
   .footer-compact {
-    bottom: 6px;
-    left: 6px;
+    bottom: 8px;
+    left: 8px;
   }
   
   .footer-compact-trigger {
-    padding: 4px 8px;
+    padding: 8px 12px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   
   .footer-compact-text {
-    font-size: 9px;
+    font-size: 12px;
   }
   
   .footer-compact-expanded {
-    min-width: 180px;
-    max-width: 240px;
-    padding: 10px;
+    min-width: 200px;
+    max-width: 280px;
+    padding: 12px;
   }
   
   .footer-compact-title {
-    font-size: 11px;
+    font-size: 13px;
   }
   
   .footer-compact-update,
   .footer-compact-link {
-    font-size: 9px;
+    font-size: 11px;
+  }
+  
+  .footer-compact-link {
+    padding: 6px 8px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
   }
 }
 
 /* Country Info Component - Textbook Theme */
 .country-info {
   position: absolute;
-  bottom: 60px;
+  bottom: 80px;
   left: 8px;
-  z-index: 1000;
-  width: 280px;
+  z-index: 1500;
+  width: 320px;
   max-width: calc(100vw - 16px);
   background: rgba(245, 245, 220, 0.95);
   border: 2px solid #8B4513;
@@ -323,7 +333,7 @@ a {
 }
 
 .country-info-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: #8B4513;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
@@ -361,13 +371,13 @@ a {
 }
 
 .country-info-description {
-  max-height: 200px;
+  max-height: 240px;
   padding: 12px 16px 16px 16px;
-  font-size: 13px;
+  font-size: 15px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   color: #654321;
-  line-height: 1.4;
+  line-height: 1.5;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
   background: rgba(245, 245, 220, 0.95);
 }
@@ -415,53 +425,65 @@ a {
 /* Mobile responsive country info styling */
 @media (max-width: 768px) {
   .country-info {
-    width: 240px;
-    bottom: 50px;
-    left: 6px;
-    max-width: calc(100vw - 12px);
+    width: calc(100vw - 20px);
+    bottom: 100px;
+    left: 10px;
+    max-width: 400px;
+    max-height: calc(100vh - 200px);
   }
   
   .country-info-header {
-    padding: 10px 12px 6px 12px;
+    padding: 14px 18px 10px 18px;
   }
   
   .country-info-title {
-    font-size: 14px;
-    line-height: 1.2;
+    font-size: 18px;
+    line-height: 1.4;
   }
   
   .country-info-close {
-    width: 20px;
-    height: 20px;
-    font-size: 14px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    min-width: 36px;
+    min-height: 36px;
   }
   
   .country-info-description {
-    padding: 10px 12px 12px 12px;
-    font-size: 12px;
-    max-height: 120px;
+    padding: 14px 18px 18px 18px;
+    font-size: 16px;
+    max-height: calc(100vh - 300px);
+    min-height: 80px;
   }
   
   .country-info-description.loading,
   .country-info-description.empty {
-    min-height: 50px;
+    min-height: 80px;
   }
 }
 
 /* Extra small screens */
 @media (max-width: 480px) {
   .country-info {
-    width: calc(100vw - 12px);
-    max-height: 50vh;
+    width: calc(100vw - 16px);
+    bottom: 120px;
+    left: 8px;
+    max-height: calc(100vh - 220px);
+  }
+  
+  .country-info-title {
+    font-size: 17px;
   }
   
   .country-info-description {
-    max-height: 100px;
+    font-size: 15px;
+    max-height: calc(100vh - 320px);
+    min-height: 60px;
   }
   
   .country-info-description.loading,
   .country-info-description.empty {
-    min-height: 40px;
+    min-height: 60px;
   }
 }
 
@@ -527,27 +549,28 @@ a {
 /* Mobile Responsive for Persistent UI Toggle */
 @media (max-width: 768px) {
   .persistent-ui-toggle {
-    bottom: 6px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
   }
   
   .persistent-ui-toggle-btn {
-    padding: 4px 8px;
+    padding: 8px 12px;
+    min-height: 44px;
   }
   
   .persistent-ui-toggle-text {
-    font-size: 9px;
+    font-size: 12px;
   }
   
   .persistent-ui-toggle.minimal .persistent-ui-toggle-btn {
-    padding: 6px;
-    width: 32px;
-    height: 32px;
+    padding: 10px;
+    width: 44px;
+    height: 44px;
   }
   
   .persistent-ui-toggle.minimal .persistent-ui-toggle-icon {
-    font-size: 14px;
+    font-size: 18px;
   }
 }
 
@@ -748,35 +771,46 @@ a {
 /* Mobile Responsive for Compact Feedback Widget */
 @media (max-width: 768px) {
   .feedback-widget-compact {
-    bottom: 6px;
-    right: 6px;
+    bottom: 8px;
+    right: 8px;
   }
   
   .feedback-widget-compact-trigger {
-    padding: 4px 8px;
+    padding: 8px 12px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   
   .feedback-widget-compact-text {
-    font-size: 9px;
-  }
-  
-  .feedback-widget-compact-modal {
-    min-width: 240px;
-    max-width: 280px;
-    padding: 12px;
-  }
-  
-  .feedback-widget-compact-title {
     font-size: 12px;
   }
   
+  .feedback-widget-compact-modal {
+    min-width: 260px;
+    max-width: 320px;
+    padding: 16px;
+  }
+  
+  .feedback-widget-compact-title {
+    font-size: 14px;
+  }
+  
   .feedback-widget-compact-description {
-    font-size: 9px;
+    font-size: 12px;
   }
   
   .feedback-widget-compact-input,
   .feedback-widget-compact-textarea {
-    font-size: 9px;
+    font-size: 14px;
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+  
+  .feedback-widget-compact-submit {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-height: 44px;
   }
 }
 
@@ -931,6 +965,8 @@ a {
   pointer-events: auto;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
 }
 
 .timeline-years-container::-webkit-scrollbar {
@@ -1048,45 +1084,184 @@ a {
 
 
 
+/* Global mobile touch improvements */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements have proper touch targets */
+  button, 
+  [role="button"], 
+  input[type="button"], 
+  input[type="submit"], 
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Improve touch scrolling for all scrollable areas */
+  *[style*="overflow"] {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
+  .timeline-container {
+    min-height: 120px !important;
+    padding: 8px 0 !important;
+  }
+  
   .timeline-discrete {
+    padding: 16px 12px;
+    gap: 12px;
+    margin: 0;
+  }
+  
+  .timeline-current-year {
+    font-size: 24px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+  }
+  
+  .timeline-nav-container {
+    gap: 12px;
+    padding: 12px 8px;
+  }
+  
+  .timeline-nav-btn {
     padding: 12px 16px;
-    gap: 10px;
-    margin: 8px;
+    font-size: 20px;
+    min-width: 48px;
+    height: 48px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    background: rgba(245, 245, 220, 0.9);
+    backdrop-filter: blur(2px);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .timeline-nav-btn:hover:not(:disabled) {
+    background: rgba(245, 245, 220, 1);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+  }
+  
+  .timeline-years-container {
+    padding: 8px;
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+  
+  .timeline-year-btn {
+    min-width: 70px;
+    height: 40px;
+    font-size: 13px;
+    padding: 6px 10px;
+    margin: 0 3px;
+    touch-action: manipulation;
+    scroll-snap-align: center;
+  }
+  
+  .timeline-years-scroll {
+    padding: 8px 6px;
+    gap: 6px;
+  }
+  
+  .timeline-nav-arrow {
+    font-size: 24px;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .timeline-container {
+    min-height: 140px !important;
+  }
+  
+  .timeline-discrete {
+    padding: 20px 8px;
+    gap: 16px;
+  }
+  
+  .timeline-current-year {
+    font-size: 28px;
+    padding: 10px 16px;
+  }
+  
+  .timeline-nav-btn {
+    padding: 14px 18px;
+    font-size: 22px;
+    min-width: 52px;
+    height: 52px;
+  }
+  
+  .timeline-year-btn {
+    min-width: 80px;
+    height: 44px;
+    font-size: 14px;
+    padding: 8px 12px;
+    margin: 0 4px;
+  }
+  
+  .timeline-nav-arrow {
+    font-size: 26px;
+  }
+}
+
+/* Landscape orientation on mobile devices */
+@media (max-width: 768px) and (orientation: landscape) {
+  .timeline-container {
+    min-height: 100px !important;
+  }
+  
+  .timeline-discrete {
+    padding: 12px 8px;
+    gap: 8px;
   }
   
   .timeline-current-year {
     font-size: 20px;
-    padding: 6px 10px;
+    padding: 6px 12px;
+    margin-bottom: 4px;
   }
   
   .timeline-nav-container {
-    gap: 10px;
     padding: 8px 6px;
   }
   
   .timeline-nav-btn {
-    padding: 6px 12px;
-    font-size: 16px;
+    padding: 8px 12px;
+    font-size: 18px;
     min-width: 40px;
     height: 40px;
   }
   
   .timeline-year-btn {
-    min-width: 55px;
-    height: 32px;
-    font-size: 11px;
+    min-width: 60px;
+    height: 36px;
+    font-size: 12px;
     padding: 4px 8px;
-    margin: 0 2px;
   }
   
-  .timeline-years-scroll {
-    padding: 6px 4px;
+  /* Popup adjustments for landscape */
+  .country-info {
+    bottom: 80px;
+    max-height: calc(100vh - 160px);
+    width: 50vw;
+    max-width: 500px;
   }
   
-  .timeline-nav-arrow {
-    font-size: 20px;
+  .mapboxgl-popup-content {
+    max-height: calc(100vh - 140px) !important;
+    max-width: 60vw !important;
+  }
+  
+  .popup-description {
+    max-height: calc(100vh - 220px);
+  }
+  
+  .country-info-description {
+    max-height: calc(100vh - 240px);
   }
 }
 
@@ -1182,15 +1357,15 @@ svg {
 
 .popup-title {
   width: 100%;
-  padding: 12px 16px 8px 16px;
-  font-size: 16px;
+  padding: 14px 18px 10px 18px;
+  font-size: 18px;
   font-weight: bold;
   color: #8B4513;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #D2B48C;
   background: rgba(245, 245, 220, 0.8);
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.4;
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -1199,14 +1374,14 @@ svg {
 }
 
 .popup-description {
-  max-height: 200px;
-  padding: 12px 16px 16px 16px;
-  font-size: 13px;
+  max-height: 240px;
+  padding: 14px 18px 18px 18px;
+  font-size: 15px;
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   color: #654321;
-  line-height: 1.4;
+  line-height: 1.5;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
   background: rgba(245, 245, 220, 0.95);
 }
@@ -1275,30 +1450,32 @@ svg {
 /* Mobile responsive popup styling */
 @media (max-width: 768px) {
   .mapboxgl-popup-content {
-    border-width: 1px !important;
+    border-width: 2px !important;
     max-width: 95vw !important;
-    max-height: 60vh !important;
+    max-height: calc(100vh - 200px) !important;
   }
   
   .popup-title {
-    padding: 10px 12px 6px 12px;
-    font-size: 14px;
-    line-height: 1.2;
+    padding: 16px 20px 12px 20px;
+    font-size: 18px;
+    line-height: 1.4;
     word-break: break-word;
   }
   
   .popup-description {
-    padding: 10px 12px 12px 12px;
-    font-size: 12px;
-    max-height: 120px;
+    padding: 16px 20px 20px 20px;
+    font-size: 16px;
+    max-height: calc(100vh - 320px);
   }
   
   .mapboxgl-popup-close-button {
-    width: 20px !important;
-    height: 20px !important;
-    font-size: 14px !important;
-    top: 6px !important;
-    right: 6px !important;
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 20px !important;
+    top: 10px !important;
+    right: 10px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
   }
 }
 
@@ -1306,11 +1483,18 @@ svg {
 @media (max-width: 480px) {
   .mapboxgl-popup-content {
     max-width: 98vw !important;
-    max-height: 50vh !important;
+    max-height: calc(100vh - 180px) !important;
+  }
+  
+  .popup-title {
+    font-size: 17px;
+    padding: 14px 18px 10px 18px;
   }
   
   .popup-description {
-    max-height: 100px;
+    font-size: 15px;
+    max-height: calc(100vh - 280px);
+    padding: 14px 18px 18px 18px;
   }
 }
 
@@ -1392,9 +1576,10 @@ div[data-hot-toast] div[role="status"] {
 /* Mobile responsive toast styling */
 @media (max-width: 768px) {
   .react-hot-toast {
-    font-size: 11px !important;
-    padding: 10px 12px !important;
-    max-width: 300px !important;
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    max-width: 320px !important;
+    line-height: 1.5 !important;
   }
 }
 
