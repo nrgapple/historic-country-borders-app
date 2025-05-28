@@ -28,6 +28,8 @@ export default function MapContainer({
   const [selectedInfo, setSelectedInfo] = useState<CountryInfoData | undefined>();
   const { viewState, updateMapView, isReady } = useMapQuery();
   const hasSetStyleRef = useRef(false);
+  const mapRef = useRef<any>(null);
+  const [isWaitingForStyleLoad, setIsWaitingForStyleLoad] = useState(false);
 
   // Handle loading toast
   useEffect(() => {
@@ -44,20 +46,32 @@ export default function MapContainer({
     setSelectedInfo(undefined);
   }, [data]);
 
-  const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
+  // Reset style loading state when map key changes
+  useEffect(() => {
+    setIsWaitingForStyleLoad(false);
+    hasSetStyleRef.current = false;
+  }, [isReady]);
+
+  const handleStyleLoad = useCallback(({ target }: MapboxEvent) => {
+    // Use style.load event for reliable style loading detection
+    setIsWaitingForStyleLoad(false);
     target.resize();
   }, []);
 
-  const handleLoad = useCallback(({ target }: MapboxEvent) => {
+  // Cleanup effect to remove event listeners
+  useEffect(() => {
+    return () => {
+      if (mapRef.current && mapRef.current.getMap) {
+        const map = mapRef.current.getMap();
+        map.off('style.load', handleStyleLoad);
+      }
+    };
+  }, [handleStyleLoad]);
+
+  const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
     target.resize();
     
-    ReactGA4.event({
-      category: 'Map',
-      action: 'load',
-      label: 'map loaded',
-      value: 1,
-    });
-    
+    // Only proceed if this is the final style load event and we haven't set the style yet
     if (hasSetStyleRef.current || !target.isStyleLoaded()) {
       return;
     }
@@ -89,7 +103,21 @@ export default function MapContainer({
         },
       ],
     };
+    
+    // Set the new style and wait for it to load
     target.setStyle(newStyle);
+    setIsWaitingForStyleLoad(true); // Wait until the new style loads
+  }, []);
+
+  const handleLoad = useCallback(({ target }: MapboxEvent) => {
+    target.resize();
+    
+    ReactGA4.event({
+      category: 'Map',
+      action: 'load',
+      label: 'map loaded',
+      value: 1,
+    });
   }, []);
 
   const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
@@ -137,8 +165,22 @@ export default function MapContainer({
         onClick={handleClick}
         initialViewState={viewState}
         onMove={handleViewStateChange}
+        // Use a ref to access the map instance for style.load event
+        ref={(mapInstance) => {
+          mapRef.current = mapInstance;
+          if (mapInstance && mapInstance.getMap) {
+            const map = mapInstance.getMap();
+            // Remove any existing listener to prevent duplicates
+            map.off('style.load', handleStyleLoad);
+            // Add style.load event listener for reliable style loading detection
+            map.on('style.load', handleStyleLoad);
+          }
+        }}
       >
-        {places && data && <MapSources data={data} places={places} selectedCountry={selectedInfo?.place} />}
+        {/* Only render MapSources when style is ready and data is available */}
+        {places && data && !isWaitingForStyleLoad && (
+          <MapSources data={data} places={places} selectedCountry={selectedInfo?.place} />
+        )}
       </MapboxDefaultMap>
       <CountryInfo info={selectedInfo} onClose={closeCountryInfo} />
     </div>
