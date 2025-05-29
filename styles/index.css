@@ -1702,3 +1702,287 @@ div[data-hot-toast] div[role="status"] {
 .dot-label span {
   bottom: -6px !important;
 }
+
+/* Settings Button and Modal */
+
+/* Settings Button positioned near other UI controls */
+.settings-button {
+  position: absolute;
+  top: 180px;
+  right: 15px;
+  z-index: 1000;
+  font-family: 'Times New Roman', serif;
+}
+
+.settings-button-trigger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(245, 245, 220, 0.95);
+  border: 2px solid #8B4513;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+}
+
+.settings-button-trigger:hover {
+  background: rgba(245, 245, 220, 1);
+  border-color: #654321;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.settings-button-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Settings Modal */
+.settings-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px);
+}
+
+.settings-modal {
+  background: rgba(245, 245, 220, 0.98);
+  border: 3px solid #8B4513;
+  border-radius: 8px;
+  box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.5);
+  font-family: 'Times New Roman', serif;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(8px);
+  min-width: 320px;
+  min-height: 400px;
+}
+
+.settings-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 2px solid #8B4513;
+  background: rgba(210, 180, 140, 0.8);
+}
+
+.settings-modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #8B4513;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.settings-modal-close {
+  background: rgba(139, 69, 19, 0.1);
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8B4513;
+  transition: all 0.2s ease;
+}
+
+.settings-modal-close:hover {
+  background: rgba(139, 69, 19, 0.2);
+  border-color: #654321;
+  transform: scale(1.1);
+}
+
+.settings-modal-content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  color: #654321;
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #8B4513;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #D2B48C;
+  padding-bottom: 4px;
+}
+
+.settings-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-option {
+  background: rgba(245, 245, 220, 0.9);
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  min-width: 80px;
+  flex: 1;
+}
+
+.settings-option:hover {
+  background: rgba(245, 245, 220, 1);
+  border-color: #654321;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.settings-option.active {
+  background: #DEB887;
+  border-color: #654321;
+  border-width: 3px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.settings-option-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #8B4513;
+  margin-bottom: 2px;
+}
+
+.settings-option-description {
+  font-size: 10px;
+  color: #654321;
+  font-style: italic;
+}
+
+.settings-opacity-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.settings-opacity-option {
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #F5F5DC;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-opacity-option:hover {
+  border-color: #654321;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+.settings-opacity-option.active {
+  border-color: #654321;
+  border-width: 3px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+  transform: scale(1.1);
+}
+
+.settings-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #D2B48C;
+  text-align: center;
+}
+
+.settings-reset-button {
+  background: rgba(139, 69, 19, 0.1);
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-family: 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #8B4513;
+  transition: all 0.2s ease;
+}
+
+.settings-reset-button:hover {
+  background: rgba(139, 69, 19, 0.2);
+  border-color: #654321;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsive settings */
+@media (max-width: 768px) {
+  .settings-button {
+    top: 140px;
+    right: 12px;
+  }
+
+  .settings-modal {
+    margin: 8px;
+    min-width: 280px;
+    max-height: calc(100vh - 16px);
+  }
+
+  .settings-modal-content {
+    padding: 16px;
+  }
+
+  .settings-options {
+    flex-direction: column;
+  }
+
+  .settings-option {
+    min-width: unset;
+    flex: none;
+  }
+
+  .settings-opacity-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-modal {
+    margin: 4px;
+    min-width: unset;
+    width: calc(100vw - 8px);
+  }
+
+  .settings-opacity-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Settings-based dynamic styling */
+
+/* Note: Text size and text case settings now only affect map labels via MapSources.tsx */

@@ -4,6 +4,7 @@ import {
   mapBCFormat,
 } from '../util/constants';
 import PersistentUIToggle from '../components/PersistentUIToggle';
+import SettingsButton from '../components/SettingsButton';
 import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
@@ -114,6 +115,7 @@ export default function Viewer({ years, user, id, config }: DataProps) {
         isUIHidden={hide}
         onToggle={handleToggleUI}
       />
+      <SettingsButton />
       <Toaster
         toastOptions={{
           className: 'react-hot-toast',

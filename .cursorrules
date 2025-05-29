@@ -11,3 +11,8 @@ Examples:
 - To install React: `yarn add react`
 - To remove Lodash: `yarn remove lodash`
 - To run the build script: `yarn build`
+
+Try to write tests around your work.
+- Use package.json to find testing commands
+- Write useful tests to check work
+- Write tests for regression testing

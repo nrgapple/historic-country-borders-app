@@ -4,6 +4,8 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
 import { InfoProviderProvider } from '../contexts/InfoProviderContext';
+import { SettingsProvider } from '../contexts/SettingsContext';
+import SettingsApplier from '../components/SettingsApplier';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import CompactFeedbackWidget from '../components/CompactFeedbackWidget';
@@ -27,9 +29,12 @@ export default function App({ Component, pageProps }: AppProps) {
     <QueryProvider>
       <StateProvider>
         <InfoProviderProvider>
-          <FeedbackWrapper />
-          <Component {...pageProps} />
-          <SpeedInsights />
+          <SettingsProvider>
+            <SettingsApplier />
+            <FeedbackWrapper />
+            <Component {...pageProps} />
+            <SpeedInsights />
+          </SettingsProvider>
         </InfoProviderProvider>
       </StateProvider>
     </QueryProvider>
