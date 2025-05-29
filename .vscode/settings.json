@@ -1,3 +1,7 @@
 {
-  "cSpell.words": ["Mapbox"]
+  "cSpell.words": ["Mapbox"],
+  "npm.packageManager": "yarn",
+  "npm.exclude": "**/node_modules/**",
+  "typescript.preferences.npmScript": "yarn",
+  "javascript.preferences.npmScript": "yarn"
 }
