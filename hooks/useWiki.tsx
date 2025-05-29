@@ -25,8 +25,6 @@ const fetcher: Fetcher<string, string> = async (title: string) => {
 export const useWikiData = (name: string) => {
   const { data, error } = useSWR(`wiki:${name}`, () => fetcher(name));
 
-  console.log('useWikiData - Name:', name, 'Data:', data, 'Loading:', !error && !data);
-
   return {
     title: name,
     info: data || 'Not Found',

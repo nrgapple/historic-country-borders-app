@@ -1,9 +1,13 @@
 import useSWR, { Fetcher } from 'swr';
 import ReactGA4 from 'react-ga4';
+import { kv } from '@vercel/kv';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+
+// Cache TTL in seconds (1 hour)
+const CACHE_TTL = 3600;
 
 interface FetcherProps {
   countryName: string;
@@ -15,6 +19,63 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
   
   if (!countryName || countryName.trim() === '') {
     return 'Not Found';
+  }
+
+  // Create cache key
+  const cacheKey = `ai:${countryName.toLowerCase().replace(/\s+/g, '_')}:${year}`;
+  
+  try {
+    // Try to get cached response first
+    const cachedResponse = await kv.get<string>(cacheKey);
+    if (cachedResponse) {
+      console.log('Cache hit for AI request:', {
+        countryName,
+        year,
+        cacheKey,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Track cache hit
+      ReactGA4.event({
+        category: 'AI Feature',
+        action: 'cache_hit',
+        label: `${countryName}_${year}`,
+        value: 1,
+      });
+
+      return cachedResponse;
+    }
+
+    console.log('Cache miss for AI request:', {
+      countryName,
+      year,
+      cacheKey,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Track cache miss
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'cache_miss',
+      label: `${countryName}_${year}`,
+      value: 1,
+    });
+  } catch (cacheError) {
+    console.warn('Redis cache error (continuing without cache):', {
+      countryName,
+      year,
+      cacheKey,
+      error: cacheError instanceof Error ? cacheError.message : 'Unknown cache error',
+      timestamp: new Date().toISOString(),
+    });
+
+    // Track cache error
+    ReactGA4.event({
+      category: 'AI Feature',
+      action: 'cache_error',
+      label: `${countryName}_${year}`,
+      value: 1,
+    });
   }
 
   // Check API key dynamically for better testability
@@ -145,6 +206,44 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       const trimmedContent = content.trim();
       
       if (trimmedContent) {
+        // Cache the successful response ONLY - we never cache error responses
+        // This ensures only valid AI content is served from cache
+        try {
+          await kv.set(cacheKey, trimmedContent, { ex: CACHE_TTL });
+          console.log('Successfully cached AI response:', {
+            countryName,
+            year,
+            cacheKey,
+            ttl: CACHE_TTL,
+            contentLength: trimmedContent.length,
+            timestamp: new Date().toISOString(),
+          });
+
+          // Track successful cache write
+          ReactGA4.event({
+            category: 'AI Feature',
+            action: 'cache_write_success',
+            label: `${countryName}_${year}`,
+            value: 1,
+          });
+        } catch (cacheWriteError) {
+          console.warn('Failed to cache AI response (continuing normally):', {
+            countryName,
+            year,
+            cacheKey,
+            error: cacheWriteError instanceof Error ? cacheWriteError.message : 'Unknown cache write error',
+            timestamp: new Date().toISOString(),
+          });
+
+          // Track cache write error
+          ReactGA4.event({
+            category: 'AI Feature',
+            action: 'cache_write_error',
+            label: `${countryName}_${year}`,
+            value: 1,
+          });
+        }
+
         // Track successful AI response
         ReactGA4.event({
           category: 'AI Feature',
@@ -256,8 +355,6 @@ export const useAIData = (name: string, year: string = new Date().getFullYear().
     revalidateOnReconnect: false,
     dedupingInterval: 300000, // 5 minutes
   });
-
-  console.log('useAIData - Name:', name, 'Year:', year, 'Data:', data, 'Loading:', !error && !data);
 
   return {
     title: name,

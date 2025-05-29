@@ -19,6 +19,17 @@ The app provides country information through two sources:
 
 You can switch between these sources using the toggle button in the footer.
 
+### AI Response Caching
+
+The app uses **Vercel KV (Redis)** to cache AI responses for improved performance:
+
+- ⚡ **Instant responses** for previously requested countries/years
+- 💰 **Reduced API costs** - Fewer calls to Google Gemini
+- 🔧 **Smart expiration** - 1-hour cache TTL keeps content fresh
+- 📊 **Analytics tracking** - Cache hit/miss rates in Google Analytics
+
+See [REDIS_SETUP.md](./REDIS_SETUP.md) for detailed setup instructions.
+
 ### AI Feature Analytics
 
 The app includes comprehensive Google Analytics tracking for the AI feature to understand user engagement and performance:
@@ -40,6 +51,13 @@ The app includes comprehensive Google Analytics tracking for the AI feature to u
 - `request_failed` - Failed AI requests
 - `api_error` - API-specific errors with status codes
 - `api_key_missing` - Missing API key events
+
+**Cache Performance:**
+- `cache_hit` - Response served from Redis cache (faster)
+- `cache_miss` - No cached response, API call made
+- `cache_error` - Redis unavailable (fallback to API)
+- `cache_write_success` - Response successfully cached
+- `cache_write_error` - Failed to cache response
 
 **Content Display:**
 - `popup_displayed` - When popups show AI vs Wikipedia content
@@ -91,6 +109,13 @@ NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 
 # Optional for map features
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+
+# Vercel KV (Redis) for AI response caching - Added automatically by Vercel
+# See REDIS_SETUP.md for setup instructions
+KV_URL=redis://...
+KV_REST_API_URL=https://...
+KV_REST_API_TOKEN=...
+KV_REST_API_READ_ONLY_TOKEN=...
 ```
 
 ### Getting API Keys
@@ -107,6 +132,19 @@ NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
 - ✅ No credit card required
 - ✅ High-quality AI responses
 - ✅ Excellent historical knowledge
+
+#### Vercel KV (Redis) for Caching (Optional but Recommended)
+
+1. Deploy to Vercel or use Vercel CLI
+2. Add KV database via Vercel Dashboard → Storage → Create Database → KV
+3. Environment variables are added automatically
+4. See [REDIS_SETUP.md](./REDIS_SETUP.md) for detailed instructions
+
+**Benefits:**
+- ⚡ Instant responses for cached content
+- 💰 Reduces API usage and costs
+- 🔧 Automatic 1-hour cache expiration
+- 📊 Cache performance analytics
 
 #### Google Analytics 4 (Optional)
 
