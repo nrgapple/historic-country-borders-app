@@ -1,0 +1,25 @@
+{
+  "name": "Historic Country Borders",
+  "short_name": "Historic Borders",
+  "description": "Visualize country borders from different times in history (123,000 BC - 1994)",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#252525",
+  "theme_color": "#6930c3",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "reference", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+} 

@@ -96,7 +96,12 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
 
   return (
     <>
-      <Layout title={config.name} url={`https://historyborders.app`}>
+      <Layout 
+        title={config.name} 
+        url={`https://historicborders.app${year ? `/year/${year}` : ''}`}
+        year={year}
+        description={`Explore how country borders looked in the year ${year}. Interactive historical map showing political boundaries and territories as they existed ${year} years ago.`}
+      >
         <ViewerTimeline
           index={index}
           years={years}

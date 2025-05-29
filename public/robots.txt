@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://historicborders.app/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to admin or sensitive areas (if any)
+Disallow: /api/
+Disallow: /_next/
+
+# Allow important pages
+Allow: /year/*
+Allow: /
+
+# Host information
+Host: historicborders.app 
