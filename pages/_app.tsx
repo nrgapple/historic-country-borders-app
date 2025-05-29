@@ -12,10 +12,27 @@ import '@szhsin/react-menu/dist/transitions/slide.css';
 import CompactFeedbackWidget from '../components/CompactFeedbackWidget';
 import ReactGA4 from 'react-ga4';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-
-ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR);
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
+  // Initialize GA4 only on client side
+  useEffect(() => {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    if (process.env.NEXT_PUBLIC_GA_FOUR) {
+      ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR, {
+        testMode: isDevelopment, // Enable test mode in development - prevents data from being sent to Google
+      });
+
+      // Log the current configuration in development
+      if (isDevelopment) {
+        console.log('[Analytics] GA4 initialized in TEST mode - data will NOT be sent to Google');
+        console.log('[Analytics] Test mode enabled for development');
+        console.log('[Analytics] Measurement ID:', process.env.NEXT_PUBLIC_GA_FOUR);
+      }
+    }
+  }, []);
+
   // Use our custom scroll lock with allowed selectors for timeline and popups
   useScrollLock(true, {
     allowedSelectors: [
