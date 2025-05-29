@@ -11,10 +11,15 @@ import { DataProps } from '../pages';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
-import { useScrollLock } from '../hooks/useScrollLock';
 import ViewerMap from './viewer/ViewerMap';
 import ViewerTimeline from './viewer/ViewerTimeline';
-import { isValidYear, getDefaultYear } from '../utils/queryParams';
+
+// Helper function to get a random year from the available years
+const getRandomYear = (years: (string | number)[]): string => {
+  if (!years || years.length === 0) return '';
+  const randomIndex = Math.floor(Math.random() * years.length);
+  return years[randomIndex].toString();
+};
 
 export default function Viewer({ years, user, id, config }: DataProps) {
   const hide = useAppStateValue('hide');
@@ -24,13 +29,13 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   
   // Get the current year with proper validation and fallback
   const year = useMemo(() => {
-    // If a year is provided in query params, try to use it even if invalid
-    // This preserves the user's intent and doesn't clear the URL
+    // If a year is provided in query params, use it
     if (query.year) {
       return query.year;
     }
-    // Only fall back to default if no year is provided
-    return getDefaultYear(years);
+    // Don't use random during server-side rendering to avoid hydration mismatch
+    // The useEffect below will handle setting a random year on the client
+    return years?.[0]?.toString() || '';
   }, [query.year, years]);
 
   const index = useMemo(() => {
@@ -42,16 +47,16 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     setState((c) => void (c.hide = !hide));
   };
 
-  // Set default year in URL if not present or invalid
+  // Set random year in URL if not present
   // Only run after router is ready to avoid clearing query params during hydration
   useEffect(() => {
     if (!isReady) return; // Wait for router to be ready
     
-    // Only set default if no year is provided at all, not if it's invalid
+    // Only set random if no year is provided at all
     if (!query.year && years.length > 0) {
-      const defaultYear = getDefaultYear(years);
-      if (defaultYear) {
-        setQuery({ year: defaultYear });
+      const randomYear = getRandomYear(years);
+      if (randomYear) {
+        setQuery({ year: randomYear });
       }
     }
   }, [isReady, query.year, years, setQuery]);
