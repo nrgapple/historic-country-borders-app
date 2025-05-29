@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSettings, TextSize, TextCase } from '../contexts/SettingsContext';
+import { InfoProvider } from '../hooks/useCountryInfo';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -20,6 +21,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const textCaseOptions: { value: TextCase; label: string; description: string }[] = [
     { value: 'regular', label: 'Regular', description: 'Normal case' },
     { value: 'upper', label: 'UPPERCASE', description: 'All capitals' },
+  ];
+
+  const infoProviderOptions: { value: InfoProvider; label: string; description: string; icon: string }[] = [
+    { value: 'wikipedia', label: 'Wikipedia', description: 'Real-time Wikipedia content', icon: '📚' },
+    { value: 'ai', label: 'AI (Beta)', description: 'AI-generated historical context', icon: '🤖' },
   ];
 
   const opacityOptions = [
@@ -56,6 +62,27 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         <div className="settings-modal-content">
+          {/* Information Provider Setting */}
+          <div className="settings-section">
+            <div className="settings-section-title">🤖 Information Source</div>
+            <div className="settings-options">
+              {infoProviderOptions.map((option) => (
+                <button
+                  key={option.value}
+                  className={`settings-option ${
+                    settings.infoProvider === option.value ? 'active' : ''
+                  }`}
+                  onClick={() => updateSettings({ infoProvider: option.value })}
+                >
+                  <div className="settings-option-label">
+                    {option.icon} {option.label}
+                  </div>
+                  <div className="settings-option-description">{option.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Text Size Setting */}
           <div className="settings-section">
             <div className="settings-section-title">📝 Text Size</div>

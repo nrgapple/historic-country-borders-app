@@ -42,7 +42,8 @@ describe('useCountryInfo', () => {
     expect(result.current.provider).toBe('wikipedia')
     expect(result.current.info).toBe('Wikipedia information about Test Country')
     expect(mockUseWikiData).toHaveBeenCalledWith('Test Country')
-    expect(mockUseAIData).toHaveBeenCalledWith('Test Country', undefined)
+    // AI hook should not be called when using Wikipedia
+    expect(mockUseAIData).not.toHaveBeenCalled()
   })
 
   it('should use Wikipedia when explicitly specified', () => {
@@ -53,7 +54,8 @@ describe('useCountryInfo', () => {
     expect(result.current.provider).toBe('wikipedia')
     expect(result.current.info).toBe('Wikipedia information about Test Country')
     expect(mockUseWikiData).toHaveBeenCalledWith('Test Country')
-    expect(mockUseAIData).toHaveBeenCalledWith('Test Country', undefined)
+    // AI hook should not be called when using Wikipedia
+    expect(mockUseAIData).not.toHaveBeenCalled()
   })
 
   it('should use AI when specified', () => {
@@ -64,6 +66,8 @@ describe('useCountryInfo', () => {
     expect(result.current.provider).toBe('ai')
     expect(result.current.info).toBe('AI-generated information about Test Country')
     expect(mockUseAIData).toHaveBeenCalledWith('Test Country', undefined)
+    // Wikipedia hook should not be called when using AI
+    expect(mockUseWikiData).not.toHaveBeenCalled()
   })
 
   it('should pass year to AI hook when provided', () => {
@@ -74,6 +78,8 @@ describe('useCountryInfo', () => {
     expect(result.current.provider).toBe('ai')
     expect(result.current.info).toBe('AI-generated information about Test Country')
     expect(mockUseAIData).toHaveBeenCalledWith('Test Country', '1500')
+    // Wikipedia hook should not be called when using AI
+    expect(mockUseWikiData).not.toHaveBeenCalled()
   })
 
   it('should pass through loading state from Wikipedia', () => {
@@ -142,31 +148,32 @@ describe('useCountryInfo', () => {
     const { result } = renderHook(() => useCountryInfo(''))
 
     expect(mockUseWikiData).toHaveBeenCalledWith('')
-    expect(mockUseAIData).toHaveBeenCalledWith('', undefined)
+    // AI hook should not be called when using Wikipedia (default)
+    expect(mockUseAIData).not.toHaveBeenCalled()
     expect(result.current.provider).toBe('wikipedia')
   })
 
-  it('should call both hooks but only return data from selected provider', () => {
+  it('should only call the selected provider hook', () => {
     const { result } = renderHook(() => 
       useCountryInfo('Test Country', { provider: 'ai' })
     )
 
-    // Both hooks should be called (for potential caching/prefetching)
-    expect(mockUseWikiData).toHaveBeenCalledWith('Test Country')
+    // Only AI hook should be called when AI is selected
     expect(mockUseAIData).toHaveBeenCalledWith('Test Country', undefined)
+    expect(mockUseWikiData).not.toHaveBeenCalled()
     
-    // But only AI data should be returned
+    // AI data should be returned
     expect(result.current.provider).toBe('ai')
     expect(result.current.info).toBe('AI-generated information about Test Country')
   })
 
-  it('should pass year to both hooks when provided', () => {
+  it('should pass year only to AI hook when AI is selected', () => {
     const { result } = renderHook(() => 
-      useCountryInfo('Test Country', { provider: 'wikipedia', year: '1800' })
+      useCountryInfo('Test Country', { provider: 'ai', year: '1800' })
     )
 
-    expect(mockUseWikiData).toHaveBeenCalledWith('Test Country')
     expect(mockUseAIData).toHaveBeenCalledWith('Test Country', '1800')
-    expect(result.current.provider).toBe('wikipedia')
+    expect(mockUseWikiData).not.toHaveBeenCalled()
+    expect(result.current.provider).toBe('ai')
   })
 }) 

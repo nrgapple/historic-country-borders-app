@@ -170,7 +170,11 @@ describe('useWikiData', () => {
       renderHook(() => useWikiData('Test Place'))
 
       // Verify wikijs was called with correct parameters
-      expect(mockUseSWR).toHaveBeenCalledWith('wiki:Test Place', expect.any(Function))
+      expect(mockUseSWR).toHaveBeenCalledWith('wiki:Test Place', expect.any(Function), {
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+        dedupingInterval: 300000, // 5 minutes
+      })
     })
 
     it('should fallback to REST API when wikijs fails', async () => {

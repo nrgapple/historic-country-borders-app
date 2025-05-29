@@ -68,11 +68,13 @@ After setup, your `.env.local` should include:
 
 ```bash
 # Existing variables
-NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
 NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 
 # Redis for AI response caching
 REDIS_URL=redis://your-redis-connection-string
+
+# Gemini API key (server-side only)
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ## Cache Behavior
@@ -179,4 +181,4 @@ Cache Miss → Call Gemini API
 Store in Redis → Return Response
 ```
 
-This caching layer significantly improves the user experience while reducing costs and API rate limit concerns. 
+This caching layer significantly improves the user experience while reducing costs and API rate limit concerns.

@@ -1,18 +1,40 @@
-// Redis cache utility functions that work via API routes
+import { createClient } from 'redis';
+
+// Server-side Redis client for direct database connection
+let redis: any = null;
+
+async function getRedisClient() {
+  if (!redis) {
+    const redisUrl = process.env.REDIS_URL;
+    
+    if (!redisUrl) {
+      console.warn('REDIS_URL not found - caching disabled');
+      return null;
+    }
+
+    try {
+      redis = createClient({ url: redisUrl });
+      await redis.connect();
+      console.log('Redis connected successfully');
+    } catch (error) {
+      console.error('Redis connection failed:', error);
+      redis = null;
+      return null;
+    }
+  }
+  return redis;
+}
+
 export const redisCache = {
   async get<T>(key: string): Promise<T | null> {
     try {
-      const response = await fetch(`/api/cache?key=${encodeURIComponent(key)}`, {
-        method: 'GET',
-      });
-
-      if (!response.ok) {
-        console.error('Cache API GET error:', response.status, response.statusText);
+      const client = await getRedisClient();
+      if (!client) {
         return null;
       }
 
-      const result = await response.json();
-      return result.success ? result.data : null;
+      const value = await client.get(key);
+      return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error('Redis get error:', error);
       return null;
@@ -21,25 +43,20 @@ export const redisCache = {
 
   async set(key: string, value: any, ttlSeconds?: number): Promise<boolean> {
     try {
-      const response = await fetch('/api/cache', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          key,
-          value,
-          ttl: ttlSeconds,
-        }),
-      });
-
-      if (!response.ok) {
-        console.error('Cache API POST error:', response.status, response.statusText);
+      const client = await getRedisClient();
+      if (!client) {
         return false;
       }
 
-      const result = await response.json();
-      return result.success;
+      const serializedValue = JSON.stringify(value);
+      
+      if (ttlSeconds) {
+        await client.setEx(key, ttlSeconds, serializedValue);
+      } else {
+        await client.set(key, serializedValue);
+      }
+      
+      return true;
     } catch (error) {
       console.error('Redis set error:', error);
       return false;
@@ -48,17 +65,13 @@ export const redisCache = {
 
   async del(key: string): Promise<boolean> {
     try {
-      const response = await fetch(`/api/cache?key=${encodeURIComponent(key)}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        console.error('Cache API DELETE error:', response.status, response.statusText);
+      const client = await getRedisClient();
+      if (!client) {
         return false;
       }
 
-      const result = await response.json();
-      return result.success;
+      await client.del(key);
+      return true;
     } catch (error) {
       console.error('Redis del error:', error);
       return false;

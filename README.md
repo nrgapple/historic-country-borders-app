@@ -101,9 +101,6 @@ yarn install
 Create a `.env.local` file:
 
 ```bash
-# Required for AI features
-NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
-
 # Optional for analytics
 NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 
@@ -111,7 +108,10 @@ NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
 
 # Redis for AI response caching (required for caching)
-REDIS_URL=redis://your-redis-url-here
+REDIS_URL=your_redis_connection_string
+
+# Required for AI features (server-side only)
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ### Getting API Keys

@@ -3,7 +3,7 @@ import { useAllowScroll } from '../hooks/useScrollLock';
 import { useEffect, useMemo } from 'react';
 import ReactGA4 from 'react-ga4';
 import { useCountryInfo } from '../hooks/useCountryInfo';
-import { useInfoProvider } from '../contexts/InfoProviderContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { CoordTuple } from '../util/types';
 
 export interface Info {
@@ -18,7 +18,8 @@ interface PopupInfoProps {
 
 export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   const { position, place = '' } = info ?? {};
-  const { provider } = useInfoProvider();
+  const { settings } = useSettings();
+  const provider = settings.infoProvider;
   const { info: description, title: title, isLoading } = useCountryInfo(place, { provider });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,

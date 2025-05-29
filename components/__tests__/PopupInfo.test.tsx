@@ -8,20 +8,27 @@ vi.mock('../../hooks/useCountryInfo', () => ({
   useCountryInfo: vi.fn(),
 }))
 
-// Mock the InfoProviderContext
-vi.mock('../../contexts/InfoProviderContext', () => ({
-  useInfoProvider: vi.fn(),
+// Mock the SettingsContext
+vi.mock('../../contexts/SettingsContext', () => ({
+  useSettings: vi.fn(),
 }))
 
-// Mock our custom scroll lock hook
+// Mock ReactGA4
+vi.mock('react-ga4', () => ({
+  default: {
+    event: vi.fn(),
+  },
+}))
+
+// Mock the scroll lock hook
 vi.mock('../../hooks/useScrollLock', () => ({
   useAllowScroll: vi.fn(),
 }))
 
-// Mock react-map-gl Popup component
+// Mock Popup component from react-map-gl
 vi.mock('react-map-gl', () => ({
-  Popup: vi.fn(({ children, latitude, longitude, onClose, style, className }) => (
-    <div 
+  Popup: ({ children, latitude, longitude, className, style, onClose }: any) => (
+    <div
       data-testid="popup"
       data-latitude={latitude}
       data-longitude={longitude}
@@ -31,14 +38,14 @@ vi.mock('react-map-gl', () => ({
       <button onClick={onClose} data-testid="close-button">Close</button>
       {children}
     </div>
-  )),
+  ),
 }))
 
 import { useCountryInfo } from '../../hooks/useCountryInfo'
-import { useInfoProvider } from '../../contexts/InfoProviderContext'
+import { useSettings } from '../../contexts/SettingsContext'
 
 const mockUseCountryInfo = useCountryInfo as any
-const mockUseInfoProvider = useInfoProvider as any
+const mockUseSettings = useSettings as any
 
 describe('PopupInfo', () => {
   const mockInfo: Info = {
@@ -53,10 +60,15 @@ describe('PopupInfo', () => {
       title: 'Test Title',
       isLoading: false,
     })
-    mockUseInfoProvider.mockReturnValue({
-      provider: 'wikipedia',
-      setProvider: vi.fn(),
-      toggleProvider: vi.fn(),
+    mockUseSettings.mockReturnValue({
+      settings: {
+        textSize: 'medium',
+        textCase: 'regular',
+        countryOpacity: 0.7,
+        infoProvider: 'wikipedia',
+      },
+      updateSettings: vi.fn(),
+      resetToDefaults: vi.fn(),
     })
   })
 
@@ -105,10 +117,15 @@ describe('PopupInfo', () => {
   })
 
   it('should show loading state with proper styling for AI', () => {
-    mockUseInfoProvider.mockReturnValue({
-      provider: 'ai',
-      setProvider: vi.fn(),
-      toggleProvider: vi.fn(),
+    mockUseSettings.mockReturnValue({
+      settings: {
+        textSize: 'medium',
+        textCase: 'regular',
+        countryOpacity: 0.7,
+        infoProvider: 'ai',
+      },
+      updateSettings: vi.fn(),
+      resetToDefaults: vi.fn(),
     })
     mockUseCountryInfo.mockReturnValue({
       info: '',
@@ -236,10 +253,15 @@ describe('PopupInfo', () => {
   })
 
   it('should show AI provider indicator when using AI', () => {
-    mockUseInfoProvider.mockReturnValue({
-      provider: 'ai',
-      setProvider: vi.fn(),
-      toggleProvider: vi.fn(),
+    mockUseSettings.mockReturnValue({
+      settings: {
+        textSize: 'medium',
+        textCase: 'regular',
+        countryOpacity: 0.7,
+        infoProvider: 'ai',
+      },
+      updateSettings: vi.fn(),
+      resetToDefaults: vi.fn(),
     })
 
     render(<PopupInfo info={mockInfo} />)

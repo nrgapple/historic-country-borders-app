@@ -55,6 +55,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        infoProvider: 'wikipedia',
       })
     })
 
@@ -63,8 +64,8 @@ describe('SettingsContext', () => {
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
         category: 'Settings',
-        action: 'settings_default',
-        label: 'defaults_used',
+        action: 'settings_restored',
+        label: 'from_localStorage',
         value: 1,
       })
     })
@@ -127,6 +128,7 @@ describe('SettingsContext', () => {
           textSize: 'small',
           textCase: 'upper',
           countryOpacity: 0.9,
+          infoProvider: 'wikipedia',
         })
       })
 
@@ -134,6 +136,7 @@ describe('SettingsContext', () => {
         textSize: 'small',
         textCase: 'upper',
         countryOpacity: 0.9,
+        infoProvider: 'wikipedia',
       })
 
       // Should track each setting change
@@ -180,6 +183,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        infoProvider: 'wikipedia',
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
@@ -205,7 +209,14 @@ describe('SettingsContext', () => {
           textSize: 'large',
           textCase: 'regular',
           countryOpacity: 0.7,
+          infoProvider: 'wikipedia',
         })
+      )
+
+      // Should also save to legacy key for backward compatibility
+      expect(localStorageMock.setItem).toHaveBeenCalledWith(
+        'historic-borders-info-provider',
+        'wikipedia'
       )
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
@@ -221,6 +232,7 @@ describe('SettingsContext', () => {
         textSize: 'small' as TextSize,
         textCase: 'upper' as TextCase,
         countryOpacity: 0.4,
+        infoProvider: 'ai' as const,
       }
 
       localStorageMock.setItem(
@@ -249,6 +261,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        infoProvider: 'wikipedia',
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
@@ -264,6 +277,7 @@ describe('SettingsContext', () => {
         textSize: 'invalid-size',
         textCase: 'invalid-case',
         countryOpacity: 5, // out of range
+        infoProvider: 'invalid-provider',
       }
 
       localStorageMock.setItem(
@@ -278,6 +292,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        infoProvider: 'wikipedia',
       })
     })
   })

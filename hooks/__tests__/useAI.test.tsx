@@ -8,13 +8,10 @@ global.fetch = vi.fn()
 describe('useAIData', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Clear environment variable
-    vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', '')
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
-    vi.unstubAllEnvs()
   })
 
   it('should return loading state initially', async () => {
@@ -28,51 +25,11 @@ describe('useAIData', () => {
     })
   })
 
-  it('should return error message when no API key is provided', async () => {
-    const { result } = renderHook(() => useAIData('United States'))
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    expect(result.current.info).toBe('AI information requires Gemini API key setup. Please check the README or switch to Wikipedia.')
-    expect(result.current.title).toBe('United States')
-  })
-
-  it('should return error message for unknown countries when no API key', async () => {
-    const { result } = renderHook(() => useAIData('Unknown Country'))
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    expect(result.current.info).toBe('AI information requires Gemini API key setup. Please check the README or switch to Wikipedia.')
-  })
-
-  it('should handle empty country name', async () => {
-    const { result } = renderHook(() => useAIData(''))
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    expect(result.current.info).toBe('Not Found')
-  })
-
-  it('should call Gemini API when API key is provided', async () => {
-    // Set API key
-    vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', 'test-api-key')
-    
+  it('should call the AI API endpoint successfully', async () => {
     const mockResponse = {
       ok: true,
       json: vi.fn().mockResolvedValue({
-        candidates: [{
-          content: {
-            parts: [{
-              text: 'France is a beautiful country in Europe.'
-            }]
-          }
-        }]
+        content: 'France is a beautiful country in Europe.',
       })
     }
     
@@ -84,25 +41,32 @@ describe('useAIData', () => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=test-api-key',
-      expect.objectContaining({
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: expect.stringContaining('"contents"')
+    expect(global.fetch).toHaveBeenCalledWith('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        countryName: 'France',
+        year: '1500',
       })
-    )
+    })
     
     expect(result.current.info).toBe('France is a beautiful country in Europe.')
   })
 
-  it('should return error message when API call fails', async () => {
-    // Set API key
-    vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', 'test-api-key')
+  it('should handle API error responses', async () => {
+    const mockResponse = {
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: vi.fn().mockResolvedValue({
+        content: '',
+        error: 'AI service temporarily unavailable'
+      })
+    }
     
-    global.fetch = vi.fn().mockRejectedValue(new Error('API Error'))
+    global.fetch = vi.fn().mockResolvedValue(mockResponse)
 
     const { result } = renderHook(() => useAIData('France'))
 
@@ -110,16 +74,18 @@ describe('useAIData', () => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    expect(result.current.info).toBe('Something went wrong with AI information. Please try again or switch to Wikipedia.')
+    expect(result.current.info).toBe('AI service temporarily unavailable')
   })
 
-  it('should handle malformed API response', async () => {
-    // Set API key
-    vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', 'test-api-key')
-    
+  it('should handle quota exceeded errors', async () => {
     const mockResponse = {
-      ok: true,
-      json: vi.fn().mockResolvedValue({})
+      ok: false,
+      status: 429,
+      statusText: 'Too Many Requests',
+      json: vi.fn().mockResolvedValue({
+        content: '',
+        error: 'AI service has reached its daily quota limit. Please try again tomorrow or switch to Wikipedia for historical information.'
+      })
     }
     
     global.fetch = vi.fn().mockResolvedValue(mockResponse)
@@ -130,58 +96,109 @@ describe('useAIData', () => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    expect(result.current.info).toBe('AI returned unexpected response format. Please try again or switch to Wikipedia.')
+    expect(result.current.info).toBe('AI service has reached its daily quota limit. Please try again tomorrow or switch to Wikipedia for historical information.')
   })
 
-  it('should include year in the request when provided', async () => {
-    // Set API key
-    vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', 'test-api-key')
-    
-    // Mock cache API calls to return null (cache miss)
-    const mockCacheResponse = {
-      ok: true,
-      json: vi.fn().mockResolvedValue({ success: true, data: null })
-    }
-    
-    const mockGeminiResponse = {
-      ok: true,
-      json: vi.fn().mockResolvedValue({
-        candidates: [{
-          content: {
-            parts: [{
-              text: 'Historical information about Spain in 1500.'
-            }]
-          }
-        }]
-      })
-    }
-    
-    // Mock fetch to handle both cache and Gemini API calls
-    global.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/api/cache')) {
-        return Promise.resolve(mockCacheResponse)
-      }
-      return Promise.resolve(mockGeminiResponse)
-    })
+  it('should handle network errors', async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('Failed to fetch'))
 
-    const { result } = renderHook(() => useAIData('Spain', '1500'))
+    const { result } = renderHook(() => useAIData('Spain'))
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
 
-    expect(global.fetch).toHaveBeenCalled()
+    expect(result.current.info).toBe('Network connection issue. Please check your internet connection and try again.')
+  })
+
+  it('should handle empty country name', async () => {
+    const { result } = renderHook(() => useAIData(''))
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.info).toBe('Not Found')
+    expect(global.fetch).not.toHaveBeenCalled()
+  })
+
+  it('should use current year when no year is provided', async () => {
+    const mockResponse = {
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        content: 'Modern information about Italy.',
+      })
+    }
     
-    // Find the Gemini API call (not the cache calls)
-    const fetchCalls = (global.fetch as any).mock.calls
-    const geminiCall = fetchCalls.find((call: any) => 
-      call[0].includes('generativelanguage.googleapis.com')
-    )
+    global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+    const currentYear = new Date().getFullYear().toString()
+    const { result } = renderHook(() => useAIData('Italy'))
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(global.fetch).toHaveBeenCalledWith('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        countryName: 'Italy',
+        year: currentYear,
+      })
+    })
+  })
+
+  it('should handle malformed JSON response', async () => {
+    const mockResponse = {
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      json: vi.fn().mockRejectedValue(new Error('Invalid JSON'))
+    }
     
-    expect(geminiCall).toBeDefined()
-    const requestBody = JSON.parse(geminiCall[1].body)
+    global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+    const { result } = renderHook(() => useAIData('Portugal'))
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.info).toBe('Failed to parse error response')
+  })
+
+  it('should handle empty content response', async () => {
+    const mockResponse = {
+      ok: true,
+      json: vi.fn().mockResolvedValue({
+        content: '',
+        error: 'AI generated empty response. Please try again or switch to Wikipedia.'
+      })
+    }
     
-    expect(requestBody.contents[0].parts[0].text).toContain('as it existed in the year 1500')
-    expect(result.current.info).toBe('Historical information about Spain in 1500.')
+    global.fetch = vi.fn().mockResolvedValue(mockResponse)
+
+    const { result } = renderHook(() => useAIData('Netherlands'))
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.info).toBe('AI generated empty response. Please try again or switch to Wikipedia.')
+  })
+
+  it('should handle timeout errors', async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('AbortError: Request timeout'))
+
+    const { result } = renderHook(() => useAIData('Belgium'))
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current.info).toBe('AI service request timed out. Please try again or switch to Wikipedia.')
   })
 }) 

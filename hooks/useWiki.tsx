@@ -1,5 +1,9 @@
 import useSWR, { Fetcher } from 'swr';
-import wiki from 'wikijs';
+
+interface WikiApiResponse {
+  content: string;
+  error?: string;
+}
 
 const fetcher: Fetcher<string, string> = async (title: string) => {
   // Validate title input
@@ -7,103 +11,66 @@ const fetcher: Fetcher<string, string> = async (title: string) => {
     return 'Not Found';
   }
 
-  const cleanTitle = title.trim();
-  
   try {
-    // First try wikijs with proper configuration
-    const wikiInstance = wiki({
-      apiUrl: 'https://en.wikipedia.org/w/api.php',
+    const response = await fetch('/api/wikipedia', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'HistoricCountryBordersApp/1.0 (https://github.com/user/repo)'
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: title.trim(),
+      }),
     });
 
-    // Use the search method to find the best match (supports fuzzy search)
-    const searchResults = await wikiInstance.search(cleanTitle, 1);
-    
-    if (searchResults && searchResults.results && searchResults.results.length > 0) {
-      const bestMatch = searchResults.results[0];
-      const page = await wikiInstance.page(bestMatch);
-      const summary = await page.summary();
-      
-      if (summary && summary.trim()) {
-        // Truncate to reasonable length if too long
-        if (summary.length > 500) {
-          return summary.substring(0, 500) + '...';
-        }
-        return summary;
-      }
+    if (!response.ok) {
+      const errorData: WikiApiResponse = await response.json().catch(() => ({ 
+        content: '', 
+        error: 'Failed to parse error response' 
+      }));
+
+      console.error('Wikipedia API HTTP error:', {
+        status: response.status,
+        statusText: response.statusText,
+        title,
+        errorMessage: errorData.error,
+        timestamp: new Date().toISOString(),
+      });
+
+      return errorData.error || `HTTP error! status: ${response.status} - ${response.statusText}`;
     }
+
+    const data: WikiApiResponse = await response.json();
     
-    // If no search results, try direct page lookup
-    const page = await wikiInstance.page(cleanTitle);
-    const summary = await page.summary();
-    
-    if (summary && summary.trim()) {
-      if (summary.length > 500) {
-        return summary.substring(0, 500) + '...';
-      }
-      return summary;
-    }
-    
-    return 'Not Found';
-  } catch (wikiError) {
-    console.warn('WikiJS error, falling back to direct API:', {
-      title: cleanTitle,
-      error: wikiError instanceof Error ? wikiError.message : 'Unknown wikijs error',
+    console.log('Wikipedia API response:', {
+      title,
+      responseType: typeof data,
+      hasContent: !!data.content,
       timestamp: new Date().toISOString(),
     });
 
-    // Fallback to direct Wikipedia API with CORS support
-    try {
-      // Use Wikipedia's opensearch API for fuzzy search
-      const searchUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(cleanTitle)}&limit=1&namespace=0&format=json&origin=*`;
-      const searchResp = await fetch(searchUrl);
-      
-      if (!searchResp.ok) {
-        throw new Error(`Search failed: ${searchResp.status}`);
+    return data.content || 'Not Found';
+  } catch (error) {
+    console.error('Wikipedia API error:', {
+      title,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString(),
+    });
+
+    // Determine error type and provide appropriate message
+    let errorMessage = 'Unable to load Wikipedia information';
+    
+    if (error instanceof Error) {
+      // Check if it's a network error
+      if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
       }
-      
-      const searchData = await searchResp.json();
-      
-      // opensearch returns [query, titles, descriptions, urls]
-      if (!searchData[1] || searchData[1].length === 0) {
-        return 'Not Found';
+      // Check if it's a timeout error
+      else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
+        errorMessage = 'Wikipedia request timed out. Please try again.';
       }
-      
-      const foundTitle = searchData[1][0];
-      
-      // Get the page extract using the page API
-      const pageUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(foundTitle)}&prop=extracts&exintro=1&explaintext=1&exsectionformat=plain&origin=*`;
-      const pageResp = await fetch(pageUrl);
-      
-      if (!pageResp.ok) {
-        throw new Error(`Page fetch failed: ${pageResp.status}`);
-      }
-      
-      const pageData = await pageResp.json();
-      
-      if (pageData.query && pageData.query.pages) {
-        const pages = Object.values(pageData.query.pages) as any[];
-        if (pages.length > 0 && pages[0].extract) {
-          const extract = pages[0].extract;
-          if (extract.length > 500) {
-            return extract.substring(0, 500) + '...';
-          }
-          return extract;
-        }
-      }
-      
-      return 'Not Found';
-    } catch (fallbackError) {
-      console.error('Wikipedia fallback also failed:', {
-        title: cleanTitle,
-        error: fallbackError instanceof Error ? fallbackError.message : 'Unknown fallback error',
-        timestamp: new Date().toISOString(),
-      });
-      
-      return 'Unable to load Wikipedia information';
     }
+    
+    return errorMessage;
   }
 };
 

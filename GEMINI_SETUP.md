@@ -14,7 +14,7 @@
 Create a `.env.local` file in your project root:
 
 ```bash
-NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_api_key_here
 ```
 
 ### 3. Restart Your Server
@@ -54,4 +54,4 @@ We switched from Hugging Face to Google Gemini because:
 
 ---
 
-**Need help?** Check the main [README.md](./README.md) for more details. 
+**Need help?** Check the main [README.md](./README.md) for more details.

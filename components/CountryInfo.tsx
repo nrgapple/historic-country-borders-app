@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useCountryInfo } from '../hooks/useCountryInfo';
-import { useInfoProvider } from '../contexts/InfoProviderContext';
+import { useSettings } from '../contexts/SettingsContext';
 
 export interface CountryInfoData {
   place: string;
@@ -16,7 +16,8 @@ const noData = 'Not Found';
 
 export default function CountryInfo({ info, year, onClose }: CountryInfoProps) {
   const { place = '' } = info ?? {};
-  const { provider } = useInfoProvider();
+  const { settings } = useSettings();
+  const provider = settings.infoProvider;
   const { info: description, title: title, isLoading } = useCountryInfo(place, { provider, year });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,

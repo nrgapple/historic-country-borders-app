@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import ReactGA4 from 'react-ga4';
+import { InfoProvider } from '../hooks/useCountryInfo';
 
 export type TextSize = 'small' | 'medium' | 'large';
 export type TextCase = 'regular' | 'upper';
@@ -8,6 +9,7 @@ interface Settings {
   textSize: TextSize;
   textCase: TextCase;
   countryOpacity: number; // 0.1 to 1.0 in steps of 0.1
+  infoProvider: InfoProvider;
 }
 
 interface SettingsContextType {
@@ -19,11 +21,13 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'historic-borders-settings';
+const INFO_PROVIDER_STORAGE_KEY = 'historic-borders-info-provider';
 
 const DEFAULT_SETTINGS: Settings = {
   textSize: 'medium',
   textCase: 'regular',
   countryOpacity: 0.7,
+  infoProvider: 'wikipedia',
 };
 
 // Helper function to get initial settings from localStorage
@@ -32,13 +36,16 @@ const getInitialSettings = (): Settings => {
     return DEFAULT_SETTINGS; // SSR fallback
   }
   
+  let settings = { ...DEFAULT_SETTINGS };
+  
   try {
+    // Load main settings
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsedSettings = JSON.parse(stored);
       
       // Validate settings structure and types
-      const validatedSettings: Settings = {
+      settings = {
         textSize: ['small', 'medium', 'large'].includes(parsedSettings.textSize) 
           ? parsedSettings.textSize 
           : DEFAULT_SETTINGS.textSize,
@@ -50,18 +57,37 @@ const getInitialSettings = (): Settings => {
           && parsedSettings.countryOpacity <= 1.0
           ? parsedSettings.countryOpacity 
           : DEFAULT_SETTINGS.countryOpacity,
+        infoProvider: ['wikipedia', 'ai'].includes(parsedSettings.infoProvider)
+          ? parsedSettings.infoProvider
+          : DEFAULT_SETTINGS.infoProvider,
       };
+    }
+    
+    // Check for legacy info provider setting and migrate it
+    const legacyProvider = localStorage.getItem(INFO_PROVIDER_STORAGE_KEY);
+    if (legacyProvider && (legacyProvider === 'ai' || legacyProvider === 'wikipedia')) {
+      settings.infoProvider = legacyProvider as InfoProvider;
+      // Remove legacy setting after migration
+      localStorage.removeItem(INFO_PROVIDER_STORAGE_KEY);
       
-      // Track settings restoration from localStorage
+      // Track migration
       ReactGA4.event({
         category: 'Settings',
-        action: 'settings_restored',
-        label: 'from_localStorage',
+        action: 'provider_migrated',
+        label: `${legacyProvider}_to_settings`,
         value: 1,
       });
-      
-      return validatedSettings;
     }
+      
+    // Track settings restoration from localStorage
+    ReactGA4.event({
+      category: 'Settings',
+      action: 'settings_restored',
+      label: 'from_localStorage',
+      value: 1,
+    });
+    
+    return settings;
   } catch (error) {
     console.warn('Failed to read settings from localStorage:', error);
     
@@ -94,6 +120,10 @@ const saveSettings = (settings: Settings) => {
   try {
     const startTime = performance.now();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    
+    // Also save info provider to legacy key for backward compatibility
+    localStorage.setItem(INFO_PROVIDER_STORAGE_KEY, settings.infoProvider);
+    
     const duration = performance.now() - startTime;
     
     // Track successful localStorage save
@@ -151,10 +181,29 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       const oldValue = previousSettings[settingKey];
       const newValue = updatedSettings[settingKey];
       
+      // Special handling for infoProvider changes with AI Feature analytics
+      if (settingKey === 'infoProvider' && oldValue !== newValue) {
+        // Track AI feature toggle
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'toggle_provider',
+          label: `${oldValue}_to_${newValue}`,
+          value: 1,
+        });
+
+        // Track specific provider activation
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: newValue === 'ai' ? 'enable_ai' : 'disable_ai',
+          label: String(newValue),
+          value: 1,
+        });
+      }
+      
       ReactGA4.event({
         category: 'Settings',
         action: 'setting_changed',
-        label: `${key}_to_${newValue}`,
+        label: `${key}_to_${String(newValue)}`,
         value: 1,
       });
 
@@ -162,13 +211,13 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       ReactGA4.event({
         category: 'Settings',
         action: 'setting_transition',
-        label: `${key}_${oldValue}_to_${newValue}`,
+        label: `${key}_${String(oldValue)}_to_${String(newValue)}`,
         value: 1,
       });
     });
 
     // Track setting combinations for popular configurations
-    const settingCombination = `textSize:${updatedSettings.textSize}_textCase:${updatedSettings.textCase}_opacity:${updatedSettings.countryOpacity}`;
+    const settingCombination = `textSize:${updatedSettings.textSize}_textCase:${updatedSettings.textCase}_opacity:${updatedSettings.countryOpacity}_provider:${updatedSettings.infoProvider}`;
     ReactGA4.event({
       category: 'Settings',
       action: 'settings_combination_used',
