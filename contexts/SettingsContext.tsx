@@ -10,6 +10,7 @@ interface Settings {
   textCase: TextCase;
   countryOpacity: number; // 0.1 to 1.0 in steps of 0.1
   infoProvider: InfoProvider;
+  aiCompareEnabled: boolean; // New setting for AI Compare feature
 }
 
 interface SettingsContextType {
@@ -28,6 +29,7 @@ const DEFAULT_SETTINGS: Settings = {
   textCase: 'regular',
   countryOpacity: 0.7,
   infoProvider: 'wikipedia',
+  aiCompareEnabled: false, // Disabled by default
 };
 
 // Helper function to get initial settings from localStorage
@@ -60,6 +62,9 @@ const getInitialSettings = (): Settings => {
         infoProvider: ['wikipedia', 'ai'].includes(parsedSettings.infoProvider)
           ? parsedSettings.infoProvider
           : DEFAULT_SETTINGS.infoProvider,
+        aiCompareEnabled: typeof parsedSettings.aiCompareEnabled === 'boolean' 
+          ? parsedSettings.aiCompareEnabled 
+          : DEFAULT_SETTINGS.aiCompareEnabled,
       };
     }
     

@@ -4,6 +4,8 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import MapContainer from '../MapContainer'
 import ReactGA4 from 'react-ga4'
 import { InfoProviderProvider } from '../../contexts/InfoProviderContext'
+import { CompareProvider } from '../../contexts/CompareContext'
+import { SettingsProvider } from '../../contexts/SettingsContext'
 
 // Mock ReactGA4
 vi.mock('react-ga4', () => ({
@@ -92,7 +94,11 @@ let mockMapClickHandler: any = null
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <InfoProviderProvider>
-    {children}
+    <SettingsProvider>
+      <CompareProvider>
+        {children}
+      </CompareProvider>
+    </SettingsProvider>
   </InfoProviderProvider>
 )
 

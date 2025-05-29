@@ -5,6 +5,7 @@ import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
 import { InfoProviderProvider } from '../contexts/InfoProviderContext';
 import { SettingsProvider } from '../contexts/SettingsContext';
+import { CompareProvider } from '../contexts/CompareContext';
 import SettingsApplier from '../components/SettingsApplier';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
@@ -21,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
       '.timeline-years-container',
       '.popup-description', 
       '.country-info-description',
-      '.mapboxgl-popup-content'
+      '.mapboxgl-popup-content',
+      '.compare-popup-content',
+      '.compare-history-list'
     ]
   });
   
@@ -30,10 +33,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <StateProvider>
         <InfoProviderProvider>
           <SettingsProvider>
-            <SettingsApplier />
-            <FeedbackWrapper />
-            <Component {...pageProps} />
-            <SpeedInsights />
+            <CompareProvider>
+              <SettingsApplier />
+              <FeedbackWrapper />
+              <Component {...pageProps} />
+              <SpeedInsights />
+            </CompareProvider>
           </SettingsProvider>
         </InfoProviderProvider>
       </StateProvider>

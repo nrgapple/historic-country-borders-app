@@ -1986,3 +1986,532 @@ div[data-hot-toast] div[role="status"] {
 /* Settings-based dynamic styling */
 
 /* Note: Text size and text case settings now only affect map labels via MapSources.tsx */
+
+/* Settings Modal Tabs */
+.settings-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+}
+
+.settings-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-tab.active {
+  background: white;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-tab:hover:not(.active) {
+  color: #333;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Compare History */
+.compare-history {
+  min-height: 300px;
+}
+
+.compare-history-header {
+  margin-bottom: 20px;
+}
+
+.compare-history-header h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.compare-history-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.compare-history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.compare-history-empty p {
+  margin: 8px 0;
+}
+
+.compare-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.compare-history-item {
+  width: 100%;
+  padding: 16px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.compare-history-item:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.compare-history-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.compare-countries {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.country1 {
+  color: #2563eb;
+}
+
+.vs {
+  color: #666;
+  font-weight: normal;
+}
+
+.country2 {
+  color: #dc2626;
+}
+
+.compare-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.compare-preview {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* Compare Popup */
+.compare-popup {
+  position: absolute;
+  bottom: 80px;
+  right: 8px;
+  z-index: 1500;
+  width: 380px;
+  max-width: calc(100vw - 16px);
+  background: rgba(245, 245, 220, 0.95);
+  border: 2px solid #8B4513;
+  border-radius: 6px;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  font-family: 'Times New Roman', serif;
+  overflow: hidden;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.compare-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 8px 16px;
+  border-bottom: 1px solid #D2B48C;
+  background: rgba(245, 245, 220, 0.8);
+}
+
+.compare-popup-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #8B4513;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.compare-popup-close {
+  background: rgba(139, 69, 19, 0.1);
+  color: #8B4513;
+  border: 1px solid rgba(139, 69, 19, 0.3);
+  border-radius: 3px;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.compare-popup-close:hover {
+  background: rgba(139, 69, 19, 0.2);
+  border-color: rgba(139, 69, 19, 0.5);
+  transform: scale(1.1);
+}
+
+.compare-popup-content {
+  max-height: 400px;
+  padding: 12px 16px 16px 16px;
+  font-size: 14px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  color: #654321;
+  line-height: 1.5;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+  background: rgba(245, 245, 220, 0.95);
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  isolation: isolate;
+}
+
+/* Compare Start Screen */
+.compare-start {
+  text-align: center;
+}
+
+.compare-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #8B4513;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-description {
+  font-size: 13px;
+  color: #654321;
+  margin-bottom: 16px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Compare Selection */
+.compare-selection {
+  text-align: center;
+}
+
+.compare-instruction {
+  margin-bottom: 12px;
+}
+
+.compare-step {
+  font-size: 13px;
+  color: #8B4513;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-countries {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.compare-country {
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 80px;
+  text-align: center;
+  font-family: 'Times New Roman', serif;
+}
+
+.compare-country.selected {
+  background: rgba(139, 69, 19, 0.1);
+  border: 2px solid #8B4513;
+}
+
+.compare-country.pending {
+  background: rgba(210, 180, 140, 0.3);
+  border: 2px dashed #D2B48C;
+}
+
+.compare-country-name {
+  font-weight: bold;
+  color: #8B4513;
+  margin-bottom: 2px;
+  font-size: 12px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-country-year {
+  font-size: 10px;
+  color: #654321;
+  font-style: italic;
+}
+
+.compare-vs {
+  font-weight: bold;
+  color: #8B4513;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Compare Actions */
+.compare-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.compare-action-button {
+  padding: 8px 16px;
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-action-button.primary {
+  background: #8B4513;
+  color: rgba(245, 245, 220, 1);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.compare-action-button.primary:hover {
+  background: #654321;
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.compare-action-button.secondary {
+  background: rgba(245, 245, 220, 0.9);
+  color: #8B4513;
+  border-color: #8B4513;
+}
+
+.compare-action-button.secondary:hover {
+  background: rgba(245, 245, 220, 1);
+  border-color: #654321;
+  color: #654321;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Compare Loading */
+.compare-loading {
+  text-align: center;
+  padding: 16px;
+}
+
+.compare-loading-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.compare-loading-text {
+  font-size: 12px;
+  color: #654321;
+  line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Compare Result */
+.compare-result-header {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #D2B48C;
+}
+
+.compare-result-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #8B4513;
+  line-height: 1.3;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-result-content {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #654321;
+  margin-bottom: 16px;
+  white-space: pre-wrap;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Clickable country names in results */
+.compare-country-link {
+  background: none;
+  border: none;
+  color: #8B4513;
+  font-weight: bold;
+  font-size: inherit;
+  font-family: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 2px 4px;
+  border-radius: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.compare-country-link:hover {
+  background: rgba(139, 69, 19, 0.1);
+  color: #654321;
+  text-decoration: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Country Info Compare Button */
+.country-info-compare-button {
+  padding: 12px 16px;
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.country-info-actions {
+  padding: 12px 16px;
+  border-top: 1px solid #D2B48C;
+  background: rgba(210, 180, 140, 0.3);
+}
+
+.country-info-compare-button {
+  width: 100%;
+  padding: 10px 16px;
+  background: #8B4513;
+  color: rgba(245, 245, 220, 1);
+  border: 2px solid #8B4513;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Times New Roman', serif;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.country-info-compare-button:hover {
+  background: #654321;
+  border-color: #654321;
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile responsive compare popup */
+@media (max-width: 768px) {
+  .compare-popup {
+    width: calc(100vw - 20px);
+    bottom: 100px;
+    right: 10px;
+    max-width: 400px;
+    max-height: calc(100vh - 200px);
+  }
+  
+  .compare-popup-header {
+    padding: 14px 18px 10px 18px;
+  }
+  
+  .compare-popup-title {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  
+  .compare-popup-close {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  
+  .compare-popup-content {
+    padding: 14px 18px 18px 18px;
+    font-size: 15px;
+    max-height: calc(100vh - 300px);
+  }
+  
+  .compare-countries {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .compare-vs {
+    transform: rotate(90deg);
+    margin: -4px 0;
+  }
+  
+  .compare-action-button {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+  
+  .country-info-compare-button {
+    padding: 12px 16px;
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .compare-popup {
+    width: calc(100vw - 16px);
+    bottom: 120px;
+    right: 8px;
+    max-height: calc(100vh - 220px);
+  }
+  
+  .compare-popup-title {
+    font-size: 15px;
+  }
+  
+  .compare-popup-content {
+    font-size: 14px;
+    max-height: calc(100vh - 320px);
+  }
+  
+  .compare-action-button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
