@@ -1,6 +1,6 @@
 import useSWR, { Fetcher } from 'swr';
 import ReactGA4 from 'react-ga4';
-import { kv } from '@vercel/kv';
+import { redisCache } from '../lib/redis';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
@@ -26,7 +26,7 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
   
   try {
     // Try to get cached response first
-    const cachedResponse = await kv.get<string>(cacheKey);
+    const cachedResponse = await redisCache.get<string>(cacheKey);
     if (cachedResponse) {
       console.log('Cache hit for AI request:', {
         countryName,
@@ -209,7 +209,7 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         // Cache the successful response ONLY - we never cache error responses
         // This ensures only valid AI content is served from cache
         try {
-          await kv.set(cacheKey, trimmedContent, { ex: CACHE_TTL });
+          await redisCache.set(cacheKey, trimmedContent, CACHE_TTL);
           console.log('Successfully cached AI response:', {
             countryName,
             year,

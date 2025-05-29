@@ -6,5 +6,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_DISCORD_WEBHOOK_URL: string;
     NEXT_PUBLIC_ENV: string;
     NEXT_PUBLIC_MAPBOX_TOKEN: string;
+    REDIS_URL: string;
   }
 }

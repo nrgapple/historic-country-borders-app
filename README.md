@@ -21,7 +21,7 @@ You can switch between these sources using the toggle button in the footer.
 
 ### AI Response Caching
 
-The app uses **Vercel KV (Redis)** to cache AI responses for improved performance:
+The app uses **Redis** to cache AI responses for improved performance:
 
 - ⚡ **Instant responses** for previously requested countries/years
 - 💰 **Reduced API costs** - Fewer calls to Google Gemini
@@ -110,12 +110,8 @@ NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 # Optional for map features
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_mapbox_token
 
-# Vercel KV (Redis) for AI response caching - Added automatically by Vercel
-# See REDIS_SETUP.md for setup instructions
-KV_URL=redis://...
-KV_REST_API_URL=https://...
-KV_REST_API_TOKEN=...
-KV_REST_API_READ_ONLY_TOKEN=...
+# Redis for AI response caching (required for caching)
+REDIS_URL=redis://your-redis-url-here
 ```
 
 ### Getting API Keys
@@ -133,12 +129,11 @@ KV_REST_API_READ_ONLY_TOKEN=...
 - ✅ High-quality AI responses
 - ✅ Excellent historical knowledge
 
-#### Vercel KV (Redis) for Caching (Optional but Recommended)
+#### Vercel Redis for Caching (Optional but Recommended)
 
-1. Deploy to Vercel or use Vercel CLI
-2. Add KV database via Vercel Dashboard → Storage → Create Database → KV
-3. Environment variables are added automatically
-4. See [REDIS_SETUP.md](./REDIS_SETUP.md) for detailed instructions
+1. Set up Redis on Vercel or any Redis provider
+2. Add the `REDIS_URL` environment variable to your project
+3. See [REDIS_SETUP.md](./REDIS_SETUP.md) for detailed instructions
 
 **Benefits:**
 - ⚡ Instant responses for cached content

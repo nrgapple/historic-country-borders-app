@@ -1,6 +1,6 @@
 # Redis Setup for AI Response Caching
 
-This app uses **Vercel KV** (Redis) to cache AI responses, improving performance and reducing API calls to Google Gemini.
+This app uses **Redis** to cache AI responses, improving performance and reducing API calls to Google Gemini.
 
 ## Benefits of Redis Caching
 
@@ -9,54 +9,47 @@ This app uses **Vercel KV** (Redis) to cache AI responses, improving performance
 - 🏃 **Better UX** - Users get immediate responses for previously requested countries/years
 - 🔧 **Automatic expiration** - Cache TTL of 1 hour keeps content fresh
 
-## Vercel KV Setup
+## Redis Setup
 
-### Option 1: Automatic Setup (Recommended)
+### Option 1: Vercel Redis (Recommended)
 
-If deploying to Vercel, KV can be set up automatically:
+If deploying to Vercel, you can use Vercel's Redis service:
 
 1. **Deploy to Vercel** (if not already deployed)
    ```bash
    npx vercel --prod
    ```
 
-2. **Add KV Database** via Vercel Dashboard:
+2. **Add Redis Database** via Vercel Dashboard:
    - Go to your project in [Vercel Dashboard](https://vercel.com/dashboard)
    - Navigate to **Storage** tab
    - Click **Create Database**
-   - Select **KV (Redis)**
+   - Select **Redis**
    - Choose a name (e.g., `historic-borders-cache`)
    - Click **Create**
 
 3. **Environment Variables** are automatically added:
-   - `KV_URL`
-   - `KV_REST_API_URL` 
-   - `KV_REST_API_TOKEN`
-   - `KV_REST_API_READ_ONLY_TOKEN`
+   - `REDIS_URL` - This is what the app uses
 
-### Option 2: Manual Setup
+### Option 2: External Redis Provider
 
-1. **Create KV Database**:
+You can use any Redis provider (Redis Cloud, AWS ElastiCache, etc.):
+
+1. **Create Redis Database** with your preferred provider
+2. **Get Connection URL** (usually in format: `redis://username:password@host:port`)
+3. **Add Environment Variable**:
    ```bash
-   npx vercel env add KV_URL
-   npx vercel env add KV_REST_API_URL
-   npx vercel env add KV_REST_API_TOKEN
-   npx vercel env add KV_REST_API_READ_ONLY_TOKEN
-   ```
-
-2. **Pull Environment Variables**:
-   ```bash
-   npx vercel env pull .env.local
+   REDIS_URL=redis://your-connection-string-here
    ```
 
 ### Option 3: Local Development
 
 For local development, you can either:
 
-**A) Use Vercel KV remotely** (recommended):
+**A) Use Remote Redis** (recommended):
 ```bash
-# Pull production environment variables
-npx vercel env pull .env.local
+# Add your Redis URL to .env.local
+REDIS_URL=redis://your-remote-redis-url
 ```
 
 **B) Use Redis locally** (advanced):
@@ -66,7 +59,7 @@ brew install redis  # macOS
 redis-server
 
 # Add to .env.local:
-KV_URL=redis://localhost:6379
+REDIS_URL=redis://localhost:6379
 ```
 
 ## Environment Variables
@@ -78,11 +71,8 @@ After setup, your `.env.local` should include:
 NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
 NEXT_PUBLIC_GA_FOUR=your_google_analytics_id
 
-# Vercel KV (Redis) - Added automatically by Vercel
-KV_URL=redis://...
-KV_REST_API_URL=https://...
-KV_REST_API_TOKEN=...
-KV_REST_API_READ_ONLY_TOKEN=...
+# Redis for AI response caching
+REDIS_URL=redis://your-redis-connection-string
 ```
 
 ## Cache Behavior
@@ -133,17 +123,17 @@ In Google Analytics, monitor:
 **"Redis cache error (continuing without cache)"**
 - Normal fallback behavior
 - App continues working without caching
-- Check Vercel KV dashboard for database status
+- Check Vercel Redis dashboard for database status
 
 **Slow first requests, fast subsequent ones**
 - Expected behavior - first request populates cache
 - Subsequent requests for same country/year are cached
 
 **Cache not working in development**
-- Ensure `.env.local` has KV environment variables
+- Ensure `.env.local` has REDIS_URL environment variable
 - Run `npx vercel env pull .env.local` to sync
 
-### Vercel KV Limits
+### Vercel Redis Limits
 
 **Hobby Plan (Free)**:
 - 30,000 requests/month
@@ -152,26 +142,27 @@ In Google Analytics, monitor:
 
 **Pro Plan**:
 - Higher limits available
-- See [Vercel KV Pricing](https://vercel.com/docs/storage/vercel-kv/limits-and-pricing)
+- See [Vercel Redis Pricing](https://vercel.com/docs/storage/vercel-redis/limits-and-pricing)
 
 ### Manual Cache Management
 
 **Clear cache** (if needed):
 ```bash
-# Using Vercel CLI
-npx vercel kv clear
+# Using Redis CLI (connect to your Redis instance)
+redis-cli -u $REDIS_URL FLUSHALL
 
-# Or via Redis CLI (if using local Redis)
-redis-cli FLUSHALL
+# Or connect directly and run commands
+redis-cli -u $REDIS_URL
+> FLUSHALL
 ```
 
 **View cache contents**:
 ```bash
-# List all keys
-npx vercel kv keys "ai:*"
+# List all AI cache keys
+redis-cli -u $REDIS_URL KEYS "ai:*"
 
 # Get specific value  
-npx vercel kv get "ai:france:1789"
+redis-cli -u $REDIS_URL GET "ai:france:1789"
 ```
 
 ## Architecture
