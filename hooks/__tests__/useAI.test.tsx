@@ -137,7 +137,13 @@ describe('useAIData', () => {
     // Set API key
     vi.stubEnv('NEXT_PUBLIC_GEMINI_API_KEY', 'test-api-key')
     
-    const mockResponse = {
+    // Mock cache API calls to return null (cache miss)
+    const mockCacheResponse = {
+      ok: true,
+      json: vi.fn().mockResolvedValue({ success: true, data: null })
+    }
+    
+    const mockGeminiResponse = {
       ok: true,
       json: vi.fn().mockResolvedValue({
         candidates: [{
@@ -150,7 +156,13 @@ describe('useAIData', () => {
       })
     }
     
-    global.fetch = vi.fn().mockResolvedValue(mockResponse)
+    // Mock fetch to handle both cache and Gemini API calls
+    global.fetch = vi.fn().mockImplementation((url) => {
+      if (url.includes('/api/cache')) {
+        return Promise.resolve(mockCacheResponse)
+      }
+      return Promise.resolve(mockGeminiResponse)
+    })
 
     const { result } = renderHook(() => useAIData('Spain', '1500'))
 
@@ -159,8 +171,15 @@ describe('useAIData', () => {
     })
 
     expect(global.fetch).toHaveBeenCalled()
-    const fetchCall = (global.fetch as any).mock.calls[0]
-    const requestBody = JSON.parse(fetchCall[1].body)
+    
+    // Find the Gemini API call (not the cache calls)
+    const fetchCalls = (global.fetch as any).mock.calls
+    const geminiCall = fetchCalls.find((call: any) => 
+      call[0].includes('generativelanguage.googleapis.com')
+    )
+    
+    expect(geminiCall).toBeDefined()
+    const requestBody = JSON.parse(geminiCall[1].body)
     
     expect(requestBody.contents[0].parts[0].text).toContain('as it existed in the year 1500')
     expect(result.current.info).toBe('Historical information about Spain in 1500.')

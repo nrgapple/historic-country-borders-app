@@ -4,10 +4,15 @@ import { redisCache } from '../lib/redis';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
+// 
+// QUOTA MANAGEMENT:
+// - Free tier: 500 requests per day per project
+// - To reduce quota usage: increase CACHE_TTL and implement request throttling
+// - Consider using a paid plan for higher quotas if needed
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
-// Cache TTL in seconds (1 hour)
-const CACHE_TTL = 3600;
+// Cache TTL in seconds (24 hours to reduce API calls and manage quota)
+const CACHE_TTL = 86400;
 
 interface FetcherProps {
   countryName: string;
@@ -162,6 +167,49 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         errorBody: errorText,
         timestamp: new Date().toISOString(),
       });
+
+      // Handle specific error types
+      if (response.status === 429) {
+        // Parse error response to get quota details
+        let quotaExceeded = false;
+        let retryDelay = null;
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.error?.code === 429) {
+            quotaExceeded = true;
+            // Extract retry delay if available
+            const retryInfo = errorData.error.details?.find(
+              (detail: any) => detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+            );
+            if (retryInfo?.retryDelay) {
+              retryDelay = retryInfo.retryDelay;
+            }
+          }
+        } catch (parseError) {
+          console.warn('Could not parse 429 error response:', parseError);
+        }
+
+        // Track quota exceeded
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'quota_exceeded',
+          label: `${countryName}_${year}`,
+          value: 1,
+        });
+
+        // Track response time for quota exceeded requests
+        ReactGA4.event({
+          category: 'AI Feature',
+          action: 'response_time_quota_exceeded',
+          label: `${countryName}_${year}`,
+          value: Math.round(responseTime),
+        });
+
+        if (quotaExceeded) {
+          const retryMessage = retryDelay ? ` (retry after ${retryDelay})` : '';
+          return `AI service has reached its daily quota limit${retryMessage}. Please try again tomorrow or switch to Wikipedia for historical information.`;
+        }
+      }
 
       // Track API error
       ReactGA4.event({
@@ -319,6 +367,28 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       timestamp: new Date().toISOString(),
     });
 
+    // Determine error type and provide appropriate message
+    let errorMessage = 'Something went wrong with AI information. Please try again or switch to Wikipedia.';
+    
+    if (error instanceof Error) {
+      // Check if it's a quota/rate limit error
+      if (error.message.includes('429')) {
+        errorMessage = 'AI service quota exceeded. Please try again later or switch to Wikipedia for historical information.';
+      }
+      // Check if it's a network error
+      else if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+      }
+      // Check if it's an API key error
+      else if (error.message.includes('401') || error.message.includes('403')) {
+        errorMessage = 'AI service authentication issue. Please check API key configuration.';
+      }
+      // Check if it's a timeout error
+      else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
+        errorMessage = 'AI service request timed out. Please try again or switch to Wikipedia.';
+      }
+    }
+
     // Track request failure
     ReactGA4.event({
       category: 'AI Feature',
@@ -344,8 +414,8 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       value: Math.round(responseTime),
     });
     
-    // Return error message instead of fallback
-    return 'Something went wrong with AI information. Please try again or switch to Wikipedia.';
+    // Return specific error message instead of generic fallback
+    return errorMessage;
   }
 };
 
