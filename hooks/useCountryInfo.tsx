@@ -11,21 +11,18 @@ interface UseCountryInfoOptions {
 export const useCountryInfo = (name: string, options: UseCountryInfoOptions = {}) => {
   const { provider = 'wikipedia', year } = options;
   
-  const wikiData = useWikiData(name);
-  const aiData = useAIData(name, year);
-  
-  // Return the appropriate data based on the provider
-  switch (provider) {
-    case 'ai':
-      return {
-        ...aiData,
-        provider: 'ai' as const,
-      };
-    case 'wikipedia':
-    default:
-      return {
-        ...wikiData,
-        provider: 'wikipedia' as const,
-      };
+  // Only call the hook for the selected provider
+  if (provider === 'ai') {
+    const aiData = useAIData(name, year);
+    return {
+      ...aiData,
+      provider: 'ai' as const,
+    };
+  } else {
+    const wikiData = useWikiData(name);
+    return {
+      ...wikiData,
+      provider: 'wikipedia' as const,
+    };
   }
 }; 
