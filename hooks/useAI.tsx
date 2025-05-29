@@ -14,6 +14,29 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 // Cache TTL in seconds (24 hours to reduce API calls and manage quota)
 const CACHE_TTL = 86400;
 
+/**
+ * Generates a contextual prompt for AI to describe a geographical/political entity
+ * as it existed in a specific year, accounting for different types of entities
+ * (countries, territories, tribes, city-states, etc.)
+ */
+const generateHistoricalPrompt = (entityName: string, year: string): string => {
+  return `Describe ${entityName} as it existed specifically in the year ${year}. Be historically accurate for that exact time period. The entity might be:
+- A sovereign nation or kingdom
+- A territory, colony, or protectorate
+- A tribal confederation or indigenous group
+- A city-state or principality
+- Multiple competing states or regions
+- Part of a larger empire or federation
+
+Provide a brief, engaging paragraph (under 100 words) that includes:
+1. What type of political/geographical entity it was in ${year}
+2. Its location and approximate boundaries
+3. Who controlled or governed it (if applicable)
+4. 2-3 interesting facts about its culture, society, or significance during that specific time period
+
+If the entity didn't exist as a unified political entity in ${year}, describe what existed in that geographical area instead (tribes, competing kingdoms, part of larger empire, etc.). Focus on what was actually happening in ${year}, not modern borders or names.`;
+};
+
 interface FetcherProps {
   countryName: string;
   year: string;
@@ -115,7 +138,7 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
 
   try {
     // Create a focused prompt for Gemini
-    const prompt = `Write a brief, informative paragraph about ${countryName} as it existed in the year ${year}. Include its location, capital city (if applicable for that time period), and 2-3 interesting facts about its culture, history, or geography relevant to that era. Keep it under 100 words and make it engaging. If the territory didn't exist as a unified entity in ${year}, describe what was there instead.`;
+    const prompt = generateHistoricalPrompt(countryName, year);
 
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
