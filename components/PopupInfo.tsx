@@ -32,11 +32,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   // Track popup display events
   useEffect(() => {
     if (place && position) {
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'popup_displayed',
-        label: `${provider}_${place}`,
-        value: 1,
+      ReactGA4.event('country_info_popup_view', {
+        country_name: place,
+        info_provider: provider,
+        popup_type: 'country_information'
       });
     }
   }, [place, position, provider]);
@@ -50,43 +49,29 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
       
       if (!isError && !empty) {
         // Track successful content display
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'content_displayed',
-          label: `${provider}_${place}`,
-          value: 1,
-        });
-
-        // Track content quality metrics
         const wordCount = description.trim().split(/\s+/).length;
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'content_word_count',
-          label: `${provider}_${place}`,
-          value: wordCount,
-        });
-
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'content_length',
-          label: `${provider}_${place}`,
-          value: description.length,
+        
+        ReactGA4.event('country_info_content_loaded', {
+          country_name: place,
+          info_provider: provider,
+          content_length: description.length,
+          word_count: wordCount,
+          content_quality: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
         });
       } else if (isError) {
         // Track error content display
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'content_error_displayed',
-          label: `${provider}_${place}`,
-          value: 1,
+        ReactGA4.event('country_info_content_error', {
+          country_name: place,
+          info_provider: provider,
+          error_type: description.includes('AI information requires') ? 'authentication_required' : 
+                     description.includes('Something went wrong') ? 'content_generation_failed' : 'unknown_error'
         });
       } else if (empty) {
         // Track empty content
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'content_empty_displayed',
-          label: `${provider}_${place}`,
-          value: 1,
+        ReactGA4.event('country_info_content_empty', {
+          country_name: place,
+          info_provider: provider,
+          reason: 'no_data_available'
         });
       }
     }
@@ -95,11 +80,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   // Track popup close events
   const handleClose = () => {
     if (place) {
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'popup_closed',
-        label: `${provider}_${place}`,
-        value: 1,
+      ReactGA4.event('country_info_popup_close', {
+        country_name: place,
+        info_provider: provider,
+        had_content: !empty && !isLoading
       });
     }
     onClose?.();

@@ -19,11 +19,10 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
   }
 
   // Track AI request initiation
-  ReactGA4.event({
-    category: 'AI Feature',
-    action: 'request_initiated',
-    label: `${countryName}_${year}`,
-    value: 1,
+  ReactGA4.event('ai_content_request', {
+    country_name: countryName,
+    year: year,
+    request_type: 'country_information'
   });
 
   try {
@@ -58,36 +57,23 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       // Handle specific error types
       if (response.status === 429) {
         // Track quota exceeded
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'quota_exceeded',
-          label: `${countryName}_${year}`,
-          value: 1,
-        });
-
-        // Track response time for quota exceeded requests
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_time_quota_exceeded',
-          label: `${countryName}_${year}`,
-          value: Math.round(responseTime),
+        ReactGA4.event('ai_quota_exceeded', {
+          country_name: countryName,
+          year: year,
+          error_type: 'rate_limit',
+          response_time_ms: Math.round(responseTime)
         });
       }
 
       // Track API error
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'api_error',
-        label: `${response.status}_${countryName}_${year}`,
-        value: response.status,
-      });
-
-      // Track response time for failed requests
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_time_error',
-        label: `${countryName}_${year}`,
-        value: Math.round(responseTime),
+      ReactGA4.event('ai_request_error', {
+        country_name: countryName,
+        year: year,
+        error_code: response.status,
+        error_type: response.status === 404 ? 'not_found' : 
+                   response.status === 500 ? 'server_error' : 
+                   response.status === 429 ? 'rate_limit' : 'http_error',
+        response_time_ms: Math.round(responseTime)
       });
 
       // Return the error message from the API
@@ -108,46 +94,25 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
     
     if (content) {
       // Track successful AI response
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_success',
-        label: `${countryName}_${year}`,
-        value: 1,
-      });
-
-      // Track response time for successful requests
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_time_success',
-        label: `${countryName}_${year}`,
-        value: Math.round(responseTime),
-      });
-
-      // Track response quality metrics
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_length',
-        label: `${countryName}_${year}`,
-        value: content.length,
-      });
-
-      // Track word count for content analysis
       const wordCount = content.split(/\s+/).length;
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_word_count',
-        label: `${countryName}_${year}`,
-        value: wordCount,
+      
+      ReactGA4.event('ai_content_generated', {
+        country_name: countryName,
+        year: year,
+        content_length: content.length,
+        word_count: wordCount,
+        response_time_ms: Math.round(responseTime),
+        content_quality: wordCount < 50 ? 'short' : wordCount < 200 ? 'medium' : 'detailed'
       });
 
       return content;
     } else {
       // Track empty response
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_empty',
-        label: `${countryName}_${year}`,
-        value: 1,
+      ReactGA4.event('ai_empty_response', {
+        country_name: countryName,
+        year: year,
+        response_time_ms: Math.round(responseTime),
+        error_message: data.error || 'empty_content'
       });
 
       return data.error || 'AI generated empty response. Please try again or switch to Wikipedia.';
@@ -166,41 +131,29 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
 
     // Determine error type and provide appropriate message
     let errorMessage = 'Something went wrong with AI information. Please try again or switch to Wikipedia.';
+    let errorType = 'unknown_error';
     
     if (error instanceof Error) {
       // Check if it's a network error
       if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
         errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+        errorType = 'network_error';
       }
       // Check if it's a timeout error
       else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
         errorMessage = 'AI service request timed out. Please try again or switch to Wikipedia.';
+        errorType = 'timeout_error';
       }
     }
 
-    // Track request failure
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'request_failed',
-      label: `${countryName}_${year}`,
-      value: 1,
-    });
-
-    // Track error type
-    const errorType = error instanceof Error ? error.name : 'UnknownError';
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'error_type',
-      label: `${errorType}_${countryName}_${year}`,
-      value: 1,
-    });
-
-    // Track response time for failed requests
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'response_time_failed',
-      label: `${countryName}_${year}`,
-      value: Math.round(responseTime),
+    // Track request failure with detailed error information
+    ReactGA4.event('ai_request_failed', {
+      country_name: countryName,
+      year: year,
+      error_type: errorType,
+      error_name: error instanceof Error ? error.name : 'UnknownError',
+      response_time_ms: Math.round(responseTime),
+      network_related: errorType.includes('network') || errorType.includes('timeout')
     });
     
     // Return specific error message instead of generic fallback

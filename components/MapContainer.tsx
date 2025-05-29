@@ -7,11 +7,17 @@ import React, {
 import { useData } from '../hooks/useData';
 import toast from 'react-hot-toast';
 import CountryInfo, { CountryInfoData } from './CountryInfo';
+import ComparePopup, { CompareInfo } from './ComparePopup';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
 import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
 import { useMapQuery } from '../hooks/useMapQuery';
+import { useCompare } from '../contexts/CompareContext';
+import { useSettings } from '../contexts/SettingsContext';
+import { useYearRouting } from '../hooks/useYearRouting';
+import { Feature, MultiPolygon } from 'geojson';
+import bbox from '@turf/bbox';
 
 interface MapContainerProps {
   year: string;
@@ -26,7 +32,11 @@ export default function MapContainer({
 }: MapContainerProps) {
   const { data: { data, places } = {}, isLoading } = useData(year, user, id);
   const [selectedInfo, setSelectedInfo] = useState<CountryInfoData | undefined>();
+  const [compareInfo, setCompareInfo] = useState<CompareInfo | undefined>();
   const { viewState, updateMapView, isReady } = useMapQuery();
+  const { compareState, cancelCompare } = useCompare();
+  const { settings } = useSettings();
+  const { setYear } = useYearRouting();
   const hasSetStyleRef = useRef(false);
   const mapRef = useRef<any>(null);
   const [isWaitingForStyleLoad, setIsWaitingForStyleLoad] = useState(false);
@@ -41,10 +51,25 @@ export default function MapContainer({
     }
   }, [isLoading]);
 
-  // Clear selected info when data changes
+  // Clear selected info when data changes, but keep compare info in compare mode
   useEffect(() => {
     setSelectedInfo(undefined);
-  }, [data]);
+    if (!compareState.isCompareMode) {
+      setCompareInfo(undefined);
+    }
+  }, [data, compareState.isCompareMode]);
+
+  // Clear compare info when AI Compare is disabled or compare mode is turned off
+  useEffect(() => {
+    if (!compareState.isCompareMode || !settings.aiCompareEnabled) {
+      setCompareInfo(undefined);
+    }
+    
+    // If AI Compare is disabled while in compare mode, fully exit compare mode
+    if (!settings.aiCompareEnabled && compareState.isCompareMode) {
+      cancelCompare();
+    }
+  }, [compareState.isCompareMode, settings.aiCompareEnabled, cancelCompare]);
 
   // Reset style loading state when map key changes or data changes
   useEffect(() => {
@@ -68,65 +93,17 @@ export default function MapContainer({
     };
   }, [handleStyleLoad]);
 
-  const handleStyleData = useCallback(({ target }: MapStyleDataEvent) => {
-    target.resize();
-    
-    // If style is loaded but we haven't set our custom style yet, proceed
-    if (!hasSetStyleRef.current && target.isStyleLoaded()) {
-      const style = target.getStyle();
-      if (!style) {
-        console.error('No style found');
-        return;
-      }
-
-      // Remove default country borders
-      const filterDefaultBorderLayers = (l: any) => !l.id.includes('admin');
-      hasSetStyleRef.current = true;
-      
-      const newStyle = {
-        ...style,
-        imports: [
-          {
-            //@ts-ignore
-            ...style.imports[0],
-            data: {
-              //@ts-ignore
-              ...style.imports[0].data,
-              //@ts-ignore
-              layers: style.imports[0].data.layers.filter(
-                filterDefaultBorderLayers,
-              ),
-            },
-          },
-        ],
-      };
-      
-      // Set the new style and wait for it to load
-      target.setStyle(newStyle);
-      setIsWaitingForStyleLoad(true);
-      
-      // Add a fallback timeout in case style.load event doesn't fire
-      setTimeout(() => {
-        setIsWaitingForStyleLoad(false);
-      }, 1000);
-    }
-    
-    // If we've already set the style and this is a subsequent styledata event,
-    // it means the new style has loaded, so we can allow MapSources to render
-    if (hasSetStyleRef.current && target.isStyleLoaded()) {
+  const handleStyleData = useCallback((e: MapStyleDataEvent) => {
+    // Style data event fired, set flag to allow MapSources rendering
+    if (!hasSetStyleRef.current) {
       setIsWaitingForStyleLoad(false);
+      hasSetStyleRef.current = true;
     }
-  }, [year]);
+  }, []);
 
-  const handleLoad = useCallback(({ target }: MapboxEvent) => {
-    target.resize();
-    
-    ReactGA4.event({
-      category: 'Map',
-      action: 'load',
-      label: 'map loaded',
-      value: 1,
-    });
+  const handleLoad = useCallback(() => {
+    // Map is loaded, but style might still be loading
+    setIsWaitingForStyleLoad(false);
   }, []);
 
   const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
@@ -138,9 +115,13 @@ export default function MapContainer({
     );
   }, [updateMapView]);
 
-  const handleClick = useCallback(({ originalEvent, features }) => {
+  const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
     if (!features?.length) {
-      setSelectedInfo(undefined);
+      // Clear selections when clicking empty space, but only if not in compare mode
+      if (!compareState.isCompareMode) {
+        setSelectedInfo(undefined);
+        setCompareInfo(undefined);
+      }
       return;
     }
     
@@ -148,21 +129,165 @@ export default function MapContainer({
     const place = feature.properties?.NAME;
     originalEvent.stopPropagation();
     
-    setSelectedInfo({
-      place,
-    });
+    // Get coordinates for popup positioning
+    const coordinates = lngLat.toArray() as [number, number];
     
-    ReactGA4.event({
-      category: 'Country',
-      action: 'click',
-      label: place || 'unknown',
-      value: 1,
-    });
-  }, []);
+    if (compareState.isCompareMode && settings.aiCompareEnabled) {
+      // In compare mode, update compare info
+      setCompareInfo({
+        place,
+        year,
+        position: coordinates,
+      });
+      setSelectedInfo(undefined); // Clear normal info popup
+      
+      ReactGA4.event('country_select_compare_mode', {
+        country_name: place || 'unknown',
+        year: year,
+        selection_method: 'map_click',
+        compare_stage: compareState.country1 ? 'selecting_second' : 'selecting_first'
+      });
+    } else {
+      // Normal mode, update country info
+      setSelectedInfo({
+        place,
+      });
+      setCompareInfo(undefined); // Clear compare popup
+      
+      ReactGA4.event('country_select', {
+        country_name: place || 'unknown',
+        year: year,
+        selection_method: 'map_click',
+        mode: 'explore'
+      });
+    }
+  }, [compareState.isCompareMode, settings.aiCompareEnabled, year]);
 
   const closeCountryInfo = useCallback(() => {
     setSelectedInfo(undefined);
   }, []);
+
+  const closeComparePopup = useCallback(() => {
+    setCompareInfo(undefined);
+    // Also cancel compare mode when closing the popup
+    if (compareState.isCompareMode) {
+      cancelCompare();
+    }
+  }, [compareState.isCompareMode, cancelCompare]);
+
+  const handleStartCompare = useCallback((countryName: string, year: string) => {
+    // When starting compare from CountryInfo, switch to compare mode
+    // The compare context will handle the state, but we need to position the popup
+    if (selectedInfo) {
+      // Use current viewport center for popup positioning
+      const coordinates: [number, number] = viewState && 
+        typeof viewState.longitude === 'number' && 
+        typeof viewState.latitude === 'number' && 
+        !isNaN(viewState.longitude) && 
+        !isNaN(viewState.latitude) 
+        ? [viewState.longitude, viewState.latitude] 
+        : [10, 50]; // Default to somewhere in Europe instead of [0,0]
+      
+      setCompareInfo({
+        place: countryName,
+        year,
+        position: coordinates,
+      });
+      setSelectedInfo(undefined);
+    }
+  }, [selectedInfo, viewState]);
+
+  const handleCountryClick = useCallback((countryName: string, targetYear: string) => {
+    // Navigate to the target year if different
+    if (targetYear !== year) {
+      setYear(targetYear);
+    }
+
+    // Find the country in the current data to center the map
+    const findAndCenterCountry = (countryData: typeof data) => {
+      if (!countryData || !mapRef.current) return;
+
+      // Find the country feature in the borders data
+      const countryFeature = countryData.borders.features.find(
+        (feature: Feature) => feature.properties?.NAME === countryName
+      );
+
+      if (countryFeature && countryFeature.geometry) {
+        try {
+          // Calculate bounding box of the country
+          const boundingBox = bbox(countryFeature);
+          const [minLng, minLat, maxLng, maxLat] = boundingBox;
+
+          // Get the map instance
+          const map = mapRef.current.getMap();
+          
+          // Fit the map to the country bounds with some padding
+          map.fitBounds(
+            [[minLng, minLat], [maxLng, maxLat]],
+            {
+              padding: 50,
+              duration: 1500,
+              essential: true
+            }
+          );
+
+          // Highlight the country by setting it as selected
+          if (compareState.isCompareMode) {
+            // In compare mode, update or create compareInfo to highlight the country
+            setCompareInfo(prev => prev ? { ...prev, place: countryName } : {
+              place: countryName,
+              year: targetYear,
+              position: [0, 0] // Will be updated if user clicks on map
+            });
+          } else {
+            setSelectedInfo({ place: countryName });
+          }
+
+          ReactGA4.event('country_navigate_from_comparison', {
+            country_name: countryName,
+            target_year: targetYear,
+            source: 'ai_comparison_result',
+            year_changed: targetYear !== year
+          });
+        } catch (error) {
+          console.warn('Failed to center map on country:', countryName, error);
+          
+          // Fallback: just highlight the country without centering
+          if (compareState.isCompareMode) {
+            // In compare mode, update or create compareInfo to highlight the country
+            setCompareInfo(prev => prev ? { ...prev, place: countryName } : {
+              place: countryName,
+              year: targetYear,
+              position: [0, 0] // Will be updated if user clicks on map
+            });
+          } else {
+            setSelectedInfo({ place: countryName });
+          }
+        }
+      }
+    };
+
+    // If year is changing, we need to wait for new data to load
+    if (targetYear !== year) {
+      // The data will update automatically when year changes
+      // We'll handle centering in a useEffect
+      const timeoutId = setTimeout(() => {
+        findAndCenterCountry(data);
+      }, 500); // Wait a bit for data to load
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Same year, center immediately
+      findAndCenterCountry(data);
+    }
+  }, [year, setYear, data, mapRef, compareState.isCompareMode]);
+
+  // Effect to center on country when data changes (for year navigation)
+  useEffect(() => {
+    // This will be set by the handleCountryClick callback when year changes
+    // We could store the target country in state, but for now we'll rely on
+    // the timeout in handleCountryClick
+  }, [data]);
 
   return (
     <div className="map-grid">
@@ -188,10 +313,32 @@ export default function MapContainer({
       >
         {/* Only render MapSources when style is ready and data is available */}
         {places && data && !isWaitingForStyleLoad && (
-          <MapSources data={data} places={places} selectedCountry={selectedInfo?.place} />
+          <MapSources 
+            data={data} 
+            places={places} 
+            selectedCountry={selectedInfo?.place || compareInfo?.place} 
+          />
         )}
       </MapboxDefaultMap>
-      <CountryInfo info={selectedInfo} year={year} onClose={closeCountryInfo} />
+      
+      {/* Show normal country info popup only when not in compare mode */}
+      {!compareState.isCompareMode && selectedInfo && (
+        <CountryInfo 
+          info={selectedInfo} 
+          year={year} 
+          onClose={closeCountryInfo}
+          onStartCompare={handleStartCompare}
+        />
+      )}
+      
+      {/* Show compare popup when in compare mode and AI compare is enabled */}
+      {compareState.isCompareMode && settings.aiCompareEnabled && (compareInfo || compareState.currentComparison) && (
+        <ComparePopup 
+          info={compareInfo} 
+          onClose={closeComparePopup}
+          onCountryClick={handleCountryClick}
+        />
+      )}
     </div>
   );
 }

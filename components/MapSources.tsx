@@ -16,46 +16,42 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
 
   // Track settings impact on map rendering
   useEffect(() => {
-    ReactGA4.event({
-      category: 'Map',
-      action: 'rendered_with_settings',
-      label: `textSize:${settings.textSize}_textCase:${settings.textCase}_opacity:${settings.countryOpacity}`,
-      value: 1,
+    ReactGA4.event('map_render_with_settings', {
+      text_size: settings.textSize,
+      text_case: settings.textCase,
+      country_opacity: Math.round(settings.countryOpacity * 100),
+      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}`
     });
 
-    // Track accessibility-related settings usage
+    // Track accessibility features usage
     if (settings.textSize === 'large') {
-      ReactGA4.event({
-        category: 'Accessibility',
-        action: 'large_text_used',
-        label: 'map_labels',
-        value: 1,
+      ReactGA4.event('accessibility_feature_used', {
+        feature_type: 'large_text',
+        element: 'map_labels',
+        text_size: settings.textSize
       });
     }
 
     if (settings.textCase === 'upper') {
-      ReactGA4.event({
-        category: 'Map',
-        action: 'uppercase_labels_used',
-        label: 'text_formatting',
-        value: 1,
+      ReactGA4.event('text_formatting_applied', {
+        formatting_type: 'uppercase',
+        element: 'map_labels',
+        text_case: settings.textCase
       });
     }
 
-    // Track low/high opacity usage for visual preferences
+    // Track opacity preferences for visual customization
     if (settings.countryOpacity <= 0.3) {
-      ReactGA4.event({
-        category: 'Map',
-        action: 'low_opacity_used',
-        label: 'country_visibility',
-        value: Math.round(settings.countryOpacity * 10),
+      ReactGA4.event('visual_preference_low_opacity', {
+        opacity_level: 'low',
+        opacity_value: Math.round(settings.countryOpacity * 100),
+        element: 'country_borders'
       });
     } else if (settings.countryOpacity >= 0.9) {
-      ReactGA4.event({
-        category: 'Map',
-        action: 'high_opacity_used',
-        label: 'country_visibility',
-        value: Math.round(settings.countryOpacity * 10),
+      ReactGA4.event('visual_preference_high_opacity', {
+        opacity_level: 'high',
+        opacity_value: Math.round(settings.countryOpacity * 100),
+        element: 'country_borders'
       });
     }
   }, [settings]);
@@ -63,11 +59,11 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
   // Track selected country interactions with current settings
   useEffect(() => {
     if (selectedCountry) {
-      ReactGA4.event({
-        category: 'Map',
-        action: 'country_selected_with_settings',
-        label: `${selectedCountry}_textSize:${settings.textSize}`,
-        value: 1,
+      ReactGA4.event('country_selected_with_settings', {
+        country_name: selectedCountry,
+        text_size: settings.textSize,
+        text_case: settings.textCase,
+        country_opacity: Math.round(settings.countryOpacity * 100)
       });
     }
   }, [selectedCountry, settings.textSize, settings.textCase]);

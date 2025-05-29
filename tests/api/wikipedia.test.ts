@@ -1,18 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createMocks } from 'node-mocks-http'
-import handler from '../wikipedia'
+import handler from '../../pages/api/wikipedia'
 
 // Mock fetch
 global.fetch = vi.fn()
 
 // Mock wikijs
-const mockWiki = {
-  search: vi.fn(),
-  page: vi.fn(),
-}
-
 const mockPage = {
   summary: vi.fn(),
+}
+
+const mockWiki = {
+  search: vi.fn(),
+  page: vi.fn().mockResolvedValue(mockPage),
+  find: vi.fn().mockResolvedValue(mockPage),
 }
 
 vi.mock('wikijs', () => ({

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createMocks } from 'node-mocks-http'
-import handler from '../ai'
+import handler from '../../pages/api/ai'
 
 // Mock fetch
 global.fetch = vi.fn()
@@ -13,7 +13,7 @@ vi.mock('react-ga4', () => ({
 }))
 
 // Mock redis cache
-vi.mock('../../../lib/redis', () => ({
+vi.mock('../../lib/redis', () => ({
   redisCache: {
     get: vi.fn(),
     set: vi.fn(),

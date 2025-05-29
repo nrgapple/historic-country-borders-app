@@ -56,17 +56,17 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
     })
 
     it('should track default settings usage', () => {
       renderHook(() => useSettings(), { wrapper })
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_restored',
-        label: 'from_localStorage',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_restored', {
+        source: 'localStorage',
+        settings_count: expect.any(Number),
+        has_custom_settings: expect.any(Boolean)
       })
     })
   })
@@ -80,11 +80,12 @@ describe('SettingsContext', () => {
       })
 
       expect(result.current.settings.textSize).toBe('large')
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'textSize_to_large',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'textSize',
+        previous_value: 'medium',
+        new_value: 'large',
+        setting_type: 'string',
+        change_method: 'settings_update'
       })
     })
 
@@ -96,11 +97,12 @@ describe('SettingsContext', () => {
       })
 
       expect(result.current.settings.textCase).toBe('upper')
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'textCase_to_upper',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'textCase',
+        previous_value: 'regular',
+        new_value: 'upper',
+        setting_type: 'string',
+        change_method: 'settings_update'
       })
     })
 
@@ -112,11 +114,12 @@ describe('SettingsContext', () => {
       })
 
       expect(result.current.settings.countryOpacity).toBe(0.5)
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'countryOpacity_to_0.5',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'countryOpacity',
+        previous_value: '0.7',
+        new_value: '0.5',
+        setting_type: 'number',
+        change_method: 'settings_update'
       })
     })
 
@@ -137,26 +140,30 @@ describe('SettingsContext', () => {
         textCase: 'upper',
         countryOpacity: 0.9,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
       // Should track each setting change
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'textSize_to_small',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'textSize',
+        previous_value: 'medium',
+        new_value: 'small',
+        setting_type: 'string',
+        change_method: 'settings_update'
       })
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'textCase_to_upper',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'textCase',
+        previous_value: 'regular',
+        new_value: 'upper',
+        setting_type: 'string',
+        change_method: 'settings_update'
       })
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: 'countryOpacity_to_0.9',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'countryOpacity',
+        previous_value: '0.7',
+        new_value: '0.9',
+        setting_type: 'number',
+        change_method: 'settings_update'
       })
     })
   })
@@ -184,13 +191,14 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_reset',
-        label: 'to_defaults',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_reset', {
+        reset_target: 'defaults',
+        previous_customizations: expect.any(Number),
+        reset_method: 'manual_reset',
+        had_customizations: expect.any(Boolean)
       })
     })
   })
@@ -210,6 +218,7 @@ describe('SettingsContext', () => {
           textCase: 'regular',
           countryOpacity: 0.7,
           infoProvider: 'wikipedia',
+          aiCompareEnabled: false,
         })
       )
 
@@ -219,11 +228,11 @@ describe('SettingsContext', () => {
         'wikipedia'
       )
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_saved',
-        label: 'to_localStorage',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_saved', {
+        storage_type: 'localStorage',
+        settings_count: expect.any(Number),
+        save_duration_ms: expect.any(Number),
+        operation: 'settings_save'
       })
     })
 
@@ -233,6 +242,7 @@ describe('SettingsContext', () => {
         textCase: 'upper' as TextCase,
         countryOpacity: 0.4,
         infoProvider: 'ai' as const,
+        aiCompareEnabled: false,
       }
 
       localStorageMock.setItem(
@@ -243,11 +253,10 @@ describe('SettingsContext', () => {
       const { result } = renderHook(() => useSettings(), { wrapper })
 
       expect(result.current.settings).toEqual(savedSettings)
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_restored',
-        label: 'from_localStorage',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_restored', {
+        source: 'localStorage',
+        settings_count: expect.any(Number),
+        has_custom_settings: expect.any(Boolean)
       })
     })
 
@@ -262,13 +271,14 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'localstorage_read_error',
-        label: 'settings',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_storage_error', {
+        error_type: 'read_error',
+        storage_type: 'localStorage',
+        operation: 'settings_load',
+        error_name: expect.any(String)
       })
     })
 
@@ -293,6 +303,7 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
     })
   })

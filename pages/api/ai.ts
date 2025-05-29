@@ -82,11 +82,11 @@ export default async function handler(
       });
 
       // Track cache hit
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'cache_hit',
-        label: `${countryName}_${year}`,
-        value: 1,
+      ReactGA4.event('ai_cache_hit', {
+        country_name: countryName,
+        year: year,
+        cache_key: cacheKey,
+        performance_benefit: 'cache_served'
       });
 
       return res.status(200).json({ content: cachedResponse });
@@ -100,11 +100,11 @@ export default async function handler(
     });
 
     // Track cache miss
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'cache_miss',
-      label: `${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_cache_miss', {
+      country_name: countryName,
+      year: year,
+      cache_key: cacheKey,
+      cache_status: 'miss'
     });
   } catch (cacheError) {
     console.warn('Redis cache error (continuing without cache):', {
@@ -116,11 +116,11 @@ export default async function handler(
     });
 
     // Track cache error
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'cache_error',
-      label: `${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_cache_error', {
+      country_name: countryName,
+      year: year,
+      error_type: 'cache_operation_failed',
+      error_message: cacheError instanceof Error ? cacheError.message : 'unknown_cache_error'
     });
   }
 
@@ -136,11 +136,11 @@ export default async function handler(
     });
 
     // Track missing API key
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'api_key_missing',
-      label: `${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_api_key_missing', {
+      country_name: countryName,
+      year: year,
+      error_type: 'configuration_error',
+      service: 'gemini_api'
     });
 
     return res.status(500).json({ 
@@ -150,11 +150,11 @@ export default async function handler(
   }
 
   // Track AI request initiation
-  ReactGA4.event({
-    category: 'AI Feature',
-    action: 'request_initiated',
-    label: `${countryName}_${year}`,
-    value: 1,
+  ReactGA4.event('ai_api_request_start', {
+    country_name: countryName,
+    year: year,
+    api_service: 'gemini',
+    request_type: 'historical_information'
   });
 
   try {
@@ -234,19 +234,12 @@ export default async function handler(
         }
 
         // Track quota exceeded
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'quota_exceeded',
-          label: `${countryName}_${year}`,
-          value: 1,
-        });
-
-        // Track response time for quota exceeded requests
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_time_quota_exceeded',
-          label: `${countryName}_${year}`,
-          value: Math.round(responseTime),
+        ReactGA4.event('ai_quota_exceeded', {
+          country_name: countryName,
+          year: year,
+          error_type: 'rate_limit',
+          response_time_ms: Math.round(responseTime),
+          retry_delay: retryDelay || 'unknown'
         });
 
         if (quotaExceeded) {
@@ -259,19 +252,14 @@ export default async function handler(
       }
 
       // Track API error
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'api_error',
-        label: `${response.status}_${countryName}_${year}`,
-        value: response.status,
-      });
-
-      // Track response time for failed requests
-      ReactGA4.event({
-        category: 'AI Feature',
-        action: 'response_time_error',
-        label: `${countryName}_${year}`,
-        value: Math.round(responseTime),
+      ReactGA4.event('ai_api_error', {
+        country_name: countryName,
+        year: year,
+        error_code: response.status,
+        error_type: response.status === 404 ? 'not_found' : 
+                   response.status === 500 ? 'server_error' : 
+                   response.status === 429 ? 'rate_limit' : 'http_error',
+        response_time_ms: Math.round(responseTime)
       });
 
       return res.status(response.status).json({ 
@@ -318,11 +306,12 @@ export default async function handler(
           });
 
           // Track successful cache write
-          ReactGA4.event({
-            category: 'AI Feature',
-            action: 'cache_write_success',
-            label: `${countryName}_${year}`,
-            value: 1,
+          ReactGA4.event('ai_cache_write_success', {
+            country_name: countryName,
+            year: year,
+            cache_key: cacheKey,
+            content_length: trimmedContent.length,
+            cache_ttl: CACHE_TTL
           });
         } catch (cacheWriteError) {
           console.warn('Failed to cache AI response (continuing normally):', {
@@ -334,55 +323,34 @@ export default async function handler(
           });
 
           // Track cache write error
-          ReactGA4.event({
-            category: 'AI Feature',
-            action: 'cache_write_error',
-            label: `${countryName}_${year}`,
-            value: 1,
+          ReactGA4.event('ai_cache_write_error', {
+            country_name: countryName,
+            year: year,
+            error_type: 'cache_write_failed',
+            error_message: cacheWriteError instanceof Error ? cacheWriteError.message : 'unknown_error'
           });
         }
 
-        // Track successful AI response
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_success',
-          label: `${countryName}_${year}`,
-          value: 1,
-        });
-
-        // Track response time for successful requests
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_time_success',
-          label: `${countryName}_${year}`,
-          value: Math.round(responseTime),
-        });
-
-        // Track response quality metrics
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_length',
-          label: `${countryName}_${year}`,
-          value: trimmedContent.length,
-        });
-
-        // Track word count for content analysis
+        // Track successful AI response with comprehensive metrics
         const wordCount = trimmedContent.split(/\s+/).length;
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_word_count',
-          label: `${countryName}_${year}`,
-          value: wordCount,
+        ReactGA4.event('ai_content_generated_api', {
+          country_name: countryName,
+          year: year,
+          content_length: trimmedContent.length,
+          word_count: wordCount,
+          response_time_ms: Math.round(responseTime),
+          content_quality: wordCount < 50 ? 'short' : wordCount < 150 ? 'medium' : 'detailed',
+          api_service: 'gemini'
         });
 
         return res.status(200).json({ content: trimmedContent });
       } else {
         // Track empty response
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'response_empty',
-          label: `${countryName}_${year}`,
-          value: 1,
+        ReactGA4.event('ai_empty_response_api', {
+          country_name: countryName,
+          year: year,
+          response_time_ms: Math.round(responseTime),
+          api_service: 'gemini'
         });
 
         return res.status(200).json({ 
@@ -399,11 +367,11 @@ export default async function handler(
     });
 
     // Track unexpected response format
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'response_format_error',
-      label: `${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_response_format_error', {
+      country_name: countryName,
+      year: year,
+      error_type: 'unexpected_format',
+      api_service: 'gemini'
     });
     
     return res.status(200).json({ 
@@ -444,28 +412,16 @@ export default async function handler(
     }
 
     // Track request failure
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'request_failed',
-      label: `${countryName}_${year}`,
-      value: 1,
-    });
-
-    // Track error type
-    const errorType = error instanceof Error ? error.name : 'UnknownError';
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'error_type',
-      label: `${errorType}_${countryName}_${year}`,
-      value: 1,
-    });
-
-    // Track response time for failed requests
-    ReactGA4.event({
-      category: 'AI Feature',
-      action: 'response_time_failed',
-      label: `${countryName}_${year}`,
-      value: Math.round(responseTime),
+    ReactGA4.event('ai_api_request_failed', {
+      country_name: countryName,
+      year: year,
+      error_type: error instanceof Error && error.message.includes('429') ? 'quota_exceeded' :
+                 error instanceof Error && error.message.includes('fetch') ? 'network_error' :
+                 error instanceof Error && error.message.includes('401') ? 'authentication_error' :
+                 error instanceof Error && error.message.includes('timeout') ? 'timeout_error' : 'unknown_error',
+      error_name: error instanceof Error ? error.name : 'UnknownError',
+      response_time_ms: Math.round(responseTime),
+      api_service: 'gemini'
     });
     
     // Return specific error message instead of generic fallback

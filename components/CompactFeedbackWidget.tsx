@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReactGA4 from 'react-ga4';
+import { useFingerPrint } from '../hooks/useFingerPrint';
 
 interface CompactFeedbackWidgetProps {
   title?: string;
@@ -21,22 +22,53 @@ export default function CompactFeedbackWidget({
     rating: ''
   });
   const [isSending, setIsSending] = useState(false);
+  const fingerprint = useFingerPrint();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.rating) return;
+    if (!formData.rating || !fingerprint) return;
     
     setIsSending(true);
     
     try {
-      // Send feedback (you can implement your API call here)
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      // Convert rating to match API expectations
+      const ratingMap: { [key: string]: string } = {
+        'good': 'nice',
+        'meh': 'meh', 
+        'bad': 'bad'
+      };
+
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user: formData.email,
+          message: formData.message,
+          rate: ratingMap[formData.rating],
+          visitorId: fingerprint,
+          metadata: {
+            dev: process.env.NODE_ENV === 'development'
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Feedback sent successfully:', result);
       
-      ReactGA4.event({
-        category: 'Feedback',
-        action: `${formData.rating}`,
-        label: 'compact-feedback',
+      ReactGA4.event('feedback_submit', {
+        feedback_rating: formData.rating,
+        feedback_type: 'compact_widget',
+        has_email: !!formData.email.trim(),
+        has_message: !!formData.message.trim(),
+        message_length: formData.message.trim().length
       });
       
       // Reset form and close
@@ -44,6 +76,7 @@ export default function CompactFeedbackWidget({
       setIsOpen(false);
     } catch (error) {
       console.error('Feedback submission error:', error);
+      alert(`Failed to send feedback: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsSending(false);
     }
@@ -55,10 +88,10 @@ export default function CompactFeedbackWidget({
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-    ReactGA4.event({
-      category: 'Feedback',
-      action: `${!isOpen ? 'opened' : 'closed'} compact feedback`,
-      label: 'compact-feedback',
+    ReactGA4.event('feedback_widget_toggle', {
+      action: !isOpen ? 'open' : 'close',
+      widget_type: 'compact_feedback',
+      interaction_source: 'trigger_button'
     });
   };
 
@@ -128,7 +161,7 @@ export default function CompactFeedbackWidget({
           <button
             type="submit"
             className="feedback-widget-compact-submit"
-            disabled={isSending || !formData.rating}
+            disabled={isSending || !formData.rating || !fingerprint}
           >
             {isSending ? 'Sending...' : 'Send Feedback'}
           </button>

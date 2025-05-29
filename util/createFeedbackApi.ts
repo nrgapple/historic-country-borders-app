@@ -10,12 +10,21 @@ interface Payload {
   };
 }
 
-export function createFeedbackAPI(options: { webhook: string }) {
+export function createFeedbackAPI(options: { webhook: string | undefined }) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
     const { webhook } = options;
     const { user, message, rate, metadata, visitorId } = req.body as Payload;
     const method = req.method;
-    if (method !== 'POST') throw new Error('Method not allowed');
+    if (method !== 'POST') {
+      return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    if (!webhook) {
+      console.error('Discord webhook URL not configured');
+      return res.status(500).json({ 
+        message: 'Feedback system not configured. Please check environment variables.' 
+      });
+    }
 
     const username = 'HB Feedback';
     const ratingEmote =
@@ -65,9 +74,10 @@ export function createFeedbackAPI(options: { webhook: string }) {
 
       return res.status(200).json({ message: 'success' });
     } catch (err) {
-      let message = err;
+      console.error('Discord webhook error:', err);
+      let message = 'Failed to send feedback';
 
-      if (err instanceof TypeError) {
+      if (err instanceof Error) {
         message = err.message;
       }
 
