@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createMocks } from 'node-mocks-http'
-import handler from '../feedback'
+import handler from '../../pages/api/feedback'
 
 // Mock fetch
 global.fetch = vi.fn()
