@@ -8,7 +8,7 @@ import SettingsButton from '../components/SettingsButton';
 import Layout from '../components/Layout';
 import toast, { Toaster } from 'react-hot-toast';
 import { useQuery } from '../hooks/useQuery';
-import { DataProps } from '../pages';
+import { useYearRouting } from '../hooks/useYearRouting';
 import { useAppStateSetter, useAppStateValue } from '../hooks/useState';
 import ReactGA4 from 'react-ga4';
 import { toastMessages } from '../config/toasts';
@@ -22,22 +22,34 @@ const getRandomYear = (years: (string | number)[]): string => {
   return years[randomIndex].toString();
 };
 
-export default function Viewer({ years, user, id, config }: DataProps) {
+export interface DataProps {
+  years: number[];
+  user: string;
+  id: string;
+  config: any;
+  currentYear?: string;
+}
+
+export default function Viewer({ years, user, id, config, currentYear }: DataProps) {
   const hide = useAppStateValue('hide');
   const setState = useAppStateSetter();
 
-  const { query, setQuery, isReady } = useQuery();
+  // Use year routing instead of query parameters
+  const { currentYear: routedYear, setYear, isReady } = useYearRouting(currentYear);
+  
+  // Still use query for map state (lng, lat, zoom)
+  const { query, updateQuery } = useQuery();
   
   // Get the current year with proper validation and fallback
   const year = useMemo(() => {
-    // If a year is provided in query params, use it
-    if (query.year) {
-      return query.year;
+    // If we have a routed year (from URL path), use it
+    if (routedYear) {
+      return routedYear;
     }
     // Don't use random during server-side rendering to avoid hydration mismatch
     // The useEffect below will handle setting a random year on the client
     return years?.[0]?.toString() || '';
-  }, [query.year, years]);
+  }, [routedYear, years]);
 
   const index = useMemo(() => {
     const i = years?.findIndex((y) => y.toString() === year) ?? -1;
@@ -54,13 +66,13 @@ export default function Viewer({ years, user, id, config }: DataProps) {
     if (!isReady) return; // Wait for router to be ready
     
     // Only set random if no year is provided at all
-    if (!query.year && years.length > 0) {
+    if (!routedYear && years.length > 0) {
       const randomYear = getRandomYear(years);
       if (randomYear) {
-        setQuery({ year: randomYear });
+        setYear(randomYear);
       }
     }
-  }, [isReady, query.year, years, setQuery]);
+  }, [isReady, routedYear, years, setYear]);
 
   // The scroll lock is now handled in _app.tsx globally
   // No need for additional scroll locking here
@@ -68,7 +80,7 @@ export default function Viewer({ years, user, id, config }: DataProps) {
   useEffect(() => {
     ReactGA4.send({
       hitType: 'pageview',
-      page: `${year ? `/?year=${year}` : '/'}`,
+      page: `${year ? `/year/${year}` : '/'}`,
       title: `${year ? `Year ${year}` : 'Home'}`,
     });
   }, [year]);
@@ -89,7 +101,7 @@ export default function Viewer({ years, user, id, config }: DataProps) {
           index={index}
           years={years}
           onChange={(y: string) => {
-            setQuery({ year: y });
+            setYear(y);
             ReactGA4.event({
               category: 'Timeline',
               action: 'Year Changed',

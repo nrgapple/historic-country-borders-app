@@ -22,6 +22,7 @@ function getNumberParam(query: ParsedUrlQuery, key: string, defaultValue: number
 
 /**
  * Parses query parameters into a typed AppQueryParams object
+ * Note: Year is now handled via path routing, not query parameters
  */
 export function parseQueryParams(query: ParsedUrlQuery | null | undefined): AppQueryParams {
   if (!query) {
@@ -29,7 +30,6 @@ export function parseQueryParams(query: ParsedUrlQuery | null | undefined): AppQ
   }
   
   return {
-    year: getStringParam(query, 'year'),
     lng: getStringParam(query, 'lng'),
     lat: getStringParam(query, 'lat'),
     zoom: getStringParam(query, 'zoom'),

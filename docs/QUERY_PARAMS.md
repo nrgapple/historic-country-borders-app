@@ -1,73 +1,80 @@
-# Query Parameter System
+# Query Parameter and Routing System
 
-This document describes the improved query parameter system for the Historic Country Borders App.
+This document describes the improved query parameter and routing system for the Historic Country Borders App.
 
 ## Overview
 
-The query parameter system has been refactored to provide:
+The routing system has been refactored to provide:
+- **Path-Based Year Routing**: Years are now handled via URL paths (`/year/1322`) instead of query parameters
 - **Type Safety**: Proper TypeScript interfaces for all query parameters
 - **Centralized Logic**: All query parameter handling is centralized in dedicated utilities
 - **Validation**: Built-in validation and default values
 - **Clean API**: Simple, intuitive hooks for components
 - **Hydration Safe**: Properly handles Next.js server-side rendering and client-side hydration
+- **No Page Refresh**: Year navigation uses shallow routing to prevent map flickering
 
-## Query Parameters
+## Routing Structure
 
-The app supports the following query parameters:
+### Year-Based Routes
+Years are now handled via dynamic routes:
+```
+/year/[year]    # Dynamic route for specific years
+/               # Root redirects to random year
+```
+
+### Query Parameters
+The app supports the following query parameters for map state:
 
 | Parameter | Type | Description | Default |
 |-----------|------|-------------|---------|
-| `year` | string | The selected historical year | First available year |
 | `lng` | string | Map longitude coordinate | 0 |
 | `lat` | string | Map latitude coordinate | 0 |
 | `zoom` | string | Map zoom level | 2 |
 
-## Testing Query Parameters
+## Testing the Routing System
 
-To test that query parameters work correctly on initial page load, try these URLs:
+### Test Year Navigation
+```
+http://localhost:3000/year/1322
+```
+This should load the timeline at year 1322 with clean URL structure.
 
-### Test Map Position
+### Test Map Position with Year
 ```
-http://localhost:3000/?lng=2.3522&lat=48.8566&zoom=10
+http://localhost:3000/year/1500?lng=2.3522&lat=48.8566&zoom=10
 ```
-This should load the map centered on Paris, France with zoom level 10.
+This should load year 1500 with the map centered on Paris, France with zoom level 10.
 
-### Test Year Selection
+### Test Root Redirect
 ```
-http://localhost:3000/?year=1000
+http://localhost:3000/
 ```
-This should load the timeline at year 1000 (if available in the dataset).
-
-### Test Combined Parameters
-```
-http://localhost:3000/?year=1500&lng=2.3522&lat=48.8566&zoom=8
-```
-This should load year 1500 with the map centered on Paris at zoom level 8.
+This should redirect to a random year (e.g., `/year/1234`).
 
 ## Usage
 
-### Basic Query Parameter Access
+### Year-Based Routing
 
 ```typescript
-import { useQuery } from '../hooks/useQuery';
+import { useYearRouting } from '../hooks/useYearRouting';
 
 function MyComponent() {
-  const { query, setQuery, isReady } = useQuery();
+  const { currentYear, setYear, isReady } = useYearRouting();
   
-  // Wait for router to be ready before using query params
+  // Wait for router to be ready before using year
   if (!isReady) return <div>Loading...</div>;
   
-  // Access current year
-  const currentYear = query.year;
+  // Access current year from URL path
+  const year = currentYear;
   
-  // Update year (immediate)
+  // Navigate to new year (shallow routing, no page refresh)
   const handleYearChange = (newYear: string) => {
-    setQuery({ year: newYear });
+    setYear(newYear); // Navigates to /year/newYear
   };
 }
 ```
 
-### Map-Specific Query Parameters
+### Map Query Parameters
 
 For map-related components, use the specialized `useMapQuery` hook:
 
@@ -89,14 +96,29 @@ function MapComponent() {
 }
 ```
 
+### Combined Usage
+
+```typescript
+import { useYearRouting } from '../hooks/useYearRouting';
+import { useMapQuery } from '../hooks/useMapQuery';
+
+function ViewerComponent() {
+  const { currentYear, setYear } = useYearRouting();
+  const { viewState, updateMapView } = useMapQuery();
+  
+  // Year changes via path routing (no page refresh)
+  // Map state changes via query parameters (smooth updates)
+}
+```
+
 ## Utility Functions
 
-### Query Parameter Parsing
+### Query Parameter Parsing (Map State Only)
 
 ```typescript
 import { parseQueryParams } from '../utils/queryParams';
 
-// Parse Next.js router query into typed object
+// Parse Next.js router query into typed object (lng, lat, zoom only)
 const typedQuery = parseQueryParams(router.query);
 ```
 
@@ -112,58 +134,61 @@ const viewState = getMapViewFromQuery(query);
 const coords = formatMapCoordinates(lng, lat, zoom);
 ```
 
-### Year Validation
-
-```typescript
-import { isValidYear, getDefaultYear } from '../utils/queryParams';
-
-// Check if year is valid
-const isValid = isValidYear(query.year, availableYears);
-
-// Get default year
-const defaultYear = getDefaultYear(availableYears);
-```
-
 ## Architecture
 
 ### Files Structure
 
 ```
 types/
-  query.ts              # TypeScript interfaces and constants
+  query.ts              # TypeScript interfaces for map query parameters
 
 utils/
-  queryParams.ts        # Utility functions for parsing and validation
+  queryParams.ts        # Utility functions for map state parsing and validation
 
 hooks/
-  useQuery.tsx          # Main query parameter hook
+  useQuery.tsx          # Main query parameter hook (map state only)
   useMapQuery.ts        # Map-specific query parameter hook
+  useYearRouting.tsx    # Year-based routing hook
+
+pages/
+  index.tsx             # Root page that redirects to random year
+  year/
+    [year].tsx          # Dynamic route for year-specific pages
 ```
 
 ### Key Components
 
-1. **QueryProvider**: Context provider that manages query state
-2. **useQuery**: Main hook for accessing and updating query parameters
+1. **QueryProvider**: Context provider that manages map query state
+2. **useQuery**: Hook for accessing and updating map query parameters
 3. **useMapQuery**: Specialized hook for map view state
-4. **Utility Functions**: Pure functions for parsing, validation, and formatting
+4. **useYearRouting**: Hook for year-based path routing
+5. **Utility Functions**: Pure functions for parsing, validation, and formatting
 
 ## Benefits
 
-1. **Type Safety**: All query parameters are properly typed
-2. **Validation**: Built-in validation prevents invalid states
-3. **Performance**: Debounced updates for smooth map movement
-4. **Maintainability**: Centralized logic makes changes easier
-5. **Developer Experience**: Clear, intuitive API with good documentation
-6. **Hydration Safe**: Properly handles Next.js SSR without hydration mismatches
+1. **Clean URLs**: Years in path (`/year/1322`) instead of query parameters
+2. **No Page Refresh**: Shallow routing prevents map flickering during year changes
+3. **Type Safety**: All parameters are properly typed
+4. **Validation**: Built-in validation prevents invalid states
+5. **Performance**: Debounced updates for smooth map movement
+6. **Maintainability**: Centralized logic makes changes easier
+7. **Developer Experience**: Clear, intuitive API with good documentation
+8. **Hydration Safe**: Properly handles Next.js SSR without hydration mismatches
+9. **SEO Friendly**: Clean year-based URLs are better for search engines
 
 ## Migration Notes
 
-The new system replaces the previous Map-based approach with a simpler, more direct implementation:
+The new system introduces path-based routing for years while maintaining query parameters for map state:
 
-- No more complex Map state management
-- Simplified debouncing logic
-- Better TypeScript support
-- Cleaner component code
-- Proper Next.js hydration handling
+### What Changed
+- Years moved from query parameters to URL paths
+- Root page now redirects to random year
+- Year navigation uses shallow routing for smooth transitions
+- Map state remains in query parameters for smooth updates
 
-All existing functionality is preserved while providing a much cleaner developer experience. 
+### What Stayed the Same
+- Map query parameters (lng, lat, zoom) work exactly as before
+- All existing map functionality is preserved
+- TypeScript support and validation remain strong
+
+This hybrid approach provides the best of both worlds: clean URLs for years and smooth map navigation via query parameters. 

@@ -1,11 +1,10 @@
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
-import { GetStaticProps } from 'next';
-import { getYearFromFile, githubToken } from '../util/constants';
-import { ConfigType, GithubFileInfoType } from '../util/types';
+import { GetStaticProps, GetStaticPaths } from 'next';
+import { getYearFromFile, githubToken } from '../../util/constants';
+import { ConfigType, GithubFileInfoType } from '../../util/types';
 import { Endpoints } from '@octokit/types';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import Viewer from '../../components/Viewer';
 
 const OctokitThrottled = Octokit.plugin(throttling);
 
@@ -14,40 +13,11 @@ export interface DataProps {
   user: string;
   id: string;
   config: ConfigType;
+  currentYear: string;
 }
 
-// Helper function to get a random year from the available years
-const getRandomYear = (years: number[]): string => {
-  if (!years || years.length === 0) return '';
-  const randomIndex = Math.floor(Math.random() * years.length);
-  return years[randomIndex].toString();
-};
-
-const IndexPage = ({ years }: DataProps) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Redirect to a random year when accessing the root
-    if (years && years.length > 0 && router.isReady) {
-      const randomYear = getRandomYear(years);
-      router.replace(`/year/${randomYear}`);
-    }
-  }, [years, router]);
-
-  // Show loading state while redirecting
-  return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      fontFamily: "'Times New Roman', serif",
-      fontSize: '18px',
-      color: '#654321'
-    }}>
-      Loading historic borders...
-    </div>
-  );
+const YearPage = (props: DataProps) => {
+  return <Viewer {...props} />;
 };
 
 type GetGithubFilesResp =
@@ -79,9 +49,44 @@ const octokit = new OctokitThrottled({
   },
 });
 
-export const getStaticProps: GetStaticProps<DataProps> = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   const user = 'aourednik';
   const repo = 'historical-basemaps';
+  
+  try {
+    const fileResp = (await octokit.request(
+      `/repos/${user}/${repo}/contents/geojson`,
+    )) as GetGithubFilesResp;
+    
+    const files = fileResp.data as GithubFileInfoType[];
+    const years = files
+      .filter((x) => x.name.endsWith('.geojson'))
+      .map((x) => getYearFromFile(x.name))
+      .sort((a, b) => a - b)
+      .filter((x) => !isNaN(x));
+
+    const paths = years.map((year) => ({
+      params: { year: year.toString() },
+    }));
+
+    return {
+      paths,
+      fallback: 'blocking', // Generate pages on-demand for unknown years
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      paths: [],
+      fallback: 'blocking',
+    };
+  }
+};
+
+export const getStaticProps: GetStaticProps<DataProps> = async ({ params }) => {
+  const user = 'aourednik';
+  const repo = 'historical-basemaps';
+  const currentYear = params?.year as string;
+  
   try {
     const fileResp = (await octokit.request(
       `/repos/${user}/${repo}/contents/geojson`,
@@ -100,12 +105,21 @@ export const getStaticProps: GetStaticProps<DataProps> = async () => {
       .map((x) => getYearFromFile(x.name))
       .sort((a, b) => a - b)
       .filter((x) => !isNaN(x));
+
+    // Validate that the requested year exists
+    if (!years.includes(parseInt(currentYear))) {
+      return {
+        notFound: true,
+      };
+    }
+
     return {
       props: {
         years,
         user: user,
         id: repo,
         config,
+        currentYear,
       } as DataProps,
       revalidate: 86400, // Revalidate once per day (24 hours)
     };
@@ -120,9 +134,10 @@ export const getStaticProps: GetStaticProps<DataProps> = async () => {
       config: {
         name: 'Error',
       },
+      currentYear,
     } as DataProps,
     revalidate: 86400, // Revalidate once per day (24 hours)
   };
 };
 
-export default IndexPage;
+export default YearPage; 

@@ -1,5 +1,4 @@
 export interface AppQueryParams {
-  year?: string;
   lng?: string;
   lat?: string;
   zoom?: string;
@@ -18,7 +17,6 @@ export const DEFAULT_MAP_VIEW: MapViewState = {
 };
 
 export const QUERY_PARAM_KEYS = {
-  YEAR: 'year',
   LONGITUDE: 'lng',
   LATITUDE: 'lat',
   ZOOM: 'zoom',

@@ -17,7 +17,6 @@ describe('queryParams utilities', () => {
 
     it('should parse string parameters correctly', () => {
       const query = {
-        year: '2023',
         lng: '10.5',
         lat: '20.3',
         zoom: '5',
@@ -26,7 +25,6 @@ describe('queryParams utilities', () => {
       const result = parseQueryParams(query)
       
       expect(result).toEqual({
-        year: '2023',
         lng: '10.5',
         lat: '20.3',
         zoom: '5',
@@ -35,30 +33,28 @@ describe('queryParams utilities', () => {
 
     it('should handle array values by taking first element', () => {
       const query = {
-        year: ['2023', '2024'],
         lng: ['10.5', '11.5'],
+        lat: ['20.3', '21.3'],
       }
       
       const result = parseQueryParams(query)
       
       expect(result).toEqual({
-        year: '2023',
         lng: '10.5',
-        lat: undefined,
+        lat: '20.3',
         zoom: undefined,
       })
     })
 
     it('should handle missing parameters', () => {
       const query = {
-        year: '2023',
+        lng: '10.5',
       }
       
       const result = parseQueryParams(query)
       
       expect(result).toEqual({
-        year: '2023',
-        lng: undefined,
+        lng: '10.5',
         lat: undefined,
         zoom: undefined,
       })
