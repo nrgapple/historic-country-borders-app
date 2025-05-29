@@ -70,6 +70,20 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
   const selectSecondCountry = (countryName: string, year: string) => {
     if (!compareState.country1) return;
 
+    // Prevent comparing the same country-year combination
+    if (compareState.country1.name === countryName && compareState.country1.year === year) {
+      // Track attempted same country selection
+      ReactGA4.event({
+        category: 'AI Compare',
+        action: 'same_country_year_attempted',
+        label: `${countryName}_${year}`,
+        value: 1,
+      });
+      
+      console.warn(`Cannot compare ${countryName} (${year}) with itself`);
+      return;
+    }
+
     setCompareState(prev => ({
       ...prev,
       country2: { name: countryName, year },

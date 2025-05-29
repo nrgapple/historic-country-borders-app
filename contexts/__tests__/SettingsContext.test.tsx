@@ -56,6 +56,7 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
     })
 
@@ -137,6 +138,7 @@ describe('SettingsContext', () => {
         textCase: 'upper',
         countryOpacity: 0.9,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
       // Should track each setting change
@@ -184,6 +186,7 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
@@ -210,6 +213,7 @@ describe('SettingsContext', () => {
           textCase: 'regular',
           countryOpacity: 0.7,
           infoProvider: 'wikipedia',
+          aiCompareEnabled: false,
         })
       )
 
@@ -233,6 +237,7 @@ describe('SettingsContext', () => {
         textCase: 'upper' as TextCase,
         countryOpacity: 0.4,
         infoProvider: 'ai' as const,
+        aiCompareEnabled: false,
       }
 
       localStorageMock.setItem(
@@ -262,6 +267,7 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith({
@@ -293,6 +299,7 @@ describe('SettingsContext', () => {
         textCase: 'regular',
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
       })
     })
   })

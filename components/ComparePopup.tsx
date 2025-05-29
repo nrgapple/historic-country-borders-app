@@ -179,6 +179,8 @@ export default function ComparePopup({ info, onClose, onCountryClick }: CompareP
 
     // Show selection UI for first country (waiting for second)
     if (compareState.country1) {
+      const isSameCountryYear = compareState.country1.name === place && compareState.country1.year === year;
+      
       return (
         <div className="compare-popup-content">
           <div className="compare-selection">
@@ -191,19 +193,26 @@ export default function ComparePopup({ info, onClose, onCountryClick }: CompareP
                 <div className="compare-country-year">({compareState.country1.year})</div>
               </div>
               <div className="compare-vs">vs</div>
-              <div className="compare-country pending">
+              <div className={`compare-country ${isSameCountryYear ? 'same-country' : 'pending'}`}>
                 <div className="compare-country-name">{place}</div>
                 <div className="compare-country-year">({year})</div>
               </div>
             </div>
-            <div className="compare-actions">
-              <button className="compare-action-button primary" onClick={handleSelectSecond}>
-                ✅ Select This Country
-              </button>
-              <button className="compare-action-button secondary" onClick={cancelCompare}>
-                ❌ Cancel
-              </button>
-            </div>
+            
+            {isSameCountryYear ? (
+              <div className="compare-same-country-message">
+                ⚠️ Cannot compare the same country and year. Please select a different country or year.
+              </div>
+            ) : (
+              <div className="compare-actions">
+                <button className="compare-action-button primary" onClick={handleSelectSecond}>
+                  ✅ Select This Country
+                </button>
+                <button className="compare-action-button secondary" onClick={cancelCompare}>
+                  ❌ Cancel
+                </button>
+              </div>
+            )}
           </div>
         </div>
       );
