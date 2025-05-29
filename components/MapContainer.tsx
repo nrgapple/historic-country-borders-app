@@ -64,7 +64,12 @@ export default function MapContainer({
     if (!compareState.isCompareMode || !settings.aiCompareEnabled) {
       setCompareInfo(undefined);
     }
-  }, [compareState.isCompareMode, settings.aiCompareEnabled]);
+    
+    // If AI Compare is disabled while in compare mode, fully exit compare mode
+    if (!settings.aiCompareEnabled && compareState.isCompareMode) {
+      cancelCompare();
+    }
+  }, [compareState.isCompareMode, settings.aiCompareEnabled, cancelCompare]);
 
   // Reset style loading state when map key changes or data changes
   useEffect(() => {

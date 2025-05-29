@@ -22,6 +22,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   }, [isOpen]);
 
+  // Switch to settings tab when AI Compare is disabled while on history tab
+  useEffect(() => {
+    if (!settings.aiCompareEnabled && activeTab === 'history') {
+      setActiveTab('settings');
+    }
+  }, [settings.aiCompareEnabled, activeTab]);
+
   if (!isOpen) return null;
 
   const textSizeOptions: { value: TextSize; label: string; description: string }[] = [
@@ -95,12 +102,15 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           >
             ⚙️ Settings
           </button>
-          <button
-            className={`settings-tab ${activeTab === 'history' ? 'active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            📊 Compare History ({history.length})
-          </button>
+          {/* Only show Compare History tab when AI Compare is enabled */}
+          {settings.aiCompareEnabled && (
+            <button
+              className={`settings-tab ${activeTab === 'history' ? 'active' : ''}`}
+              onClick={() => setActiveTab('history')}
+            >
+              📊 Compare History ({history.length})
+            </button>
+          )}
         </div>
 
         <div className="settings-modal-content">
