@@ -92,7 +92,9 @@ const saveSettings = (settings: Settings) => {
   }
   
   try {
+    const startTime = performance.now();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    const duration = performance.now() - startTime;
     
     // Track successful localStorage save
     ReactGA4.event({
@@ -101,14 +103,22 @@ const saveSettings = (settings: Settings) => {
       label: 'to_localStorage',
       value: 1,
     });
+
+    // Track performance metrics
+    ReactGA4.event({
+      category: 'Settings',
+      action: 'save_performance',
+      label: `localStorage_save_time`,
+      value: Math.round(duration),
+    });
   } catch (error) {
     console.warn('Failed to save settings to localStorage:', error);
     
-    // Track localStorage save error
+    // Track localStorage save error with error type
     ReactGA4.event({
       category: 'Settings',
       action: 'localstorage_save_error',
-      label: 'settings',
+      label: error instanceof Error ? error.name : 'unknown_error',
       value: 1,
     });
   }
@@ -130,22 +140,54 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   }, []);
 
   const updateSettings = (newSettings: Partial<Settings>) => {
+    const previousSettings = settings;
     const updatedSettings = { ...settings, ...newSettings };
     setSettingsState(updatedSettings);
     saveSettings(updatedSettings);
     
-    // Track settings changes
+    // Track individual setting changes
     Object.keys(newSettings).forEach(key => {
+      const settingKey = key as keyof Settings;
+      const oldValue = previousSettings[settingKey];
+      const newValue = updatedSettings[settingKey];
+      
       ReactGA4.event({
         category: 'Settings',
         action: 'setting_changed',
-        label: `${key}_to_${updatedSettings[key as keyof Settings]}`,
+        label: `${key}_to_${newValue}`,
         value: 1,
       });
+
+      // Track setting transitions for UX insights
+      ReactGA4.event({
+        category: 'Settings',
+        action: 'setting_transition',
+        label: `${key}_${oldValue}_to_${newValue}`,
+        value: 1,
+      });
+    });
+
+    // Track setting combinations for popular configurations
+    const settingCombination = `textSize:${updatedSettings.textSize}_textCase:${updatedSettings.textCase}_opacity:${updatedSettings.countryOpacity}`;
+    ReactGA4.event({
+      category: 'Settings',
+      action: 'settings_combination_used',
+      label: settingCombination,
+      value: 1,
+    });
+
+    // Track bulk vs single setting changes
+    const changeCount = Object.keys(newSettings).length;
+    ReactGA4.event({
+      category: 'Settings',
+      action: changeCount > 1 ? 'bulk_settings_change' : 'single_setting_change',
+      label: `${changeCount}_settings_changed`,
+      value: changeCount,
     });
   };
 
   const resetToDefaults = () => {
+    const previousSettings = settings;
     setSettingsState(DEFAULT_SETTINGS);
     saveSettings(DEFAULT_SETTINGS);
     
@@ -156,6 +198,21 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       label: 'to_defaults',
       value: 1,
     });
+
+    // Track what settings were changed from defaults before reset
+    const changedSettings = Object.keys(DEFAULT_SETTINGS).filter(key => {
+      const settingKey = key as keyof Settings;
+      return previousSettings[settingKey] !== DEFAULT_SETTINGS[settingKey];
+    });
+
+    if (changedSettings.length > 0) {
+      ReactGA4.event({
+        category: 'Settings',
+        action: 'reset_from_customized',
+        label: `${changedSettings.join(',')}_were_customized`,
+        value: changedSettings.length,
+      });
+    }
   };
 
   // Don't render until initialized to prevent hydration mismatch

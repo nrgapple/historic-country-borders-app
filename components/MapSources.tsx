@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Source, Layer } from 'react-map-gl';
 import { BordersEndpointData } from '../util/types';
 import { invertColor } from '../util/constants';
 import { useSettings } from '../contexts/SettingsContext';
+import ReactGA4 from 'react-ga4';
 
 interface MapSourcesProps {
   data: BordersEndpointData['data'];
@@ -12,6 +13,64 @@ interface MapSourcesProps {
 
 export default function MapSources({ data, places, selectedCountry }: MapSourcesProps) {
   const { settings } = useSettings();
+
+  // Track settings impact on map rendering
+  useEffect(() => {
+    ReactGA4.event({
+      category: 'Map',
+      action: 'rendered_with_settings',
+      label: `textSize:${settings.textSize}_textCase:${settings.textCase}_opacity:${settings.countryOpacity}`,
+      value: 1,
+    });
+
+    // Track accessibility-related settings usage
+    if (settings.textSize === 'large') {
+      ReactGA4.event({
+        category: 'Accessibility',
+        action: 'large_text_used',
+        label: 'map_labels',
+        value: 1,
+      });
+    }
+
+    if (settings.textCase === 'upper') {
+      ReactGA4.event({
+        category: 'Map',
+        action: 'uppercase_labels_used',
+        label: 'text_formatting',
+        value: 1,
+      });
+    }
+
+    // Track low/high opacity usage for visual preferences
+    if (settings.countryOpacity <= 0.3) {
+      ReactGA4.event({
+        category: 'Map',
+        action: 'low_opacity_used',
+        label: 'country_visibility',
+        value: Math.round(settings.countryOpacity * 10),
+      });
+    } else if (settings.countryOpacity >= 0.9) {
+      ReactGA4.event({
+        category: 'Map',
+        action: 'high_opacity_used',
+        label: 'country_visibility',
+        value: Math.round(settings.countryOpacity * 10),
+      });
+    }
+  }, [settings]);
+
+  // Track selected country interactions with current settings
+  useEffect(() => {
+    if (selectedCountry) {
+      ReactGA4.event({
+        category: 'Map',
+        action: 'country_selected_with_settings',
+        label: `${selectedCountry}_textSize:${settings.textSize}`,
+        value: 1,
+      });
+    }
+  }, [selectedCountry, settings.textSize, settings.textCase]);
 
   const renderBordersLayer = () => (
     <Source id="borders" type="geojson" data={data.borders}>

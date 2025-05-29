@@ -37,9 +37,15 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   return (
     <div className="settings-modal-overlay" onClick={onClose}>
-      <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
+      <div 
+        className="settings-modal" 
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+      >
         <div className="settings-modal-header">
-          <h3 className="settings-modal-title">⚙️ Settings</h3>
+          <h3 className="settings-modal-title" id="settings-modal-title">⚙️ Settings</h3>
           <button
             className="settings-modal-close"
             onClick={onClose}
