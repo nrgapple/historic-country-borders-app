@@ -107,10 +107,11 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
           years={years}
           onChange={(y: string) => {
             setYear(y);
-            ReactGA4.event({
-              category: 'Timeline',
-              action: 'Year Changed',
-              label: `Year ${y}`,
+            ReactGA4.event('timeline_year_change', {
+              new_year: y,
+              previous_year: year,
+              year_index: years.findIndex(yr => yr.toString() === y),
+              navigation_method: 'timeline_control'
             });
           }}
         />
@@ -120,10 +121,10 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
           config={config}
           year={convertYearString(mapBCFormat, years[index])}
           onInteraction={() => {
-            ReactGA4.event({
-              category: 'Map',
-              action: 'Interaction',
-              label: `Year ${years[index]}`,
+            ReactGA4.event('map_interaction', {
+              year: years[index],
+              interaction_type: 'user_interaction',
+              map_year: convertYearString(mapBCFormat, years[index])
             });
           }}
         />

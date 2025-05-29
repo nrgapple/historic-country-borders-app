@@ -59,11 +59,10 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     });
 
     // Track compare mode activation
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'compare_mode_started',
-      label: `${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_start', {
+      country1_name: countryName,
+      country1_year: year,
+      feature: 'ai_comparison'
     });
   };
 
@@ -73,11 +72,10 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     // Prevent comparing the same country-year combination
     if (compareState.country1.name === countryName && compareState.country1.year === year) {
       // Track attempted same country selection
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'same_country_year_attempted',
-        label: `${countryName}_${year}`,
-        value: 1,
+      ReactGA4.event('ai_compare_duplicate_selection', {
+        country_name: countryName,
+        year: year,
+        error_type: 'same_country_year'
       });
       
       console.warn(`Cannot compare ${countryName} (${year}) with itself`);
@@ -90,17 +88,20 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     }));
 
     // Track second country selection
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'second_country_selected',
-      label: `${compareState.country1.name}_${compareState.country1.year}_vs_${countryName}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_country_pair_selected', {
+      country1_name: compareState.country1.name,
+      country1_year: compareState.country1.year,
+      country2_name: countryName,
+      country2_year: year,
+      year_span: Math.abs(parseInt(year) - parseInt(compareState.country1.year)),
+      same_year: year === compareState.country1.year
     });
   };
 
   const executeComparison = async () => {
     if (!compareState.country1 || !compareState.country2) return;
 
+    const startTime = Date.now();
     setCompareState(prev => ({ ...prev, isLoading: true }));
 
     try {
@@ -126,6 +127,8 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       }
 
       const comparisonId = `${compareState.country1.name}_${compareState.country1.year}_vs_${compareState.country2.name}_${compareState.country2.year}_${Date.now()}`;
+      const responseTime = Date.now() - startTime;
+      const wordCount = data.content ? data.content.split(/\s+/).length : 0;
       
       const newComparison: ComparisonItem = {
         id: comparisonId,
@@ -152,35 +155,48 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
         currentComparison: data.content,
       }));
 
-      // Track successful comparison
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'comparison_completed',
-        label: `${compareState.country1.name}_${compareState.country1.year}_vs_${compareState.country2.name}_${compareState.country2.year}`,
-        value: 1,
+      // Track successful comparison with detailed metrics
+      ReactGA4.event('ai_comparison_complete', {
+        country1_name: compareState.country1.name,
+        country1_year: compareState.country1.year,
+        country2_name: compareState.country2.name,
+        country2_year: compareState.country2.year,
+        response_time_ms: responseTime,
+        content_length: data.content?.length || 0,
+        word_count: wordCount,
+        year_span: Math.abs(parseInt(compareState.country2.year) - parseInt(compareState.country1.year)),
+        comparison_quality: wordCount < 100 ? 'brief' : wordCount < 300 ? 'detailed' : 'comprehensive'
       });
 
     } catch (error) {
       console.error('Comparison error:', error);
+      const responseTime = Date.now() - startTime;
       setCompareState(prev => ({ ...prev, isLoading: false }));
 
-      // Track comparison error
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'comparison_failed',
-        label: error instanceof Error ? error.message : 'unknown_error',
-        value: 1,
+      // Track comparison error with context
+      ReactGA4.event('ai_comparison_failed', {
+        country1_name: compareState.country1.name,
+        country1_year: compareState.country1.year,
+        country2_name: compareState.country2.name,
+        country2_year: compareState.country2.year,
+        error_message: error instanceof Error ? error.message : 'unknown_error',
+        response_time_ms: responseTime,
+        error_type: error instanceof Error && error.message.includes('429') ? 'rate_limit' : 
+                   error instanceof Error && error.message.includes('fetch') ? 'network_error' : 'api_error'
       });
     }
   };
 
   const cancelCompare = () => {
-    // Track compare cancellation
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'compare_cancelled',
-      label: compareState.country1 ? `${compareState.country1.name}_${compareState.country1.year}` : 'no_selection',
-      value: 1,
+    // Track compare cancellation with context
+    ReactGA4.event('ai_compare_cancel', {
+      country1_name: compareState.country1?.name || 'none',
+      country1_year: compareState.country1?.year || 'none',
+      country2_name: compareState.country2?.name || 'none',
+      country2_year: compareState.country2?.year || 'none',
+      cancellation_stage: !compareState.country1 ? 'initial' : 
+                         !compareState.country2 ? 'first_selected' : 
+                         compareState.isLoading ? 'loading' : 'ready_to_compare'
     });
 
     setCompareState({
@@ -224,11 +240,12 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     });
 
     // Track history item selection
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'history_item_selected',
-      label: `${comparison.country1.name}_${comparison.country1.year}_vs_${comparison.country2.name}_${comparison.country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_comparison_history_view', {
+      country1_name: comparison.country1.name,
+      country1_year: comparison.country1.year,
+      country2_name: comparison.country2.name,
+      country2_year: comparison.country2.year,
+      comparison_age_hours: Math.round((Date.now() - comparison.createdAt.getTime()) / (1000 * 60 * 60))
     });
   };
 

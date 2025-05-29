@@ -15,16 +15,18 @@ export interface AIAnalyticsEvent {
 }
 
 /**
- * Track AI feature events with consistent category and formatting
+ * Track AI feature events with modern GA4 format
  */
 export const trackAIEvent = ({ action, label, value, customParameters }: AIAnalyticsEvent) => {
-  ReactGA4.event({
-    category: 'AI Feature',
-    action,
-    label,
-    value,
+  // Convert old format to new modern GA4 format
+  const eventName = `ai_${action}`;
+  const eventParams = {
     ...customParameters,
-  });
+    ...(label && { label }),
+    ...(value !== undefined && { value })
+  };
+  
+  ReactGA4.event(eventName, eventParams);
 };
 
 /**
@@ -32,42 +34,38 @@ export const trackAIEvent = ({ action, label, value, customParameters }: AIAnaly
  */
 export const AIProviderEvents = {
   toggle: (fromProvider: string, toProvider: string) => {
-    trackAIEvent({
-      action: 'toggle_provider',
-      label: `${fromProvider}_to_${toProvider}`,
-      value: 1,
+    ReactGA4.event('ai_provider_toggle', {
+      previous_provider: fromProvider,
+      new_provider: toProvider,
+      toggle_direction: toProvider === 'ai' ? 'enable_ai' : 'disable_ai'
     });
   },
 
   enable: (provider: string) => {
-    trackAIEvent({
-      action: provider === 'ai' ? 'enable_ai' : 'disable_ai',
-      label: provider,
-      value: 1,
+    ReactGA4.event(provider === 'ai' ? 'ai_feature_enabled' : 'ai_feature_disabled', {
+      provider: provider,
+      activation_method: 'provider_toggle'
     });
   },
 
   restored: (provider: string) => {
-    trackAIEvent({
-      action: 'provider_restored',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_provider_restored', {
+      provider: provider,
+      restoration_source: 'localStorage'
     });
   },
 
   defaultUsed: (provider: string) => {
-    trackAIEvent({
-      action: 'provider_default',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_provider_default_used', {
+      provider: provider,
+      reason: 'no_stored_preference'
     });
   },
 
   sessionActive: (provider: string) => {
-    trackAIEvent({
-      action: 'session_provider_active',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_provider_session_active', {
+      provider: provider,
+      session_type: 'active_usage'
     });
   },
 };
@@ -77,96 +75,66 @@ export const AIProviderEvents = {
  */
 export const AIRequestEvents = {
   initiated: (country: string, year: string) => {
-    trackAIEvent({
-      action: 'request_initiated',
-      label: `${country}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_content_request', {
+      country_name: country,
+      year: year,
+      request_type: 'country_info'
     });
   },
 
   success: (country: string, year: string, responseTime: number, contentLength: number, wordCount: number) => {
-    trackAIEvent({
-      action: 'response_success',
-      label: `${country}_${year}`,
-      value: 1,
-    });
-
-    trackAIEvent({
-      action: 'response_time_success',
-      label: `${country}_${year}`,
-      value: Math.round(responseTime),
-    });
-
-    trackAIEvent({
-      action: 'response_length',
-      label: `${country}_${year}`,
-      value: contentLength,
-    });
-
-    trackAIEvent({
-      action: 'response_word_count',
-      label: `${country}_${year}`,
-      value: wordCount,
+    ReactGA4.event('ai_content_generated', {
+      country_name: country,
+      year: year,
+      response_time_ms: Math.round(responseTime),
+      content_length: contentLength,
+      word_count: wordCount,
+      quality_rating: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
     });
   },
 
   failed: (country: string, year: string, responseTime: number, errorType?: string) => {
-    trackAIEvent({
-      action: 'request_failed',
-      label: `${country}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_request_failed', {
+      country_name: country,
+      year: year,
+      response_time_ms: Math.round(responseTime),
+      error_type: errorType || 'unknown_error'
     });
-
-    trackAIEvent({
-      action: 'response_time_failed',
-      label: `${country}_${year}`,
-      value: Math.round(responseTime),
-    });
-
-    if (errorType) {
-      trackAIEvent({
-        action: 'error_type',
-        label: `${errorType}_${country}_${year}`,
-        value: 1,
-      });
-    }
   },
 
   apiError: (country: string, year: string, statusCode: number, responseTime: number) => {
-    trackAIEvent({
-      action: 'api_error',
-      label: `${statusCode}_${country}_${year}`,
-      value: statusCode,
-    });
-
-    trackAIEvent({
-      action: 'response_time_error',
-      label: `${country}_${year}`,
-      value: Math.round(responseTime),
+    ReactGA4.event('ai_request_error', {
+      country_name: country,
+      year: year,
+      error_code: statusCode,
+      response_time_ms: Math.round(responseTime),
+      error_category: statusCode === 429 ? 'rate_limit' : 
+                     statusCode === 401 ? 'authentication' : 
+                     statusCode >= 500 ? 'server_error' : 'client_error'
     });
   },
 
   empty: (country: string, year: string) => {
-    trackAIEvent({
-      action: 'response_empty',
-      label: `${country}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_response_empty', {
+      country_name: country,
+      year: year,
+      error_type: 'empty_content'
     });
   },
 
   formatError: (country: string, year: string) => {
-    trackAIEvent({
-      action: 'response_format_error',
-      label: `${country}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_response_format_error', {
+      country_name: country,
+      year: year,
+      error_type: 'unexpected_format'
     });
   },
 
   missingApiKey: (country: string, year: string) => {
-    trackAIEvent({
-      action: 'api_key_missing',
-      label: `${country}_${year}`,
-      value: 1,
+    ReactGA4.event('ai_api_key_missing', {
+      country_name: country,
+      year: year,
+      error_type: 'missing_api_key'
     });
   },
 };
@@ -176,54 +144,44 @@ export const AIRequestEvents = {
  */
 export const AIContentEvents = {
   popupDisplayed: (provider: string, country: string) => {
-    trackAIEvent({
-      action: 'popup_displayed',
-      label: `${provider}_${country}`,
-      value: 1,
+    ReactGA4.event('ai_popup_displayed', {
+      provider: provider,
+      country_name: country,
+      display_type: 'country_info'
     });
   },
 
   contentDisplayed: (provider: string, country: string, wordCount: number, contentLength: number) => {
-    trackAIEvent({
-      action: 'content_displayed',
-      label: `${provider}_${country}`,
-      value: 1,
-    });
-
-    trackAIEvent({
-      action: 'content_word_count',
-      label: `${provider}_${country}`,
-      value: wordCount,
-    });
-
-    trackAIEvent({
-      action: 'content_length',
-      label: `${provider}_${country}`,
-      value: contentLength,
+    ReactGA4.event('ai_content_displayed', {
+      provider: provider,
+      country_name: country,
+      word_count: wordCount,
+      content_length: contentLength,
+      content_quality: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
     });
   },
 
   errorDisplayed: (provider: string, country: string) => {
-    trackAIEvent({
-      action: 'content_error_displayed',
-      label: `${provider}_${country}`,
-      value: 1,
+    ReactGA4.event('ai_content_error_displayed', {
+      provider: provider,
+      country_name: country,
+      error_type: 'display_error'
     });
   },
 
   emptyDisplayed: (provider: string, country: string) => {
-    trackAIEvent({
-      action: 'content_empty_displayed',
-      label: `${provider}_${country}`,
-      value: 1,
+    ReactGA4.event('ai_content_empty_displayed', {
+      provider: provider,
+      country_name: country,
+      error_type: 'empty_content'
     });
   },
 
   popupClosed: (provider: string, country: string) => {
-    trackAIEvent({
-      action: 'popup_closed',
-      label: `${provider}_${country}`,
-      value: 1,
+    ReactGA4.event('ai_popup_closed', {
+      provider: provider,
+      country_name: country,
+      close_type: 'user_initiated'
     });
   },
 };
@@ -233,26 +191,22 @@ export const AIContentEvents = {
  */
 export const AIStorageEvents = {
   saved: (provider: string) => {
-    trackAIEvent({
-      action: 'provider_saved',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_provider_saved', {
+      provider: provider,
+      save_method: 'localStorage'
     });
   },
 
   saveError: (provider: string) => {
-    trackAIEvent({
-      action: 'localstorage_save_error',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_localstorage_save_error', {
+      provider: provider,
+      error_type: 'unknown_error'
     });
   },
 
   readError: () => {
-    trackAIEvent({
-      action: 'localstorage_read_error',
-      label: 'provider_preference',
-      value: 1,
+    ReactGA4.event('ai_localstorage_read_error', {
+      error_type: 'unknown_error'
     });
   },
 };
@@ -262,24 +216,21 @@ export const AIStorageEvents = {
  */
 export const AIPerformanceEvents = {
   responseTime: (country: string, year: string, time: number, success: boolean) => {
-    const action = success ? 'response_time_success' : 'response_time_failed';
-    trackAIEvent({
-      action,
-      label: `${country}_${year}`,
-      value: Math.round(time),
+    const action = success ? 'ai_response_time_success' : 'ai_response_time_failed';
+    ReactGA4.event(action, {
+      country_name: country,
+      year: year,
+      response_time_ms: Math.round(time),
     });
   },
 
   contentQuality: (country: string, year: string, wordCount: number, charCount: number) => {
-    trackAIEvent({
-      action: 'content_quality_metrics',
-      label: `${country}_${year}`,
-      value: 1,
-      customParameters: {
-        word_count: wordCount,
-        char_count: charCount,
-        words_per_char: wordCount / charCount,
-      },
+    ReactGA4.event('ai_content_quality_metrics', {
+      country_name: country,
+      year: year,
+      word_count: wordCount,
+      char_count: charCount,
+      words_per_char: wordCount / charCount,
     });
   },
 };
@@ -289,26 +240,23 @@ export const AIPerformanceEvents = {
  */
 export const AIUsageEvents = {
   sessionStart: (provider: string) => {
-    trackAIEvent({
-      action: 'session_started',
-      label: provider,
-      value: 1,
+    ReactGA4.event('ai_session_started', {
+      provider: provider,
+      session_type: 'active_usage'
     });
   },
 
   featureDiscovery: (source: string) => {
-    trackAIEvent({
-      action: 'feature_discovered',
-      label: source,
-      value: 1,
+    ReactGA4.event('ai_feature_discovered', {
+      source: source,
     });
   },
 
   comparisonUsage: (fromProvider: string, toProvider: string, country: string) => {
-    trackAIEvent({
-      action: 'provider_comparison',
-      label: `${fromProvider}_vs_${toProvider}_${country}`,
-      value: 1,
+    ReactGA4.event('ai_provider_comparison', {
+      from_provider: fromProvider,
+      to_provider: toProvider,
+      country_name: country,
     });
   },
 };
@@ -322,10 +270,10 @@ export const trackUserEngagement = (
   year: string,
   engagementType: 'view' | 'close' | 'switch_provider' | 'retry'
 ) => {
-  trackAIEvent({
-    action: `user_engagement_${engagementType}`,
-    label: `${provider}_${country}_${year}`,
-    value: 1,
+  ReactGA4.event(`ai_user_engagement_${engagementType}`, {
+    provider: provider,
+    country_name: country,
+    year: year,
   });
 };
 

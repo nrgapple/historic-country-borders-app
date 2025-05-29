@@ -12,10 +12,11 @@ export default function PersistentUIToggle({
 }: PersistentUIToggleProps) {
   const handleToggle = () => {
     onToggle();
-    ReactGA4.event({
-      category: 'UI',
-      action: `${isUIHidden ? 'show' : 'hide'} UI from persistent toggle`,
-      label: 'persistent-ui-toggle',
+    ReactGA4.event('ui_visibility_toggle', {
+      action: isUIHidden ? 'show_ui' : 'hide_ui',
+      toggle_source: 'persistent_toggle_button',
+      previous_state: isUIHidden ? 'hidden' : 'visible',
+      new_state: isUIHidden ? 'visible' : 'hidden'
     });
   };
 

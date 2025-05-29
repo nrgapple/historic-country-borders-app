@@ -112,11 +112,10 @@ describe('CompareContext', () => {
     expect(screen.getByTestId('country1-year')).toHaveTextContent('1800')
     expect(screen.getByTestId('country2')).toHaveTextContent('none')
 
-    expect(ReactGA4.event).toHaveBeenCalledWith({
-      category: 'AI Compare',
-      action: 'compare_mode_started',
-      label: 'France_1800',
-      value: 1,
+    expect(ReactGA4.event).toHaveBeenCalledWith('ai_compare_start', {
+      country1_name: 'France',
+      country1_year: '1800',
+      feature: 'ai_comparison'
     })
   })
 
@@ -143,11 +142,10 @@ describe('CompareContext', () => {
       expect(screen.getByTestId('country2')).toHaveTextContent('none')
       
       // Should track the attempted same country selection
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'AI Compare',
-        action: 'same_country_year_attempted',
-        label: 'France_1800',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('ai_compare_duplicate_selection', {
+        country_name: 'France',
+        year: '1800',
+        error_type: 'same_country_year'
       })
 
       // Should warn in console
@@ -162,11 +160,13 @@ describe('CompareContext', () => {
       expect(screen.getByTestId('country2')).toHaveTextContent('Germany')
       expect(screen.getByTestId('country2-year')).toHaveTextContent('1800')
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'AI Compare',
-        action: 'second_country_selected',
-        label: 'France_1800_vs_Germany_1800',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('ai_compare_country_pair_selected', {
+        country1_name: 'France',
+        country1_year: '1800',
+        country2_name: 'Germany',
+        country2_year: '1800',
+        year_span: 0,
+        same_year: true
       })
     })
 
@@ -178,11 +178,13 @@ describe('CompareContext', () => {
       expect(screen.getByTestId('country2')).toHaveTextContent('France')
       expect(screen.getByTestId('country2-year')).toHaveTextContent('1900')
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'AI Compare',
-        action: 'second_country_selected',
-        label: 'France_1800_vs_France_1900',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('ai_compare_country_pair_selected', {
+        country1_name: 'France',
+        country1_year: '1800',
+        country2_name: 'France',
+        country2_year: '1900',
+        year_span: 100,
+        same_year: false
       })
     })
 
@@ -222,11 +224,12 @@ describe('CompareContext', () => {
     expect(screen.getByTestId('country1')).toHaveTextContent('none')
     expect(screen.getByTestId('country2')).toHaveTextContent('none')
 
-    expect(ReactGA4.event).toHaveBeenCalledWith({
-      category: 'AI Compare',
-      action: 'compare_cancelled',
-      label: 'France_1800',
-      value: 1,
+    expect(ReactGA4.event).toHaveBeenCalledWith('ai_compare_cancel', {
+      country1_name: 'France',
+      country1_year: '1800',
+      country2_name: 'none',
+      country2_year: 'none',
+      cancellation_stage: 'first_selected'
     })
   })
 

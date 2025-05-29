@@ -170,11 +170,10 @@ describe('SettingsButton', () => {
       const button = screen.getByLabelText('Open settings')
       await user.click(button)
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_opened',
-        label: 'settings_modal',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_open', {
+        time_of_day: expect.any(String),
+        hour_of_day: expect.any(Number),
+        ui_element: 'settings_button'
       })
     })
 
@@ -198,11 +197,12 @@ describe('SettingsButton', () => {
       const closeButton = screen.getByLabelText('Close settings')
       await user.click(closeButton)
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_closed',
-        label: 'settings_modal',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_close', {
+        session_duration_ms: expect.any(Number),
+        session_duration_seconds: expect.any(Number),
+        interaction_count: expect.any(Number),
+        engagement_level: expect.any(String),
+        session_quality: expect.any(String)
       })
     })
 
@@ -227,11 +227,12 @@ describe('SettingsButton', () => {
       const overlay = modal.parentElement
       await user.click(overlay!)
 
-      expect(ReactGA4.event).toHaveBeenCalledWith({
-        category: 'Settings',
-        action: 'settings_closed',
-        label: 'settings_modal',
-        value: 1,
+      expect(ReactGA4.event).toHaveBeenCalledWith('settings_close', {
+        session_duration_ms: expect.any(Number),
+        session_duration_seconds: expect.any(Number),
+        interaction_count: expect.any(Number),
+        engagement_level: expect.any(String),
+        session_quality: expect.any(String)
       })
     })
   })

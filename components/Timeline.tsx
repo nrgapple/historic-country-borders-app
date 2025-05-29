@@ -41,12 +41,14 @@ export default function Timeline({
 
   const handleYearClick = useCallback((yearIndex: number) => {
     onChange(yearIndex);
-    ReactGA4.event({
-      category: 'UI',
-      action: `clicked timeline: ${years[yearIndex]}`,
-      label: 'timeline',
+    ReactGA4.event('year_navigate', {
+      target_year: years[yearIndex],
+      current_year: currentYear,
+      navigation_method: 'timeline_click',
+      year_index: yearIndex,
+      year_change: Math.abs(years[yearIndex] - currentYear)
     });
-  }, [onChange, years]);
+  }, [onChange, years, currentYear]);
 
   const goToPrevious = useCallback(() => {
     if (index > 0) {

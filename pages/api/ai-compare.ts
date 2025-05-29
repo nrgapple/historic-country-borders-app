@@ -94,11 +94,13 @@ export default async function handler(
       });
 
       // Track cache hit
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'cache_hit',
-        label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-        value: 1,
+      ReactGA4.event('ai_compare_cache_hit', {
+        country1_name: country1.name,
+        country1_year: country1.year,
+        country2_name: country2.name,
+        country2_year: country2.year,
+        cache_key: cacheKey,
+        cache_type: 'redis'
       });
 
       return res.status(200).json({ content: cachedResponse });
@@ -112,11 +114,13 @@ export default async function handler(
     });
 
     // Track cache miss
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'cache_miss',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_cache_miss', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      cache_key: cacheKey,
+      cache_type: 'redis'
     });
   } catch (cacheError) {
     console.warn('Redis cache error (continuing without cache):', {
@@ -128,11 +132,14 @@ export default async function handler(
     });
 
     // Track cache error
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'cache_error',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_cache_error', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      cache_key: cacheKey,
+      error_type: 'cache_operation_failed',
+      cache_type: 'redis'
     });
   }
 
@@ -148,11 +155,13 @@ export default async function handler(
     });
 
     // Track missing API key
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'api_key_missing',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_api_key_missing', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      error_type: 'missing_api_key',
+      api_provider: 'gemini'
     });
 
     return res.status(500).json({ 
@@ -162,11 +171,14 @@ export default async function handler(
   }
 
   // Track AI compare request initiation
-  ReactGA4.event({
-    category: 'AI Compare',
-    action: 'request_initiated',
-    label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-    value: 1,
+  ReactGA4.event('ai_compare_request_start', {
+    country1_name: country1.name,
+    country1_year: country1.year,
+    country2_name: country2.name,
+    country2_year: country2.year,
+    year_span: Math.abs(parseInt(country2.year) - parseInt(country1.year)),
+    same_year: country1.year === country2.year,
+    api_provider: 'gemini'
   });
 
   try {
@@ -246,19 +258,25 @@ export default async function handler(
         }
 
         // Track quota exceeded
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'quota_exceeded',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: 1,
+        ReactGA4.event('ai_compare_quota_exceeded', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          response_time_ms: Math.round(responseTime),
+          api_provider: 'gemini',
+          error_code: 429
         });
 
         // Track response time for quota exceeded requests
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_time_quota_exceeded',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: Math.round(responseTime),
+        ReactGA4.event('ai_compare_response_time', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          response_time_ms: Math.round(responseTime),
+          request_status: 'quota_exceeded',
+          api_provider: 'gemini'
         });
 
         if (quotaExceeded) {
@@ -271,19 +289,28 @@ export default async function handler(
       }
 
       // Track API error
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'api_error',
-        label: `${response.status}_${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-        value: response.status,
+      ReactGA4.event('ai_compare_api_error', {
+        country1_name: country1.name,
+        country1_year: country1.year,
+        country2_name: country2.name,
+        country2_year: country2.year,
+        error_code: response.status,
+        response_time_ms: Math.round(responseTime),
+        api_provider: 'gemini',
+        error_type: response.status === 429 ? 'rate_limit' : 
+                   response.status === 401 ? 'authentication' : 
+                   response.status >= 500 ? 'server_error' : 'client_error'
       });
 
       // Track response time for failed requests
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'response_time_error',
-        label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-        value: Math.round(responseTime),
+      ReactGA4.event('ai_compare_response_time', {
+        country1_name: country1.name,
+        country1_year: country1.year,
+        country2_name: country2.name,
+        country2_year: country2.year,
+        response_time_ms: Math.round(responseTime),
+        request_status: 'error',
+        api_provider: 'gemini'
       });
 
       return res.status(response.status).json({ 
@@ -330,11 +357,15 @@ export default async function handler(
           });
 
           // Track successful cache write
-          ReactGA4.event({
-            category: 'AI Compare',
-            action: 'cache_write_success',
-            label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-            value: 1,
+          ReactGA4.event('ai_compare_cache_write_success', {
+            country1_name: country1.name,
+            country1_year: country1.year,
+            country2_name: country2.name,
+            country2_year: country2.year,
+            cache_key: cacheKey,
+            content_length: trimmedContent.length,
+            cache_type: 'redis',
+            ttl_seconds: CACHE_TTL
           });
         } catch (cacheWriteError) {
           console.warn('Failed to cache AI compare response (continuing normally):', {
@@ -346,55 +377,64 @@ export default async function handler(
           });
 
           // Track cache write error
-          ReactGA4.event({
-            category: 'AI Compare',
-            action: 'cache_write_error',
-            label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-            value: 1,
+          ReactGA4.event('ai_compare_cache_write_error', {
+            country1_name: country1.name,
+            country1_year: country1.year,
+            country2_name: country2.name,
+            country2_year: country2.year,
+            cache_key: cacheKey,
+            error_type: 'cache_write_failed',
+            cache_type: 'redis'
           });
         }
 
         // Track successful AI compare response
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_success',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: 1,
+        ReactGA4.event('ai_compare_response_success', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          response_time_ms: Math.round(responseTime),
+          content_length: trimmedContent.length,
+          word_count: trimmedContent.split(/\s+/).length,
+          api_provider: 'gemini'
         });
 
         // Track response time for successful requests
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_time_success',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: Math.round(responseTime),
+        ReactGA4.event('ai_compare_response_time', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          response_time_ms: Math.round(responseTime),
+          request_status: 'success',
+          api_provider: 'gemini'
         });
 
         // Track response quality metrics
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_length',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: trimmedContent.length,
-        });
-
-        // Track word count for content analysis
         const wordCount = trimmedContent.split(/\s+/).length;
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_word_count',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: wordCount,
+        ReactGA4.event('ai_compare_content_quality', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          content_length: trimmedContent.length,
+          word_count: wordCount,
+          quality_rating: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed',
+          year_span: Math.abs(parseInt(country2.year) - parseInt(country1.year))
         });
 
         return res.status(200).json({ content: trimmedContent });
       } else {
         // Track empty response
-        ReactGA4.event({
-          category: 'AI Compare',
-          action: 'response_empty',
-          label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-          value: 1,
+        ReactGA4.event('ai_compare_response_empty', {
+          country1_name: country1.name,
+          country1_year: country1.year,
+          country2_name: country2.name,
+          country2_year: country2.year,
+          response_time_ms: Math.round(responseTime),
+          api_provider: 'gemini',
+          error_type: 'empty_content'
         });
 
         return res.status(200).json({ 
@@ -411,11 +451,14 @@ export default async function handler(
     });
 
     // Track unexpected response format
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'response_format_error',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_response_format_error', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      response_time_ms: Math.round(responseTime),
+      api_provider: 'gemini',
+      error_type: 'unexpected_format'
     });
     
     return res.status(200).json({ 
@@ -433,54 +476,47 @@ export default async function handler(
       timestamp: new Date().toISOString(),
     });
 
-    // Determine error type and provide appropriate message
-    let errorMessage = 'Something went wrong with AI comparison. Please try again.';
-    
-    if (error instanceof Error) {
-      // Check if it's a quota/rate limit error
-      if (error.message.includes('429')) {
-        errorMessage = 'AI service quota exceeded. Please try again later.';
-      }
-      // Check if it's a network error
-      else if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
-        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
-      }
-      // Check if it's an API key error
-      else if (error.message.includes('401') || error.message.includes('403')) {
-        errorMessage = 'AI service authentication issue. Please check API key configuration.';
-      }
-      // Check if it's a timeout error
-      else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
-        errorMessage = 'AI service request timed out. Please try again.';
-      }
-    }
-
     // Track request failure
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'request_failed',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    ReactGA4.event('ai_compare_request_failed', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      error_message: error instanceof Error ? error.message : 'unknown_error',
+      error_type: error instanceof Error ? error.name : 'UnknownError',
+      response_time_ms: Math.round(responseTime),
+      api_provider: 'gemini'
     });
 
-    // Track error type
-    const errorType = error instanceof Error ? error.name : 'UnknownError';
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'error_type',
-      label: `${errorType}_${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: 1,
+    // Track specific error categorization
+    const errorCategory = error instanceof Error && error.message.includes('429') ? 'rate_limit' :
+                         error instanceof Error && error.message.includes('fetch') ? 'network_error' :
+                         error instanceof Error && error.message.includes('401') ? 'authentication' :
+                         error instanceof Error && error.message.includes('timeout') ? 'timeout' : 'api_error';
+    
+    ReactGA4.event('ai_compare_error_categorized', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      error_category: errorCategory,
+      error_name: error instanceof Error ? error.name : 'UnknownError',
+      response_time_ms: Math.round(responseTime),
+      api_provider: 'gemini'
     });
 
     // Track response time for failed requests
-    ReactGA4.event({
-      category: 'AI Compare',
-      action: 'response_time_failed',
-      label: `${country1.name}_${country1.year}_vs_${country2.name}_${country2.year}`,
-      value: Math.round(responseTime),
+    ReactGA4.event('ai_compare_response_time', {
+      country1_name: country1.name,
+      country1_year: country1.year,
+      country2_name: country2.name,
+      country2_year: country2.year,
+      response_time_ms: Math.round(responseTime),
+      request_status: 'failed',
+      api_provider: 'gemini'
     });
     
     // Return specific error message instead of generic fallback
-    return res.status(500).json({ content: '', error: errorMessage });
+    return res.status(500).json({ content: '', error: 'Something went wrong with AI comparison. Please try again.' });
   }
 } 

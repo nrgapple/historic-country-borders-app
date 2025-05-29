@@ -63,10 +63,12 @@ export default function CompactFeedbackWidget({
       const result = await response.json();
       console.log('Feedback sent successfully:', result);
       
-      ReactGA4.event({
-        category: 'Feedback',
-        action: `${formData.rating}`,
-        label: 'compact-feedback',
+      ReactGA4.event('feedback_submit', {
+        feedback_rating: formData.rating,
+        feedback_type: 'compact_widget',
+        has_email: !!formData.email.trim(),
+        has_message: !!formData.message.trim(),
+        message_length: formData.message.trim().length
       });
       
       // Reset form and close
@@ -86,10 +88,10 @@ export default function CompactFeedbackWidget({
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
-    ReactGA4.event({
-      category: 'Feedback',
-      action: `${!isOpen ? 'opened' : 'closed'} compact feedback`,
-      label: 'compact-feedback',
+    ReactGA4.event('feedback_widget_toggle', {
+      action: !isOpen ? 'open' : 'close',
+      widget_type: 'compact_feedback',
+      interaction_source: 'trigger_button'
     });
   };
 

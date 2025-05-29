@@ -76,20 +76,19 @@ const getInitialSettings = (): Settings => {
       localStorage.removeItem(INFO_PROVIDER_STORAGE_KEY);
       
       // Track migration
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'provider_migrated',
-        label: `${legacyProvider}_to_settings`,
-        value: 1,
+      ReactGA4.event('settings_provider_migrated', {
+        previous_provider: legacyProvider,
+        new_provider: legacyProvider,
+        migration_type: 'legacy_to_settings',
+        migration_source: 'localStorage'
       });
     }
       
     // Track settings restoration from localStorage
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'settings_restored',
-      label: 'from_localStorage',
-      value: 1,
+    ReactGA4.event('settings_restored', {
+      source: 'localStorage',
+      settings_count: Object.keys(settings).length,
+      has_custom_settings: JSON.stringify(settings) !== JSON.stringify(DEFAULT_SETTINGS)
     });
     
     return settings;
@@ -97,20 +96,19 @@ const getInitialSettings = (): Settings => {
     console.warn('Failed to read settings from localStorage:', error);
     
     // Track localStorage error
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'localstorage_read_error',
-      label: 'settings',
-      value: 1,
+    ReactGA4.event('settings_storage_error', {
+      error_type: 'read_error',
+      storage_type: 'localStorage',
+      operation: 'settings_load',
+      error_name: error instanceof Error ? error.name : 'unknown_error'
     });
   }
   
   // Track default settings usage
-  ReactGA4.event({
-    category: 'Settings',
-    action: 'settings_default',
-    label: 'defaults_used',
-    value: 1,
+  ReactGA4.event('settings_default_used', {
+    reason: 'no_stored_settings',
+    settings_source: 'defaults',
+    is_first_visit: true
   });
   
   return DEFAULT_SETTINGS;
@@ -132,29 +130,30 @@ const saveSettings = (settings: Settings) => {
     const duration = performance.now() - startTime;
     
     // Track successful localStorage save
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'settings_saved',
-      label: 'to_localStorage',
-      value: 1,
+    ReactGA4.event('settings_saved', {
+      storage_type: 'localStorage',
+      settings_count: Object.keys(settings).length,
+      save_duration_ms: Math.round(duration),
+      operation: 'settings_save'
     });
 
-    // Track performance metrics
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'save_performance',
-      label: `localStorage_save_time`,
-      value: Math.round(duration),
-    });
+    // Track performance metrics for save operations
+    if (duration > 10) {
+      ReactGA4.event('settings_save_performance', {
+        duration_ms: Math.round(duration),
+        performance_category: duration > 50 ? 'slow' : duration > 20 ? 'moderate' : 'fast',
+        operation: 'localStorage_save'
+      });
+    }
   } catch (error) {
     console.warn('Failed to save settings to localStorage:', error);
     
     // Track localStorage save error with error type
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'localstorage_save_error',
-      label: error instanceof Error ? error.name : 'unknown_error',
-      value: 1,
+    ReactGA4.event('settings_storage_error', {
+      error_type: 'save_error',
+      storage_type: 'localStorage',
+      operation: 'settings_save',
+      error_name: error instanceof Error ? error.name : 'unknown_error'
     });
   }
 };
@@ -189,54 +188,57 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
       // Special handling for infoProvider changes with AI Feature analytics
       if (settingKey === 'infoProvider' && oldValue !== newValue) {
         // Track AI feature toggle
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: 'toggle_provider',
-          label: `${oldValue}_to_${newValue}`,
-          value: 1,
+        ReactGA4.event('ai_provider_toggle', {
+          previous_provider: String(oldValue),
+          new_provider: String(newValue),
+          toggle_direction: newValue === 'ai' ? 'enable_ai' : 'disable_ai',
+          setting_context: 'info_provider'
         });
 
         // Track specific provider activation
-        ReactGA4.event({
-          category: 'AI Feature',
-          action: newValue === 'ai' ? 'enable_ai' : 'disable_ai',
-          label: String(newValue),
-          value: 1,
+        ReactGA4.event(newValue === 'ai' ? 'ai_feature_enabled' : 'ai_feature_disabled', {
+          provider: String(newValue),
+          previous_provider: String(oldValue),
+          activation_method: 'settings_toggle'
         });
       }
       
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'setting_changed',
-        label: `${key}_to_${String(newValue)}`,
-        value: 1,
+      ReactGA4.event('setting_changed', {
+        setting_name: key,
+        previous_value: String(oldValue),
+        new_value: String(newValue),
+        setting_type: typeof newValue,
+        change_method: 'settings_update'
       });
 
       // Track setting transitions for UX insights
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'setting_transition',
-        label: `${key}_${String(oldValue)}_to_${String(newValue)}`,
-        value: 1,
+      ReactGA4.event('setting_transition', {
+        setting_name: key,
+        transition: `${String(oldValue)}_to_${String(newValue)}`,
+        setting_category: key === 'infoProvider' ? 'provider' : 
+                         key.includes('text') ? 'text_formatting' : 
+                         key.includes('opacity') ? 'visual' : 'general'
       });
     });
 
     // Track setting combinations for popular configurations
     const settingCombination = `textSize:${updatedSettings.textSize}_textCase:${updatedSettings.textCase}_opacity:${updatedSettings.countryOpacity}_provider:${updatedSettings.infoProvider}`;
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'settings_combination_used',
-      label: settingCombination,
-      value: 1,
+    ReactGA4.event('settings_combination_applied', {
+      text_size: updatedSettings.textSize,
+      text_case: updatedSettings.textCase,
+      country_opacity: Math.round(updatedSettings.countryOpacity * 100),
+      info_provider: updatedSettings.infoProvider,
+      ai_compare_enabled: updatedSettings.aiCompareEnabled,
+      combination_hash: settingCombination.slice(0, 50) // Truncate for analytics
     });
 
     // Track bulk vs single setting changes
     const changeCount = Object.keys(newSettings).length;
-    ReactGA4.event({
-      category: 'Settings',
-      action: changeCount > 1 ? 'bulk_settings_change' : 'single_setting_change',
-      label: `${changeCount}_settings_changed`,
-      value: changeCount,
+    ReactGA4.event(changeCount > 1 ? 'settings_bulk_change' : 'settings_single_change', {
+      change_count: changeCount,
+      changed_settings: Object.keys(newSettings).join(','),
+      change_type: changeCount > 1 ? 'bulk' : 'single',
+      settings_modified: Object.keys(newSettings)
     });
   };
 
@@ -246,11 +248,11 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     saveSettings(DEFAULT_SETTINGS);
     
     // Track settings reset
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'settings_reset',
-      label: 'to_defaults',
-      value: 1,
+    ReactGA4.event('settings_reset', {
+      reset_target: 'defaults',
+      previous_customizations: Object.keys(previousSettings).filter(key => previousSettings[key as keyof Settings] !== DEFAULT_SETTINGS[key as keyof Settings]).length,
+      reset_method: 'manual_reset',
+      had_customizations: Object.keys(previousSettings).filter(key => previousSettings[key as keyof Settings] !== DEFAULT_SETTINGS[key as keyof Settings]).length > 0
     });
 
     // Track what settings were changed from defaults before reset
@@ -260,11 +262,11 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     });
 
     if (changedSettings.length > 0) {
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'reset_from_customized',
-        label: `${changedSettings.join(',')}_were_customized`,
-        value: changedSettings.length,
+      ReactGA4.event('settings_reset_from_customized', {
+        customized_settings: changedSettings.join(','),
+        customization_count: changedSettings.length,
+        reset_scope: 'all_settings',
+        customization_level: changedSettings.length > 3 ? 'heavy' : changedSettings.length > 1 ? 'moderate' : 'light'
       });
     }
   };

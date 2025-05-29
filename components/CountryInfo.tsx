@@ -47,11 +47,11 @@ export default function CountryInfo({ info, year, onClose, onStartCompare }: Cou
   const handleStartCompare = () => {
     if (place && year) {
       // Track compare button click
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'compare_button_clicked',
-        label: `${place}_${year}`,
-        value: 1,
+      ReactGA4.event('ai_compare_initiate', {
+        country_name: place,
+        year: year,
+        source: 'country_info_panel',
+        action_type: 'compare_button_click'
       });
 
       startCompare(place, year);

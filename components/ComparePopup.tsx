@@ -33,11 +33,11 @@ export default function ComparePopup({ info, onClose, onCountryClick }: CompareP
   // Track popup display events
   useEffect(() => {
     if ((place && position && compareState.isCompareMode) || compareState.currentComparison) {
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'popup_displayed',
-        label: place ? `${place}_${year}` : 'historical_comparison',
-        value: 1,
+      ReactGA4.event('ai_compare_popup_view', {
+        popup_type: place ? 'country_selection' : 'comparison_result',
+        country_name: place || 'unknown',
+        year: year || 'unknown',
+        compare_stage: compareState.country1 && compareState.country2 ? 'ready_to_compare' : 'selecting_countries'
       });
     }
   }, [place, position, year, compareState.isCompareMode, compareState.currentComparison]);
@@ -45,11 +45,13 @@ export default function ComparePopup({ info, onClose, onCountryClick }: CompareP
   // Handle close with analytics
   const handleClose = () => {
     if (compareState.isCompareMode) {
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'popup_closed',
-        label: compareState.country1 ? `${compareState.country1.name}_${compareState.country1.year}` : 'no_selection',
-        value: 1,
+      ReactGA4.event('ai_compare_popup_close', {
+        compare_stage: compareState.currentComparison ? 'comparison_result' : 
+                       compareState.country1 && compareState.country2 ? 'ready_to_compare' : 'selecting_countries',
+        country1_name: compareState.country1?.name || 'none',
+        country1_year: compareState.country1?.year || 'none',
+        country2_name: compareState.country2?.name || 'none',
+        country2_year: compareState.country2?.year || 'none'
       });
       
       cancelCompare();
@@ -79,11 +81,11 @@ export default function ComparePopup({ info, onClose, onCountryClick }: CompareP
 
   const handleCountryClick = (countryName: string, year: string) => {
     if (onCountryClick) {
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'country_name_clicked',
-        label: `${countryName}_${year}`,
-        value: 1,
+      ReactGA4.event('ai_comparison_country_navigate', {
+        country_name: countryName,
+        year: year,
+        source: 'comparison_result',
+        navigation_type: 'country_name_click'
       });
       
       onCountryClick(countryName, year);

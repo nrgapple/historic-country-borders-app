@@ -18,21 +18,13 @@ export default function SettingsButton() {
       modalOpenTimeRef.current = Date.now();
       settingsInteractionCountRef.current = 0;
       
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'settings_opened',
-        label: 'settings_modal',
-        value: 1,
-      });
-
-      // Track time of day when settings are accessed
       const hour = new Date().getHours();
       const timeOfDay = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'settings_opened_time',
-        label: timeOfDay,
-        value: hour,
+      
+      ReactGA4.event('settings_open', {
+        time_of_day: timeOfDay,
+        hour_of_day: hour,
+        ui_element: 'settings_button'
       });
     } else {
       handleCloseModal();
@@ -44,40 +36,19 @@ export default function SettingsButton() {
     
     // Calculate session duration
     const sessionDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : 0;
+    const sessionDurationSeconds = Math.round(sessionDuration / 1000);
     
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'settings_closed',
-      label: 'settings_modal',
-      value: 1,
-    });
-
-    // Track session metrics
-    if (sessionDuration > 0) {
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'modal_session_duration',
-        label: `${Math.round(sessionDuration / 1000)}s`,
-        value: Math.round(sessionDuration / 1000),
-      });
-
-      // Track engagement level based on session duration
-      const engagementLevel = sessionDuration < 3000 ? 'quick' : 
-                             sessionDuration < 10000 ? 'moderate' : 'engaged';
-      ReactGA4.event({
-        category: 'Settings',
-        action: 'settings_engagement',
-        label: engagementLevel,
-        value: Math.round(sessionDuration / 1000),
-      });
-    }
-
-    // Track interaction count during session
-    ReactGA4.event({
-      category: 'Settings',
-      action: 'modal_interactions',
-      label: `${settingsInteractionCountRef.current}_interactions`,
-      value: settingsInteractionCountRef.current,
+    // Determine engagement level based on session duration and interactions
+    const engagementLevel = sessionDuration < 3000 ? 'quick_look' : 
+                           sessionDuration < 10000 ? 'moderate_engagement' : 'deep_engagement';
+    
+    ReactGA4.event('settings_close', {
+      session_duration_ms: sessionDuration,
+      session_duration_seconds: sessionDurationSeconds,
+      interaction_count: settingsInteractionCountRef.current,
+      engagement_level: engagementLevel,
+      session_quality: settingsInteractionCountRef.current === 0 ? 'no_interaction' : 
+                      settingsInteractionCountRef.current < 3 ? 'low_interaction' : 'high_interaction'
     });
 
     // Reset tracking refs

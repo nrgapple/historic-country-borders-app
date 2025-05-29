@@ -193,11 +193,11 @@ describe('MapContainer', () => {
     const map = screen.getByTestId('mapbox-map')
     fireEvent.click(map)
     
-    expect(ReactGA4.event).toHaveBeenCalledWith({
-      category: 'Country',
-      action: 'click',
-      label: 'Test Country',
-      value: 1,
+    expect(ReactGA4.event).toHaveBeenCalledWith('country_select', {
+      country_name: 'Test Country',
+      year: '2023',
+      selection_method: 'map_click',
+      mode: 'explore'
     })
   })
 
@@ -369,11 +369,11 @@ describe('MapContainer', () => {
       }
     })
     
-    expect(ReactGA4.event).toHaveBeenCalledWith({
-      category: 'Country',
-      action: 'click',
-      label: 'unknown',
-      value: 1,
+    expect(ReactGA4.event).toHaveBeenCalledWith('country_select', {
+      country_name: 'unknown',
+      year: '2023',
+      selection_method: 'map_click',
+      mode: 'explore'
     })
   })
 

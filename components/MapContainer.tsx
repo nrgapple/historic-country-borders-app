@@ -141,11 +141,11 @@ export default function MapContainer({
       });
       setSelectedInfo(undefined); // Clear normal info popup
       
-      ReactGA4.event({
-        category: 'AI Compare',
-        action: 'country_clicked_in_compare_mode',
-        label: place || 'unknown',
-        value: 1,
+      ReactGA4.event('country_select_compare_mode', {
+        country_name: place || 'unknown',
+        year: year,
+        selection_method: 'map_click',
+        compare_stage: compareState.country1 ? 'selecting_second' : 'selecting_first'
       });
     } else {
       // Normal mode, update country info
@@ -154,11 +154,11 @@ export default function MapContainer({
       });
       setCompareInfo(undefined); // Clear compare popup
       
-      ReactGA4.event({
-        category: 'Country',
-        action: 'click',
-        label: place || 'unknown',
-        value: 1,
+      ReactGA4.event('country_select', {
+        country_name: place || 'unknown',
+        year: year,
+        selection_method: 'map_click',
+        mode: 'explore'
       });
     }
   }, [compareState.isCompareMode, settings.aiCompareEnabled, year]);
@@ -243,11 +243,11 @@ export default function MapContainer({
             setSelectedInfo({ place: countryName });
           }
 
-          ReactGA4.event({
-            category: 'AI Compare',
-            action: 'country_navigated_from_comparison',
-            label: `${countryName}_${targetYear}`,
-            value: 1,
+          ReactGA4.event('country_navigate_from_comparison', {
+            country_name: countryName,
+            target_year: targetYear,
+            source: 'ai_comparison_result',
+            year_changed: targetYear !== year
           });
         } catch (error) {
           console.warn('Failed to center map on country:', countryName, error);

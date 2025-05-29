@@ -286,11 +286,11 @@ describe('ComparePopup', () => {
     fireEvent.click(germanyButton)
     
     expect(defaultProps.onCountryClick).toHaveBeenCalledWith('Germany', '1800')
-    expect(ReactGA4.event).toHaveBeenCalledWith({
-      category: 'AI Compare',
-      action: 'country_name_clicked',
-      label: 'Germany_1800',
-      value: 1,
+    expect(ReactGA4.event).toHaveBeenCalledWith('ai_comparison_country_navigate', {
+      country_name: 'Germany',
+      year: '1800',
+      source: 'comparison_result',
+      navigation_type: 'country_name_click'
     })
   })
 
