@@ -57,6 +57,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
+        showLabels: true,
       })
     })
 
@@ -123,6 +124,23 @@ describe('SettingsContext', () => {
       })
     })
 
+    it('should update show labels setting', () => {
+      const { result } = renderHook(() => useSettings(), { wrapper })
+
+      act(() => {
+        result.current.updateSettings({ showLabels: false })
+      })
+
+      expect(result.current.settings.showLabels).toBe(false)
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'showLabels',
+        previous_value: 'true',
+        new_value: 'false',
+        setting_type: 'boolean',
+        change_method: 'settings_update'
+      })
+    })
+
     it('should update multiple settings at once', () => {
       const { result } = renderHook(() => useSettings(), { wrapper })
 
@@ -141,6 +159,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.9,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
+        showLabels: true,
       })
 
       // Should track each setting change
@@ -192,6 +211,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
+        showLabels: true,
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith('settings_reset', {
@@ -219,6 +239,7 @@ describe('SettingsContext', () => {
           countryOpacity: 0.7,
           infoProvider: 'wikipedia',
           aiCompareEnabled: false,
+          showLabels: true,
         })
       )
 
@@ -243,6 +264,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.4,
         infoProvider: 'ai' as const,
         aiCompareEnabled: false,
+        showLabels: true,
       }
 
       localStorageMock.setItem(
@@ -272,6 +294,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
+        showLabels: true,
       })
 
       expect(ReactGA4.event).toHaveBeenCalledWith('settings_storage_error', {
@@ -304,6 +327,7 @@ describe('SettingsContext', () => {
         countryOpacity: 0.7,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
+        showLabels: true,
       })
     })
   })

@@ -20,7 +20,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       text_size: settings.textSize,
       text_case: settings.textCase,
       country_opacity: Math.round(settings.countryOpacity * 100),
-      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}`
+      show_labels: settings.showLabels,
+      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}_${settings.showLabels ? 'labels' : 'nolabels'}`
     });
 
     // Track accessibility features usage
@@ -28,7 +29,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       ReactGA4.event('accessibility_feature_used', {
         feature_type: 'large_text',
         element: 'map_labels',
-        text_size: settings.textSize
+        text_size: settings.textSize,
+        labels_visible: settings.showLabels
       });
     }
 
@@ -36,7 +38,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       ReactGA4.event('text_formatting_applied', {
         formatting_type: 'uppercase',
         element: 'map_labels',
-        text_case: settings.textCase
+        text_case: settings.textCase,
+        labels_visible: settings.showLabels
       });
     }
 
@@ -54,6 +57,15 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         element: 'country_borders'
       });
     }
+
+    // Track label visibility preference
+    if (!settings.showLabels) {
+      ReactGA4.event('labels_hidden_preference', {
+        preference_type: 'clean_map',
+        labels_visible: false,
+        map_element: 'all_labels'
+      });
+    }
   }, [settings]);
 
   // Track selected country interactions with current settings
@@ -63,10 +75,11 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         country_name: selectedCountry,
         text_size: settings.textSize,
         text_case: settings.textCase,
-        country_opacity: Math.round(settings.countryOpacity * 100)
+        country_opacity: Math.round(settings.countryOpacity * 100),
+        show_labels: settings.showLabels
       });
     }
-  }, [selectedCountry, settings.textSize, settings.textCase]);
+  }, [selectedCountry, settings.textSize, settings.textCase, settings.showLabels]);
 
   const renderBordersLayer = () => (
     <Source id="borders" type="geojson" data={data.borders}>
@@ -257,8 +270,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
   return (
     <>
       {renderBordersLayer()}
-      {renderLabelsLayer()}
-      {renderPlacesLayer()}
+      {settings.showLabels && renderLabelsLayer()}
+      {settings.showLabels && renderPlacesLayer()}
     </>
   );
 }

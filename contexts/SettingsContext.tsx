@@ -11,6 +11,7 @@ interface Settings {
   countryOpacity: number; // 0.1 to 1.0 in steps of 0.1
   infoProvider: InfoProvider;
   aiCompareEnabled: boolean; // New setting for AI Compare feature
+  showLabels: boolean; // New setting to show/hide map labels
 }
 
 interface SettingsContextType {
@@ -30,6 +31,7 @@ const DEFAULT_SETTINGS: Settings = {
   countryOpacity: 0.7,
   infoProvider: 'wikipedia',
   aiCompareEnabled: false, // Disabled by default
+  showLabels: true, // Default to showing labels
 };
 
 // Helper function to get initial settings from localStorage
@@ -65,6 +67,9 @@ const getInitialSettings = (): Settings => {
         aiCompareEnabled: typeof parsedSettings.aiCompareEnabled === 'boolean' 
           ? parsedSettings.aiCompareEnabled 
           : DEFAULT_SETTINGS.aiCompareEnabled,
+        showLabels: typeof parsedSettings.showLabels === 'boolean' 
+          ? parsedSettings.showLabels 
+          : DEFAULT_SETTINGS.showLabels,
       };
     }
     

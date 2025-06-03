@@ -158,6 +158,27 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
               </div>
 
+              {/* Show Labels Setting */}
+              <div className="settings-section">
+                <div className="settings-section-title">🏷️ Map Labels</div>
+                <div className="settings-options">
+                  <button
+                    className={`settings-option ${settings.showLabels ? 'active' : ''}`}
+                    onClick={() => updateSettings({ showLabels: !settings.showLabels })}
+                  >
+                    <div className="settings-option-label">
+                      {settings.showLabels ? '👁️' : '🚫'} Show Labels
+                    </div>
+                    <div className="settings-option-description">
+                      {settings.showLabels 
+                        ? 'Country and place labels are visible on the map'
+                        : 'Hide all text labels for a cleaner map view'
+                      }
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {/* Text Size Setting */}
               <div className="settings-section">
                 <div className="settings-section-title">📝 Text Size</div>
