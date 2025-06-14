@@ -282,13 +282,6 @@ export default function MapContainer({
     }
   }, [year, setYear, data, mapRef, compareState.isCompareMode]);
 
-  // Effect to center on country when data changes (for year navigation)
-  useEffect(() => {
-    // This will be set by the handleCountryClick callback when year changes
-    // We could store the target country in state, but for now we'll rely on
-    // the timeout in handleCountryClick
-  }, [data]);
-
   return (
     <div className="map-grid" data-testid="map-container">
       <MapboxDefaultMap
