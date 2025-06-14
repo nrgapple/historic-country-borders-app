@@ -2,6 +2,7 @@ import { createClient } from 'redis';
 
 // Server-side Redis client for direct database connection
 let redis: any = null;
+let isConnecting = false;
 
 async function getRedisClient() {
   if (!redis) {
@@ -12,18 +13,88 @@ async function getRedisClient() {
       return null;
     }
 
+    // Prevent multiple connection attempts
+    if (isConnecting) {
+      // Wait for the connection attempt to complete
+      let attempts = 0;
+      while (isConnecting && attempts < 50) { // 5 second timeout
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+      return redis;
+    }
+
+    isConnecting = true;
+
     try {
-      redis = createClient({ url: redisUrl });
+      redis = createClient({ 
+        url: redisUrl,
+        socket: {
+          // Add connection timeout
+          connectTimeout: 5000, // 5 seconds
+          // Add socket timeout
+          lazyConnect: true,
+          // Reconnection settings
+          reconnectStrategy: (retries: number) => {
+            if (retries > 3) {
+              console.error('Redis reconnection failed after 3 attempts');
+              return false; // Stop reconnecting
+            }
+            return Math.min(retries * 50, 500); // Exponential backoff
+          }
+        }
+      });
+
+      // Handle connection events
+      redis.on('error', (err: Error) => {
+        console.error('Redis client error:', err.message);
+        // Don't throw here, just log the error
+      });
+
+      redis.on('connect', () => {
+        console.log('Redis client connected');
+      });
+
+      redis.on('ready', () => {
+        console.log('Redis client ready');
+      });
+
+      redis.on('end', () => {
+        console.log('Redis connection ended');
+        redis = null; // Reset client on disconnection
+      });
+
+      redis.on('reconnecting', () => {
+        console.log('Redis client reconnecting...');
+      });
+
       await redis.connect();
       console.log('Redis connected successfully');
+      isConnecting = false;
     } catch (error) {
       console.error('Redis connection failed:', error);
       redis = null;
+      isConnecting = false;
       return null;
     }
   }
   return redis;
 }
+
+// Add graceful shutdown
+process.on('SIGINT', async () => {
+  if (redis) {
+    await redis.quit();
+    redis = null;
+  }
+});
+
+process.on('SIGTERM', async () => {
+  if (redis) {
+    await redis.quit();
+    redis = null;
+  }
+});
 
 export const redisCache = {
   async get<T>(key: string): Promise<T | null> {
@@ -33,10 +104,23 @@ export const redisCache = {
         return null;
       }
 
-      const value = await client.get(key);
+      // Add timeout for get operations
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error('Redis get timeout')), 3000);
+      });
+
+      const value = await Promise.race([
+        client.get(key),
+        timeoutPromise
+      ]);
+      
       return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error('Redis get error:', error);
+      // Reset client on connection errors
+      if (error instanceof Error && (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND'))) {
+        redis = null;
+      }
       return null;
     }
   },
@@ -50,15 +134,30 @@ export const redisCache = {
 
       const serializedValue = JSON.stringify(value);
       
+      // Add timeout for set operations
+      const timeoutPromise = new Promise<boolean>((_, reject) => {
+        setTimeout(() => reject(new Error('Redis set timeout')), 3000);
+      });
+
       if (ttlSeconds) {
-        await client.setEx(key, ttlSeconds, serializedValue);
+        await Promise.race([
+          client.setEx(key, ttlSeconds, serializedValue),
+          timeoutPromise
+        ]);
       } else {
-        await client.set(key, serializedValue);
+        await Promise.race([
+          client.set(key, serializedValue),
+          timeoutPromise
+        ]);
       }
       
       return true;
     } catch (error) {
       console.error('Redis set error:', error);
+      // Reset client on connection errors
+      if (error instanceof Error && (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND'))) {
+        redis = null;
+      }
       return false;
     }
   },
@@ -70,10 +169,23 @@ export const redisCache = {
         return false;
       }
 
-      await client.del(key);
+      // Add timeout for delete operations
+      const timeoutPromise = new Promise<boolean>((_, reject) => {
+        setTimeout(() => reject(new Error('Redis del timeout')), 3000);
+      });
+
+      await Promise.race([
+        client.del(key),
+        timeoutPromise
+      ]);
+      
       return true;
     } catch (error) {
       console.error('Redis del error:', error);
+      // Reset client on connection errors
+      if (error instanceof Error && (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND'))) {
+        redis = null;
+      }
       return false;
     }
   },
