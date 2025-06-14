@@ -22,7 +22,7 @@ export const useQuery = () => {
 
 export const QueryProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   
   // Cleanup timeout on unmount
   useEffect(() => {

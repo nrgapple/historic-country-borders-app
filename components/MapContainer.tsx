@@ -106,7 +106,7 @@ export default function MapContainer({
     setIsWaitingForStyleLoad(false);
   }, []);
 
-  const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
+  const handleViewStateChange = useCallback(({ viewState: newViewState }: { viewState: any }) => {
     // Use debounced update for smooth map movement
     updateMapView(
       newViewState.longitude, 
@@ -115,7 +115,7 @@ export default function MapContainer({
     );
   }, [updateMapView]);
 
-  const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
+  const handleClick = useCallback(({ originalEvent, features, lngLat }: { originalEvent: any; features?: any[]; lngLat: any }) => {
     if (!features?.length) {
       // Clear selections when clicking empty space, but only if not in compare mode
       if (!compareState.isCompareMode) {
@@ -290,9 +290,9 @@ export default function MapContainer({
   }, [data]);
 
   return (
-    <div className="map-grid">
+    <div className="map-grid" data-testid="map-container">
       <MapboxDefaultMap
-        key={isReady ? `ready-${year}-${user}-${id}` : 'loading'}
+        key={isReady ? `ready-${user}-${id}` : 'loading'}
         interactiveLayerIds={['borders']}
         onStyleData={handleStyleData}
         onLoad={handleLoad}

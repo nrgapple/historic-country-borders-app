@@ -495,4 +495,42 @@ describe('MapContainer', () => {
       expect(true).toBe(true)
     })
   })
+
+  it('should not recreate map when only year changes', () => {
+    const { rerender } = render(
+      <MapContainer year="1900" user="test" id="test" />,
+      { wrapper: TestWrapper }
+    );
+
+    // Get the initial map element
+    const initialMap = screen.getByTestId('mapbox-map');
+    
+    // Change the year prop
+    rerender(
+      <MapContainer year="1950" user="test" id="test" />
+    );
+
+    // The map element should be the same instance (not recreated)
+    const mapAfterYearChange = screen.getByTestId('mapbox-map');
+    expect(mapAfterYearChange).toBe(initialMap);
+  });
+
+  it('should recreate map when user or id changes', () => {
+    const { rerender } = render(
+      <MapContainer year="1900" user="test" id="test" />,
+      { wrapper: TestWrapper }
+    );
+
+    // Get the initial map element
+    const initialMap = screen.getByTestId('mapbox-map');
+    
+    // Change the user prop
+    rerender(
+      <MapContainer year="1900" user="different" id="test" />
+    );
+
+    // The map element should be different (recreated)
+    const mapAfterUserChange = screen.getByTestId('mapbox-map');
+    expect(mapAfterUserChange).not.toBe(initialMap);
+  });
 }) 
