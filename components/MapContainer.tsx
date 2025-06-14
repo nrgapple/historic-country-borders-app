@@ -214,8 +214,17 @@ export default function MapContainer({
 
       if (countryFeature && countryFeature.geometry) {
         try {
+          // Ensure we have a proper GeoJSON Feature for Turf.js
+          const properFeature = countryFeature.type === 'Feature' 
+            ? countryFeature 
+            : {
+                type: 'Feature' as const,
+                geometry: countryFeature.geometry,
+                properties: countryFeature.properties || {}
+              };
+          
           // Calculate bounding box of the country
-          const boundingBox = bbox(countryFeature);
+          const boundingBox = bbox(properFeature);
           const [minLng, minLat, maxLng, maxLat] = boundingBox;
 
           // Get the map instance
