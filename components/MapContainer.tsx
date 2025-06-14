@@ -11,7 +11,7 @@ import ComparePopup, { CompareInfo } from './ComparePopup';
 import ReactGA4 from 'react-ga4';
 import MapboxDefaultMap from '../util/MapboxDefaultMap';
 import MapSources from './MapSources';
-import { MapboxEvent, MapStyleDataEvent } from 'react-map-gl';
+import { MapboxEvent, MapStyleDataEvent, MapLayerMouseEvent, ViewStateChangeEvent } from 'react-map-gl';
 import { useMapQuery } from '../hooks/useMapQuery';
 import { useCompare } from '../contexts/CompareContext';
 import { useSettings } from '../contexts/SettingsContext';
@@ -106,17 +106,17 @@ export default function MapContainer({
     setIsWaitingForStyleLoad(false);
   }, []);
 
-  const handleViewStateChange = useCallback(({ viewState: newViewState }) => {
+  const handleViewStateChange = useCallback((e: ViewStateChangeEvent) => {
     // Use debounced update for smooth map movement
     updateMapView(
-      newViewState.longitude, 
-      newViewState.latitude, 
-      newViewState.zoom
+      e.viewState.longitude, 
+      e.viewState.latitude, 
+      e.viewState.zoom
     );
   }, [updateMapView]);
 
-  const handleClick = useCallback(({ originalEvent, features, lngLat }) => {
-    if (!features?.length) {
+  const handleClick = useCallback((e: MapLayerMouseEvent) => {
+    if (!e.features?.length) {
       // Clear selections when clicking empty space, but only if not in compare mode
       if (!compareState.isCompareMode) {
         setSelectedInfo(undefined);
@@ -125,12 +125,12 @@ export default function MapContainer({
       return;
     }
     
-    const feature = features[0];
+    const feature = e.features[0];
     const place = feature.properties?.NAME;
-    originalEvent.stopPropagation();
+    e.originalEvent.stopPropagation();
     
     // Get coordinates for popup positioning
-    const coordinates = lngLat.toArray() as [number, number];
+    const coordinates = e.lngLat.toArray() as [number, number];
     
     if (compareState.isCompareMode && settings.aiCompareEnabled) {
       // In compare mode, update compare info

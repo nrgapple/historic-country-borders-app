@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router';
+'use client';
+
+import { useRouter, useParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 export interface YearRoutingContext {
@@ -9,21 +11,22 @@ export interface YearRoutingContext {
 
 export const useYearRouting = (initialYear?: string): YearRoutingContext => {
   const router = useRouter();
+  const params = useParams();
   
-  // Get current year from router or prop
-  const currentYear = router.query.year as string || initialYear || '';
+  // Get current year from params or initial year
+  const currentYear = (params?.year as string) || initialYear || '';
   
   // Navigate to new year using path routing
   const setYear = useCallback((year: string) => {
     if (!year || year === currentYear) return;
     
-    // Use router.push with shallow routing to prevent full page refresh
-    router.push(`/year/${year}`, undefined, { shallow: true });
+    // Use router.push to navigate to the new year
+    router.push(`/year/${year}`);
   }, [router, currentYear]);
 
   return {
     currentYear,
     setYear,
-    isReady: router.isReady,
+    isReady: true, // App Router is always ready
   };
 }; 

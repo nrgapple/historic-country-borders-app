@@ -1,0 +1,91 @@
+import { Octokit } from '@octokit/core';
+import { throttling } from '@octokit/plugin-throttling';
+import { getYearFromFile, githubToken } from '../util/constants';
+import { ConfigType, GithubFileInfoType } from '../util/types';
+import { Endpoints } from '@octokit/types';
+import { redirect } from 'next/navigation';
+
+const OctokitThrottled = Octokit.plugin(throttling);
+
+// Helper function to get a random year from the available years
+const getRandomYear = (years: number[]): string => {
+  if (!years || years.length === 0) return '';
+  const randomIndex = Math.floor(Math.random() * years.length);
+  return years[randomIndex].toString();
+};
+
+type GetGithubFilesResp =
+  Endpoints['GET /repos/{owner}/{repo}/contents/{path}']['response'];
+
+type GetBranchResp =
+  Endpoints['GET /repos/{owner}/{repo}/branches/{branch}']['response'];
+
+const octokit = new OctokitThrottled({
+  auth: githubToken,
+  throttle: {
+    onRateLimit: (retryAfter: any, options: any, octokit: any) => {
+      console.warn(
+        `Request quota exhausted for request ${options.method} ${options.url}`,
+      );
+
+      if (options.request.retryCount === 0) {
+        // only retries once
+        console.info(`Retrying after ${retryAfter} seconds!`);
+        return true;
+      }
+    },
+    onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
+      // does not retry, only logs a warning
+      console.warn(
+        `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
+      );
+    },
+  },
+});
+
+async function getYears() {
+  const user = 'aourednik';
+  const repo = 'historical-basemaps';
+  try {
+    const fileResp = (await octokit.request(
+      `/repos/${user}/${repo}/contents/geojson`,
+    )) as GetGithubFilesResp;
+    
+    const files = fileResp.data as GithubFileInfoType[];
+    const years = files
+      .filter((x) => x.name.endsWith('.geojson'))
+      .map((x) => getYearFromFile(x.name))
+      .sort((a, b) => a - b)
+      .filter((x) => !isNaN(x));
+    
+    return years;
+  } catch (e) {
+    console.error(e);
+    return [-500]; // fallback year
+  }
+}
+
+export default async function HomePage() {
+  const years = await getYears();
+  
+  // Redirect to a random year when accessing the root
+  if (years && years.length > 0) {
+    const randomYear = getRandomYear(years);
+    redirect(`/year/${randomYear}`);
+  }
+
+  // This return should never be reached due to redirect
+  return (
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      height: '100vh',
+      fontFamily: "'Times New Roman', serif",
+      fontSize: '18px',
+      color: '#654321'
+    }}>
+      Loading historic borders...
+    </div>
+  );
+} 

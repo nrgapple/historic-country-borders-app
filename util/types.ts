@@ -1,3 +1,4 @@
+import React from 'react';
 import { Feature, FeatureCollection } from 'geojson';
 import { FillLayerSpecification } from 'mapbox-gl';
 import { Toast } from 'react-hot-toast';
@@ -59,7 +60,7 @@ export interface BordersEndpointData {
 }
 
 export interface ToastMessage {
-  message: JSX.Element | string;
+  message: React.JSX.Element | string;
   opts?:
     | Partial<
         Pick<

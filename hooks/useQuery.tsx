@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router';
+'use client';
+
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useEffect } from 'react';
 import { AppQueryParams } from '../types/query';
 import { parseQueryParams } from '../utils/queryParams';
@@ -22,7 +24,9 @@ export const useQuery = () => {
 
 export const QueryProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -34,43 +38,33 @@ export const QueryProvider = ({ children }: { children: ReactNode }) => {
   }, []);
   
   // Parse the current query parameters into our typed structure
-  // Only parse when router is ready to avoid hydration issues
   const query = useMemo(() => {
-    if (!router.isReady || !router.query) {
-      return {};
-    }
-    return parseQueryParams(router.query);
-  }, [router.isReady, router.query]);
+    const params: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+    return parseQueryParams(params);
+  }, [searchParams]);
   
   // Update query parameters immediately
   const updateQuery = useCallback((updates: Partial<AppQueryParams> | null | undefined) => {
-    // Early return if updates is null or undefined, or router not ready
-    if (!updates || !router.isReady) return;
+    // Early return if updates is null or undefined
+    if (!updates) return;
     
-    const newQuery: Record<string, string> = {};
-    
-    // Start with existing query parameters (with null check)
-    const currentQuery = router.query || {};
-    Object.entries(currentQuery).forEach(([key, value]) => {
-      if (typeof value === 'string') {
-        newQuery[key] = value;
-      } else if (Array.isArray(value) && value.length > 0) {
-        newQuery[key] = value[0];
-      }
-    });
+    const newParams = new URLSearchParams(searchParams);
     
     // Apply updates, only including defined values
     Object.entries(updates).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        newQuery[key] = value;
+        newParams.set(key, value);
+      } else {
+        newParams.delete(key);
       }
     });
     
-    router.replace({
-      pathname: router.pathname,
-      query: newQuery,
-    }, undefined, { shallow: true });
-  }, [router]);
+    const newUrl = `${pathname}?${newParams.toString()}`;
+    router.replace(newUrl, { scroll: false });
+  }, [router, searchParams, pathname]);
   
   // Debounced version for frequent updates (like map movement)
   const debouncedUpdateQuery = useCallback((updates: Partial<AppQueryParams> | null | undefined) => {
@@ -94,8 +88,8 @@ export const QueryProvider = ({ children }: { children: ReactNode }) => {
     query,
     setQuery,
     updateQuery: debouncedUpdateQuery,
-    isReady: router.isReady,
-  }), [query, setQuery, debouncedUpdateQuery, router.isReady]);
+    isReady: true, // App Router is always ready
+  }), [query, setQuery, debouncedUpdateQuery]);
 
   return (
     <context.Provider value={contextValue}>

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import ReactGA4 from 'react-ga4';
 import { InfoProvider } from '../hooks/useCountryInfo';
