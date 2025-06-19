@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { convertYearString, timelineBCFormat } from '../util/constants';
 import ReactGA4 from 'react-ga4';
 
@@ -15,9 +15,47 @@ export default function Timeline({
 }: TimelineProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeItemRef = useRef<HTMLButtonElement>(null);
+  const [visibleYearsCount, setVisibleYearsCount] = useState(5); // Default fallback
 
   const currentYear = years[index];
   const formattedYear = convertYearString(timelineBCFormat, currentYear);
+
+  // Calculate how many years are visible in the container
+  const calculateVisibleYears = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const containerWidth = container.clientWidth;
+      
+      // Get the first year button to estimate width
+      const firstYearButton = container.querySelector('.timeline-year-btn') as HTMLElement;
+      if (firstYearButton) {
+        const buttonWidth = firstYearButton.offsetWidth;
+        const buttonMargin = parseInt(getComputedStyle(firstYearButton).marginRight) || 0;
+        const totalButtonWidth = buttonWidth + buttonMargin;
+        
+        // Calculate how many buttons fit in the container width
+        const visibleCount = Math.floor(containerWidth / totalButtonWidth);
+        setVisibleYearsCount(Math.max(1, visibleCount - 1)); // Subtract 1 for partial visibility
+      }
+    }
+  }, []);
+
+  // Calculate visible years on mount and window resize
+  useEffect(() => {
+    calculateVisibleYears();
+    
+    const handleResize = () => {
+      calculateVisibleYears();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [calculateVisibleYears]);
+
+  // Recalculate when years change
+  useEffect(() => {
+    setTimeout(calculateVisibleYears, 100); // Small delay to ensure DOM is updated
+  }, [years, calculateVisibleYears]);
 
   // Scroll active item into view when index changes
   useEffect(() => {
@@ -51,19 +89,128 @@ export default function Timeline({
   }, [onChange, years, currentYear]);
 
   const goToPrevious = useCallback(() => {
-    if (index > 0) {
-      onChange(index - 1);
+    // Find the leftmost visible year and scroll to show previous page
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      
+      // Find the first fully visible year button
+      const yearButtons = container.querySelectorAll('.timeline-year-btn');
+      let leftmostVisibleIndex = -1;
+      
+      yearButtons.forEach((button, i) => {
+        const buttonRect = button.getBoundingClientRect();
+        if (buttonRect.left >= containerRect.left && leftmostVisibleIndex === -1) {
+          leftmostVisibleIndex = i;
+        }
+      });
+      
+      if (leftmostVisibleIndex > 0) {
+        // Scroll to show the previous page, but keep at least one year visible for continuity
+        const scrollAmount = Math.max(1, visibleYearsCount - 1);
+        const targetIndex = Math.max(0, leftmostVisibleIndex - scrollAmount);
+        
+        // Scroll the target year into view without changing the selected year
+        const targetButton = yearButtons[targetIndex] as HTMLElement;
+        if (targetButton) {
+          targetButton.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'start'
+          });
+        }
+        
+        ReactGA4.event('timeline_scroll', {
+          direction: 'previous',
+          from_index: leftmostVisibleIndex,
+          to_index: targetIndex,
+          years_scrolled: leftmostVisibleIndex - targetIndex,
+          current_selected_year: currentYear
+        });
+      }
     }
-  }, [index, onChange]);
+  }, [years, currentYear, visibleYearsCount]);
 
   const goToNext = useCallback(() => {
-    if (index < years.length - 1) {
-      onChange(index + 1);
+    // Find the rightmost visible year and scroll to show next page
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      
+      // Find the last fully visible year button
+      const yearButtons = container.querySelectorAll('.timeline-year-btn');
+      let rightmostVisibleIndex = -1;
+      
+      yearButtons.forEach((button, i) => {
+        const buttonRect = button.getBoundingClientRect();
+        if (buttonRect.right <= containerRect.right) {
+          rightmostVisibleIndex = i;
+        }
+      });
+      
+      if (rightmostVisibleIndex < years.length - 1) {
+        // Scroll to show the next page, but keep at least one year visible for continuity
+        const scrollAmount = Math.max(1, visibleYearsCount - 1);
+        const targetIndex = Math.min(years.length - 1, rightmostVisibleIndex + scrollAmount);
+        
+        // Scroll the target year into view without changing the selected year
+        const targetButton = yearButtons[targetIndex] as HTMLElement;
+        if (targetButton) {
+          targetButton.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'end'
+          });
+        }
+        
+        ReactGA4.event('timeline_scroll', {
+          direction: 'next',
+          from_index: rightmostVisibleIndex,
+          to_index: targetIndex,
+          years_scrolled: targetIndex - rightmostVisibleIndex,
+          current_selected_year: currentYear
+        });
+      }
     }
-  }, [index, years.length, onChange]);
+  }, [years, currentYear, visibleYearsCount]);
 
   const primaryColor = '#6930c3';
   const secondaryColor = '#64dfdf';
+
+  // Check if there are more years to scroll to in each direction
+  const canScrollPrevious = useCallback(() => {
+    if (!scrollContainerRef.current) return false;
+    
+    const container = scrollContainerRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const yearButtons = container.querySelectorAll('.timeline-year-btn');
+    
+    // Check if there are any years hidden to the left
+    for (let i = 0; i < yearButtons.length; i++) {
+      const buttonRect = yearButtons[i].getBoundingClientRect();
+      if (buttonRect.left < containerRect.left) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
+
+  const canScrollNext = useCallback(() => {
+    if (!scrollContainerRef.current) return false;
+    
+    const container = scrollContainerRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const yearButtons = container.querySelectorAll('.timeline-year-btn');
+    
+    // Check if there are any years hidden to the right
+    for (let i = yearButtons.length - 1; i >= 0; i--) {
+      const buttonRect = yearButtons[i].getBoundingClientRect();
+      if (buttonRect.right > containerRect.right) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
 
   return (
     <div className="timeline-discrete">
@@ -73,12 +220,12 @@ export default function Timeline({
         <button
           className="timeline-nav-btn timeline-nav-prev"
           onClick={goToPrevious}
-          disabled={index === 0}
+          disabled={!canScrollPrevious()}
           style={{ 
             color: primaryColor,
             borderColor: primaryColor,
           }}
-          aria-label="Previous year"
+          aria-label="Previous page of years"
         >
           <span className="timeline-nav-arrow">‹</span>
         </button>
@@ -123,12 +270,12 @@ export default function Timeline({
         <button
           className="timeline-nav-btn timeline-nav-next"
           onClick={goToNext}
-          disabled={index === years.length - 1}
+          disabled={!canScrollNext()}
           style={{ 
             color: primaryColor,
             borderColor: primaryColor,
           }}
-          aria-label="Next year"
+          aria-label="Next page of years"
         >
           <span className="timeline-nav-arrow">›</span>
         </button>
