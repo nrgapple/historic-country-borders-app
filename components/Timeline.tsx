@@ -16,9 +16,11 @@ export default function Timeline({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeItemRef = useRef<HTMLButtonElement>(null);
   const [visibleYearsCount, setVisibleYearsCount] = useState(5); // Default fallback
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const currentYear = years[index];
-  const formattedYear = convertYearString(timelineBCFormat, currentYear);
+  const formattedYear = currentYear ? convertYearString(timelineBCFormat, currentYear) : '';
 
   // Calculate how many years are visible in the container
   const calculateVisibleYears = useCallback(() => {
@@ -40,22 +42,72 @@ export default function Timeline({
     }
   }, []);
 
+  // Check if there are more years to scroll to in each direction
+  const updateScrollButtonStates = useCallback(() => {
+    if (!scrollContainerRef.current) {
+      setCanScrollLeft(false);
+      setCanScrollRight(false);
+      return;
+    }
+    
+    const container = scrollContainerRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const yearButtons = container.querySelectorAll('.timeline-year-btn');
+    
+    let hasHiddenLeft = false;
+    let hasHiddenRight = false;
+    
+    // Check if there are any years hidden to the left or right
+    yearButtons.forEach((button) => {
+      const buttonRect = button.getBoundingClientRect();
+      if (buttonRect.left < containerRect.left) {
+        hasHiddenLeft = true;
+      }
+      if (buttonRect.right > containerRect.right) {
+        hasHiddenRight = true;
+      }
+    });
+    
+    setCanScrollLeft(hasHiddenLeft);
+    setCanScrollRight(hasHiddenRight);
+  }, []);
+
   // Calculate visible years on mount and window resize
   useEffect(() => {
     calculateVisibleYears();
+    updateScrollButtonStates();
     
     const handleResize = () => {
       calculateVisibleYears();
+      updateScrollButtonStates();
     };
     
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [calculateVisibleYears]);
+  }, [calculateVisibleYears, updateScrollButtonStates]);
+
+  // Add scroll event listener to update button states when manually scrolling
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      updateScrollButtonStates();
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [updateScrollButtonStates]);
 
   // Recalculate when years change
   useEffect(() => {
-    setTimeout(calculateVisibleYears, 100); // Small delay to ensure DOM is updated
-  }, [years, calculateVisibleYears]);
+    const timeoutId = setTimeout(() => {
+      calculateVisibleYears();
+      updateScrollButtonStates();
+    }, 100); // Small delay to ensure DOM is updated
+    
+    return () => clearTimeout(timeoutId);
+  }, [years, calculateVisibleYears, updateScrollButtonStates]);
 
   // Scroll active item into view when index changes
   useEffect(() => {
@@ -177,41 +229,6 @@ export default function Timeline({
   const primaryColor = '#6930c3';
   const secondaryColor = '#64dfdf';
 
-  // Check if there are more years to scroll to in each direction
-  const canScrollPrevious = useCallback(() => {
-    if (!scrollContainerRef.current) return false;
-    
-    const container = scrollContainerRef.current;
-    const containerRect = container.getBoundingClientRect();
-    const yearButtons = container.querySelectorAll('.timeline-year-btn');
-    
-    // Check if there are any years hidden to the left
-    for (let i = 0; i < yearButtons.length; i++) {
-      const buttonRect = yearButtons[i].getBoundingClientRect();
-      if (buttonRect.left < containerRect.left) {
-        return true;
-      }
-    }
-    return false;
-  }, []);
-
-  const canScrollNext = useCallback(() => {
-    if (!scrollContainerRef.current) return false;
-    
-    const container = scrollContainerRef.current;
-    const containerRect = container.getBoundingClientRect();
-    const yearButtons = container.querySelectorAll('.timeline-year-btn');
-    
-    // Check if there are any years hidden to the right
-    for (let i = yearButtons.length - 1; i >= 0; i--) {
-      const buttonRect = yearButtons[i].getBoundingClientRect();
-      if (buttonRect.right > containerRect.right) {
-        return true;
-      }
-    }
-    return false;
-  }, []);
-
   return (
     <div className="timeline-discrete">
       {/* Navigation Controls */}
@@ -220,7 +237,7 @@ export default function Timeline({
         <button
           className="timeline-nav-btn timeline-nav-prev"
           onClick={goToPrevious}
-          disabled={!canScrollPrevious()}
+          disabled={!canScrollLeft}
           style={{ 
             color: primaryColor,
             borderColor: primaryColor,
@@ -270,7 +287,7 @@ export default function Timeline({
         <button
           className="timeline-nav-btn timeline-nav-next"
           onClick={goToNext}
-          disabled={!canScrollNext()}
+          disabled={!canScrollRight}
           style={{ 
             color: primaryColor,
             borderColor: primaryColor,

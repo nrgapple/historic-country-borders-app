@@ -1,11 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  
+  // Move serverComponentsExternalPackages out of experimental
+  serverExternalPackages: ['redis'],
   
   // Add experimental settings for better error handling
   experimental: {
-    serverComponentsExternalPackages: ['redis'],
+    // serverComponentsExternalPackages has been moved to serverExternalPackages above
   },
 
   // Add webpack configuration for better error handling
