@@ -2,12 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   
-  // Move serverComponentsExternalPackages out of experimental
-  serverExternalPackages: ['redis'],
-  
   // Add experimental settings for better error handling
   experimental: {
-    // serverComponentsExternalPackages has been moved to serverExternalPackages above
+    serverComponentsExternalPackages: ['redis'],
   },
 
   // Add webpack configuration for better error handling

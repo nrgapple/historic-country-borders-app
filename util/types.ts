@@ -60,7 +60,7 @@ export interface BordersEndpointData {
 }
 
 export interface ToastMessage {
-  message: React.JSX.Element | string;
+  message: React.ReactElement | string;
   opts?:
     | Partial<
         Pick<
