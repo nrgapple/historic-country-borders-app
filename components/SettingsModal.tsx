@@ -60,6 +60,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     { value: 1.0, label: '100%' },
   ];
 
+  const borderThicknessOptions = [
+    { value: 0, label: '0px', description: 'No border' },
+    { value: 1, label: '1px', description: 'Very thin' },
+    { value: 2, label: '2px', description: 'Thin (default)' },
+    { value: 3, label: '3px', description: 'Medium' },
+    { value: 4, label: '4px', description: 'Thick' },
+  ];
+
   const handleHistoryItemClick = (comparison: ComparisonItem) => {
     showComparison(comparison);
     onClose();
@@ -233,6 +241,25 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       }}
                     >
                       {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Border Thickness Setting */}
+              <div className="settings-section">
+                <div className="settings-section-title">📏 Border Thickness</div>
+                <div className="settings-options">
+                  {borderThicknessOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      className={`settings-option ${
+                        settings.borderThickness === option.value ? 'active' : ''
+                      }`}
+                      onClick={() => updateSettings({ borderThickness: option.value })}
+                    >
+                      <div className="settings-option-label">{option.label}</div>
+                      <div className="settings-option-description">{option.description}</div>
                     </button>
                   ))}
                 </div>

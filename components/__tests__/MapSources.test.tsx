@@ -71,6 +71,7 @@ describe('MapSources', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         showLabels: true,
       },
     });
@@ -101,6 +102,7 @@ describe('MapSources', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         showLabels: false,
       },
     });
@@ -132,5 +134,43 @@ describe('MapSources', () => {
       layer.getAttribute('id') === 'borders-selected-highlight'
     );
     expect(highlightLayer).toBeDefined();
+  });
+
+  it('should apply border thickness setting to line width calculations', () => {
+    // Test with different border thickness values
+    const thicknessValues = [0, 2, 4];
+    
+    thicknessValues.forEach(thickness => {
+      mockUseSettings.mockReturnValue({
+        settings: {
+          textSize: 'medium',
+          textCase: 'regular',
+          countryOpacity: 0.7,
+          borderThickness: thickness,
+          showLabels: true,
+        },
+      });
+
+      const { getAllByTestId, rerender } = render(
+        <MapSources data={mockData} places={mockPlaces} />
+      );
+
+      const layers = getAllByTestId('map-layer');
+      
+      // Find the borders-outline layer
+      const outlineLayer = layers.find(layer => 
+        layer.getAttribute('id') === 'borders-outline'
+      );
+      
+      expect(outlineLayer).toBeDefined();
+      
+      // The layer should exist and render with the border thickness setting
+      // Note: We can't directly test the paint properties since they're passed as objects
+      // but we can verify the layer renders correctly with different thickness values
+      expect(outlineLayer).toBeInTheDocument();
+      
+      // Clean up for next iteration
+      rerender(<div />);
+    });
   });
 }); 

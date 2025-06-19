@@ -55,6 +55,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
         showLabels: true,
@@ -141,6 +142,40 @@ describe('SettingsContext', () => {
       })
     })
 
+    it('should update border thickness setting', () => {
+      const { result } = renderHook(() => useSettings(), { wrapper })
+
+      act(() => {
+        result.current.updateSettings({ borderThickness: 4 })
+      })
+
+      expect(result.current.settings.borderThickness).toBe(4)
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'borderThickness',
+        previous_value: '2',
+        new_value: '4',
+        setting_type: 'number',
+        change_method: 'settings_update'
+      })
+    })
+
+    it('should support no border option (borderThickness: 0)', () => {
+      const { result } = renderHook(() => useSettings(), { wrapper })
+
+      act(() => {
+        result.current.updateSettings({ borderThickness: 0 })
+      })
+
+      expect(result.current.settings.borderThickness).toBe(0)
+      expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
+        setting_name: 'borderThickness',
+        previous_value: '2',
+        new_value: '0',
+        setting_type: 'number',
+        change_method: 'settings_update'
+      })
+    })
+
     it('should update multiple settings at once', () => {
       const { result } = renderHook(() => useSettings(), { wrapper })
 
@@ -157,6 +192,7 @@ describe('SettingsContext', () => {
         textSize: 'small',
         textCase: 'upper',
         countryOpacity: 0.9,
+        borderThickness: 2,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
         showLabels: true,
@@ -209,6 +245,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
         showLabels: true,
@@ -237,6 +274,7 @@ describe('SettingsContext', () => {
           textSize: 'large',
           textCase: 'regular',
           countryOpacity: 0.7,
+          borderThickness: 2,
           infoProvider: 'wikipedia',
           aiCompareEnabled: false,
           showLabels: true,
@@ -262,6 +300,7 @@ describe('SettingsContext', () => {
         textSize: 'small' as TextSize,
         textCase: 'upper' as TextCase,
         countryOpacity: 0.4,
+        borderThickness: 2,
         infoProvider: 'ai' as const,
         aiCompareEnabled: false,
         showLabels: true,
@@ -292,6 +331,7 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
         showLabels: true,
@@ -310,6 +350,7 @@ describe('SettingsContext', () => {
         textSize: 'invalid-size',
         textCase: 'invalid-case',
         countryOpacity: 5, // out of range
+        borderThickness: 10, // out of range (should be 0-4)
         infoProvider: 'invalid-provider',
       }
 
@@ -325,10 +366,60 @@ describe('SettingsContext', () => {
         textSize: 'medium',
         textCase: 'regular',
         countryOpacity: 0.7,
+        borderThickness: 2,
         infoProvider: 'wikipedia',
         aiCompareEnabled: false,
         showLabels: true,
       })
+    })
+
+    it('should validate borderThickness range (0-4)', () => {
+      // Test valid range
+      const validSettings = {
+        textSize: 'medium',
+        textCase: 'regular',
+        countryOpacity: 0.7,
+        borderThickness: 0, // Valid: minimum value
+        infoProvider: 'wikipedia',
+        aiCompareEnabled: false,
+        showLabels: true,
+      }
+
+      localStorageMock.setItem(
+        'historic-borders-settings',
+        JSON.stringify(validSettings)
+      )
+
+      const { result } = renderHook(() => useSettings(), { wrapper })
+      expect(result.current.settings.borderThickness).toBe(0)
+
+      // Test invalid negative value
+      const invalidNegativeSettings = {
+        ...validSettings,
+        borderThickness: -1
+      }
+
+      localStorageMock.setItem(
+        'historic-borders-settings',
+        JSON.stringify(invalidNegativeSettings)
+      )
+
+      const { result: result2 } = renderHook(() => useSettings(), { wrapper })
+      expect(result2.current.settings.borderThickness).toBe(2) // Should fall back to default
+
+      // Test invalid high value
+      const invalidHighSettings = {
+        ...validSettings,
+        borderThickness: 10
+      }
+
+      localStorageMock.setItem(
+        'historic-borders-settings',
+        JSON.stringify(invalidHighSettings)
+      )
+
+      const { result: result3 } = renderHook(() => useSettings(), { wrapper })
+      expect(result3.current.settings.borderThickness).toBe(2) // Should fall back to default
     })
   })
 }) 

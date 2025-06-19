@@ -20,8 +20,9 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       text_size: settings.textSize,
       text_case: settings.textCase,
       country_opacity: Math.round(settings.countryOpacity * 100),
+      border_thickness: settings.borderThickness,
       show_labels: settings.showLabels,
-      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}_${settings.showLabels ? 'labels' : 'nolabels'}`
+      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}_${settings.borderThickness}px_${settings.showLabels ? 'labels' : 'nolabels'}`
     });
 
     // Track accessibility features usage
@@ -76,10 +77,11 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         text_size: settings.textSize,
         text_case: settings.textCase,
         country_opacity: Math.round(settings.countryOpacity * 100),
+        border_thickness: settings.borderThickness,
         show_labels: settings.showLabels
       });
     }
-  }, [selectedCountry, settings.textSize, settings.textCase, settings.showLabels]);
+  }, [selectedCountry, settings.textSize, settings.textCase, settings.countryOpacity, settings.borderThickness, settings.showLabels]);
 
   const renderBordersLayer = () => (
     <Source id="borders" type="geojson" data={data.borders}>
@@ -115,18 +117,18 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 ? [
                     'case',
                     ['==', ['get', 'NAME'], selectedCountry],
-                    5,
-                    1.2
+                    Math.max(settings.borderThickness * 2.5, 2), // Selected country gets thicker border, minimum 2px
+                    settings.borderThickness * 0.6  // Base thickness for non-selected countries (can be 0)
                   ]
-                : 1.2,
+                : settings.borderThickness * 0.6,
               8, selectedCountry 
                 ? [
                     'case',
                     ['==', ['get', 'NAME'], selectedCountry],
-                    10,
-                    3
+                    Math.max(settings.borderThickness * 5, 4),   // Selected country gets much thicker at higher zoom, minimum 4px
+                    settings.borderThickness * 1.5  // Base thickness * 1.5 for non-selected at higher zoom (can be 0)
                   ]
-                : 3
+                : settings.borderThickness * 1.5
             ],
             'line-opacity': 1,
           },
@@ -146,8 +148,8 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 'interpolate',
                 ['exponential', 1],
                 ['zoom'],
-                3, 3,
-                8, 6
+                3, Math.max(settings.borderThickness * 1.5, 1.5),
+                8, Math.max(settings.borderThickness * 3, 3)
               ],
               'line-opacity': 1,
             },

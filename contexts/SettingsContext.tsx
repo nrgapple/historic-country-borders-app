@@ -9,6 +9,7 @@ interface Settings {
   textSize: TextSize;
   textCase: TextCase;
   countryOpacity: number; // 0.1 to 1.0 in steps of 0.1
+  borderThickness: number; // 0 to 4 in steps of 1
   infoProvider: InfoProvider;
   aiCompareEnabled: boolean; // New setting for AI Compare feature
   showLabels: boolean; // New setting to show/hide map labels
@@ -29,6 +30,7 @@ const DEFAULT_SETTINGS: Settings = {
   textSize: 'medium',
   textCase: 'regular',
   countryOpacity: 0.7,
+  borderThickness: 2,
   infoProvider: 'wikipedia',
   aiCompareEnabled: false, // Disabled by default
   showLabels: true, // Default to showing labels
@@ -61,6 +63,11 @@ const getInitialSettings = (): Settings => {
           && parsedSettings.countryOpacity <= 1.0
           ? parsedSettings.countryOpacity 
           : DEFAULT_SETTINGS.countryOpacity,
+        borderThickness: typeof parsedSettings.borderThickness === 'number' 
+          && parsedSettings.borderThickness >= 0 
+          && parsedSettings.borderThickness <= 4
+          ? parsedSettings.borderThickness 
+          : DEFAULT_SETTINGS.borderThickness,
         infoProvider: ['wikipedia', 'ai'].includes(parsedSettings.infoProvider)
           ? parsedSettings.infoProvider
           : DEFAULT_SETTINGS.infoProvider,
