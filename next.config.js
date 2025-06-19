@@ -2,10 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   
-  // Add experimental settings for better error handling
-  experimental: {
-    serverComponentsExternalPackages: ['redis'],
-  },
+  // Use the new serverExternalPackages instead of experimental.serverComponentsExternalPackages
+  serverExternalPackages: ['redis'],
 
   // Add webpack configuration for better error handling
   webpack: (config, { isServer }) => {
