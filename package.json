@@ -52,7 +52,7 @@
     "@types/geojson": "^7946.0.8",
     "@types/hex-rgba": "^1.0.0",
     "@types/mapbox-gl": "^3.4.1",
-    "@types/node": "^12.12.21",
+    "@types/node": "^24.10.1",
     "@types/polylabel": "^1.0.5",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
@@ -63,6 +63,9 @@
     "typescript": "^5.0.4",
     "vitest": "^3.1.4",
     "webpack": "^5.97.1"
+  },
+  "engines": {
+    "node": ">=25.2.1"
   },
   "resolutions": {
     "strip-ansi-cjs": "npm:strip-ansi@^6.0.1",

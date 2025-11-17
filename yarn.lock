@@ -968,10 +968,12 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.63.tgz#1788fa8da838dbb5f9ea994b834278205db6ca2b"
   integrity sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==
 
-"@types/node@^12.12.21":
-  version "12.20.55"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.55.tgz#c329cbd434c42164f846b909bd6f85b5537f6240"
-  integrity sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==
+"@types/node@^24.10.1":
+  version "24.10.1"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.10.1.tgz#91e92182c93db8bd6224fca031e2370cef9a8f01"
+  integrity sha512-GNWcUTRBgIRJD5zj+Tq0fKOJ5XZajIiBroOF0yvj2bSU1WvNdYS/dn9UxwsujGW4JX06dnHyjV2y9rRaybH0iQ==
+  dependencies:
+    undici-types "~7.16.0"
 
 "@types/pbf@*", "@types/pbf@^3.0.5":
   version "3.0.5"
@@ -3273,6 +3275,11 @@ typewise@^1.0.3:
   integrity sha512-aXofE06xGhaQSPzt8hlTY+/YWQhm9P0jYUp1f2XtmW/3Bk0qzXcyFWAtPoo2uTGQj1ZwbDuSyuxicq+aDo8lCQ==
   dependencies:
     typewise-core "^1.2.0"
+
+undici-types@~7.16.0:
+  version "7.16.0"
+  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.16.0.tgz#ffccdff36aea4884cbfce9a750a0580224f58a46"
+  integrity sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==
 
 undici-types@~7.8.0:
   version "7.8.0"

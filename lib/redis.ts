@@ -32,8 +32,6 @@ async function getRedisClient() {
         socket: {
           // Add connection timeout
           connectTimeout: 5000, // 5 seconds
-          // Add socket timeout
-          lazyConnect: true,
           // Reconnection settings
           reconnectStrategy: (retries: number) => {
             if (retries > 3) {
