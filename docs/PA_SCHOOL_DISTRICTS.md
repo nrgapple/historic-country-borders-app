@@ -249,6 +249,7 @@ Each feature has:
 
 - `QUERY_PARAMS.md` - Query parameter handling
 - `AI_ANALYTICS_GUIDE.md` - Analytics implementation
+- `PA_SCHOOL_DISTRICTS_STREAMING.md` - Options for streaming data from GitHub instead of local storage
 - Historic borders implementation in `components/MapContainer.tsx`
 
 ## Code References

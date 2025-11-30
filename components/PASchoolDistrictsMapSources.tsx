@@ -28,6 +28,7 @@ export default function PASchoolDistrictsMapSources({
   }, [settings]);
 
   // Track selected district interactions with current settings
+  // Only fire when a district is actually selected (not when settings change)
   useEffect(() => {
     if (selectedDistrict) {
       ReactGA4.event('district_selected_with_settings', {
@@ -39,7 +40,8 @@ export default function PASchoolDistrictsMapSources({
         show_labels: settings.showLabels
       });
     }
-  }, [selectedDistrict, settings.textSize, settings.textCase, settings.countryOpacity, settings.borderThickness, settings.showLabels]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDistrict]); // Only depend on selectedDistrict - capture settings at selection time
 
   const renderBordersLayer = () => (
     <Source id="districts" type="geojson" data={data.borders}>

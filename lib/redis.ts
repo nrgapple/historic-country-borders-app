@@ -123,7 +123,7 @@ export const redisCache = {
     }
   },
 
-  async set(key: string, value: any, ttlSeconds?: number): Promise<boolean> {
+  async set(key: string, value: any, ttlSeconds?: number, timeoutMs?: number): Promise<boolean> {
     try {
       const client = await getRedisClient();
       if (!client) {
@@ -132,9 +132,11 @@ export const redisCache = {
 
       const serializedValue = JSON.stringify(value);
       
-      // Add timeout for set operations
+      // Use configurable timeout (default 3s, or longer for large values)
+      // For large values (>10MB), use 30 seconds timeout
+      const timeout = timeoutMs ?? (serializedValue.length > 10 * 1024 * 1024 ? 30000 : 3000);
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Redis set timeout')), 3000);
+        setTimeout(() => reject(new Error(`Redis set timeout (${timeout}ms)`)), timeout);
       });
 
       if (ttlSeconds) {

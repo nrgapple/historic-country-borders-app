@@ -18,15 +18,15 @@ import bbox from '@turf/bbox';
 
 // Pennsylvania approximate bounds: [[minLng, minLat], [maxLng, maxLat]]
 const PA_BOUNDS: [[number, number], [number, number]] = [
-  [-80.5, 39.7], // Southwest corner
-  [-74.7, 42.3], // Northeast corner
+  [-81, 39.4], // Southwest corner
+  [-74.5, 42.3], // Northeast corner
 ];
 
 // Default view centered on Pennsylvania
 const DEFAULT_PA_VIEW = {
   longitude: -77.6,
   latitude: 41.0,
-  zoom: 6.5,
+  zoom: 6,
 };
 
 export default function PASchoolDistrictsMapContainer() {
@@ -190,7 +190,7 @@ export default function PASchoolDistrictsMapContainer() {
         initialViewState={mapViewState}
         onMove={handleViewStateChange}
         maxBounds={PA_BOUNDS}
-        minZoom={6}
+        minZoom={3}
         maxZoom={15}
         // Use a ref to access the map instance for style.load event
         ref={(mapInstance) => {
@@ -229,4 +229,3 @@ export default function PASchoolDistrictsMapContainer() {
     </div>
   );
 }
-

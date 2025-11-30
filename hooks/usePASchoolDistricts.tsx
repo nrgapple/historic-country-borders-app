@@ -136,9 +136,19 @@ const processData = (data: FeatureCollection): CountryData => {
   };
 };
 
+// Fetch through our API route to bypass CORS
+const PASDA_GEOJSON_URL = '/api/pa-school-districts';
+
 const fetcher = async (url: string): Promise<BordersEndpointData> => {
-  // Fetch the GeoJSON file directly from public folder
-  const response = await fetch('/PaSchoolDistricts2025_10.geojson');
+  // Fetch through our API route (which handles CORS and caching)
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch PA school districts: ${response.statusText}`);
+  }
+  
+  // Note: Progress tracking doesn't work well through the API proxy
+  // because the browser buffers the streamed response. We just show a loading toast instead.
   const mapData = await response.json() as FeatureCollection;
   
   // Process on client side
@@ -150,7 +160,7 @@ const fetcher = async (url: string): Promise<BordersEndpointData> => {
 
 export const usePASchoolDistricts = () => {
   const { data, error } = useSWR<BordersEndpointData>(
-    '/PaSchoolDistricts2025_10.geojson',
+    PASDA_GEOJSON_URL,
     fetcher
   );
 
