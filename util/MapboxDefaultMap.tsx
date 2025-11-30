@@ -9,8 +9,8 @@ const MapboxDefaultMap = forwardRef<any, ComponentProps<typeof Map>>((props, ref
       {...props}
       ref={ref}
       reuseMaps
-      minZoom={1}
-      maxZoom={15}
+      minZoom={props.minZoom ?? 1}
+      maxZoom={props.maxZoom ?? 15}
       mapboxAccessToken={mapboxToken}
       mapStyle="mapbox://styles/nrgapple1/cm4awphea01dn01s3ajotcscl"
     />
