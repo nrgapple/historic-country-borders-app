@@ -127,6 +127,23 @@ In Google Analytics, monitor:
 - App continues working without caching
 - Check Vercel Redis dashboard for database status
 
+**"Redis OOM error - cannot cache X MB value"**
+- **Problem**: Redis has reached its `maxmemory` limit and cannot store new values
+- **Impact**: Caching fails, but app continues working (falls back to API calls)
+- **Solutions**:
+  1. **Configure Eviction Policy** (Recommended): Set Redis to evict least recently used keys when memory is full
+     - For Vercel Redis: This is typically configured automatically, but check your Redis provider settings
+     - For self-hosted Redis: Run `CONFIG SET maxmemory-policy allkeys-lru` or add to `redis.conf`:
+       ```
+       maxmemory-policy allkeys-lru
+       ```
+  2. **Increase maxmemory**: Upgrade your Redis plan or increase memory limit
+  3. **Reduce Cache Size**: 
+     - Reduce cache TTL (currently 24 hours for PA districts, 24 hours for AI responses)
+     - Consider not caching very large values (>20MB)
+  4. **Clear Cache**: Manually clear old cache entries (see Manual Cache Management below)
+- **Note**: The app handles OOM errors gracefully and continues working without caching
+
 **Slow first requests, fast subsequent ones**
 - Expected behavior - first request populates cache
 - Subsequent requests for same country/year are cached
@@ -165,6 +182,33 @@ redis-cli -u $REDIS_URL KEYS "ai:*"
 
 # Get specific value  
 redis-cli -u $REDIS_URL GET "ai:france:1789"
+```
+
+**Check Redis memory usage**:
+```bash
+# Connect to Redis
+redis-cli -u $REDIS_URL
+
+# Check memory info
+> INFO memory
+
+# Check current eviction policy
+> CONFIG GET maxmemory-policy
+
+# Check maxmemory setting
+> CONFIG GET maxmemory
+
+# Get memory usage for specific key
+> MEMORY USAGE "pa-school-districts:geojson"
+```
+
+**Configure eviction policy** (if you have access):
+```bash
+# Set to evict least recently used keys when memory is full
+redis-cli -u $REDIS_URL CONFIG SET maxmemory-policy allkeys-lru
+
+# Or use allkeys-lfu (least frequently used) - also good for caching
+redis-cli -u $REDIS_URL CONFIG SET maxmemory-policy allkeys-lfu
 ```
 
 ## Architecture
