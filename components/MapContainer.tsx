@@ -301,6 +301,7 @@ export default function MapContainer({
         onClick={handleClick}
         initialViewState={viewState}
         onMove={handleViewStateChange}
+        mapStyle="mapbox://styles/nrgapple1/cm4awphea01dn01s3ajotcscl"
         // Use a ref to access the map instance for style.load event
         ref={(mapInstance) => {
           mapRef.current = mapInstance;

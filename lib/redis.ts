@@ -123,18 +123,30 @@ export const redisCache = {
     }
   },
 
-  async set(key: string, value: any, ttlSeconds?: number): Promise<boolean> {
+  async set(key: string, value: any, ttlSeconds?: number, timeoutMs?: number): Promise<boolean> {
+    // Serialize value once for use in both try and catch blocks
+    let serializedValue: string;
+    let valueSizeMB: number;
+    
+    try {
+      serializedValue = JSON.stringify(value);
+      valueSizeMB = serializedValue.length / (1024 * 1024);
+    } catch (serializeError) {
+      console.error('Failed to serialize value for Redis cache:', serializeError);
+      return false;
+    }
+
     try {
       const client = await getRedisClient();
       if (!client) {
         return false;
       }
-
-      const serializedValue = JSON.stringify(value);
       
-      // Add timeout for set operations
+      // Use configurable timeout (default 3s, or longer for large values)
+      // For large values (>10MB), use 30 seconds timeout
+      const timeout = timeoutMs ?? (serializedValue.length > 10 * 1024 * 1024 ? 30000 : 3000);
       const timeoutPromise = new Promise<boolean>((_, reject) => {
-        setTimeout(() => reject(new Error('Redis set timeout')), 3000);
+        setTimeout(() => reject(new Error(`Redis set timeout (${timeout}ms)`)), timeout);
       });
 
       if (ttlSeconds) {
@@ -151,9 +163,25 @@ export const redisCache = {
       
       return true;
     } catch (error) {
-      console.error('Redis set error:', error);
-      // Reset client on connection errors
-      if (error instanceof Error && (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND'))) {
+      // Check for OOM (Out of Memory) errors specifically
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isOOMError = errorMessage.includes('OOM') || 
+                        errorMessage.includes('maxmemory') ||
+                        errorMessage.includes('command not allowed when used memory');
+      
+      if (isOOMError) {
+        console.warn(`Redis OOM error - cannot cache ${valueSizeMB.toFixed(2)}MB value for key "${key}". ` +
+                    `Redis has reached maxmemory limit. Consider: ` +
+                    `1) Configuring eviction policy (allkeys-lru recommended), ` +
+                    `2) Increasing maxmemory, or ` +
+                    `3) Reducing cache TTL or cache size.`);
+      } else {
+        console.error('Redis set error:', error);
+      }
+      
+      // Reset client on connection errors (but not OOM errors - those are server config issues)
+      if (error instanceof Error && 
+          (error.message.includes('ECONNRESET') || error.message.includes('ENOTFOUND'))) {
         redis = null;
       }
       return false;
