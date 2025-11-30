@@ -3,16 +3,24 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { ComponentProps, forwardRef } from 'react';
 import { mapboxToken } from './constants';
 
-const MapboxDefaultMap = forwardRef<any, ComponentProps<typeof Map>>((props, ref) => {
+interface MapboxDefaultMapProps extends ComponentProps<typeof Map> {
+  mapStyle?: string;
+}
+
+const MapboxDefaultMap = forwardRef<any, MapboxDefaultMapProps>((props, ref) => {
+  const { mapStyle, ...restProps } = props;
+  // Default to Mapbox Streets style if not specified, otherwise use custom style for main map
+  const defaultStyle = mapStyle ?? "mapbox://styles/mapbox/streets-v12";
+  
   return (
     <Map
-      {...props}
+      {...restProps}
       ref={ref}
       reuseMaps
       minZoom={props.minZoom ?? 1}
       maxZoom={props.maxZoom ?? 15}
       mapboxAccessToken={mapboxToken}
-      mapStyle="mapbox://styles/nrgapple1/cm4awphea01dn01s3ajotcscl"
+      mapStyle={defaultStyle}
     />
   );
 });
