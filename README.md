@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=nrgapple&project=historic-country-borders-app&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # [Historic Borders](https://historicborders.app/)
 
 Visualize country borders from different times in history (2000 BC-1994)
