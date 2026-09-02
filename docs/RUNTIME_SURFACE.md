@@ -1,21 +1,36 @@
 # Runtime and crawler surface
 
-Status: M2 implementation
+Status: M3 local migration complete; Cloudflare preview verification pending owner access.
+
+## Static requests
+
+The Next.js app uses `output: 'export'`. HTML for `/`, all 53 enumerated `/year/<year>` routes, `/pa/school-districts`, and the useful 404 is generated at build time. Historical content-hashed payloads and the PA school payload are immutable/local build inputs. Build and ordinary traffic make no GitHub or PASDA requests.
+
+`public/_routes.json` is the authoritative Cloudflare Functions boundary:
+
+```json
+{ "version": 1, "include": ["/api/feedback"], "exclude": [] }
+```
+
+Thus page HTML, Next assets, map data, sitemap, robots, and unknown routes cannot invoke a Function. `yarn static:validate` fails if another function or route appears.
+
+## Approved dynamic operation
+
+| Route                | Boundary and failure behavior                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/feedback` | Exactly routed Pages Function; POST and JSON only; same-origin when `Origin` is present; 8 KiB actual/declared body maximum; bounded field schema; Cloudflare `FEEDBACK_RATE_LIMITER` limit of 20 attempts/minute/location/client; five-second destination timeouts; secrets remain in Worker bindings; succeeds if any configured destination stores; safe 429/503 failures with `no-store` and diagnostic `X-HistoricBorders-Compute: feedback`. |
+
+The local static preview intentionally returns 503 for feedback because it has no secret-bearing Worker. The map remains usable.
+
+Wikipedia is not an application runtime route. The browser performs one bounded GET to Wikipedia's CORS-enabled MediaWiki API. Deterministic tests cover the query, success, empty, and unavailable states; a live M3 check observed `Access-Control-Allow-Origin: *`. Wikipedia failure only removes optional source-backed summary text.
+
+## Removed runtime operations
+
+- `/api/borders/*`: replaced by validated content-hashed static assets.
+- `/api/wikipedia`: replaced by direct browser CORS access.
+- all Next API routes: removed from the static app.
+- PA school proxy: removed in M2.
 
 ## Crawler policy
 
-`public/robots.txt` allows ordinary search engines to load public pages and required assets, disallows API crawling, and denies named model-training and answer-generation crawlers associated with amplification risk. Robots directives are advisory; they are not an access-control mechanism.
-
-Cloudflare dashboard controls are deliberately deferred to M3 because they require production account access. During M3 preview setup, enable AI Crawl Control for the production hostname and evaluate Bot Fight Mode against map rendering, Wikipedia lookups, feedback, and ordinary search crawlers before enabling it. Record the final rules and rollback instructions with the deployment configuration.
-
-## Current dynamic operations
-
-| Route                                 | Bounds and failure behavior                                                                                                                                                                                                                                                                                                                                             | Planned disposition                                                                                                                                                                                             |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `POST /api/feedback`                  | Same-origin when `Origin` is present; 8 KiB parser/declared-size limit; validated field types and lengths; best-effort per-instance limit of 20 submissions/minute/client; five-second Discord timeout; six-second response bound around storage operations; succeeds if one configured destination stores the submission and otherwise fails without exposing secrets. | Move to the one approved, independently rate-limited Cloudflare dynamic function in M3. Platform rate limiting is deferred until that function exists; tests cover method, origin, size, and schema bounds now. |
-| `POST /api/wikipedia`                 | Same-origin when `Origin` is present; 1 KiB parser/declared-size limit; non-empty string up to 160 characters; five-second timeout on each bounded Wikipedia request; cached success and safe 503 failure.                                                                                                                                                              | Reassess direct browser CORS during M3; otherwise retain as a tightly cached function.                                                                                                                          |
-| `GET /api/borders/:owner/:repo/:year` | GET only; exactly three allow-listed path segments; 15-second upstream timeout; 25 MiB maximum per validated FeatureCollection; safe 400/502 failures.                                                                                                                                                                                                                  | Remove in M3 when historical payloads become immutable static assets. Tests and validation in M3 will prove page/map delivery invokes no runtime route.                                                         |
-
-The school-district proxy was removed in M2. Browsers now load `/data/pa-school-districts.json` as a static asset; PASDA is contacted only by the explicit `yarn data:refresh` command, never by ordinary traffic or `yarn build`.
-
-The current in-memory rate limit is only a per-instance defense and cannot consistently bound abuse across serverless instances. The M3 Cloudflare function must apply platform-level rate limits to feedback; the other routes are removed or tightly cached. Until that migration, method, input, size, timeout, validation, and safe-failure controls limit individual operations.
+`public/robots.txt` allows ordinary search engines to load public pages/assets, disallows API crawling, and denies named AI/model-training crawlers. Directives are advisory. Cloudflare AI Crawl Control and any Bot Fight Mode decision require owner dashboard access and must follow `docs/CLOUDFLARE_DEPLOYMENT.md` without breaking maps, Wikipedia, feedback, or legitimate search crawlers.

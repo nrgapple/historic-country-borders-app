@@ -1,0 +1,870 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "aourednik/historical-basemaps",
+    "branch": "master",
+    "directory": "geojson",
+    "commit": "62d8f1a03a71f2d3ff17f2d166f7553f256bce68",
+    "commitDate": "2026-01-26T18:39:41Z",
+    "license": "GPL-3.0",
+    "licenseSha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "licenseUrl": "https://github.com/aourednik/historical-basemaps/blob/62d8f1a03a71f2d3ff17f2d166f7553f256bce68/LICENSE",
+    "provenanceNote": "Collected and adapted from diverse historical basemap sources; verify against other sources before academic use.",
+    "places": {
+      "file": "places.geojson",
+      "sha256": "ed7289b777df83c117e096fe2d10a9b22d24620c9f050b4ba59a09d42bf954e2",
+      "bytes": 4845378
+    }
+  },
+  "refreshedAt": "2026-09-02T21:59:16.069Z",
+  "assets": {
+    "100": {
+      "url": "/data/historical/100.220f7c9eefd31800.json",
+      "sha256": "220f7c9eefd318009693394fc56eb4fb4185b5d7e0ef3500cb1f1fcf2cef9293",
+      "bytes": 664472,
+      "source": {
+        "file": "world_100.geojson",
+        "sha256": "20265dc221c92f070f88d0a2ab6459b6942a86c2b865524131c9a1f546e03e86",
+        "bytes": 1182428
+      },
+      "counts": {
+        "borders": 85,
+        "labels": 85,
+        "places": 50,
+        "zeroAreaBorders": 0
+      }
+    },
+    "200": {
+      "url": "/data/historical/200.56848ada4f317708.json",
+      "sha256": "56848ada4f317708d1601921b1e9787ccc06f5e09543faf976adfb0d2fbf650f",
+      "bytes": 603503,
+      "source": {
+        "file": "world_200.geojson",
+        "sha256": "11f3ef1c24a6a43b69cbbd7eeec831b6c9610a539d5b028ae5898c7a5a9f7a4c",
+        "bytes": 1165203
+      },
+      "counts": {
+        "borders": 70,
+        "labels": 70,
+        "places": 50,
+        "zeroAreaBorders": 0
+      }
+    },
+    "300": {
+      "url": "/data/historical/300.800b5deb85fdd00f.json",
+      "sha256": "800b5deb85fdd00f77396758520d50fa9b4eb65e43492ed207a4054091449aeb",
+      "bytes": 624310,
+      "source": {
+        "file": "world_300.geojson",
+        "sha256": "4ec1f9d170f1b92725da0a6043a201fdc56207cad74366d6817b9432306f1b1f",
+        "bytes": 1184708
+      },
+      "counts": {
+        "borders": 71,
+        "labels": 71,
+        "places": 51,
+        "zeroAreaBorders": 0
+      }
+    },
+    "400": {
+      "url": "/data/historical/400.7192c381b4ef58c6.json",
+      "sha256": "7192c381b4ef58c6bc3e284d6f8559df13284ea770adef489a1b0c80a5ecbf59",
+      "bytes": 624250,
+      "source": {
+        "file": "world_400.geojson",
+        "sha256": "940cb6473f4e7f511d79f96b34aeecc1e44657e42a9e70538eb49291f24bf024",
+        "bytes": 1123290
+      },
+      "counts": {
+        "borders": 80,
+        "labels": 80,
+        "places": 53,
+        "zeroAreaBorders": 0
+      }
+    },
+    "500": {
+      "url": "/data/historical/500.088dcdcf9d268f7b.json",
+      "sha256": "088dcdcf9d268f7bc0373f2e8630d53ab0b8d461a6295596d0bad461c7f56db8",
+      "bytes": 727331,
+      "source": {
+        "file": "world_500.geojson",
+        "sha256": "5b70765b35918dd6da38b6b775f2d27c047ed8f30d427486ee14d1d46354bd51",
+        "bytes": 968262
+      },
+      "counts": {
+        "borders": 92,
+        "labels": 92,
+        "places": 54,
+        "zeroAreaBorders": 0
+      }
+    },
+    "600": {
+      "url": "/data/historical/600.f258f0e59539f67b.json",
+      "sha256": "f258f0e59539f67b9de4e97f7fc646a0dcd75270a72c2c4d6a2181f64659c437",
+      "bytes": 727633,
+      "source": {
+        "file": "world_600.geojson",
+        "sha256": "4995058c02023bfa7e3fd7674311c73772e5a967b43de1efe0dd4a7996dd86f5",
+        "bytes": 1025129
+      },
+      "counts": {
+        "borders": 88,
+        "labels": 88,
+        "places": 54,
+        "zeroAreaBorders": 0
+      }
+    },
+    "700": {
+      "url": "/data/historical/700.b8cd102673a35400.json",
+      "sha256": "b8cd102673a35400be7d925aaa8fe01d94ffe5e8e44f9d9c476f1ee66aed8bc1",
+      "bytes": 801611,
+      "source": {
+        "file": "world_700.geojson",
+        "sha256": "31b42c6efc118c855db3c18f3b5cb4fba9d2f1b5112ded77c6ddc364037f08fe",
+        "bytes": 966987
+      },
+      "counts": {
+        "borders": 133,
+        "labels": 133,
+        "places": 54,
+        "zeroAreaBorders": 0
+      }
+    },
+    "800": {
+      "url": "/data/historical/800.8085abd8f8807432.json",
+      "sha256": "8085abd8f880743252c6648d86ecd0bddb8f011ca884fb24ce8a77787ba91308",
+      "bytes": 869952,
+      "source": {
+        "file": "world_800.geojson",
+        "sha256": "60dd804d688240b7ff77dd1d9b4f6a5f2310848d7b990ba19a630d1643b77af5",
+        "bytes": 977275
+      },
+      "counts": {
+        "borders": 122,
+        "labels": 122,
+        "places": 55,
+        "zeroAreaBorders": 0
+      }
+    },
+    "900": {
+      "url": "/data/historical/900.b6cd6cc7eb3957ec.json",
+      "sha256": "b6cd6cc7eb3957eca0302a6aa2df7d48e7a68d9d5a70829631ad7301bd7b9d6e",
+      "bytes": 986395,
+      "source": {
+        "file": "world_900.geojson",
+        "sha256": "e315a86ee63be6e1781decf63a2f6ce4c005a195cf653b35062bb37a46ceb73c",
+        "bytes": 1056073
+      },
+      "counts": {
+        "borders": 138,
+        "labels": 138,
+        "places": 59,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1000": {
+      "url": "/data/historical/1000.ac363956f4fd7b25.json",
+      "sha256": "ac363956f4fd7b251723b89062476d531ad750d28a8a7e7ad5594a10a9a24127",
+      "bytes": 872552,
+      "source": {
+        "file": "world_1000.geojson",
+        "sha256": "b0dc4795658e505ccbd23a8dd5277c8115bcd844912a738c9111c41fd1535cd3",
+        "bytes": 1040482
+      },
+      "counts": {
+        "borders": 132,
+        "labels": 132,
+        "places": 61,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1100": {
+      "url": "/data/historical/1100.e828c0ad5cbd85f0.json",
+      "sha256": "e828c0ad5cbd85f0829325a421ca912ef348c0a1b3e11841bfdbc4aa44e9c8cd",
+      "bytes": 927476,
+      "source": {
+        "file": "world_1100.geojson",
+        "sha256": "0fca96ef7c2b5beb0ad26d514f0ab4c4921d4156b58dd8f757671cbd6e4e054a",
+        "bytes": 1065134
+      },
+      "counts": {
+        "borders": 150,
+        "labels": 150,
+        "places": 62,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1200": {
+      "url": "/data/historical/1200.dcfb85b82bc1999b.json",
+      "sha256": "dcfb85b82bc1999b957e3aea76b4c2d9524eeefea67b59bc2ba6f60a1643bfb2",
+      "bytes": 952398,
+      "source": {
+        "file": "world_1200.geojson",
+        "sha256": "83489587ee19a4eecf80565197511315441a804b8245cf0337b11b193d414beb",
+        "bytes": 1050886
+      },
+      "counts": {
+        "borders": 136,
+        "labels": 136,
+        "places": 63,
+        "zeroAreaBorders": 1
+      }
+    },
+    "1279": {
+      "url": "/data/historical/1279.05a9b672e9695071.json",
+      "sha256": "05a9b672e9695071f9a35d8cd3cc126fbcd8cdabfdc74b0e5dd821480153dfb6",
+      "bytes": 893842,
+      "source": {
+        "file": "world_1279.geojson",
+        "sha256": "bf5f4efce436448bb4627384e0a1a46890789356b654c4dedf55993ede603de9",
+        "bytes": 1028740
+      },
+      "counts": {
+        "borders": 116,
+        "labels": 116,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1300": {
+      "url": "/data/historical/1300.52c1b99f2fbe2573.json",
+      "sha256": "52c1b99f2fbe2573d1eb17f739944114f49506931bcc52034b1d567b6cb966cd",
+      "bytes": 888376,
+      "source": {
+        "file": "world_1300.geojson",
+        "sha256": "ba66ea1ab75b5b31405a9e8668cbcd7bf054e658357163d0ead95ef2d0b1ecec",
+        "bytes": 1021649
+      },
+      "counts": {
+        "borders": 115,
+        "labels": 115,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1400": {
+      "url": "/data/historical/1400.5efbb630b8a3b830.json",
+      "sha256": "5efbb630b8a3b8305de8af0152dd4c1daab9ff214ad05fae6fdb8e87150d3d18",
+      "bytes": 968702,
+      "source": {
+        "file": "world_1400.geojson",
+        "sha256": "9349daa1afe05e4b73c56e31735bf8c13625bd35b7a23f17aa2f3a4bc672a20f",
+        "bytes": 1053822
+      },
+      "counts": {
+        "borders": 122,
+        "labels": 122,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1492": {
+      "url": "/data/historical/1492.f35830ae80fb2911.json",
+      "sha256": "f35830ae80fb2911c866a8f29e547f4ae8fd16a12d145acdfede5bd758b3a021",
+      "bytes": 3378139,
+      "source": {
+        "file": "world_1492.geojson",
+        "sha256": "b952a7804cc4ed6c14aaebcb78e2e087c34ee5b1ffa1b659325cdfb45a806af3",
+        "bytes": 4016876
+      },
+      "counts": {
+        "borders": 1317,
+        "labels": 1317,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1500": {
+      "url": "/data/historical/1500.f674d7a09a4bc342.json",
+      "sha256": "f674d7a09a4bc34229dcb0c4a3bb5a2eb904b3f6f5e231e00aca2278e82fc896",
+      "bytes": 1021596,
+      "source": {
+        "file": "world_1500.geojson",
+        "sha256": "e59ac978dc15844089ecd4ef9e10d8f07b059197aa50505d2759fb14c08bb9d0",
+        "bytes": 1339178
+      },
+      "counts": {
+        "borders": 143,
+        "labels": 143,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1530": {
+      "url": "/data/historical/1530.bac61cd63e0d71cc.json",
+      "sha256": "bac61cd63e0d71ccd1b6d0728695bfee5ebc35270fed7831b99ac028bf43b5b1",
+      "bytes": 1128393,
+      "source": {
+        "file": "world_1530.geojson",
+        "sha256": "c377bf8f034ed210af0eed07c608e58d4868e19f316a8e99fd115ed71e113a60",
+        "bytes": 1607241
+      },
+      "counts": {
+        "borders": 278,
+        "labels": 278,
+        "places": 63,
+        "zeroAreaBorders": 1
+      }
+    },
+    "1600": {
+      "url": "/data/historical/1600.d757f657d763d5b2.json",
+      "sha256": "d757f657d763d5b2ee2b21e05d9a06537c3a7013487b1b82f343e418b0aec1ed",
+      "bytes": 1583407,
+      "source": {
+        "file": "world_1600.geojson",
+        "sha256": "b7861a585b36ee1b03521b169f782a6430c54359d055b9c120174c24596d6e54",
+        "bytes": 1931772
+      },
+      "counts": {
+        "borders": 661,
+        "labels": 661,
+        "places": 64,
+        "zeroAreaBorders": 1
+      }
+    },
+    "1650": {
+      "url": "/data/historical/1650.db50dc4b6d13f066.json",
+      "sha256": "db50dc4b6d13f06610e0cda7b6bda049ebdb71260e2616ea70fb4e4f1086ec1e",
+      "bytes": 1584447,
+      "source": {
+        "file": "world_1650.geojson",
+        "sha256": "89a02480ed0287cfa0be46fde05a52423d7f277291a300f27eb5b63b8762926e",
+        "bytes": 1650785
+      },
+      "counts": {
+        "borders": 598,
+        "labels": 598,
+        "places": 64,
+        "zeroAreaBorders": 1
+      }
+    },
+    "1700": {
+      "url": "/data/historical/1700.e421f35f6b875b6e.json",
+      "sha256": "e421f35f6b875b6edfd13d6decba4b34ed31ed6af31d98bb4aef99392ffde677",
+      "bytes": 1551917,
+      "source": {
+        "file": "world_1700.geojson",
+        "sha256": "aec58dce0cd6dc084299bce973ec115b65b96822ad27d9cbc39fd5baa7627ec0",
+        "bytes": 1626027
+      },
+      "counts": {
+        "borders": 591,
+        "labels": 591,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1715": {
+      "url": "/data/historical/1715.5c0d71df776f5b62.json",
+      "sha256": "5c0d71df776f5b62c09b5b1c5b38efa33085351fbde9624f2cc63c3841ed34b6",
+      "bytes": 1609299,
+      "source": {
+        "file": "world_1715.geojson",
+        "sha256": "837eac1956364a5f18e53255d4f9df10d7eb91dd6bec0678a7ff49dc38e68861",
+        "bytes": 1949163
+      },
+      "counts": {
+        "borders": 606,
+        "labels": 606,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1783": {
+      "url": "/data/historical/1783.e8df252b77da5b36.json",
+      "sha256": "e8df252b77da5b360070b80c90ea288d770dd4065ff212a3131fe6e3f0675d20",
+      "bytes": 1742951,
+      "source": {
+        "file": "world_1783.geojson",
+        "sha256": "ad4fafe9bdc4ddd690bd009ac92fb6c10a7f6658e7709b4478ab9e710ca37bc1",
+        "bytes": 1917908
+      },
+      "counts": {
+        "borders": 564,
+        "labels": 564,
+        "places": 63,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1800": {
+      "url": "/data/historical/1800.40378699aa1e9a0d.json",
+      "sha256": "40378699aa1e9a0d062eb2698c9a2ba50e5ba4385fc8ea53bb087d3ea6708e80",
+      "bytes": 1722879,
+      "source": {
+        "file": "world_1800.geojson",
+        "sha256": "6360f3eb2773a8065848215d390566d2c32862c5b5d35c0ca736db4aeaf0723f",
+        "bytes": 1883014
+      },
+      "counts": {
+        "borders": 558,
+        "labels": 558,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1815": {
+      "url": "/data/historical/1815.43573018eb23c827.json",
+      "sha256": "43573018eb23c82721b74b4787f2bc1ab5aeed57c95aff68a2fc4a6b8b47069d",
+      "bytes": 2405112,
+      "source": {
+        "file": "world_1815.geojson",
+        "sha256": "62afcd6e3f1f598a05e42550a358083bbb75e63e122ebb5a4383f019632115e9",
+        "bytes": 2413431
+      },
+      "counts": {
+        "borders": 328,
+        "labels": 328,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1880": {
+      "url": "/data/historical/1880.11440538a59a9913.json",
+      "sha256": "11440538a59a9913303cba7ca75e4436a6f9dff808be67f64a92f0341ed401a1",
+      "bytes": 1339987,
+      "source": {
+        "file": "world_1880.geojson",
+        "sha256": "af5cbc211a19cb7cad1ed65dc7669658dbda8d92acf0b9c16e8dc0c57de3b06b",
+        "bytes": 1302635
+      },
+      "counts": {
+        "borders": 173,
+        "labels": 173,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1900": {
+      "url": "/data/historical/1900.6ba4b5ae34b291e6.json",
+      "sha256": "6ba4b5ae34b291e65c0cfb9de026e686741ab51a9d0a51e9fb2b8f940f1e8aec",
+      "bytes": 1359498,
+      "source": {
+        "file": "world_1900.geojson",
+        "sha256": "bf39176daf7ac2a3ba374a58f98d3f3d07401fd265d353576952233f8e2f63aa",
+        "bytes": 1296946
+      },
+      "counts": {
+        "borders": 222,
+        "labels": 222,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1914": {
+      "url": "/data/historical/1914.17c2a4520c91e661.json",
+      "sha256": "17c2a4520c91e6618df60ae775be963d9af649fce092e1d478c0e3fac5ab401b",
+      "bytes": 1381222,
+      "source": {
+        "file": "world_1914.geojson",
+        "sha256": "3909ac0c6e089efbb35919e6929f9f8936ed7a92ff99334e7b361156ef1ffe68",
+        "bytes": 1473703
+      },
+      "counts": {
+        "borders": 144,
+        "labels": 144,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1920": {
+      "url": "/data/historical/1920.475ccfeea21e9e54.json",
+      "sha256": "475ccfeea21e9e54892f9918aff6806b28f183057050c11e87b4f8740c79cef4",
+      "bytes": 1547545,
+      "source": {
+        "file": "world_1920.geojson",
+        "sha256": "415d19849f57b41eeffdbcbab35e69520e91f9d431e7ebef8033c2718ed8e010",
+        "bytes": 1668137
+      },
+      "counts": {
+        "borders": 165,
+        "labels": 165,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1930": {
+      "url": "/data/historical/1930.a21c7e8003aa5c10.json",
+      "sha256": "a21c7e8003aa5c102005d5ac99f68b65c39f6d77804f1d53241b314401e4913e",
+      "bytes": 1374420,
+      "source": {
+        "file": "world_1930.geojson",
+        "sha256": "f5a62db4a21f563c5274f0ff884fe3b323039c60beed5352d7162f7f839a3275",
+        "bytes": 1469538
+      },
+      "counts": {
+        "borders": 163,
+        "labels": 163,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1938": {
+      "url": "/data/historical/1938.d8b9c53753f9c061.json",
+      "sha256": "d8b9c53753f9c061aa6d0097bdc62e1f64c4cef0b9716f86517bc3539044ff19",
+      "bytes": 1482911,
+      "source": {
+        "file": "world_1938.geojson",
+        "sha256": "ba7689bec824144806049030be3d67132bff77562a71684ad892a4c808273870",
+        "bytes": 1618903
+      },
+      "counts": {
+        "borders": 175,
+        "labels": 175,
+        "places": 64,
+        "zeroAreaBorders": 1
+      }
+    },
+    "1945": {
+      "url": "/data/historical/1945.302c538787db2c72.json",
+      "sha256": "302c538787db2c72928a43800b095793f3d53625c66b130e21ef0ce2795a4856",
+      "bytes": 1444563,
+      "source": {
+        "file": "world_1945.geojson",
+        "sha256": "4fefbc8f613b700f86e8ff74ce09288b6698d22ff29f225a5ff1cc8137e7fb2e",
+        "bytes": 1545590
+      },
+      "counts": {
+        "borders": 184,
+        "labels": 184,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1960": {
+      "url": "/data/historical/1960.cf6e194813eb8fe7.json",
+      "sha256": "cf6e194813eb8fe776a3913b2dc3e3e9bf6c2402977d17bd7f0638d5336ce21c",
+      "bytes": 1401224,
+      "source": {
+        "file": "world_1960.geojson",
+        "sha256": "e51fe415a22632b10c61eb136697ba8a045822e069e1256eea308952357955b6",
+        "bytes": 1489991
+      },
+      "counts": {
+        "borders": 159,
+        "labels": 159,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "1994": {
+      "url": "/data/historical/1994.73cdff7e53a2cdf1.json",
+      "sha256": "73cdff7e53a2cdf150c7fb8d1c36c9b4c4f392b2e1a2a45d6362c86f0fd1163b",
+      "bytes": 1845282,
+      "source": {
+        "file": "world_1994.geojson",
+        "sha256": "5aa74eb004e085a39faff7e39b4b20c4c1f0c78feabc9d87e0abd62daf09f2b1",
+        "bytes": 1938216
+      },
+      "counts": {
+        "borders": 198,
+        "labels": 198,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "2000": {
+      "url": "/data/historical/2000.71a2dccd3a42dd02.json",
+      "sha256": "71a2dccd3a42dd027c69054c58acda8855f3f8d0eea1b923d9a23540b0312bc0",
+      "bytes": 1740436,
+      "source": {
+        "file": "world_2000.geojson",
+        "sha256": "c00d1952b51eb89724df883182f40fac7a938d85425ae63aa2019ac211856ea8",
+        "bytes": 1876302
+      },
+      "counts": {
+        "borders": 199,
+        "labels": 199,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "2010": {
+      "url": "/data/historical/2010.2e53203397250f75.json",
+      "sha256": "2e53203397250f75c9ad9e34897730b06ab129fa3e25762e2af04878466b2681",
+      "bytes": 1740418,
+      "source": {
+        "file": "world_2010.geojson",
+        "sha256": "a75e768634e7242ec69d461bf51961a7d92073d387eb55cc4feafccd824a0aa7",
+        "bytes": 1876293
+      },
+      "counts": {
+        "borders": 199,
+        "labels": 199,
+        "places": 64,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-123000": {
+      "url": "/data/historical/bc123000.5dd7d6063228227e.json",
+      "sha256": "5dd7d6063228227eaf6d9142254a60a3e6b63efd60731a8403c43610f17a4add",
+      "bytes": 89596,
+      "source": {
+        "file": "world_bc123000.geojson",
+        "sha256": "e03a8a560db73e2e1431201bdb8f7f6105e4bffb6c89df90be45957e777d5a06",
+        "bytes": 719044
+      },
+      "counts": {
+        "borders": 4,
+        "labels": 4,
+        "places": 0,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-10000": {
+      "url": "/data/historical/bc10000.b9e6dcbc956c4832.json",
+      "sha256": "b9e6dcbc956c48323d10f5a034b883df45b28839aac0a3e45eac13841a7e0bd5",
+      "bytes": 103497,
+      "source": {
+        "file": "world_bc10000.geojson",
+        "sha256": "c17eeb497dd77d9a8cfac46329d8457b318d363c27d36403fda30e601a26a645",
+        "bytes": 782341
+      },
+      "counts": {
+        "borders": 16,
+        "labels": 16,
+        "places": 1,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-8000": {
+      "url": "/data/historical/bc8000.26bfdd06fbd70d92.json",
+      "sha256": "26bfdd06fbd70d92aecfe917dc3ef3accee45ed63406e7de8126c5374fb06d82",
+      "bytes": 119505,
+      "source": {
+        "file": "world_bc8000.geojson",
+        "sha256": "7ee29cdecfc61698187dfeb42df3f78fc5a4df1152488e4d5a9cbde2059c0be0",
+        "bytes": 779787
+      },
+      "counts": {
+        "borders": 17,
+        "labels": 17,
+        "places": 3,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-5000": {
+      "url": "/data/historical/bc5000.10bb3fd771c15c6d.json",
+      "sha256": "10bb3fd771c15c6d34fc390e59da401d9260b2b20b0aed38c25ee69beb39aeda",
+      "bytes": 731527,
+      "source": {
+        "file": "world_bc5000.geojson",
+        "sha256": "4ae8721545dd9236e0cfe414e83f9da28ec681f70d23d80c18407fa28cf1908c",
+        "bytes": 3686094
+      },
+      "counts": {
+        "borders": 29,
+        "labels": 29,
+        "places": 14,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-4000": {
+      "url": "/data/historical/bc4000.6cbc70d4b1cbf132.json",
+      "sha256": "6cbc70d4b1cbf132d796232634e6f0e0b3258e7eb5f900a04038180fc3b08f55",
+      "bytes": 176829,
+      "source": {
+        "file": "world_bc4000.geojson",
+        "sha256": "e3c4f1a6a255301e69edcb75b3e5fd8d0e52461967e54146bb9f1f57d4654173",
+        "bytes": 786563
+      },
+      "counts": {
+        "borders": 23,
+        "labels": 23,
+        "places": 17,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-3000": {
+      "url": "/data/historical/bc3000.224d0cb33314483a.json",
+      "sha256": "224d0cb33314483a5575943d47737cf9b328252555e8b79c7786a5e512fcd8d8",
+      "bytes": 198267,
+      "source": {
+        "file": "world_bc3000.geojson",
+        "sha256": "2cf107e2f0d4f9b5427b293f19b11fffe7c1134f52320df4f94b4889b978f033",
+        "bytes": 789242
+      },
+      "counts": {
+        "borders": 25,
+        "labels": 25,
+        "places": 23,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-2000": {
+      "url": "/data/historical/bc2000.6f3688a4ea2cfab5.json",
+      "sha256": "6f3688a4ea2cfab57f812b03880c450907964cfbccfaa6251c5457cc5ce62462",
+      "bytes": 615468,
+      "source": {
+        "file": "world_bc2000.geojson",
+        "sha256": "ca78719de30fafc242f26a61535a9854553ff3544a86656ef6e62289b5d9751f",
+        "bytes": 858843
+      },
+      "counts": {
+        "borders": 45,
+        "labels": 45,
+        "places": 30,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-1500": {
+      "url": "/data/historical/bc1500.25a4810ef3938f91.json",
+      "sha256": "25a4810ef3938f91ea5590fec33921430bfb20b468d4ac119fdd1e4884e73e4d",
+      "bytes": 737208,
+      "source": {
+        "file": "world_bc1500.geojson",
+        "sha256": "8f82479089bbffd760df8093c4f2e8689d44a67fcb173adf6960fc8de70861aa",
+        "bytes": 874760
+      },
+      "counts": {
+        "borders": 69,
+        "labels": 69,
+        "places": 34,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-1000": {
+      "url": "/data/historical/bc1000.8e644474f9923c0c.json",
+      "sha256": "8e644474f9923c0c380442cfa9e0421d35cc2a0879f49dbea5099c298ef5d6be",
+      "bytes": 742574,
+      "source": {
+        "file": "world_bc1000.geojson",
+        "sha256": "c3ba4242712ee55c99669f3f0493def883b1424ee6b5666840a49b30b71bcecc",
+        "bytes": 875445
+      },
+      "counts": {
+        "borders": 70,
+        "labels": 70,
+        "places": 35,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-700": {
+      "url": "/data/historical/bc700.66a91dd8ffde1729.json",
+      "sha256": "66a91dd8ffde172939f30cbef19ef06e68068fccf1e06b9a5d36d0b125a11e03",
+      "bytes": 757054,
+      "source": {
+        "file": "world_bc700.geojson",
+        "sha256": "377238d6e333d5aca61a7aa42c64f9712b7c0403fc8d7d3ae1c753a42ad676ca",
+        "bytes": 881803
+      },
+      "counts": {
+        "borders": 80,
+        "labels": 80,
+        "places": 38,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-500": {
+      "url": "/data/historical/bc500.941c096f07ed04b9.json",
+      "sha256": "941c096f07ed04b9000064cb2508eadaf100197a95a47c526a46b996228fc21e",
+      "bytes": 687966,
+      "source": {
+        "file": "world_bc500.geojson",
+        "sha256": "ebf257ef748c37906de08f8a2c5410c85b06957ac72c2f0e6a13eae67de12e57",
+        "bytes": 915849
+      },
+      "counts": {
+        "borders": 77,
+        "labels": 77,
+        "places": 42,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-400": {
+      "url": "/data/historical/bc400.c631c0bed424cc4b.json",
+      "sha256": "c631c0bed424cc4b7b798dfb3845edc7fb7da7f9996482bd4cd752720a49a147",
+      "bytes": 754564,
+      "source": {
+        "file": "world_bc400.geojson",
+        "sha256": "5c1eced870abf8514533cae5b6d2f8a4531f037f4c37a1d1443ab0660497ab42",
+        "bytes": 899223
+      },
+      "counts": {
+        "borders": 81,
+        "labels": 81,
+        "places": 42,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-323": {
+      "url": "/data/historical/bc323.eb4caf15cef6e517.json",
+      "sha256": "eb4caf15cef6e517fe8f4475cb8c9353a57158749893dc478e69b818125d6b71",
+      "bytes": 620774,
+      "source": {
+        "file": "world_bc323.geojson",
+        "sha256": "03eadec707e29647de3c4e75391da9792fe08affb9d1a2dae2bfd9519a88a72d",
+        "bytes": 888990
+      },
+      "counts": {
+        "borders": 75,
+        "labels": 75,
+        "places": 42,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-300": {
+      "url": "/data/historical/bc300.6fd67e0341475938.json",
+      "sha256": "6fd67e03414759389beef0a6fe2eeb5bf183447c15079d3370ff07c488839c97",
+      "bytes": 633092,
+      "source": {
+        "file": "world_bc300.geojson",
+        "sha256": "24cd984081f859e9af906a5b48097c7eb1ee83ef066f83e6d87854848d8bd4f2",
+        "bytes": 909382
+      },
+      "counts": {
+        "borders": 79,
+        "labels": 79,
+        "places": 44,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-200": {
+      "url": "/data/historical/bc200.a5ba2f0ce2e8283d.json",
+      "sha256": "a5ba2f0ce2e8283d1c4bcb9ba393d13b71cd9ad90b6dad58c3b59cf276a81a4c",
+      "bytes": 830145,
+      "source": {
+        "file": "world_bc200.geojson",
+        "sha256": "4fd73b9d463e6d31a54c5437fbc7a08d24dfeadcabd2a50ddbcd363abf8d82f8",
+        "bytes": 948656
+      },
+      "counts": {
+        "borders": 86,
+        "labels": 86,
+        "places": 47,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-100": {
+      "url": "/data/historical/bc100.cc56a65b8dc50924.json",
+      "sha256": "cc56a65b8dc5092479633ed094a1ae7cf55ba8e8e9a16c39d077103aba4c6497",
+      "bytes": 647521,
+      "source": {
+        "file": "world_bc100.geojson",
+        "sha256": "710c05247c2e1bc99bf6ad334a939143a5451cfa7bb1c9087e18821eda67c9d0",
+        "bytes": 958689
+      },
+      "counts": {
+        "borders": 85,
+        "labels": 85,
+        "places": 48,
+        "zeroAreaBorders": 0
+      }
+    },
+    "-1": {
+      "url": "/data/historical/bc1.12af3b8963c63bc1.json",
+      "sha256": "12af3b8963c63bc118c56be0f3a8d50ee511e694e49602134f1ab79c04d461a7",
+      "bytes": 651377,
+      "source": {
+        "file": "world_bc1.geojson",
+        "sha256": "0099bac4e9d74dce953c63802252d3021d7cc1ec54bc9ae2ba48e93c6c442e9a",
+        "bytes": 1185423
+      },
+      "counts": {
+        "borders": 80,
+        "labels": 80,
+        "places": 48,
+        "zeroAreaBorders": 0
+      }
+    }
+  }
+}

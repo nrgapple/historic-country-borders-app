@@ -10,13 +10,13 @@ Every candidate needs evidence, a user problem, acceptance criteria, and a succe
 
 ## Active milestones
 
-| Candidate                                       | User problem                                                           | Evidence                                                           | Impact | Confidence | Effort | Risk | Status                |
-| ----------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------ | -----: | ---------: | -----: | ---: | --------------------- |
-| Restore on static Cloudflare hosting            | Nobody can use the disabled production site                            | Production HTTP 402                                                |      5 |          5 |      4 |    3 | Approved              |
-| Repair PA school districts                      | Users cannot rely on the priority district experience                  | M2 replaced proxy/browser processing with a validated static asset |      5 |          5 |      3 |    2 | Completed in M2       |
-| Add CI/local/E2E harness                        | Regressions and deployment failures are discovered too late            | No CI or browser suite; current test/build failures                |      5 |          5 |      3 |    1 | In progress           |
-| Remove generated-information and cache services | Unwanted features add cost, secrets, dependencies, and compute surface | Owner decision and repository audit                                |      4 |          5 |      3 |    2 | Completed in M1       |
-| Static historical map artifacts                 | Ordinary exploration currently invokes runtime compute                 | `/api/borders/...` on every uncached data request                  |      5 |          5 |      4 |    3 | Approved architecture |
+| Candidate                                       | User problem                                                           | Evidence                                                               | Impact | Confidence | Effort | Risk | Status                |
+| ----------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- | -----: | ---------: | -----: | ---: | --------------------- |
+| Restore on static Cloudflare hosting            | Nobody can use the disabled production site                            | Local export is green; Cloudflare preview/account verification pending |      5 |          5 |      4 |    3 | M3 owner step pending |
+| Repair PA school districts                      | Users cannot rely on the priority district experience                  | M2 replaced proxy/browser processing with a validated static asset     |      5 |          5 |      3 |    2 | Completed in M2       |
+| Add CI/local/E2E harness                        | Regressions and deployment failures are discovered too late            | CI, static-export validation, and cross-browser journeys are enforced  |      5 |          5 |      3 |    1 | In progress           |
+| Remove generated-information and cache services | Unwanted features add cost, secrets, dependencies, and compute surface | Owner decision and repository audit                                    |      4 |          5 |      3 |    2 | Completed in M1       |
+| Static historical map artifacts                 | Ordinary exploration previously invoked runtime compute                | 53 validated content-hashed assets; border API removed                 |      5 |          5 |      4 |    3 | Completed in M3       |
 
 ## Discovery candidates
 

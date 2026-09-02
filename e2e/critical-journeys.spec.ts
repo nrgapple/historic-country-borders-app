@@ -107,7 +107,7 @@ const emptyMapboxStyle = {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.route('**/api/borders/**', (route) =>
+  await page.route('**/data/historical/*.json', (route) =>
     route.fulfill({ json: historicalMapResponse }),
   );
   await page.route('**/data/pa-school-districts.json', (route) =>
@@ -138,14 +138,67 @@ test('root resolves to an available historical year', async ({ page }) => {
   await expectReadyMap(page.getByTestId('map-container'));
 });
 
-test('a historical year loads deterministic border data', async ({ page }) => {
-  await page.goto('/year/1994');
+test('historical deep links load static AD and BC border data without an API route', async ({
+  page,
+}) => {
+  const apiRequests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.startsWith('/api/')) {
+      apiRequests.push(request.url());
+    }
+  });
 
+  await page.goto('/year/1994');
   await expect(page).toHaveURL(/\/year\/1994$/);
   await expectReadyMap(page.getByTestId('map-container'));
   await expect(
     page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();
+
+  await page.goto('/year/-100');
+  await expect(page).toHaveURL(/\/year\/-100$/);
+  await expectReadyMap(page.getByTestId('map-container'));
+  expect(apiRequests).toEqual([]);
+});
+
+test('unknown years use the useful static 404', async ({ page }) => {
+  const response = await page.goto('/year/9999');
+  expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole('heading', { name: 'That map is not available' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Explore an available historical year' }),
+  ).toBeVisible();
+});
+
+test('static preview fails feedback safely without an application server', async ({
+  page,
+  request,
+}) => {
+  const response = await request.post('/api/feedback', {
+    data: { rate: 'nice', visitorId: 'fixture-visitor' },
+  });
+  expect(response.status()).toBe(503);
+  await expect(response.json()).resolves.toEqual({
+    message: 'Feedback is unavailable in local static preview',
+  });
+
+  await page.goto('/year/1994');
+  await page.getByText('Feedback', { exact: true }).click();
+  await page.getByText('Good', { exact: true }).click();
+  const submit = page.getByRole('button', { name: 'Send Feedback' });
+  await expect(submit).toBeEnabled();
+  const alert = new Promise<string>((resolve) =>
+    page.once('dialog', async (dialog) => {
+      resolve(dialog.message());
+      await dialog.accept();
+    }),
+  );
+  await submit.click();
+  await expect(alert).resolves.toContain(
+    'Feedback is unavailable in local static preview',
+  );
 });
 
 test('Pennsylvania school districts load usable district data for cold and returning users', async ({

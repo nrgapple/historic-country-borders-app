@@ -1,6 +1,6 @@
 # Historic Borders
 
-[Historic Borders](https://historicborders.app/) is an interactive map for exploring political borders from 2000 BC through 1994. Select a place to read a source-backed Wikipedia summary, move through the timeline, or explore the Pennsylvania school-district map.
+[Historic Borders](https://historicborders.app/) is an interactive map for exploring selected political-border snapshots from 123,000 BC through 2010. Select a place to read a source-backed Wikipedia summary, move through the timeline, or explore the Pennsylvania school-district map.
 
 Historical and administrative boundaries are third-party data and may be approximate, disputed, or incomplete. Follow the in-app source links and consult original sources for academic or legal use.
 
@@ -25,16 +25,12 @@ Open <http://localhost:3000>.
 
 ### Environment variables
 
-| Variable                         | Exposure    | Purpose                                          |
-| -------------------------------- | ----------- | ------------------------------------------------ |
-| `NEXT_PUBLIC_MAPBOX_TOKEN`       | Browser     | Public, URL-restricted Mapbox map token          |
-| `NEXT_PUBLIC_GA_FOUR`            | Browser     | Optional GA4 measurement ID                      |
-| `DISCORD_WEBHOOK_URL`            | Server only | Optional feedback destination                    |
-| `AIRTABLE_PERSONAL_ACCESS_TOKEN` | Server only | Optional feedback destination credential         |
-| `AIRTABLE_BASE_ID`               | Server only | Optional feedback base                           |
-| `AIRTABLE_TABLE_NAME`            | Server only | Optional feedback table (defaults to `Feedback`) |
+| Variable                   | Exposure | Purpose                                 |
+| -------------------------- | -------- | --------------------------------------- |
+| `NEXT_PUBLIC_MAPBOX_TOKEN` | Browser  | Public, URL-restricted Mapbox map token |
+| `NEXT_PUBLIC_GA_FOUR`      | Browser  | Optional GA4 measurement ID             |
 
-Never place a secret in a variable prefixed with `NEXT_PUBLIC_`. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) for optional feedback setup.
+Feedback secrets are configured only on the isolated Cloudflare Function, not exposed to the Next.js build. Never place a secret in a variable prefixed with `NEXT_PUBLIC_`. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
 
 ## Validation
 
@@ -43,8 +39,12 @@ yarn validate                 # complete local quality gate
 yarn type-check               # TypeScript
 yarn test                     # unit/integration tests
 yarn test:e2e                 # production build plus browser journeys
-yarn data:validate            # validate committed PA district data offline
-yarn data:refresh             # explicitly fetch and review a PASDA refresh
+yarn data:validate            # validate all committed map data offline
+yarn data:refresh             # explicitly refresh both pinned upstream datasets
+yarn data:refresh:historical  # explicitly refresh pinned historical artifacts
+yarn data:refresh:schools     # explicitly refresh pinned PASDA artifact
+yarn static:validate          # verify static routes/assets and dynamic isolation
+yarn preview                  # serve out/ with deep-link and 404 behavior
 yarn format:check && yarn lint
 ```
 
@@ -52,9 +52,9 @@ Tests use fixtures and do not require production credentials or live third-party
 
 ## Architecture and data
 
-The current upgrade moves the application to a static-first Cloudflare deployment. Normal pages and map assets will become immutable static output; only bounded operations such as feedback may remain dynamic. Data refreshes are explicit and reviewable rather than silently occurring during ordinary traffic.
+The application exports static HTML and committed map assets for Cloudflare Pages. Normal pages and map assets invoke no Worker; only the exactly routed, bounded feedback Function is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
 
-- Historical map data: [historicborders-timeline-example](https://github.com/nrgapple/historicborders-timeline-example)
+- Historical map data: [source, pin, validation, and uncertainty](docs/HISTORICAL_DATA.md)
 - Country descriptions: [Wikipedia](https://www.wikipedia.org/)
 - Pennsylvania districts: PASDA (source, vintage, and limitations are documented in [docs/PA_SCHOOL_DISTRICTS.md](docs/PA_SCHOOL_DISTRICTS.md))
 - Maps: [Mapbox](https://www.mapbox.com/)

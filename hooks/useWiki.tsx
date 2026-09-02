@@ -1,101 +1,75 @@
-import useSWR, { Fetcher } from 'swr';
+import useSWR from 'swr';
 
-interface WikiApiResponse {
-  content: string;
-  error?: string;
-}
+const API_URL = 'https://en.wikipedia.org/w/api.php';
+const MAX_NAME_LENGTH = 160;
+const TIMEOUT_MS = 5_000;
 
-const fetcher: Fetcher<string, string> = async (title: string) => {
-  // Validate title input
-  if (!title || title.trim() === '') {
-    return 'Not Found';
-  }
+const fetchSummary = async (title: string): Promise<string> => {
+  const cleanTitle = title.trim();
+  if (!cleanTitle || cleanTitle.length > MAX_NAME_LENGTH) return 'Not Found';
+
+  const query = new URLSearchParams({
+    action: 'query',
+    generator: 'search',
+    gsrsearch: cleanTitle,
+    gsrlimit: '1',
+    gsrnamespace: '0',
+    prop: 'extracts',
+    exintro: '1',
+    explaintext: '1',
+    exsectionformat: 'plain',
+    format: 'json',
+    origin: '*',
+    'Api-User-Agent':
+      'HistoricBorders/1.0 (https://historicborders.app; Wikipedia summary lookup)',
+  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const response = await fetch('/api/wikipedia', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: title.trim(),
-      }),
+    const response = await fetch(`${API_URL}?${query}`, {
+      signal: controller.signal,
     });
+    if (!response.ok) throw new Error(`Wikipedia returned ${response.status}`);
+    const body = await response.json();
+    const page = Object.values(body?.query?.pages ?? {})[0] as
+      { extract?: unknown } | undefined;
+    const extract = page?.extract;
+    if (typeof extract !== 'string' || !extract.trim()) return 'Not Found';
+    return extract.length > 500 ? `${extract.slice(0, 500)}...` : extract;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+};
 
-    if (!response.ok) {
-      const errorData: WikiApiResponse = await response.json().catch(() => ({
-        content: '',
-        error: 'Failed to parse error response',
-      }));
-
-      console.error('Wikipedia API HTTP error:', {
-        status: response.status,
-        statusText: response.statusText,
-        title,
-        errorMessage: errorData.error,
-        timestamp: new Date().toISOString(),
-      });
-
-      return (
-        errorData.error ||
-        `HTTP error! status: ${response.status} - ${response.statusText}`
-      );
-    }
-
-    const data: WikiApiResponse = await response.json();
-
-    console.log('Wikipedia API response:', {
-      title,
-      responseType: typeof data,
-      hasContent: !!data.content,
-      timestamp: new Date().toISOString(),
-    });
-
-    return data.content || 'Not Found';
+const safeFetcher = async (title: string): Promise<string> => {
+  try {
+    return await fetchSummary(title);
   } catch (error) {
-    console.error('Wikipedia API error:', {
-      title,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    });
-
-    // Determine error type and provide appropriate message
-    let errorMessage = 'Unable to load Wikipedia information';
-
-    if (error instanceof Error) {
-      // Check if it's a network error
-      if (
-        error.message.includes('fetch') ||
-        error.message.includes('network') ||
-        error.message.includes('Failed to fetch')
-      ) {
-        errorMessage =
-          'Network connection issue. Please check your internet connection and try again.';
-      }
-      // Check if it's a timeout error
-      else if (
-        error.message.includes('timeout') ||
-        error.message.includes('AbortError')
-      ) {
-        errorMessage = 'Wikipedia request timed out. Please try again.';
-      }
+    console.error('Wikipedia request failed:', error);
+    if (error instanceof Error && error.name === 'AbortError') {
+      return 'Wikipedia request timed out. Please try again.';
     }
-
-    return errorMessage;
+    return 'Wikipedia information is temporarily unavailable. Please try again.';
   }
 };
 
 export const useWikiData = (name: string) => {
-  const { data, error } = useSWR(`wiki:${name}`, () => fetcher(name), {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 300000, // 5 minutes
-  });
+  const cleanName = name.trim();
+  const { data, error } = useSWR(
+    cleanName ? `wiki:${cleanName}` : null,
+    () => safeFetcher(cleanName),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 300_000,
+    },
+  );
 
   return {
     title: name,
     info: data || 'Not Found',
-    isLoading: !error && !data,
+    isLoading: Boolean(cleanName) && !error && !data,
     isError: error,
   } as const;
 };

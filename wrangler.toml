@@ -1,0 +1,11 @@
+name = "historic-borders"
+compatibility_date = "2025-09-01"
+pages_build_output_dir = "./out"
+
+[[ratelimits]]
+name = "FEEDBACK_RATE_LIMITER"
+namespace_id = "1001"
+
+[ratelimits.simple]
+limit = 20
+period = 60
