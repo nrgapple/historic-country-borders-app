@@ -1,6 +1,6 @@
 # Upgrade Harness Plan
 
-Status: Approved — M0 baseline in progress
+Status: Approved — M1 complete; M2 queued
 
 ## Problem
 

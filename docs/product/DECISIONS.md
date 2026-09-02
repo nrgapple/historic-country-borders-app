@@ -6,9 +6,13 @@
 
 Normal pages and map assets will not invoke request-time compute. Cloudflare is the target because its static asset delivery fits the free-only constraint and its bot controls address crawler amplification. Dynamic compute is restricted to justified, bounded endpoints.
 
-### Remove generative AI and Redis
+### Wikipedia-only country information
 
-Remove Gemini country information, AI comparisons, their UI and analytics, and Redis caching. Wikipedia remains the information source. Redis has no approved remaining product purpose.
+Generated country descriptions, country comparisons, their UI, analytics, history, caching service, and provider-specific dependencies were removed in M1. Wikipedia is the sole information source.
+
+### Bound temporary dynamic routes
+
+Until static artifacts replace the map proxies, each current route has explicit method, input or source-size, timeout, validation, and safe-failure bounds. Feedback platform rate limiting and crawler dashboard controls are deferred to the M3 Cloudflare boundary, where they can work consistently across instances. See `docs/RUNTIME_SURFACE.md`.
 
 ### Pennsylvania school districts first
 

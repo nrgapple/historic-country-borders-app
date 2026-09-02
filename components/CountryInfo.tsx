@@ -1,8 +1,5 @@
 import React, { useMemo } from 'react';
 import { useCountryInfo } from '../hooks/useCountryInfo';
-import { useSettings } from '../contexts/SettingsContext';
-import { useCompare } from '../contexts/CompareContext';
-import ReactGA4 from 'react-ga4';
 
 export interface CountryInfoData {
   place: string;
@@ -10,65 +7,23 @@ export interface CountryInfoData {
 
 interface CountryInfoProps {
   info: CountryInfoData | undefined;
-  year?: string;
   onClose?: () => void;
-  onStartCompare?: (countryName: string, year: string) => void;
 }
 
 const noData = 'Not Found';
 
-export default function CountryInfo({
-  info,
-  year,
-  onClose,
-  onStartCompare,
-}: CountryInfoProps) {
+export default function CountryInfo({ info, onClose }: CountryInfoProps) {
   const { place = '' } = info ?? {};
-  const { settings } = useSettings();
-  const { compareState, startCompare } = useCompare();
-  const provider = settings.infoProvider;
-  const {
-    info: description,
-    title: title,
-    isLoading,
-  } = useCountryInfo(place, { provider, year });
+  const { info: description, title, isLoading } = useCountryInfo(place);
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],
   );
+  const descriptionClass = `country-info-description${
+    isLoading ? ' loading' : empty ? ' empty' : ''
+  }`;
 
-  // Determine description CSS class based on state
-  const descriptionClass = useMemo(() => {
-    let baseClass = 'country-info-description';
-    if (isLoading) {
-      baseClass += ' loading';
-    } else if (empty) {
-      baseClass += ' empty';
-    }
-    return baseClass;
-  }, [isLoading, empty]);
-
-  // Don't render if no country is selected or if in compare mode
-  if (!place || compareState.isCompareMode) {
-    return null;
-  }
-
-  const handleStartCompare = () => {
-    if (place && year) {
-      // Track compare button click
-      ReactGA4.event('ai_compare_initiate', {
-        country_name: place,
-        year: year,
-        source: 'country_info_panel',
-        action_type: 'compare_button_click',
-      });
-
-      startCompare(place, year);
-
-      // Call the parent callback if provided
-      onStartCompare?.(place, year);
-    }
-  };
+  if (!place) return null;
 
   return (
     <div className="country-info">
@@ -87,7 +42,7 @@ export default function CountryInfo({
           <>📚 Loading information...</>
         ) : empty ? (
           <>
-            📖 No information available
+            📖 No Wikipedia information available
             <br />
             for this location 😔
           </>
@@ -95,19 +50,6 @@ export default function CountryInfo({
           description
         )}
       </div>
-
-      {/* AI Compare Button - only show if feature is enabled and not loading/empty */}
-      {settings.aiCompareEnabled && !isLoading && !empty && place && year && (
-        <div className="country-info-actions">
-          <button
-            className="country-info-compare-button"
-            onClick={handleStartCompare}
-            title="Compare this country with another using AI"
-          >
-            🔀 Compare
-          </button>
-        </div>
-      )}
     </div>
   );
 }

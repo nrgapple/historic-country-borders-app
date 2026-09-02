@@ -1,6 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
 import { createFeedbackRecord, isAirtableConfigured } from './airtable';
+import {
+  hasOversizedBody,
+  rejectCrossOriginRequest,
+  settleWithin,
+} from './apiSecurity';
+import { createFixedWindowLimiter } from './rateLimit';
+
+const feedbackLimiter = createFixedWindowLimiter(20, 60_000);
 
 interface Payload {
   user: string;
@@ -65,7 +73,7 @@ async function sendToDiscord(
       color = 0xf39c12; // Orange
     else if (rate === 'bad') color = 0xe74c3c; // Red
 
-    await fetch(webhook, {
+    const response = await fetch(webhook, {
       method: 'POST',
       body: JSON.stringify({
         username,
@@ -121,9 +129,10 @@ async function sendToDiscord(
         ],
       }),
       headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(5_000),
     });
 
-    return true;
+    return response.ok;
   } catch (err) {
     console.error('Discord webhook error:', err);
     return false;
@@ -133,11 +142,51 @@ async function sendToDiscord(
 export function createFeedbackAPI(options: FeedbackOptions) {
   return async function (req: NextApiRequest, res: NextApiResponse) {
     const { webhook, airtableTableName } = options;
-    const { user, message, rate, metadata, visitorId } = req.body as Payload;
-    const method = req.method;
 
-    if (method !== 'POST') {
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
       return res.status(405).json({ message: 'Method not allowed' });
+    }
+    if (
+      rejectCrossOriginRequest(req, res) ||
+      hasOversizedBody(req, res, 8_192)
+    ) {
+      return;
+    }
+
+    const body = req.body as Partial<Payload> | undefined;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return res.status(400).json({ message: 'Invalid feedback payload' });
+    }
+    const { user = '', message = '', rate = '', metadata, visitorId } = body;
+    if (
+      typeof user !== 'string' ||
+      user.length > 320 ||
+      typeof message !== 'string' ||
+      message.length > 2_000 ||
+      !['', 'nice', 'meh', 'bad'].includes(rate) ||
+      typeof visitorId !== 'string' ||
+      visitorId.length < 1 ||
+      visitorId.length > 200 ||
+      (metadata !== undefined &&
+        (typeof metadata !== 'object' ||
+          metadata === null ||
+          Array.isArray(metadata) ||
+          JSON.stringify(metadata).length > 4_000))
+    ) {
+      return res.status(400).json({ message: 'Invalid feedback payload' });
+    }
+
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const clientKey =
+      (Array.isArray(forwardedFor)
+        ? forwardedFor[0]
+        : forwardedFor?.split(',')[0]
+      )?.trim() ||
+      req.socket.remoteAddress ||
+      'unknown';
+    if (!feedbackLimiter.allow(clientKey)) {
+      return res.status(429).json({ message: 'Too many feedback submissions' });
     }
 
     // Validate that at least one storage method is configured
@@ -210,7 +259,7 @@ export function createFeedbackAPI(options: FeedbackOptions) {
 
     // Execute all storage operations in parallel (non-blocking)
     const results = await Promise.allSettled(
-      storageOperations.map((op) => op.promise),
+      storageOperations.map((op) => settleWithin(op.promise, 6_000)),
     );
 
     // Count successes

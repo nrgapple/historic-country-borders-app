@@ -272,15 +272,38 @@ describe('/api/feedback', () => {
   });
 
   it('should reject non-POST methods', async () => {
-    const { req, res } = createMocks({
-      method: 'GET',
-    });
-
+    const { req, res } = createMocks({ method: 'GET' });
     await handler(req, res);
-
     expect(res._getStatusCode()).toBe(405);
-    const responseData = JSON.parse(res._getData());
-    expect(responseData.message).toBe('Method not allowed');
+    expect(res.getHeader('allow')).toBe('POST');
+  });
+
+  it('should reject cross-origin, oversized, and malformed submissions', async () => {
+    const crossOrigin = createMocks({
+      method: 'POST',
+      headers: {
+        host: 'historicborders.app',
+        origin: 'https://attacker.example',
+      },
+      body: { rate: 'nice', visitorId: 'visitor' },
+    });
+    await handler(crossOrigin.req, crossOrigin.res);
+    expect(crossOrigin.res._getStatusCode()).toBe(403);
+
+    const oversized = createMocks({
+      method: 'POST',
+      headers: { 'content-length': '8193' },
+      body: { rate: 'nice', visitorId: 'visitor' },
+    });
+    await handler(oversized.req, oversized.res);
+    expect(oversized.res._getStatusCode()).toBe(413);
+
+    const malformed = createMocks({
+      method: 'POST',
+      body: { rate: 'excellent', visitorId: '' },
+    });
+    await handler(malformed.req, malformed.res);
+    expect(malformed.res._getStatusCode()).toBe(400);
   });
 
   it('should handle different rating types', async () => {

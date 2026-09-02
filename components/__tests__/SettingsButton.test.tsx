@@ -6,7 +6,6 @@ import SettingsButton from '../SettingsButton';
 import { SettingsProvider } from '../../contexts/SettingsContext';
 import { StateProvider } from '../../hooks/useState';
 import ReactGA4 from 'react-ga4';
-import { CompareProvider } from '../../contexts/CompareContext';
 
 // Mock ReactGA4
 vi.mock('react-ga4', () => ({
@@ -38,9 +37,7 @@ Object.defineProperty(window, 'localStorage', {
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <StateProvider>
-    <SettingsProvider>
-      <CompareProvider>{children}</CompareProvider>
-    </SettingsProvider>
+    <SettingsProvider>{children}</SettingsProvider>
   </StateProvider>
 );
 

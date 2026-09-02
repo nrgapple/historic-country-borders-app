@@ -9,8 +9,6 @@ import {
 } from '@testing-library/react';
 import MapContainer from '../MapContainer';
 import ReactGA4 from 'react-ga4';
-import { InfoProviderProvider } from '../../contexts/InfoProviderContext';
-import { CompareProvider } from '../../contexts/CompareContext';
 import { SettingsProvider } from '../../contexts/SettingsContext';
 
 // Mock the useYearRouting hook
@@ -113,11 +111,7 @@ let mockMapClickHandler: any = null;
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <InfoProviderProvider>
-    <SettingsProvider>
-      <CompareProvider>{children}</CompareProvider>
-    </SettingsProvider>
-  </InfoProviderProvider>
+  <SettingsProvider>{children}</SettingsProvider>
 );
 
 describe('MapContainer', () => {
@@ -490,27 +484,6 @@ describe('MapContainer', () => {
 
       expect(screen.getByText('Extreme Location')).toBeInTheDocument();
     }
-  });
-
-  describe('AI Compare Cleanup', () => {
-    it('should clear compare info when AI Compare is disabled', () => {
-      // This test would need to simulate the settings context changing
-      // Since we're testing the effect, we'd need to mock the settings context
-      // For now, this is a placeholder for the integration test structure
-      expect(true).toBe(true);
-    });
-
-    it('should exit compare mode when AI Compare is disabled while in compare mode', () => {
-      // This test would simulate being in compare mode and then disabling AI Compare
-      // Would need to mock the compare context and settings context
-      expect(true).toBe(true);
-    });
-
-    it('should handle country highlighting when compareInfo is undefined', () => {
-      // Test the fix for country highlighting when clicking country names
-      // in comparison results when no compareInfo exists initially
-      expect(true).toBe(true);
-    });
   });
 
   it('should not recreate map when only year changes', () => {

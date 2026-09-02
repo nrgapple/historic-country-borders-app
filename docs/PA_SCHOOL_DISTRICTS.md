@@ -171,17 +171,12 @@ Processing a 20MB GeoJSON file with 500 complex polygons caused out-of-memory er
 | **Timeline**        | Yes (multiple years) | No (single year)       |
 | **Processing**      | Server-side API      | Client-side hook       |
 | **Label Placement** | polylabel            | Centroid               |
-| **Compare Mode**    | Yes (AI compare)     | No                     |
 | **Map Bounds**      | Global               | Restricted to PA       |
 | **Route**           | `/year/[year]`       | `/pa/school-districts` |
 
-## API Endpoint (Currently Unused)
+## Temporary API endpoint
 
-The `pages/api/pa-school-districts.ts` endpoint exists but is not currently used. The implementation processes data client-side. The endpoint could be used for:
-
-- Server-side caching
-- Pre-processing optimization
-- Future server-side features
+The browser currently loads the PASDA source through `pages/api/pa-school-districts.ts`. M2 replaces this bounded proxy and client-side processing with a validated, normalized static artifact. See `docs/RUNTIME_SURFACE.md` for the temporary route limits.
 
 ## Usage
 

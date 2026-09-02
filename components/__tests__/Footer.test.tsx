@@ -2,11 +2,8 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Footer from '../Footer';
-import { InfoProviderProvider } from '../../contexts/InfoProviderContext';
-
-// Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <InfoProviderProvider>{children}</InfoProviderProvider>
+  <>{children}</>
 );
 
 describe('Footer', () => {

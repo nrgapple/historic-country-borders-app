@@ -9,3 +9,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   return feedbackAPI(req, res);
 }
+
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '8kb' },
+  },
+};

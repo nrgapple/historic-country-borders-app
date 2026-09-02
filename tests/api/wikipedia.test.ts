@@ -1,192 +1,87 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMocks } from 'node-mocks-http';
 import handler from '../../pages/api/wikipedia';
 
-// Mock fetch
-global.fetch = vi.fn();
-
-// Mock wikijs
-const mockPage = {
-  summary: vi.fn(),
-};
-
-const mockWiki = {
-  search: vi.fn(),
-  page: vi.fn().mockResolvedValue(mockPage),
-  find: vi.fn().mockResolvedValue(mockPage),
-};
-
-vi.mock('wikijs', () => ({
-  default: vi.fn(() => mockWiki),
-}));
-
 describe('/api/wikipedia', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockWiki.search.mockResolvedValue({
-      results: ['France'],
-    });
-    mockWiki.page.mockResolvedValue(mockPage);
-    mockPage.summary.mockResolvedValue('France is a country in Europe.');
-  });
+  beforeEach(() => vi.stubGlobal('fetch', vi.fn()));
+  afterEach(() => vi.unstubAllGlobals());
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should handle POST request successfully', async () => {
+  it('returns a source-backed summary', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ['France', ['France'], [], []],
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          query: { pages: { '1': { extract: 'France is in Europe.' } } },
+        }),
+      } as Response);
     const { req, res } = createMocks({
       method: 'POST',
-      body: {
-        name: 'France',
-      },
+      body: { name: ' France ' },
     });
 
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.content).toBe('France is a country in Europe.');
+    expect(JSON.parse(res._getData()).content).toBe('France is in Europe.');
+    expect(res.getHeader('cache-control')).toContain('s-maxage=86400');
   });
 
-  it('should return 405 for non-POST requests', async () => {
-    const { req, res } = createMocks({
-      method: 'GET',
-    });
+  it('bounds methods, origins, body size, and names', async () => {
+    const method = createMocks({ method: 'GET' });
+    await handler(method.req, method.res);
+    expect(method.res._getStatusCode()).toBe(405);
 
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(405);
-    const data = JSON.parse(res._getData());
-    expect(data.error).toBe('Method not allowed');
-  });
-
-  it('should return 400 for missing name', async () => {
-    const { req, res } = createMocks({
+    const origin = createMocks({
       method: 'POST',
-      body: {},
+      headers: { host: 'historicborders.app', origin: 'https://example.com' },
+      body: { name: 'France' },
     });
+    await handler(origin.req, origin.res);
+    expect(origin.res._getStatusCode()).toBe(403);
 
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(400);
-    const data = JSON.parse(res._getData());
-    expect(data.error).toBe('Name is required');
-  });
-
-  it('should handle empty name', async () => {
-    const { req, res } = createMocks({
+    const body = createMocks({
       method: 'POST',
-      body: {
-        name: '',
-      },
+      headers: { 'content-length': '1025' },
+      body: { name: 'France' },
     });
+    await handler(body.req, body.res);
+    expect(body.res._getStatusCode()).toBe(413);
 
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(400);
-    const data = JSON.parse(res._getData());
-    expect(data.error).toBe('Name is required');
+    const name = createMocks({
+      method: 'POST',
+      body: { name: 'x'.repeat(161) },
+    });
+    await handler(name.req, name.res);
+    expect(name.res._getStatusCode()).toBe(400);
   });
 
-  it('should handle wikijs errors and fallback to direct API', async () => {
-    mockWiki.search.mockRejectedValue(new Error('Wikijs error'));
-
-    const mockSearchResponse = {
+  it('returns not found for no search result', async () => {
+    vi.mocked(fetch).mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue(['France search', ['France'], [], []]),
-    };
-
-    const mockPageResponse = {
-      ok: true,
-      json: vi.fn().mockResolvedValue({
-        query: {
-          pages: {
-            '123': {
-              extract: 'France is a country in Western Europe.',
-            },
-          },
-        },
-      }),
-    };
-
-    global.fetch = vi
-      .fn()
-      .mockResolvedValueOnce(mockSearchResponse)
-      .mockResolvedValueOnce(mockPageResponse);
-
+      json: async () => ['Unknown', [], [], []],
+    } as Response);
     const { req, res } = createMocks({
       method: 'POST',
-      body: {
-        name: 'France',
-      },
+      body: { name: 'Unknown' },
     });
-
     await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.content).toBe('France is a country in Western Europe.');
+    expect(JSON.parse(res._getData()).content).toBe('Not Found');
   });
 
-  it('should return "Not Found" when no results are found', async () => {
-    mockWiki.search.mockRejectedValue(new Error('Wikijs error'));
-
-    const mockSearchResponse = {
-      ok: true,
-      json: vi.fn().mockResolvedValue(['NonexistentPlace', [], [], []]),
-    };
-
-    global.fetch = vi.fn().mockResolvedValue(mockSearchResponse);
-
+  it('fails safely when Wikipedia is unavailable', async () => {
+    vi.mocked(fetch).mockRejectedValue(new Error('timeout'));
     const { req, res } = createMocks({
       method: 'POST',
-      body: {
-        name: 'NonexistentPlace',
-      },
+      body: { name: 'France' },
     });
-
     await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.content).toBe('Not Found');
-  });
-
-  it('should handle complete failure gracefully', async () => {
-    mockWiki.search.mockRejectedValue(new Error('Wikijs error'));
-    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
-
-    const { req, res } = createMocks({
-      method: 'POST',
-      body: {
-        name: 'Test Place',
-      },
-    });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.content).toBe('Unable to load Wikipedia information');
-  });
-
-  it('should truncate long content', async () => {
-    const longContent = 'A'.repeat(600); // Content longer than 500 characters
-    mockPage.summary.mockResolvedValue(longContent);
-
-    const { req, res } = createMocks({
-      method: 'POST',
-      body: {
-        name: 'Test Place',
-      },
-    });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
-    expect(data.content).toHaveLength(503); // 500 + '...'
-    expect(data.content.endsWith('...')).toBe(true);
+    expect(res._getStatusCode()).toBe(503);
+    expect(JSON.parse(res._getData()).error).toContain(
+      'temporarily unavailable',
+    );
   });
 });

@@ -10,13 +10,13 @@ Every candidate needs evidence, a user problem, acceptance criteria, and a succe
 
 ## Active milestones
 
-| Candidate                            | User problem                                                           | Evidence                                                           | Impact | Confidence | Effort | Risk | Status                |
-| ------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------ | -----: | ---------: | -----: | ---: | --------------------- |
-| Restore on static Cloudflare hosting | Nobody can use the disabled production site                            | Production HTTP 402                                                |      5 |          5 |      4 |    3 | Approved              |
-| Repair PA school districts           | Users cannot rely on the priority district experience                  | Production disabled; architecture proxies/processes a 21 MB source |      5 |          4 |      3 |    3 | Approved              |
-| Add CI/local/E2E harness             | Regressions and deployment failures are discovered too late            | No CI or browser suite; current test/build failures                |      5 |          5 |      3 |    1 | In progress           |
-| Remove Gemini/AI/Redis               | Unwanted features add cost, secrets, dependencies, and compute surface | Owner decision and repository audit                                |      4 |          5 |      3 |    2 | Approved              |
-| Static historical map artifacts      | Ordinary exploration currently invokes runtime compute                 | `/api/borders/...` on every uncached data request                  |      5 |          5 |      4 |    3 | Approved architecture |
+| Candidate                                       | User problem                                                           | Evidence                                                           | Impact | Confidence | Effort | Risk | Status                |
+| ----------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------ | -----: | ---------: | -----: | ---: | --------------------- |
+| Restore on static Cloudflare hosting            | Nobody can use the disabled production site                            | Production HTTP 402                                                |      5 |          5 |      4 |    3 | Approved              |
+| Repair PA school districts                      | Users cannot rely on the priority district experience                  | Production disabled; architecture proxies/processes a 21 MB source |      5 |          4 |      3 |    3 | Approved              |
+| Add CI/local/E2E harness                        | Regressions and deployment failures are discovered too late            | No CI or browser suite; current test/build failures                |      5 |          5 |      3 |    1 | In progress           |
+| Remove generated-information and cache services | Unwanted features add cost, secrets, dependencies, and compute surface | Owner decision and repository audit                                |      4 |          5 |      3 |    2 | Completed in M1       |
+| Static historical map artifacts                 | Ordinary exploration currently invokes runtime compute                 | `/api/borders/...` on every uncached data request                  |      5 |          5 |      4 |    3 | Approved architecture |
 
 ## Discovery candidates
 

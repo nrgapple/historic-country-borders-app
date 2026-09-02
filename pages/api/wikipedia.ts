@@ -1,157 +1,90 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import wiki from 'wikijs';
-
-interface WikiRequest {
-  name: string;
-}
+import {
+  hasOversizedBody,
+  rejectCrossOriginRequest,
+} from '../../util/apiSecurity';
 
 interface WikiResponse {
   content: string;
   error?: string;
 }
 
-const fetcher = async (title: string): Promise<string> => {
-  // Validate title input
-  if (!title || title.trim() === '') {
-    return 'Not Found';
-  }
+const API_URL = 'https://en.wikipedia.org/w/api.php';
+const TIMEOUT_MS = 5_000;
+const MAX_NAME_LENGTH = 160;
 
-  const cleanTitle = title.trim();
+async function fetchJson(url: string): Promise<any> {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent':
+        'HistoricBorders/1.0 (https://historicborders.app; Wikipedia summary lookup)',
+    },
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`Wikipedia returned ${response.status}`);
+  return response.json();
+}
 
-  try {
-    // First try wikijs with proper configuration
-    const wikiInstance = wiki({
-      apiUrl: 'https://en.wikipedia.org/w/api.php',
-      headers: {
-        'User-Agent':
-          'HistoricCountryBordersApp/1.0 (https://github.com/user/repo)',
-      },
-    });
+async function fetchSummary(name: string): Promise<string> {
+  const search = await fetchJson(
+    `${API_URL}?action=opensearch&search=${encodeURIComponent(name)}&limit=1&namespace=0&format=json&origin=*`,
+  );
+  const title = Array.isArray(search?.[1]) ? search[1][0] : undefined;
+  if (typeof title !== 'string') return 'Not Found';
 
-    // Use the search method to find the best match (supports fuzzy search)
-    const searchResults = await wikiInstance.search(cleanTitle, 1);
-
-    if (
-      searchResults &&
-      searchResults.results &&
-      searchResults.results.length > 0
-    ) {
-      const bestMatch = searchResults.results[0];
-      const page = await wikiInstance.page(bestMatch);
-      const summary = await page.summary();
-
-      if (summary && summary.trim()) {
-        // Truncate to reasonable length if too long
-        if (summary.length > 500) {
-          return summary.substring(0, 500) + '...';
-        }
-        return summary;
-      }
-    }
-
-    // If no search results, try direct page lookup
-    const page = await wikiInstance.page(cleanTitle);
-    const summary = await page.summary();
-
-    if (summary && summary.trim()) {
-      if (summary.length > 500) {
-        return summary.substring(0, 500) + '...';
-      }
-      return summary;
-    }
-
-    return 'Not Found';
-  } catch (wikiError) {
-    console.warn('WikiJS error, falling back to direct API:', {
-      title: cleanTitle,
-      error:
-        wikiError instanceof Error ? wikiError.message : 'Unknown wikijs error',
-      timestamp: new Date().toISOString(),
-    });
-
-    // Fallback to direct Wikipedia API with CORS support
-    try {
-      // Use Wikipedia's opensearch API for fuzzy search
-      const searchUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(cleanTitle)}&limit=1&namespace=0&format=json&origin=*`;
-      const searchResp = await fetch(searchUrl);
-
-      if (!searchResp.ok) {
-        throw new Error(`Search failed: ${searchResp.status}`);
-      }
-
-      const searchData = await searchResp.json();
-
-      // opensearch returns [query, titles, descriptions, urls]
-      if (!searchData[1] || searchData[1].length === 0) {
-        return 'Not Found';
-      }
-
-      const foundTitle = searchData[1][0];
-
-      // Get the page extract using the page API
-      const pageUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&titles=${encodeURIComponent(foundTitle)}&prop=extracts&exintro=1&explaintext=1&exsectionformat=plain&origin=*`;
-      const pageResp = await fetch(pageUrl);
-
-      if (!pageResp.ok) {
-        throw new Error(`Page fetch failed: ${pageResp.status}`);
-      }
-
-      const pageData = await pageResp.json();
-
-      if (pageData.query && pageData.query.pages) {
-        const pages = Object.values(pageData.query.pages) as any[];
-        if (pages.length > 0 && pages[0].extract) {
-          const extract = pages[0].extract;
-          if (extract.length > 500) {
-            return extract.substring(0, 500) + '...';
-          }
-          return extract;
-        }
-      }
-
-      return 'Not Found';
-    } catch (fallbackError) {
-      console.error('Wikipedia fallback also failed:', {
-        title: cleanTitle,
-        error:
-          fallbackError instanceof Error
-            ? fallbackError.message
-            : 'Unknown fallback error',
-        timestamp: new Date().toISOString(),
-      });
-
-      return 'Unable to load Wikipedia information';
-    }
-  }
-};
+  const page = await fetchJson(
+    `${API_URL}?action=query&format=json&titles=${encodeURIComponent(title)}&prop=extracts&exintro=1&explaintext=1&exsectionformat=plain&origin=*`,
+  );
+  const pages = Object.values(page?.query?.pages ?? {}) as Array<{
+    extract?: unknown;
+  }>;
+  const extract = pages[0]?.extract;
+  if (typeof extract !== 'string' || !extract.trim()) return 'Not Found';
+  return extract.length > 500 ? `${extract.slice(0, 500)}...` : extract;
+}
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<WikiResponse>,
 ) {
   if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
     return res.status(405).json({ content: '', error: 'Method not allowed' });
   }
+  if (rejectCrossOriginRequest(req, res) || hasOversizedBody(req, res, 1_024)) {
+    return;
+  }
 
-  const { name }: WikiRequest = req.body;
-
-  if (!name || name.trim() === '') {
+  const name = req.body?.name;
+  if (typeof name !== 'string' || !name.trim()) {
     return res.status(400).json({ content: '', error: 'Name is required' });
+  }
+  const cleanName = name.trim();
+  if (cleanName.length > MAX_NAME_LENGTH) {
+    return res.status(400).json({ content: '', error: 'Name is too long' });
   }
 
   try {
-    const content = await fetcher(name);
+    const content = await fetchSummary(cleanName);
+    res.setHeader(
+      'Cache-Control',
+      'public, s-maxage=86400, stale-while-revalidate=604800',
+    );
     return res.status(200).json({ content });
   } catch (error) {
-    console.error('Wikipedia API error:', {
-      name,
+    console.error('Wikipedia lookup failed:', {
+      name: cleanName,
       error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
     });
-
-    return res.status(500).json({
+    return res.status(503).json({
       content: '',
-      error: 'Failed to fetch Wikipedia information',
+      error: 'Wikipedia information is temporarily unavailable',
     });
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '1kb' },
+  },
+};

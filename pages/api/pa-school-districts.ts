@@ -2,6 +2,7 @@ import { NextApiHandler } from 'next';
 
 const PASDA_GEOJSON_URL =
   'https://www.pasda.psu.edu/json/PaSchoolDistricts2025_10.geojson';
+const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
 
 // Proxy endpoint to fetch PASDA GeoJSON (bypasses CORS)
 // This API route fetches the data server-side where CORS doesn't apply
@@ -17,8 +18,10 @@ const handler: NextApiHandler = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
 
   try {
-    // Fetch from PASDA server-side (no CORS restrictions)
-    const response = await fetch(PASDA_GEOJSON_URL);
+    // This bounded proxy is temporary; M2 replaces it with a validated artifact.
+    const response = await fetch(PASDA_GEOJSON_URL, {
+      signal: AbortSignal.timeout(20_000),
+    });
 
     if (!response.ok) {
       return res.status(response.status).json({
@@ -26,13 +29,17 @@ const handler: NextApiHandler = async (req, res) => {
       });
     }
 
-    // Disable Next.js response body buffering to enable streaming
-    res.setHeader('Transfer-Encoding', 'chunked');
+    const contentLength = Number(response.headers.get('content-length'));
+    if (contentLength > MAX_SOURCE_BYTES) {
+      return res
+        .status(502)
+        .json({ error: 'School district source is too large' });
+    }
 
-    // If content-length is available, forward it for progress tracking
-    const contentLength = response.headers.get('content-length');
-    if (contentLength) {
-      res.setHeader('Content-Length', contentLength);
+    // Disable Next.js response body buffering to enable streaming.
+    res.setHeader('Transfer-Encoding', 'chunked');
+    if (contentLength > 0) {
+      res.setHeader('Content-Length', String(contentLength));
     }
 
     // Stream the response directly to the client
@@ -46,13 +53,17 @@ const handler: NextApiHandler = async (req, res) => {
 
     // Stream chunks to client
     try {
+      let streamedBytes = 0;
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        // Convert Uint8Array to Buffer for Node.js write
-        const buffer = Buffer.from(value);
-        res.write(buffer);
+        streamedBytes += value.byteLength;
+        if (streamedBytes > MAX_SOURCE_BYTES) {
+          await reader.cancel('Source exceeded size limit');
+          throw new Error('School district source is too large');
+        }
+        res.write(Buffer.from(value));
       }
       res.end();
     } catch (streamError) {

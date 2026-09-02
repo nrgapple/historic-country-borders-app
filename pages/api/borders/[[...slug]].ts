@@ -17,25 +17,62 @@ import {
   stringToVibrantHexColor2,
 } from '../../../util/stringToColor';
 
-const handler: NextApiHandler = async (req, res) => {
-  const { slug } = req.query;
+const REPOSITORY_PART = /^[A-Za-z0-9_.-]{1,100}$/;
+const YEAR_PART = /^(?:[0-9]{1,4}|[0-9]{1,4}bc)$/;
+const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
 
-  const [user, id, year] = slug ?? [];
-  const url = `https://raw.githubusercontent.com/${user}/${id}/master/geojson/world_${year}.geojson`;
+async function fetchJson(url: string): Promise<FeatureCollection> {
+  const response = await fetch(url, { signal: AbortSignal.timeout(15_000) });
+  if (!response.ok) throw new Error(`Upstream returned ${response.status}`);
+  const contentLength = Number(response.headers.get('content-length'));
+  if (contentLength > MAX_SOURCE_BYTES)
+    throw new Error('Upstream data is too large');
+  const text = await response.text();
+  if (Buffer.byteLength(text) > MAX_SOURCE_BYTES) {
+    throw new Error('Upstream data is too large');
+  }
+  const value = JSON.parse(text);
+  if (value?.type !== 'FeatureCollection' || !Array.isArray(value.features)) {
+    throw new Error('Upstream data is not a FeatureCollection');
+  }
+  return value as FeatureCollection;
+}
+
+const handler: NextApiHandler = async (req, res) => {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const slug = req.query.slug;
+  if (
+    !Array.isArray(slug) ||
+    slug.length !== 3 ||
+    !REPOSITORY_PART.test(slug[0]) ||
+    !REPOSITORY_PART.test(slug[1]) ||
+    slug[0].includes('..') ||
+    slug[1].includes('..') ||
+    !YEAR_PART.test(slug[2])
+  ) {
+    return res.status(400).json({ error: 'Invalid border request' });
+  }
+
+  const [user, id, year] = slug;
+  const root = `https://raw.githubusercontent.com/${user}/${id}/master/geojson`;
 
   try {
-    const resp = await fetch(url);
-    const placesResp = await fetch(
-      `https://raw.githubusercontent.com/${user}/${id}/master/geojson/places.geojson`,
-    );
-    const mapData = await resp.json();
-    const placesData = await placesResp.json();
-    const data = processData(mapData as FeatureCollection);
+    const [mapData, placesData] = await Promise.all([
+      fetchJson(`${root}/world_${year}.geojson`),
+      fetchJson(`${root}/places.geojson`),
+    ]);
+    const data = processData(mapData);
     const places = getPlaces(year, placesData);
     return res.json({ data, places });
   } catch (error) {
-    console.error(error);
-    res.status(500).send({ error });
+    console.error('Border data request failed:', error);
+    return res
+      .status(502)
+      .json({ error: 'Border data is temporarily unavailable' });
   }
 };
 

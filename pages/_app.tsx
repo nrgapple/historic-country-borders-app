@@ -3,15 +3,12 @@ import { AppProps } from 'next/app';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { QueryProvider } from '../hooks/useQuery';
 import { StateProvider, useAppState } from '../hooks/useState';
-import { InfoProviderProvider } from '../contexts/InfoProviderContext';
 import { SettingsProvider } from '../contexts/SettingsContext';
-import { CompareProvider } from '../contexts/CompareContext';
 import SettingsApplier from '../components/SettingsApplier';
 import '@szhsin/react-menu/dist/index.css';
 import '@szhsin/react-menu/dist/transitions/slide.css';
 import CompactFeedbackWidget from '../components/CompactFeedbackWidget';
 import ReactGA4 from 'react-ga4';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -45,24 +42,17 @@ export default function App({ Component, pageProps }: AppProps) {
       '.popup-description',
       '.country-info-description',
       '.mapboxgl-popup-content',
-      '.compare-popup-content',
-      '.compare-history-list',
     ],
   });
 
   return (
     <QueryProvider>
       <StateProvider>
-        <InfoProviderProvider>
-          <SettingsProvider>
-            <CompareProvider>
-              <SettingsApplier />
-              <FeedbackWrapper />
-              <Component {...pageProps} />
-              <SpeedInsights />
-            </CompareProvider>
-          </SettingsProvider>
-        </InfoProviderProvider>
+        <SettingsProvider>
+          <SettingsApplier />
+          <FeedbackWrapper />
+          <Component {...pageProps} />
+        </SettingsProvider>
       </StateProvider>
     </QueryProvider>
   );
