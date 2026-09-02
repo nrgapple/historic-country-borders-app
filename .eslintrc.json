@@ -4,6 +4,7 @@
     ".next/",
     "coverage/",
     "node_modules/",
+    "next-env.d.ts",
     "out/",
     "playwright-report/",
     "public/",
