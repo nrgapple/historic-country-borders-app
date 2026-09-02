@@ -42,11 +42,12 @@ export default function FeedbackWidget({
     >
       <div
         className="feedback-widget"
-        style={{
-          // @ts-ignore
-          '--color-primary': themeColor,
-          '--color-text': textColor,
-        }}
+        style={
+          {
+            '--color-primary': themeColor,
+            '--color-text': textColor,
+          } as React.CSSProperties
+        }
       >
         <TriggerButton>{customIcon}</TriggerButton>
         <FeedbackModal title={title} description={description} />

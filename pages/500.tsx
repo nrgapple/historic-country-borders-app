@@ -7,9 +7,8 @@ export default function Custom500() {
         src="https://ptb.discord.com/widget?id=1118256717382299708&theme=dark"
         width="350"
         height="500"
-        //@ts-ignore
-        allowtransparency="true"
-        frameborder="0"
+        allowTransparency
+        frameBorder="0"
         sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
       ></iframe>
     </div>

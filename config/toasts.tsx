@@ -21,7 +21,7 @@ export const toastMessages: ToastMessage[] = [
   {
     message: (
       <span>
-        The map's border data is ingested from{' '}
+        The map&apos;s border data is ingested from{' '}
         <a
           className="toast-link"
           href="https://github.com/aourednik/historical-basemaps"
@@ -33,9 +33,9 @@ export const toastMessages: ToastMessage[] = [
     ),
     opts: { icon: '📀', duration: 3000, position: 'bottom-center' },
   },
-    {
-      message: `Check out the AI info when clicking on a country! Enable AI in the settings (⚙️ icon).`,
-      opts: { icon: '🤖', duration: 5000, position: 'bottom-center' },
-    },
+  {
+    message: `Check out the AI info when clicking on a country! Enable AI in the settings (⚙️ icon).`,
+    opts: { icon: '🤖', duration: 5000, position: 'bottom-center' },
+  },
   share,
 ];
