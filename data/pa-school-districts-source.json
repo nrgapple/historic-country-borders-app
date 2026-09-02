@@ -1,0 +1,30 @@
+{
+  "title": "Pa School Districts",
+  "publisher": "Pennsylvania Department of Transportation, Bureau of Planning and Research, Cartographic Information Division",
+  "vintage": "2025-10",
+  "sourceUrl": "https://www.pasda.psu.edu/json/PaSchoolDistricts2025_10.geojson",
+  "metadataUrl": "https://www.pasda.psu.edu/uci/FullMetadataDisplay.aspx?file=PaSchoolDistricts2025_10.xml",
+  "accessConstraints": "None",
+  "license": "No named license is specified in the PASDA metadata; access is free with no stated access constraints.",
+  "disclaimer": "PASDA and the data distributors provide the files as-is without warranties; consult the full metadata for distribution liability and fitness limitations.",
+  "retrievedAt": "2026-09-02T21:25:16.292Z",
+  "sha256": "d17163e4f6edd6d27266bad2d850ab063461e90610733056db8efa430ac3c993",
+  "sourceBytes": 21161924,
+  "expectedDistrictCount": 500,
+  "requiredProperties": [
+    "SCHOOL_NAM",
+    "SCHOOL_DIS",
+    "CTY_NAME",
+    "IU_NAME",
+    "IU_NUM",
+    "AUN_NUM",
+    "AVTS"
+  ],
+  "geometryCounts": { "Polygon": 460, "MultiPolygon": 40 },
+  "fixture": {
+    "path": "tests/fixtures/pa-school-districts-source.fixture.geojson",
+    "sha256": "c05a49de86956e31de43f631c59a44b23a72df0fdbabf4150eefa95a3fa8bfe9",
+    "districtCount": 2,
+    "geometryCounts": { "Polygon": 1, "MultiPolygon": 1 }
+  }
+}

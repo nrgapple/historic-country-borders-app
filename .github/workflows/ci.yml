@@ -48,7 +48,7 @@ jobs:
           path: coverage/
           if-no-files-found: ignore
           retention-days: 7
-      - run: yarn playwright install --with-deps chromium
+      - run: yarn playwright install --with-deps chromium firefox webkit
       - run: yarn test:e2e:run
       - name: Upload browser-test artifacts
         if: failure()

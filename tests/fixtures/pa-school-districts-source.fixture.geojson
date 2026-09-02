@@ -1,0 +1,64 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "SCHOOL_NAM": "Fixture Polygon",
+        "SCHOOL_DIS": "Fixture Polygon SD",
+        "CTY_NAME": "FIXTURE",
+        "IU_NAME": "FIXTURE IU 1",
+        "IU_NUM": "1",
+        "AUN_NUM": "100000001",
+        "AVTS": "FIXTURE TECH"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-77.7, 40.9],
+            [-77.5, 40.9],
+            [-77.5, 41.1],
+            [-77.7, 41.1],
+            [-77.7, 40.9]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "SCHOOL_NAM": "Fixture MultiPolygon",
+        "SCHOOL_DIS": "Fixture MultiPolygon SD",
+        "CTY_NAME": "FIXTURE",
+        "IU_NAME": "FIXTURE IU 2",
+        "IU_NUM": "2",
+        "AUN_NUM": "100000002",
+        "AVTS": "FIXTURE TECH"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [-76.7, 40.9],
+              [-76.5, 40.9],
+              [-76.5, 41.1],
+              [-76.7, 41.1],
+              [-76.7, 40.9]
+            ]
+          ],
+          [
+            [
+              [-76.4, 40.9],
+              [-76.35, 40.9],
+              [-76.35, 40.95],
+              [-76.4, 40.95],
+              [-76.4, 40.9]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

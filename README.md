@@ -43,6 +43,8 @@ yarn validate                 # complete local quality gate
 yarn type-check               # TypeScript
 yarn test                     # unit/integration tests
 yarn test:e2e                 # production build plus browser journeys
+yarn data:validate            # validate committed PA district data offline
+yarn data:refresh             # explicitly fetch and review a PASDA refresh
 yarn format:check && yarn lint
 ```
 

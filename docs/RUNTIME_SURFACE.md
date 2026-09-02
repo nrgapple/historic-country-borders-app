@@ -1,6 +1,6 @@
 # Runtime and crawler surface
 
-Status: M1 implementation
+Status: M2 implementation
 
 ## Crawler policy
 
@@ -15,6 +15,7 @@ Cloudflare dashboard controls are deliberately deferred to M3 because they requi
 | `POST /api/feedback`                  | Same-origin when `Origin` is present; 8 KiB parser/declared-size limit; validated field types and lengths; best-effort per-instance limit of 20 submissions/minute/client; five-second Discord timeout; six-second response bound around storage operations; succeeds if one configured destination stores the submission and otherwise fails without exposing secrets. | Move to the one approved, independently rate-limited Cloudflare dynamic function in M3. Platform rate limiting is deferred until that function exists; tests cover method, origin, size, and schema bounds now. |
 | `POST /api/wikipedia`                 | Same-origin when `Origin` is present; 1 KiB parser/declared-size limit; non-empty string up to 160 characters; five-second timeout on each bounded Wikipedia request; cached success and safe 503 failure.                                                                                                                                                              | Reassess direct browser CORS during M3; otherwise retain as a tightly cached function.                                                                                                                          |
 | `GET /api/borders/:owner/:repo/:year` | GET only; exactly three allow-listed path segments; 15-second upstream timeout; 25 MiB maximum per validated FeatureCollection; safe 400/502 failures.                                                                                                                                                                                                                  | Remove in M3 when historical payloads become immutable static assets. Tests and validation in M3 will prove page/map delivery invokes no runtime route.                                                         |
-| `GET /api/pa-school-districts`        | GET only; 20-second upstream timeout; 25 MiB maximum enforced from headers and streamed bytes; safe upstream failure. Its intentionally large payload has no request body.                                                                                                                                                                                              | Replace with a validated build-time artifact in M2, then serve as a static asset.                                                                                                                               |
+
+The school-district proxy was removed in M2. Browsers now load `/data/pa-school-districts.json` as a static asset; PASDA is contacted only by the explicit `yarn data:refresh` command, never by ordinary traffic or `yarn build`.
 
 The current in-memory rate limit is only a per-instance defense and cannot consistently bound abuse across serverless instances. The M3 Cloudflare function must apply platform-level rate limits to feedback; the other routes are removed or tightly cached. Until that migration, method, input, size, timeout, validation, and safe-failure controls limit individual operations.

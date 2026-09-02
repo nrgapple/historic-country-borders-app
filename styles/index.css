@@ -19,6 +19,28 @@ body {
   height: 100vh;
 }
 
+.school-district-data-status {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  z-index: 1000;
+  max-width: min(620px, calc(100vw - 140px));
+  padding: 6px 10px;
+  transform: translateX(-50%);
+  border: 1px solid #8b4513;
+  border-radius: 4px;
+  background: rgba(245, 245, 220, 0.95);
+  color: #3f2a1d;
+  font-size: 12px;
+  text-align: center;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.school-district-data-status a,
+.school-district-data-status button {
+  color: #5c2d91;
+}
+
 .app {
   display: grid;
   grid-template-columns: 100%;

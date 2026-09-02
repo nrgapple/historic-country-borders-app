@@ -1,22 +1,28 @@
 # Relay Status: M2 Pennsylvania School Districts
 
-- State: QUEUED — DO NOT START BEFORE M1 IS GREEN
-- Current position: Packet prepared; M2 implementation has not started.
-- Last completed leg: 0 (Relay setup)
-- Next leg to run: 1
-- Next task: After M1 completion, execute the complete M2 finish line.
+- State: COMPLETE — M2 exit gate passed; M3 handoff ready
+- Current position: M2 is implemented and validated on `upgrade/cloudflare-harness`.
+- Last completed leg: 1 (entire M2 milestone)
+- Next leg to run: none in this Relay
+- Next task: Start `m3-static-cloudflare` leg 1 according to its charter.
 
-## Relevant context
+## Completion evidence
 
-- Prerequisite: `.pi-web/relays/m1-ai-removal/status.md` must say COMPLETE.
-- Read `AGENTS.md` and only the M2 section of `docs/UPGRADE_HARNESS_PLAN.md`.
-- Primary current paths: `hooks/usePASchoolDistricts.tsx`, `pages/api/pa-school-districts.ts`, `scripts/preprocess-districts.js`, `components/PASchoolDistrictsMapContainer.tsx`, `components/PASchoolDistrictsMapSources.tsx`, `docs/PA_SCHOOL_DISTRICTS.md`.
-- Upstream was observed at 21,161,924 bytes, but schema/count/geometry must be measured and pinned by this Relay.
+- PASDA October 2025 source provenance pins 21,161,924 bytes, SHA-256, metadata/terms, 500 required records, seven required properties, and a 460 Polygon/40 MultiPolygon mix.
+- `yarn data:refresh` explicitly fetches, bounds, validates, normalizes, and atomically publishes reviewable data; `yarn data:validate` verifies the fixture and committed artifact offline.
+- The 20,379,855-byte static artifact preserves valid borders, calculates areas, and generates validated interior label points for Polygon and MultiPolygon records.
+- The browser loads `/data/pa-school-districts.json`; the runtime proxy, client processing, and IndexedDB cache were removed. Normal `yarn build` has no PASDA refresh step.
+- Loading, ready, empty, malformed/unavailable, stale, retry, cold-load, returning-load, and district-detail selection behavior is covered by unit/integration and browser tests.
+- `yarn validate` passes: 196 Vitest tests, offline data validation, build/size checks, and 9 Playwright runs across Chromium, Firefox, and WebKit.
+- Source, runtime, README, architecture decision, backlog, and scorecard documentation reflect M2.
 
-## Progress documentation
+## Relevant context for M3
 
-Update status, append `log.md`, update scorecard/source decisions, and preserve generated validation reports before handoff or stop.
+- Preserve the committed school artifact and explicit refresh boundary.
+- Three dynamic routes remain: historical borders, Wikipedia, and feedback.
+- CI now installs and runs Chromium, Firefox, and WebKit.
+- See `data/pa-school-districts-source.json`, `data/pa-school-districts-validation.json`, and `docs/PA_SCHOOL_DISTRICTS.md` for exact M2 evidence.
 
 ## Blockers / intervention
 
-M1 completion is the only current prerequisite.
+None.

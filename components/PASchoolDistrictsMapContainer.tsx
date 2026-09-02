@@ -25,7 +25,15 @@ const DEFAULT_PA_VIEW = {
 };
 
 export default function PASchoolDistrictsMapContainer() {
-  const { data: { data, places } = {}, isLoading } = usePASchoolDistricts();
+  const {
+    data: artifact,
+    isLoading,
+    isEmpty,
+    isError,
+    isStale,
+    retry,
+  } = usePASchoolDistricts();
+  const data = artifact?.data;
   const [selectedInfo, setSelectedInfo] = useState<
     DistrictInfoData | undefined
   >();
@@ -130,17 +138,22 @@ export default function PASchoolDistrictsMapContainer() {
     };
   }, [handleStyleLoad]);
 
-  const handleStyleData = useCallback((e: MapStyleDataEvent) => {
-    // Don't set style as loaded here - wait for style.load event
-    if (!hasSetStyleRef.current) {
-      hasSetStyleRef.current = true;
+  const handleStyleData = useCallback((event: MapStyleDataEvent) => {
+    if (!hasSetStyleRef.current) hasSetStyleRef.current = true;
+    const target = (event as unknown as MapboxEvent).target;
+    if (target.isStyleLoaded()) {
+      setIsWaitingForStyleLoad(false);
+      setIsStyleLoaded(true);
+      target.resize();
     }
   }, []);
 
-  const handleLoad = useCallback(() => {
-    // Map loaded, but style might still be loading
-    // Don't set style as loaded here - wait for style.load event
-  }, []);
+  const handleLoad = useCallback(
+    (event: MapboxEvent) => {
+      if (event.target.isStyleLoaded()) handleStyleLoad(event);
+    },
+    [handleStyleLoad],
+  );
 
   const handleViewStateChange = useCallback(
     ({ viewState: newViewState }: { viewState: any }) => {
@@ -207,9 +220,53 @@ export default function PASchoolDistrictsMapContainer() {
     <div
       className="map-grid"
       data-testid="pa-school-districts-map-container"
-      data-data-state={isLoading ? 'loading' : data ? 'ready' : 'unavailable'}
+      data-data-state={
+        isLoading
+          ? 'loading'
+          : isError
+            ? 'unavailable'
+            : isEmpty
+              ? 'empty'
+              : data
+                ? 'ready'
+                : 'unavailable'
+      }
       data-feature-count={data?.borders.features.length ?? 0}
     >
+      <div className="school-district-data-status" aria-live="polite">
+        {isLoading && <span role="status">Loading school district map…</span>}
+        {isError && (
+          <span role="alert">
+            School district map data is unavailable.{' '}
+            <button type="button" onClick={retry}>
+              Try again
+            </button>
+          </span>
+        )}
+        {isEmpty && !isError && (
+          <span role="status">No school districts are available.</span>
+        )}
+        {artifact && !isEmpty && (
+          <span>
+            District boundaries: {artifact.source.vintage}{' '}
+            <a
+              href={artifact.source.metadataUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              PASDA/PennDOT source
+            </a>
+            {isStale && (
+              <>
+                {' '}
+                — This source is older than 18 months; verify current
+                boundaries.
+              </>
+            )}
+          </span>
+        )}
+      </div>
+
       <MapboxDefaultMap
         key={isReady ? 'ready-pa-school-districts' : 'loading'}
         interactiveLayerIds={['districts']}

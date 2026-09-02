@@ -10,7 +10,8 @@
     "sitemap:check": "node scripts/generate-sitemap.js --check",
     "prebuild": "yarn sitemap:generate",
     "build": "NODE_OPTIONS=--max-old-space-size=8192 next build",
-    "preprocess-districts": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc' node scripts/preprocess-districts.js",
+    "data:refresh": "node scripts/refresh-school-districts.js",
+    "data:validate": "node scripts/validate-school-districts.js",
     "start": "next start",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -24,7 +25,7 @@
     "test:e2e:run": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "size:check": "node scripts/check-build-size.js",
-    "quality": "yarn format:check && yarn lint && yarn type-check && yarn test:coverage && yarn sitemap:check && yarn build && yarn size:check",
+    "quality": "yarn format:check && yarn lint && yarn type-check && yarn test:coverage && yarn data:validate && yarn sitemap:check && yarn build && yarn size:check",
     "validate": "yarn quality && yarn test:e2e:run"
   },
   "dependencies": {

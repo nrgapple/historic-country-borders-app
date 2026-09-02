@@ -14,15 +14,15 @@ Generated country descriptions, country comparisons, their UI, analytics, histor
 
 Until static artifacts replace the map proxies, each current route has explicit method, input or source-size, timeout, validation, and safe-failure bounds. Feedback platform rate limiting and crawler dashboard controls are deferred to the M3 Cloudflare boundary, where they can work consistently across instances. See `docs/RUNTIME_SURFACE.md`.
 
-### Pennsylvania school districts first
+### Pennsylvania school districts as a committed static artifact
 
-After the harness and cost-surface work, restoring a reliable school-district map is the first product repair milestone.
+The browser consumes a committed, validated artifact generated only by `yarn data:refresh`. Normal builds and page traffic do not contact PASDA. Committing the measured 19.4 MiB artifact keeps deployment deterministic, portable, and free-tier compatible while preserving a reviewable upstream diff.
 
 ## Deferred
 
-### Generated-data storage location
+### Historical generated-data storage location
 
-Choose committed artifacts, CI/release artifacts, or object storage after measuring historical and school output sizes and Cloudflare constraints.
+The M2 school artifact is committed. Choose committed artifacts, CI/release artifacts, or object storage for the larger historical dataset after measuring its output and Cloudflare constraints in M3.
 
 ### Domain cutover
 

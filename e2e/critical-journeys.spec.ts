@@ -40,29 +40,63 @@ const historicalMapResponse = {
 };
 
 const schoolDistrictResponse = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-77.7, 40.9],
-            [-77.5, 40.9],
-            [-77.5, 41.1],
-            [-77.7, 41.1],
-            [-77.7, 40.9],
-          ],
-        ],
-      },
-      properties: {
-        SCHOOL_NAM: 'Fixture School District',
-        SCHOOL_DIS: 'Fixture',
-        CTY_NAME: 'Fixture County',
-      },
+  schemaVersion: 1,
+  source: {
+    title: 'Fixture districts',
+    publisher: 'Fixture publisher',
+    vintage: '2025-10',
+    sourceUrl: 'https://example.com/source',
+    metadataUrl: 'https://example.com/metadata',
+    accessConstraints: 'None',
+    license: 'Fixture terms',
+    disclaimer: 'Fixture disclaimer',
+    retrievedAt: '2026-09-02T00:00:00Z',
+    sha256: 'fixture',
+  },
+  validation: {
+    districtCount: 1,
+    geometryCounts: { Polygon: 1, MultiPolygon: 0 },
+    requiredProperties: ['SCHOOL_NAM'],
+  },
+  data: {
+    labels: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [-77.6, 41] },
+          properties: { NAME: 'Fixture School District' },
+        },
+      ],
     },
-  ],
+    borders: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-77.7, 40.9],
+                [-77.5, 40.9],
+                [-77.5, 41.1],
+                [-77.7, 41.1],
+                [-77.7, 40.9],
+              ],
+            ],
+          },
+          properties: {
+            NAME: 'Fixture School District',
+            SCHOOL_NAM: 'Fixture School District',
+            SCHOOL_DIS: 'Fixture SD',
+            CTY_NAME: 'Fixture County',
+          },
+        },
+      ],
+    },
+  },
+  places: { type: 'FeatureCollection', features: [] },
 };
 
 const emptyMapboxStyle = {
@@ -76,7 +110,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/borders/**', (route) =>
     route.fulfill({ json: historicalMapResponse }),
   );
-  await page.route('**/api/pa-school-districts', (route) =>
+  await page.route('**/data/pa-school-districts.json', (route) =>
     route.fulfill({ json: schoolDistrictResponse }),
   );
   await page.route('https://api.mapbox.com/**', (route) => {
@@ -114,7 +148,7 @@ test('a historical year loads deterministic border data', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('Pennsylvania school districts load usable district data', async ({
+test('Pennsylvania school districts load usable district data for cold and returning users', async ({
   page,
 }) => {
   await page.goto('/pa/school-districts');
@@ -123,4 +157,7 @@ test('Pennsylvania school districts load usable district data', async ({
   await expect(
     page.getByRole('button', { name: 'Open settings' }),
   ).toBeVisible();
+  await expect(page.getByText(/District boundaries: 2025-10/)).toBeVisible();
+  await page.reload();
+  await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
 });

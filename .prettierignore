@@ -4,5 +4,6 @@ node_modules/
 out/
 playwright-report/
 public/sitemap.xml
+public/data/pa-school-districts.json
 test-results/
 yarn.lock
