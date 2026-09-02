@@ -5,6 +5,7 @@ This document describes the improved query parameter and routing system for the 
 ## Overview
 
 The routing system has been refactored to provide:
+
 - **Path-Based Year Routing**: Years are now handled via URL paths (`/year/1322`) instead of query parameters
 - **Type Safety**: Proper TypeScript interfaces for all query parameters
 - **Centralized Logic**: All query parameter handling is centralized in dedicated utilities
@@ -16,39 +17,48 @@ The routing system has been refactored to provide:
 ## Routing Structure
 
 ### Year-Based Routes
+
 Years are now handled via dynamic routes:
+
 ```
 /year/[year]    # Dynamic route for specific years
 /               # Root redirects to random year
 ```
 
 ### Query Parameters
+
 The app supports the following query parameters for map state:
 
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `lng` | string | Map longitude coordinate | 0 |
-| `lat` | string | Map latitude coordinate | 0 |
-| `zoom` | string | Map zoom level | 2 |
+| Parameter | Type   | Description              | Default |
+| --------- | ------ | ------------------------ | ------- |
+| `lng`     | string | Map longitude coordinate | 0       |
+| `lat`     | string | Map latitude coordinate  | 0       |
+| `zoom`    | string | Map zoom level           | 2       |
 
 ## Testing the Routing System
 
 ### Test Year Navigation
+
 ```
 http://localhost:3000/year/1322
 ```
+
 This should load the timeline at year 1322 with clean URL structure.
 
 ### Test Map Position with Year
+
 ```
 http://localhost:3000/year/1500?lng=2.3522&lat=48.8566&zoom=10
 ```
+
 This should load year 1500 with the map centered on Paris, France with zoom level 10.
 
 ### Test Root Redirect
+
 ```
 http://localhost:3000/
 ```
+
 This should redirect to a random year (e.g., `/year/1234`).
 
 ## Usage
@@ -60,13 +70,13 @@ import { useYearRouting } from '../hooks/useYearRouting';
 
 function MyComponent() {
   const { currentYear, setYear, isReady } = useYearRouting();
-  
+
   // Wait for router to be ready before using year
   if (!isReady) return <div>Loading...</div>;
-  
+
   // Access current year from URL path
   const year = currentYear;
-  
+
   // Navigate to new year (shallow routing, no page refresh)
   const handleYearChange = (newYear: string) => {
     setYear(newYear); // Navigates to /year/newYear
@@ -83,12 +93,12 @@ import { useMapQuery } from '../hooks/useMapQuery';
 
 function MapComponent() {
   const { viewState, updateMapView, isReady } = useMapQuery();
-  
+
   // Don't render until ready to avoid hydration issues
   if (!isReady) return <div>Loading map...</div>;
-  
+
   // viewState contains: { longitude, latitude, zoom }
-  
+
   // Update map position (debounced for smooth movement)
   const handleMapMove = (lng: number, lat: number, zoom: number) => {
     updateMapView(lng, lat, zoom);
@@ -105,7 +115,7 @@ import { useMapQuery } from '../hooks/useMapQuery';
 function ViewerComponent() {
   const { currentYear, setYear } = useYearRouting();
   const { viewState, updateMapView } = useMapQuery();
-  
+
   // Year changes via path routing (no page refresh)
   // Map state changes via query parameters (smooth updates)
 }
@@ -125,7 +135,10 @@ const typedQuery = parseQueryParams(router.query);
 ### Map View State
 
 ```typescript
-import { getMapViewFromQuery, formatMapCoordinates } from '../utils/queryParams';
+import {
+  getMapViewFromQuery,
+  formatMapCoordinates,
+} from '../utils/queryParams';
 
 // Get map view state with defaults
 const viewState = getMapViewFromQuery(query);
@@ -181,14 +194,16 @@ pages/
 The new system introduces path-based routing for years while maintaining query parameters for map state:
 
 ### What Changed
+
 - Years moved from query parameters to URL paths
 - Root page now redirects to random year
 - Year navigation uses shallow routing for smooth transitions
 - Map state remains in query parameters for smooth updates
 
 ### What Stayed the Same
+
 - Map query parameters (lng, lat, zoom) work exactly as before
 - All existing map functionality is preserved
 - TypeScript support and validation remain strong
 
-This hybrid approach provides the best of both worlds: clean URLs for years and smooth map navigation via query parameters. 
+This hybrid approach provides the best of both worlds: clean URLs for years and smooth map navigation via query parameters.

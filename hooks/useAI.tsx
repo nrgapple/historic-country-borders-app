@@ -11,9 +11,12 @@ interface AIApiResponse {
   error?: string;
 }
 
-const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: FetcherProps) => {
+const fetcher: Fetcher<string, FetcherProps> = async ({
+  countryName,
+  year,
+}: FetcherProps) => {
   const startTime = Date.now();
-  
+
   if (!countryName || countryName.trim() === '') {
     return 'Not Found';
   }
@@ -22,7 +25,7 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
   ReactGA4.event('ai_content_request', {
     country_name: countryName,
     year: year,
-    request_type: 'country_information'
+    request_type: 'country_information',
   });
 
   try {
@@ -40,9 +43,9 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
     const responseTime = Date.now() - startTime;
 
     if (!response.ok) {
-      const errorData: AIApiResponse = await response.json().catch(() => ({ 
-        content: '', 
-        error: 'Failed to parse error response' 
+      const errorData: AIApiResponse = await response.json().catch(() => ({
+        content: '',
+        error: 'Failed to parse error response',
       }));
 
       console.error('AI API HTTP error:', {
@@ -61,7 +64,7 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
           country_name: countryName,
           year: year,
           error_type: 'rate_limit',
-          response_time_ms: Math.round(responseTime)
+          response_time_ms: Math.round(responseTime),
         });
       }
 
@@ -70,18 +73,26 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         country_name: countryName,
         year: year,
         error_code: response.status,
-        error_type: response.status === 404 ? 'not_found' : 
-                   response.status === 500 ? 'server_error' : 
-                   response.status === 429 ? 'rate_limit' : 'http_error',
-        response_time_ms: Math.round(responseTime)
+        error_type:
+          response.status === 404
+            ? 'not_found'
+            : response.status === 500
+              ? 'server_error'
+              : response.status === 429
+                ? 'rate_limit'
+                : 'http_error',
+        response_time_ms: Math.round(responseTime),
       });
 
       // Return the error message from the API
-      return errorData.error || `HTTP error! status: ${response.status} - ${response.statusText}`;
+      return (
+        errorData.error ||
+        `HTTP error! status: ${response.status} - ${response.statusText}`
+      );
     }
 
     const data: AIApiResponse = await response.json();
-    
+
     console.log('AI API response:', {
       countryName,
       year,
@@ -91,18 +102,19 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
     });
 
     const content = data.content?.trim() || '';
-    
+
     if (content) {
       // Track successful AI response
       const wordCount = content.split(/\s+/).length;
-      
+
       ReactGA4.event('ai_content_generated', {
         country_name: countryName,
         year: year,
         content_length: content.length,
         word_count: wordCount,
         response_time_ms: Math.round(responseTime),
-        content_quality: wordCount < 50 ? 'short' : wordCount < 200 ? 'medium' : 'detailed'
+        content_quality:
+          wordCount < 50 ? 'short' : wordCount < 200 ? 'medium' : 'detailed',
       });
 
       return content;
@@ -112,14 +124,17 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
         country_name: countryName,
         year: year,
         response_time_ms: Math.round(responseTime),
-        error_message: data.error || 'empty_content'
+        error_message: data.error || 'empty_content',
       });
 
-      return data.error || 'AI generated empty response. Please try again or switch to Wikipedia.';
+      return (
+        data.error ||
+        'AI generated empty response. Please try again or switch to Wikipedia.'
+      );
     }
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     console.error('AI API error:', error);
     console.error('Error details:', {
       countryName,
@@ -130,18 +145,28 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
     });
 
     // Determine error type and provide appropriate message
-    let errorMessage = 'Something went wrong with AI information. Please try again or switch to Wikipedia.';
+    let errorMessage =
+      'Something went wrong with AI information. Please try again or switch to Wikipedia.';
     let errorType = 'unknown_error';
-    
+
     if (error instanceof Error) {
       // Check if it's a network error
-      if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
-        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+      if (
+        error.message.includes('fetch') ||
+        error.message.includes('network') ||
+        error.message.includes('Failed to fetch')
+      ) {
+        errorMessage =
+          'Network connection issue. Please check your internet connection and try again.';
         errorType = 'network_error';
       }
       // Check if it's a timeout error
-      else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
-        errorMessage = 'AI service request timed out. Please try again or switch to Wikipedia.';
+      else if (
+        error.message.includes('timeout') ||
+        error.message.includes('AbortError')
+      ) {
+        errorMessage =
+          'AI service request timed out. Please try again or switch to Wikipedia.';
         errorType = 'timeout_error';
       }
     }
@@ -153,20 +178,28 @@ const fetcher: Fetcher<string, FetcherProps> = async ({ countryName, year }: Fet
       error_type: errorType,
       error_name: error instanceof Error ? error.name : 'UnknownError',
       response_time_ms: Math.round(responseTime),
-      network_related: errorType.includes('network') || errorType.includes('timeout')
+      network_related:
+        errorType.includes('network') || errorType.includes('timeout'),
     });
-    
+
     // Return specific error message instead of generic fallback
     return errorMessage;
   }
 };
 
-export const useAIData = (name: string, year: string = new Date().getFullYear().toString()) => {
-  const { data, error } = useSWR(`ai:${name}:${year}`, () => fetcher({ countryName: name, year }), {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 300000, // 5 minutes
-  });
+export const useAIData = (
+  name: string,
+  year: string = new Date().getFullYear().toString(),
+) => {
+  const { data, error } = useSWR(
+    `ai:${name}:${year}`,
+    () => fetcher({ countryName: name, year }),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 300000, // 5 minutes
+    },
+  );
 
   return {
     title: name,
@@ -174,4 +207,4 @@ export const useAIData = (name: string, year: string = new Date().getFullYear().
     isLoading: !error && !data,
     isError: error,
   } as const;
-}; 
+};

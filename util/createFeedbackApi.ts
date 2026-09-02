@@ -29,7 +29,7 @@ async function sendToDiscord(
   visitorId: string,
   feedbackId: string,
   timestamp: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, any>,
 ): Promise<boolean> {
   try {
     const username = 'HB Feedback';
@@ -37,15 +37,15 @@ async function sendToDiscord(
       rate === 'nice'
         ? '😃'
         : rate === 'meh'
-        ? '😐'
-        : rate === 'bad'
-        ? '😡'
-        : '🤷‍♂️';
-    
+          ? '😐'
+          : rate === 'bad'
+            ? '😡'
+            : '🤷‍♂️';
+
     // Determine environment
     const isDev = metadata?.dev || process.env.NODE_ENV === 'development';
     const environment = isDev ? '🔧 Development' : '🚀 Production';
-    
+
     // Format timestamp for display
     const date = new Date(timestamp);
     const formattedTime = date.toLocaleString('en-US', {
@@ -59,8 +59,10 @@ async function sendToDiscord(
 
     // Determine embed color based on rating
     let color = 0x3498db; // Default blue
-    if (rate === 'nice') color = 0x2ecc71; // Green
-    else if (rate === 'meh') color = 0xf39c12; // Orange
+    if (rate === 'nice')
+      color = 0x2ecc71; // Green
+    else if (rate === 'meh')
+      color = 0xf39c12; // Orange
     else if (rate === 'bad') color = 0xe74c3c; // Red
 
     await fetch(webhook, {
@@ -104,7 +106,10 @@ async function sendToDiscord(
               },
               message && {
                 name: '💬 Message',
-                value: message.length > 1024 ? message.substring(0, 1021) + '...' : message,
+                value:
+                  message.length > 1024
+                    ? message.substring(0, 1021) + '...'
+                    : message,
                 inline: false,
               },
             ].filter(Boolean),
@@ -142,7 +147,8 @@ export function createFeedbackAPI(options: FeedbackOptions) {
     if (!hasDiscord && !hasAirtable) {
       console.error('No feedback storage method configured');
       return res.status(500).json({
-        message: 'Feedback system not configured. Please check environment variables.',
+        message:
+          'Feedback system not configured. Please check environment variables.',
       });
     }
 
@@ -171,30 +177,45 @@ export function createFeedbackAPI(options: FeedbackOptions) {
     };
 
     // Build array of storage operations for configured services only
-    const storageOperations: Array<{ name: string; promise: Promise<boolean> }> = [];
+    const storageOperations: Array<{
+      name: string;
+      promise: Promise<boolean>;
+    }> = [];
 
     if (hasDiscord) {
       storageOperations.push({
         name: 'Discord',
-        promise: sendToDiscord(webhook!, user, message, rate, visitorId, feedbackId, timestamp, metadata),
+        promise: sendToDiscord(
+          webhook!,
+          user,
+          message,
+          rate,
+          visitorId,
+          feedbackId,
+          timestamp,
+          metadata,
+        ),
       });
     }
 
     if (hasAirtable) {
       storageOperations.push({
         name: 'Airtable',
-        promise: createFeedbackRecord(airtableTableName || 'Feedback', feedbackData),
+        promise: createFeedbackRecord(
+          airtableTableName || 'Feedback',
+          feedbackData,
+        ),
       });
     }
 
     // Execute all storage operations in parallel (non-blocking)
     const results = await Promise.allSettled(
-      storageOperations.map((op) => op.promise)
+      storageOperations.map((op) => op.promise),
     );
 
     // Count successes
     const successes = results.filter(
-      (result) => result.status === 'fulfilled' && result.value === true
+      (result) => result.status === 'fulfilled' && result.value === true,
     ).length;
 
     // Log individual failures

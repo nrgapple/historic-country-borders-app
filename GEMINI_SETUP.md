@@ -29,16 +29,18 @@ yarn dev
 ✅ **No credit card required** - completely free  
 ✅ **High quality AI** - advanced language model  
 ✅ **Reliable** - no rate limit issues like other providers  
-✅ **Historical knowledge** - excellent for country information  
+✅ **Historical knowledge** - excellent for country information
 
 ## Troubleshooting
 
 **"AI information requires Gemini API key setup"**
+
 - Make sure your API key is in `.env.local`
 - Restart your development server
 - Check that the key starts with your expected format
 
 **API errors**
+
 - Verify your internet connection
 - Check that your API key is valid
 - Use Wikipedia as a fallback option
@@ -46,6 +48,7 @@ yarn dev
 ## Why Gemini?
 
 We switched from Hugging Face to Google Gemini because:
+
 - No "exceeded credits" errors
 - Much higher rate limits (60/min vs variable)
 - Better reliability and uptime

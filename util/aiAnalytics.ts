@@ -2,7 +2,7 @@ import ReactGA4 from 'react-ga4';
 
 /**
  * Centralized AI Feature Analytics Tracking
- * 
+ *
  * This utility provides consistent tracking for all AI-related features
  * and user interactions throughout the application.
  */
@@ -17,15 +17,20 @@ export interface AIAnalyticsEvent {
 /**
  * Track AI feature events with modern GA4 format
  */
-export const trackAIEvent = ({ action, label, value, customParameters }: AIAnalyticsEvent) => {
+export const trackAIEvent = ({
+  action,
+  label,
+  value,
+  customParameters,
+}: AIAnalyticsEvent) => {
   // Convert old format to new modern GA4 format
   const eventName = `ai_${action}`;
   const eventParams = {
     ...customParameters,
     ...(label && { label }),
-    ...(value !== undefined && { value })
+    ...(value !== undefined && { value }),
   };
-  
+
   ReactGA4.event(eventName, eventParams);
 };
 
@@ -37,35 +42,38 @@ export const AIProviderEvents = {
     ReactGA4.event('ai_provider_toggle', {
       previous_provider: fromProvider,
       new_provider: toProvider,
-      toggle_direction: toProvider === 'ai' ? 'enable_ai' : 'disable_ai'
+      toggle_direction: toProvider === 'ai' ? 'enable_ai' : 'disable_ai',
     });
   },
 
   enable: (provider: string) => {
-    ReactGA4.event(provider === 'ai' ? 'ai_feature_enabled' : 'ai_feature_disabled', {
-      provider: provider,
-      activation_method: 'provider_toggle'
-    });
+    ReactGA4.event(
+      provider === 'ai' ? 'ai_feature_enabled' : 'ai_feature_disabled',
+      {
+        provider: provider,
+        activation_method: 'provider_toggle',
+      },
+    );
   },
 
   restored: (provider: string) => {
     ReactGA4.event('ai_provider_restored', {
       provider: provider,
-      restoration_source: 'localStorage'
+      restoration_source: 'localStorage',
     });
   },
 
   defaultUsed: (provider: string) => {
     ReactGA4.event('ai_provider_default_used', {
       provider: provider,
-      reason: 'no_stored_preference'
+      reason: 'no_stored_preference',
     });
   },
 
   sessionActive: (provider: string) => {
     ReactGA4.event('ai_provider_session_active', {
       provider: provider,
-      session_type: 'active_usage'
+      session_type: 'active_usage',
     });
   },
 };
@@ -78,39 +86,61 @@ export const AIRequestEvents = {
     ReactGA4.event('ai_content_request', {
       country_name: country,
       year: year,
-      request_type: 'country_info'
+      request_type: 'country_info',
     });
   },
 
-  success: (country: string, year: string, responseTime: number, contentLength: number, wordCount: number) => {
+  success: (
+    country: string,
+    year: string,
+    responseTime: number,
+    contentLength: number,
+    wordCount: number,
+  ) => {
     ReactGA4.event('ai_content_generated', {
       country_name: country,
       year: year,
       response_time_ms: Math.round(responseTime),
       content_length: contentLength,
       word_count: wordCount,
-      quality_rating: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
+      quality_rating:
+        wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed',
     });
   },
 
-  failed: (country: string, year: string, responseTime: number, errorType?: string) => {
+  failed: (
+    country: string,
+    year: string,
+    responseTime: number,
+    errorType?: string,
+  ) => {
     ReactGA4.event('ai_request_failed', {
       country_name: country,
       year: year,
       response_time_ms: Math.round(responseTime),
-      error_type: errorType || 'unknown_error'
+      error_type: errorType || 'unknown_error',
     });
   },
 
-  apiError: (country: string, year: string, statusCode: number, responseTime: number) => {
+  apiError: (
+    country: string,
+    year: string,
+    statusCode: number,
+    responseTime: number,
+  ) => {
     ReactGA4.event('ai_request_error', {
       country_name: country,
       year: year,
       error_code: statusCode,
       response_time_ms: Math.round(responseTime),
-      error_category: statusCode === 429 ? 'rate_limit' : 
-                     statusCode === 401 ? 'authentication' : 
-                     statusCode >= 500 ? 'server_error' : 'client_error'
+      error_category:
+        statusCode === 429
+          ? 'rate_limit'
+          : statusCode === 401
+            ? 'authentication'
+            : statusCode >= 500
+              ? 'server_error'
+              : 'client_error',
     });
   },
 
@@ -118,7 +148,7 @@ export const AIRequestEvents = {
     ReactGA4.event('ai_response_empty', {
       country_name: country,
       year: year,
-      error_type: 'empty_content'
+      error_type: 'empty_content',
     });
   },
 
@@ -126,7 +156,7 @@ export const AIRequestEvents = {
     ReactGA4.event('ai_response_format_error', {
       country_name: country,
       year: year,
-      error_type: 'unexpected_format'
+      error_type: 'unexpected_format',
     });
   },
 
@@ -134,7 +164,7 @@ export const AIRequestEvents = {
     ReactGA4.event('ai_api_key_missing', {
       country_name: country,
       year: year,
-      error_type: 'missing_api_key'
+      error_type: 'missing_api_key',
     });
   },
 };
@@ -147,17 +177,23 @@ export const AIContentEvents = {
     ReactGA4.event('ai_popup_displayed', {
       provider: provider,
       country_name: country,
-      display_type: 'country_info'
+      display_type: 'country_info',
     });
   },
 
-  contentDisplayed: (provider: string, country: string, wordCount: number, contentLength: number) => {
+  contentDisplayed: (
+    provider: string,
+    country: string,
+    wordCount: number,
+    contentLength: number,
+  ) => {
     ReactGA4.event('ai_content_displayed', {
       provider: provider,
       country_name: country,
       word_count: wordCount,
       content_length: contentLength,
-      content_quality: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
+      content_quality:
+        wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed',
     });
   },
 
@@ -165,7 +201,7 @@ export const AIContentEvents = {
     ReactGA4.event('ai_content_error_displayed', {
       provider: provider,
       country_name: country,
-      error_type: 'display_error'
+      error_type: 'display_error',
     });
   },
 
@@ -173,7 +209,7 @@ export const AIContentEvents = {
     ReactGA4.event('ai_content_empty_displayed', {
       provider: provider,
       country_name: country,
-      error_type: 'empty_content'
+      error_type: 'empty_content',
     });
   },
 
@@ -181,7 +217,7 @@ export const AIContentEvents = {
     ReactGA4.event('ai_popup_closed', {
       provider: provider,
       country_name: country,
-      close_type: 'user_initiated'
+      close_type: 'user_initiated',
     });
   },
 };
@@ -193,20 +229,20 @@ export const AIStorageEvents = {
   saved: (provider: string) => {
     ReactGA4.event('ai_provider_saved', {
       provider: provider,
-      save_method: 'localStorage'
+      save_method: 'localStorage',
     });
   },
 
   saveError: (provider: string) => {
     ReactGA4.event('ai_localstorage_save_error', {
       provider: provider,
-      error_type: 'unknown_error'
+      error_type: 'unknown_error',
     });
   },
 
   readError: () => {
     ReactGA4.event('ai_localstorage_read_error', {
-      error_type: 'unknown_error'
+      error_type: 'unknown_error',
     });
   },
 };
@@ -215,8 +251,15 @@ export const AIStorageEvents = {
  * Performance Tracking
  */
 export const AIPerformanceEvents = {
-  responseTime: (country: string, year: string, time: number, success: boolean) => {
-    const action = success ? 'ai_response_time_success' : 'ai_response_time_failed';
+  responseTime: (
+    country: string,
+    year: string,
+    time: number,
+    success: boolean,
+  ) => {
+    const action = success
+      ? 'ai_response_time_success'
+      : 'ai_response_time_failed';
     ReactGA4.event(action, {
       country_name: country,
       year: year,
@@ -224,7 +267,12 @@ export const AIPerformanceEvents = {
     });
   },
 
-  contentQuality: (country: string, year: string, wordCount: number, charCount: number) => {
+  contentQuality: (
+    country: string,
+    year: string,
+    wordCount: number,
+    charCount: number,
+  ) => {
     ReactGA4.event('ai_content_quality_metrics', {
       country_name: country,
       year: year,
@@ -242,7 +290,7 @@ export const AIUsageEvents = {
   sessionStart: (provider: string) => {
     ReactGA4.event('ai_session_started', {
       provider: provider,
-      session_type: 'active_usage'
+      session_type: 'active_usage',
     });
   },
 
@@ -252,7 +300,11 @@ export const AIUsageEvents = {
     });
   },
 
-  comparisonUsage: (fromProvider: string, toProvider: string, country: string) => {
+  comparisonUsage: (
+    fromProvider: string,
+    toProvider: string,
+    country: string,
+  ) => {
     ReactGA4.event('ai_provider_comparison', {
       from_provider: fromProvider,
       to_provider: toProvider,
@@ -268,7 +320,7 @@ export const trackUserEngagement = (
   provider: string,
   country: string,
   year: string,
-  engagementType: 'view' | 'close' | 'switch_provider' | 'retry'
+  engagementType: 'view' | 'close' | 'switch_provider' | 'retry',
 ) => {
   ReactGA4.event(`ai_user_engagement_${engagementType}`, {
     provider: provider,
@@ -281,10 +333,10 @@ export const trackUserEngagement = (
  * Batch tracking for multiple events
  */
 export const trackBatchEvents = (events: AIAnalyticsEvent[]) => {
-  events.forEach(event => trackAIEvent(event));
+  events.forEach((event) => trackAIEvent(event));
 };
 
-export default {
+const aiAnalytics = {
   trackAIEvent,
   AIProviderEvents,
   AIRequestEvents,
@@ -294,4 +346,6 @@ export default {
   AIUsageEvents,
   trackUserEngagement,
   trackBatchEvents,
-}; 
+};
+
+export default aiAnalytics;

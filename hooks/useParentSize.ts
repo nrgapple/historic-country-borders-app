@@ -25,11 +25,11 @@ export const useParentSize = (parentRef: React.RefObject<HTMLDivElement>) => {
         set();
       }, 100);
     }
-  }, [reset, height, width]);
+  }, [reset, height, width, set]);
 
   useEffect(() => {
     set();
-  }, [parentRef]);
+  }, [set]);
 
   return { height, width, refresh } as const;
 };

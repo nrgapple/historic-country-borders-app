@@ -35,8 +35,6 @@ export const getYearFromFile = (fileName: string) =>
       .replace(/bc/g, '-'),
   );
 
-export const githubToken = process.env.NEXT_PUBLIC_GITHUB_API;
-
 export const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
 export const multiPolygonToPolygon = (
@@ -54,15 +52,14 @@ export const multiPolygonToPolygon = (
               coordinates: coord,
               type: 'Polygon',
             } as Polygon,
-          } as Feature<Polygon>),
+          }) as Feature<Polygon>,
       ),
     )
-    //@ts-ignore
-    .flat(1),
+    .flat(1) as Feature<Polygon>[],
 });
 
 const padZero = (str: string, len: number = 2) => {
-  var zeros = new Array(len).join('0');
+  const zeros = new Array(len).join('0');
   return (zeros + str).slice(-len);
 };
 
@@ -77,7 +74,7 @@ export const invertColor = (hex: string, bw: boolean) => {
   if (hex.length !== 6) {
     throw new Error('Invalid HEX color.');
   }
-  var r: string | number = parseInt(hex.slice(0, 2), 16),
+  let r: string | number = parseInt(hex.slice(0, 2), 16),
     g: string | number = parseInt(hex.slice(2, 4), 16),
     b: string | number = parseInt(hex.slice(4, 6), 16);
   if (bw) {
@@ -116,12 +113,15 @@ export const groupBy = <T, K extends keyof any>(
   list: T[],
   getKey: (item: T) => K,
 ) =>
-  list.reduce((previous, currentItem) => {
-    const group = getKey(currentItem);
-    if (!previous[group]) previous[group] = [];
-    previous[group].push(currentItem);
-    return previous;
-  }, {} as Record<K, T[]>);
+  list.reduce(
+    (previous, currentItem) => {
+      const group = getKey(currentItem);
+      if (!previous[group]) previous[group] = [];
+      previous[group].push(currentItem);
+      return previous;
+    },
+    {} as Record<K, T[]>,
+  );
 
 export const closest = (numbers: number[], target: number) =>
   numbers.reduce(function (prev, curr) {

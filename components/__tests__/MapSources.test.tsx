@@ -5,7 +5,11 @@ import MapSources from '../MapSources';
 
 // Mock react-map-gl components
 vi.mock('react-map-gl', () => ({
-  Source: ({ children, ...props }: any) => <div data-testid="map-source" {...props}>{children}</div>,
+  Source: ({ children, ...props }: any) => (
+    <div data-testid="map-source" {...props}>
+      {children}
+    </div>
+  ),
   Layer: (props: any) => <div data-testid="map-layer" {...props} />,
 }));
 
@@ -34,7 +38,15 @@ const mockData = {
         properties: { NAME: 'Test Country', COLOR: '#ff0000' },
         geometry: {
           type: 'Polygon' as const,
-          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]],
+          coordinates: [
+            [
+              [0, 0],
+              [1, 0],
+              [1, 1],
+              [0, 1],
+              [0, 0],
+            ],
+          ],
         },
       },
     ],
@@ -79,7 +91,7 @@ describe('MapSources', () => {
 
   it('should render borders, labels, and places when showLabels is true', () => {
     const { getAllByTestId } = render(
-      <MapSources data={mockData} places={mockPlaces} />
+      <MapSources data={mockData} places={mockPlaces} />,
     );
 
     const sources = getAllByTestId('map-source');
@@ -108,7 +120,7 @@ describe('MapSources', () => {
     });
 
     const { getAllByTestId } = render(
-      <MapSources data={mockData} places={mockPlaces} />
+      <MapSources data={mockData} places={mockPlaces} />,
     );
 
     const sources = getAllByTestId('map-source');
@@ -120,18 +132,18 @@ describe('MapSources', () => {
 
   it('should highlight selected country with special styling', () => {
     const { getAllByTestId } = render(
-      <MapSources 
-        data={mockData} 
-        places={mockPlaces} 
+      <MapSources
+        data={mockData}
+        places={mockPlaces}
         selectedCountry="Test Country"
-      />
+      />,
     );
 
     const layers = getAllByTestId('map-layer');
-    
+
     // Should include the selected highlight layer
-    const highlightLayer = layers.find(layer => 
-      layer.getAttribute('id') === 'borders-selected-highlight'
+    const highlightLayer = layers.find(
+      (layer) => layer.getAttribute('id') === 'borders-selected-highlight',
     );
     expect(highlightLayer).toBeDefined();
   });
@@ -139,8 +151,8 @@ describe('MapSources', () => {
   it('should apply border thickness setting to line width calculations', () => {
     // Test with different border thickness values
     const thicknessValues = [0, 2, 4];
-    
-    thicknessValues.forEach(thickness => {
+
+    thicknessValues.forEach((thickness) => {
       mockUseSettings.mockReturnValue({
         settings: {
           textSize: 'medium',
@@ -152,25 +164,25 @@ describe('MapSources', () => {
       });
 
       const { getAllByTestId, rerender } = render(
-        <MapSources data={mockData} places={mockPlaces} />
+        <MapSources data={mockData} places={mockPlaces} />,
       );
 
       const layers = getAllByTestId('map-layer');
-      
+
       // Find the borders-outline layer
-      const outlineLayer = layers.find(layer => 
-        layer.getAttribute('id') === 'borders-outline'
+      const outlineLayer = layers.find(
+        (layer) => layer.getAttribute('id') === 'borders-outline',
       );
-      
+
       expect(outlineLayer).toBeDefined();
-      
+
       // The layer should exist and render with the border thickness setting
       // Note: We can't directly test the paint properties since they're passed as objects
       // but we can verify the layer renders correctly with different thickness values
       expect(outlineLayer).toBeInTheDocument();
-      
+
       // Clean up for next iteration
       rerender(<div />);
     });
   });
-}); 
+});

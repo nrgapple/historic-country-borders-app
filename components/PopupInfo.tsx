@@ -20,7 +20,11 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   const { position, place = '' } = info ?? {};
   const { settings } = useSettings();
   const provider = settings.infoProvider;
-  const { info: description, title: title, isLoading } = useCountryInfo(place, { provider });
+  const {
+    info: description,
+    title: title,
+    isLoading,
+  } = useCountryInfo(place, { provider });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],
@@ -35,7 +39,7 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
       ReactGA4.event('country_info_popup_view', {
         country_name: place,
         info_provider: provider,
-        popup_type: 'country_information'
+        popup_type: 'country_information',
       });
     }
   }, [place, position, provider]);
@@ -43,35 +47,44 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   // Track content loading completion
   useEffect(() => {
     if (place && !isLoading && description) {
-      const isError = description.includes('Something went wrong') || 
-                     description.includes('AI information requires') ||
-                     description.includes('No information available');
-      
+      const isError =
+        description.includes('Something went wrong') ||
+        description.includes('AI information requires') ||
+        description.includes('No information available');
+
       if (!isError && !empty) {
         // Track successful content display
         const wordCount = description.trim().split(/\s+/).length;
-        
+
         ReactGA4.event('country_info_content_loaded', {
           country_name: place,
           info_provider: provider,
           content_length: description.length,
           word_count: wordCount,
-          content_quality: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed'
+          content_quality:
+            wordCount < 50
+              ? 'brief'
+              : wordCount < 150
+                ? 'moderate'
+                : 'detailed',
         });
       } else if (isError) {
         // Track error content display
         ReactGA4.event('country_info_content_error', {
           country_name: place,
           info_provider: provider,
-          error_type: description.includes('AI information requires') ? 'authentication_required' : 
-                     description.includes('Something went wrong') ? 'content_generation_failed' : 'unknown_error'
+          error_type: description.includes('AI information requires')
+            ? 'authentication_required'
+            : description.includes('Something went wrong')
+              ? 'content_generation_failed'
+              : 'unknown_error',
         });
       } else if (empty) {
         // Track empty content
         ReactGA4.event('country_info_content_empty', {
           country_name: place,
           info_provider: provider,
-          reason: 'no_data_available'
+          reason: 'no_data_available',
         });
       }
     }
@@ -83,7 +96,7 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
       ReactGA4.event('country_info_popup_close', {
         country_name: place,
         info_provider: provider,
-        had_content: !empty && !isLoading
+        had_content: !empty && !isLoading,
       });
     }
     onClose?.();
@@ -119,7 +132,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
   }, [isLoading, empty]);
 
   // Get provider-specific loading message and icon
-  const loadingMessage = provider === 'ai' ? '🤖 AI generating information...' : '📚 Loading information...';
+  const loadingMessage =
+    provider === 'ai'
+      ? '🤖 AI generating information...'
+      : '📚 Loading information...';
   const providerIcon = provider === 'ai' ? '🤖' : '📖';
 
   return (
@@ -139,7 +155,10 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
           <div className="popup-title">
             {title || place}
             {!isLoading && !empty && (
-              <span className="provider-indicator" title={provider === 'ai' ? 'AI Generated' : 'Wikipedia'}>
+              <span
+                className="provider-indicator"
+                title={provider === 'ai' ? 'AI Generated' : 'Wikipedia'}
+              >
                 {providerIcon}
               </span>
             )}
@@ -148,7 +167,11 @@ export default function PopupInfo({ info, onClose }: PopupInfoProps) {
             {isLoading ? (
               loadingMessage
             ) : empty ? (
-              <>📖 No information available<br />for this location 😔</>
+              <>
+                📖 No information available
+                <br />
+                for this location 😔
+              </>
             ) : (
               description
             )}

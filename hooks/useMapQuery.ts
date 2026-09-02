@@ -1,6 +1,9 @@
 import { useMemo, useCallback } from 'react';
 import { useQuery } from './useQuery';
-import { getMapViewFromQuery, formatMapCoordinates } from '../utils/queryParams';
+import {
+  getMapViewFromQuery,
+  formatMapCoordinates,
+} from '../utils/queryParams';
 import { MapViewState } from '../types/query';
 
 /**
@@ -18,19 +21,22 @@ export function useMapQuery() {
       return { longitude: 0, latitude: 0, zoom: 2 };
     }
     return getMapViewFromQuery(query);
-  }, [isReady, query.lng, query.lat, query.zoom]);
+  }, [isReady, query]);
 
   // Update map coordinates in URL (debounced)
-  const updateMapView = useCallback((longitude: number, latitude: number, zoom: number) => {
-    if (!isReady) return; // Don't update until router is ready
-    
-    const coordinates = formatMapCoordinates(longitude, latitude, zoom);
-    updateQuery(coordinates);
-  }, [updateQuery, isReady]);
+  const updateMapView = useCallback(
+    (longitude: number, latitude: number, zoom: number) => {
+      if (!isReady) return; // Don't update until router is ready
+
+      const coordinates = formatMapCoordinates(longitude, latitude, zoom);
+      updateQuery(coordinates);
+    },
+    [updateQuery, isReady],
+  );
 
   return {
     viewState,
     updateMapView,
     isReady,
   };
-} 
+}

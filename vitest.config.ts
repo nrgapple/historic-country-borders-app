@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -10,13 +10,14 @@ export default defineConfig({
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       '**/node_modules/**',
+      '**/e2e/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
-      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*'
+      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
     ],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       include: [
         'components/**/*.{ts,tsx}',
         'hooks/**/*.{ts,tsx}',
@@ -43,13 +44,13 @@ export default defineConfig({
         'pages/_document.tsx',
         'pages/api/**',
       ],
+      // Baseline floors prevent regressions. Raise these as legacy code is removed
+      // or covered; do not lower them to make CI pass.
       thresholds: {
-        global: {
-          branches: 60,
-          functions: 70,
-          lines: 70,
-          statements: 70,
-        },
+        branches: 79,
+        functions: 64,
+        lines: 44,
+        statements: 44,
       },
     },
   },
@@ -58,4 +59,4 @@ export default defineConfig({
       '@': new URL('./', import.meta.url).pathname,
     },
   },
-}) 
+});

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 export default function EmojiMeh({ size = 34, color = '#000', ...props }) {
   return (
@@ -34,5 +34,5 @@ export default function EmojiMeh({ size = 34, color = '#000', ...props }) {
       <circle cx="92" cy="108" r="12" />
       <circle cx="164" cy="108" r="12" />
     </svg>
-  )
+  );
 }

@@ -37,12 +37,14 @@ The app includes comprehensive Google Analytics tracking for the AI feature to u
 #### Tracked Events
 
 **Provider Usage:**
+
 - `toggle_provider` - When users switch between Wikipedia and AI
 - `enable_ai` / `disable_ai` - AI feature activation/deactivation
 - `provider_restored` - When preference is loaded from localStorage
 - `session_provider_active` - Active provider per session
 
 **AI Requests:**
+
 - `request_initiated` - AI request started
 - `response_success` - Successful AI response
 - `response_time_success` - Response time for successful requests
@@ -53,6 +55,7 @@ The app includes comprehensive Google Analytics tracking for the AI feature to u
 - `api_key_missing` - Missing API key events
 
 **Cache Performance:**
+
 - `cache_hit` - Response served from Redis cache (faster)
 - `cache_miss` - No cached response, API call made
 - `cache_error` - Redis unavailable (fallback to API)
@@ -60,6 +63,7 @@ The app includes comprehensive Google Analytics tracking for the AI feature to u
 - `cache_write_error` - Failed to cache response
 
 **Content Display:**
+
 - `popup_displayed` - When popups show AI vs Wikipedia content
 - `content_displayed` - Successful content display
 - `content_error_displayed` - Error content shown to users
@@ -67,6 +71,7 @@ The app includes comprehensive Google Analytics tracking for the AI feature to u
 - `popup_closed` - User closes information popups
 
 **Performance Metrics:**
+
 - Response times (success/failure)
 - Content quality metrics (word count, character count)
 - Error rates and types
@@ -124,6 +129,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 4. Copy the generated key to your `.env.local` file
 
 **Benefits:**
+
 - ✅ 60 requests per minute (generous free tier)
 - ✅ No credit card required
 - ✅ High-quality AI responses
@@ -136,6 +142,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 3. See [REDIS_SETUP.md](./REDIS_SETUP.md) for detailed instructions
 
 **Benefits:**
+
 - ⚡ Instant responses for cached content
 - 💰 Reduces API usage and costs
 - 🔧 Automatic 1-hour cache expiration
@@ -174,16 +181,19 @@ yarn test hooks/__tests__/useAI.test.tsx
 ### Common Issues
 
 **"AI information requires Gemini API key setup"**
+
 - Add your Gemini API key to `.env.local`
 - Restart the development server
 - See [GEMINI_SETUP.md](./GEMINI_SETUP.md) for detailed setup
 
 **Slow AI responses**
+
 - Normal response time: 1-3 seconds
 - Check your internet connection
 - Gemini API has rate limits (60 requests/minute)
 
 **Empty or error responses**
+
 - Try switching to Wikipedia temporarily
 - Check browser console for detailed error messages
 - Verify your API key is valid

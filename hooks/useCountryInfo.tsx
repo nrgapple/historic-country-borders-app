@@ -8,10 +8,15 @@ interface UseCountryInfoOptions {
   year?: string;
 }
 
-export const useCountryInfo = (name: string, options: UseCountryInfoOptions = {}) => {
+export const useCountryInfo = (
+  name: string,
+  options: UseCountryInfoOptions = {},
+) => {
   const { provider = 'wikipedia', year } = options;
-  
-  // Only call the hook for the selected provider
+
+  // Temporary legacy branch: M1 removes the AI provider. Keeping each SWR hook
+  // conditional avoids making AI requests for Wikipedia users in the meantime.
+  /* eslint-disable react-hooks/rules-of-hooks */
   if (provider === 'ai') {
     const aiData = useAIData(name, year);
     return {
@@ -25,4 +30,5 @@ export const useCountryInfo = (name: string, options: UseCountryInfoOptions = {}
       provider: 'wikipedia' as const,
     };
   }
-}; 
+  /* eslint-enable react-hooks/rules-of-hooks */
+};

@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import ReactGA4 from 'react-ga4';
 import { InfoProvider } from '../hooks/useCountryInfo';
 
@@ -8,7 +14,9 @@ interface InfoProviderContextType {
   toggleProvider: () => void;
 }
 
-const InfoProviderContext = createContext<InfoProviderContextType | undefined>(undefined);
+const InfoProviderContext = createContext<InfoProviderContextType | undefined>(
+  undefined,
+);
 
 const STORAGE_KEY = 'historic-borders-info-provider';
 
@@ -17,7 +25,7 @@ const getInitialProvider = (defaultProvider: InfoProvider): InfoProvider => {
   if (typeof window === 'undefined') {
     return defaultProvider; // SSR fallback
   }
-  
+
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'ai' || stored === 'wikipedia') {
@@ -28,12 +36,15 @@ const getInitialProvider = (defaultProvider: InfoProvider): InfoProvider => {
         label: stored,
         value: 1,
       });
-      
+
       return stored as InfoProvider;
     }
   } catch (error) {
-    console.warn('Failed to read info provider preference from localStorage:', error);
-    
+    console.warn(
+      'Failed to read info provider preference from localStorage:',
+      error,
+    );
+
     // Track localStorage error
     ReactGA4.event({
       category: 'AI Feature',
@@ -42,7 +53,7 @@ const getInitialProvider = (defaultProvider: InfoProvider): InfoProvider => {
       value: 1,
     });
   }
-  
+
   // Track default provider usage
   ReactGA4.event({
     category: 'AI Feature',
@@ -50,7 +61,7 @@ const getInitialProvider = (defaultProvider: InfoProvider): InfoProvider => {
     label: defaultProvider,
     value: 1,
   });
-  
+
   return defaultProvider;
 };
 
@@ -59,10 +70,10 @@ const saveProvider = (provider: InfoProvider) => {
   if (typeof window === 'undefined') {
     return; // SSR safety
   }
-  
+
   try {
     localStorage.setItem(STORAGE_KEY, provider);
-    
+
     // Track successful localStorage save
     ReactGA4.event({
       category: 'AI Feature',
@@ -71,8 +82,11 @@ const saveProvider = (provider: InfoProvider) => {
       value: 1,
     });
   } catch (error) {
-    console.warn('Failed to save info provider preference to localStorage:', error);
-    
+    console.warn(
+      'Failed to save info provider preference to localStorage:',
+      error,
+    );
+
     // Track localStorage save error
     ReactGA4.event({
       category: 'AI Feature',
@@ -88,9 +102,9 @@ interface InfoProviderProviderProps {
   defaultProvider?: InfoProvider;
 }
 
-export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({ 
-  children, 
-  defaultProvider = 'wikipedia' 
+export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({
+  children,
+  defaultProvider = 'wikipedia',
 }) => {
   const [provider, setProviderState] = useState<InfoProvider>(defaultProvider);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -106,7 +120,7 @@ export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({
     const previousProvider = provider;
     setProviderState(newProvider);
     saveProvider(newProvider);
-    
+
     // Track provider change
     ReactGA4.event({
       category: 'AI Feature',
@@ -136,18 +150,22 @@ export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({
   // Don't render until initialized to prevent hydration mismatch
   if (!isInitialized) {
     return (
-      <InfoProviderContext.Provider value={{ 
-        provider: defaultProvider, 
-        setProvider: () => {}, 
-        toggleProvider: () => {} 
-      }}>
+      <InfoProviderContext.Provider
+        value={{
+          provider: defaultProvider,
+          setProvider: () => {},
+          toggleProvider: () => {},
+        }}
+      >
         {children}
       </InfoProviderContext.Provider>
     );
   }
 
   return (
-    <InfoProviderContext.Provider value={{ provider, setProvider, toggleProvider }}>
+    <InfoProviderContext.Provider
+      value={{ provider, setProvider, toggleProvider }}
+    >
       {children}
     </InfoProviderContext.Provider>
   );
@@ -156,7 +174,9 @@ export const InfoProviderProvider: React.FC<InfoProviderProviderProps> = ({
 export const useInfoProvider = () => {
   const context = useContext(InfoProviderContext);
   if (context === undefined) {
-    throw new Error('useInfoProvider must be used within an InfoProviderProvider');
+    throw new Error(
+      'useInfoProvider must be used within an InfoProviderProvider',
+    );
   }
   return context;
-}; 
+};

@@ -16,7 +16,7 @@ export default function PersistentUIToggle({
       action: isUIHidden ? 'show_ui' : 'hide_ui',
       toggle_source: 'persistent_toggle_button',
       previous_state: isUIHidden ? 'hidden' : 'visible',
-      new_state: isUIHidden ? 'visible' : 'hidden'
+      new_state: isUIHidden ? 'visible' : 'hidden',
     });
   };
 
@@ -30,11 +30,9 @@ export default function PersistentUIToggle({
       >
         <span className="persistent-ui-toggle-icon">🔭</span>
         {!isUIHidden && (
-          <span className="persistent-ui-toggle-text">
-            Hide UI
-          </span>
+          <span className="persistent-ui-toggle-text">Hide UI</span>
         )}
       </button>
     </div>
   );
-} 
+}

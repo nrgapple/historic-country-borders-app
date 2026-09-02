@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-export default function IconDefault({ size = 34, color = "#fff", ...props }) {
+export default function IconDefault({ size = 34, color = '#fff', ...props }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

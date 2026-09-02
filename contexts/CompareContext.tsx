@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import ReactGA4 from 'react-ga4';
 import { redisCache } from '../lib/redis';
 
@@ -38,7 +44,9 @@ interface CompareProviderProps {
   children: ReactNode;
 }
 
-export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) => {
+export const CompareProvider: React.FC<CompareProviderProps> = ({
+  children,
+}) => {
   const [compareState, setCompareState] = useState<CompareState>({
     isCompareMode: false,
     country1: null,
@@ -46,7 +54,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     isLoading: false,
     currentComparison: null,
   });
-  
+
   const [history, setHistory] = useState<ComparisonItem[]>([]);
 
   const startCompare = (countryName: string, year: string) => {
@@ -62,7 +70,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     ReactGA4.event('ai_compare_start', {
       country1_name: countryName,
       country1_year: year,
-      feature: 'ai_comparison'
+      feature: 'ai_comparison',
     });
   };
 
@@ -70,19 +78,22 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     if (!compareState.country1) return;
 
     // Prevent comparing the same country-year combination
-    if (compareState.country1.name === countryName && compareState.country1.year === year) {
+    if (
+      compareState.country1.name === countryName &&
+      compareState.country1.year === year
+    ) {
       // Track attempted same country selection
       ReactGA4.event('ai_compare_duplicate_selection', {
         country_name: countryName,
         year: year,
-        error_type: 'same_country_year'
+        error_type: 'same_country_year',
       });
-      
+
       console.warn(`Cannot compare ${countryName} (${year}) with itself`);
       return;
     }
 
-    setCompareState(prev => ({
+    setCompareState((prev) => ({
       ...prev,
       country2: { name: countryName, year },
     }));
@@ -93,8 +104,10 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       country1_year: compareState.country1.year,
       country2_name: countryName,
       country2_year: year,
-      year_span: Math.abs(parseInt(year) - parseInt(compareState.country1.year)),
-      same_year: year === compareState.country1.year
+      year_span: Math.abs(
+        parseInt(year) - parseInt(compareState.country1.year),
+      ),
+      same_year: year === compareState.country1.year,
     });
   };
 
@@ -102,7 +115,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
     if (!compareState.country1 || !compareState.country2) return;
 
     const startTime = Date.now();
-    setCompareState(prev => ({ ...prev, isLoading: true }));
+    setCompareState((prev) => ({ ...prev, isLoading: true }));
 
     try {
       const response = await fetch('/api/ai-compare', {
@@ -121,7 +134,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -129,7 +142,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       const comparisonId = `${compareState.country1.name}_${compareState.country1.year}_vs_${compareState.country2.name}_${compareState.country2.year}_${Date.now()}`;
       const responseTime = Date.now() - startTime;
       const wordCount = data.content ? data.content.split(/\s+/).length : 0;
-      
+
       const newComparison: ComparisonItem = {
         id: comparisonId,
         country1: compareState.country1,
@@ -141,15 +154,21 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       // Add to history
       const updatedHistory = [newComparison, ...history].slice(0, 50); // Keep only last 50
       setHistory(updatedHistory);
-      
+
       // Save to localStorage
       try {
-        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
+        localStorage.setItem(
+          HISTORY_STORAGE_KEY,
+          JSON.stringify(updatedHistory),
+        );
       } catch (error) {
-        console.warn('Failed to save comparison history to localStorage:', error);
+        console.warn(
+          'Failed to save comparison history to localStorage:',
+          error,
+        );
       }
 
-      setCompareState(prev => ({
+      setCompareState((prev) => ({
         ...prev,
         isLoading: false,
         currentComparison: data.content,
@@ -164,14 +183,21 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
         response_time_ms: responseTime,
         content_length: data.content?.length || 0,
         word_count: wordCount,
-        year_span: Math.abs(parseInt(compareState.country2.year) - parseInt(compareState.country1.year)),
-        comparison_quality: wordCount < 100 ? 'brief' : wordCount < 300 ? 'detailed' : 'comprehensive'
+        year_span: Math.abs(
+          parseInt(compareState.country2.year) -
+            parseInt(compareState.country1.year),
+        ),
+        comparison_quality:
+          wordCount < 100
+            ? 'brief'
+            : wordCount < 300
+              ? 'detailed'
+              : 'comprehensive',
       });
-
     } catch (error) {
       console.error('Comparison error:', error);
       const responseTime = Date.now() - startTime;
-      setCompareState(prev => ({ ...prev, isLoading: false }));
+      setCompareState((prev) => ({ ...prev, isLoading: false }));
 
       // Track comparison error with context
       ReactGA4.event('ai_comparison_failed', {
@@ -181,8 +207,12 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
         country2_year: compareState.country2.year,
         error_message: error instanceof Error ? error.message : 'unknown_error',
         response_time_ms: responseTime,
-        error_type: error instanceof Error && error.message.includes('429') ? 'rate_limit' : 
-                   error instanceof Error && error.message.includes('fetch') ? 'network_error' : 'api_error'
+        error_type:
+          error instanceof Error && error.message.includes('429')
+            ? 'rate_limit'
+            : error instanceof Error && error.message.includes('fetch')
+              ? 'network_error'
+              : 'api_error',
       });
     }
   };
@@ -194,9 +224,13 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       country1_year: compareState.country1?.year || 'none',
       country2_name: compareState.country2?.name || 'none',
       country2_year: compareState.country2?.year || 'none',
-      cancellation_stage: !compareState.country1 ? 'initial' : 
-                         !compareState.country2 ? 'first_selected' : 
-                         compareState.isLoading ? 'loading' : 'ready_to_compare'
+      cancellation_stage: !compareState.country1
+        ? 'initial'
+        : !compareState.country2
+          ? 'first_selected'
+          : compareState.isLoading
+            ? 'loading'
+            : 'ready_to_compare',
     });
 
     setCompareState({
@@ -209,7 +243,7 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
   };
 
   const clearComparison = () => {
-    setCompareState(prev => ({
+    setCompareState((prev) => ({
       ...prev,
       currentComparison: null,
     }));
@@ -226,7 +260,10 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
         setHistory(parsedHistory);
       }
     } catch (error) {
-      console.warn('Failed to load comparison history from localStorage:', error);
+      console.warn(
+        'Failed to load comparison history from localStorage:',
+        error,
+      );
     }
   };
 
@@ -245,7 +282,9 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
       country1_year: comparison.country1.year,
       country2_name: comparison.country2.name,
       country2_year: comparison.country2.year,
-      comparison_age_hours: Math.round((Date.now() - comparison.createdAt.getTime()) / (1000 * 60 * 60))
+      comparison_age_hours: Math.round(
+        (Date.now() - comparison.createdAt.getTime()) / (1000 * 60 * 60),
+      ),
     });
   };
 
@@ -255,17 +294,19 @@ export const CompareProvider: React.FC<CompareProviderProps> = ({ children }) =>
   }, []);
 
   return (
-    <CompareContext.Provider value={{
-      compareState,
-      history,
-      startCompare,
-      selectSecondCountry,
-      executeComparison,
-      cancelCompare,
-      clearComparison,
-      loadHistory,
-      showComparison,
-    }}>
+    <CompareContext.Provider
+      value={{
+        compareState,
+        history,
+        startCompare,
+        selectSecondCountry,
+        executeComparison,
+        cancelCompare,
+        clearComparison,
+        loadHistory,
+        showComparison,
+      }}
+    >
       {children}
     </CompareContext.Provider>
   );
@@ -277,4 +318,4 @@ export const useCompare = () => {
     throw new Error('useCompare must be used within a CompareProvider');
   }
   return context;
-}; 
+};

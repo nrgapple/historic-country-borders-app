@@ -11,7 +11,11 @@ interface MapSourcesProps {
   selectedCountry?: string;
 }
 
-export default function MapSources({ data, places, selectedCountry }: MapSourcesProps) {
+export default function MapSources({
+  data,
+  places,
+  selectedCountry,
+}: MapSourcesProps) {
   const { settings } = useSettings();
 
   // Track settings impact on map rendering
@@ -22,7 +26,7 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       country_opacity: Math.round(settings.countryOpacity * 100),
       border_thickness: settings.borderThickness,
       show_labels: settings.showLabels,
-      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}_${settings.borderThickness}px_${settings.showLabels ? 'labels' : 'nolabels'}`
+      settings_combination: `${settings.textSize}_${settings.textCase}_${Math.round(settings.countryOpacity * 100)}_${settings.borderThickness}px_${settings.showLabels ? 'labels' : 'nolabels'}`,
     });
 
     // Track accessibility features usage
@@ -31,7 +35,7 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         feature_type: 'large_text',
         element: 'map_labels',
         text_size: settings.textSize,
-        labels_visible: settings.showLabels
+        labels_visible: settings.showLabels,
       });
     }
 
@@ -40,7 +44,7 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         formatting_type: 'uppercase',
         element: 'map_labels',
         text_case: settings.textCase,
-        labels_visible: settings.showLabels
+        labels_visible: settings.showLabels,
       });
     }
 
@@ -49,13 +53,13 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       ReactGA4.event('visual_preference_low_opacity', {
         opacity_level: 'low',
         opacity_value: Math.round(settings.countryOpacity * 100),
-        element: 'country_borders'
+        element: 'country_borders',
       });
     } else if (settings.countryOpacity >= 0.9) {
       ReactGA4.event('visual_preference_high_opacity', {
         opacity_level: 'high',
         opacity_value: Math.round(settings.countryOpacity * 100),
-        element: 'country_borders'
+        element: 'country_borders',
       });
     }
 
@@ -64,7 +68,7 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
       ReactGA4.event('labels_hidden_preference', {
         preference_type: 'clean_map',
         labels_visible: false,
-        map_element: 'all_labels'
+        map_element: 'all_labels',
       });
     }
   }, [settings]);
@@ -78,10 +82,17 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
         text_case: settings.textCase,
         country_opacity: Math.round(settings.countryOpacity * 100),
         border_thickness: settings.borderThickness,
-        show_labels: settings.showLabels
+        show_labels: settings.showLabels,
       });
     }
-  }, [selectedCountry, settings.textSize, settings.textCase, settings.countryOpacity, settings.borderThickness, settings.showLabels]);
+  }, [
+    selectedCountry,
+    settings.textSize,
+    settings.textCase,
+    settings.countryOpacity,
+    settings.borderThickness,
+    settings.showLabels,
+  ]);
 
   const renderBordersLayer = () => (
     <Source id="borders" type="geojson" data={data.borders}>
@@ -101,34 +112,36 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
           id: 'borders-outline',
           type: 'line',
           paint: {
-            'line-color': selectedCountry 
+            'line-color': selectedCountry
               ? [
                   'case',
                   ['==', ['get', 'NAME'], selectedCountry],
                   '#000000', // Black outline for selected country
-                  '#000000'  // Default black for others
+                  '#000000', // Default black for others
                 ]
               : '#000000',
             'line-width': [
               'interpolate',
               ['exponential', 1],
               ['zoom'],
-              3, selectedCountry 
+              3,
+              selectedCountry
                 ? [
                     'case',
                     ['==', ['get', 'NAME'], selectedCountry],
                     Math.max(settings.borderThickness * 2.5, 2), // Selected country gets thicker border, minimum 2px
-                    settings.borderThickness * 0.6  // Base thickness for non-selected countries (can be 0)
+                    settings.borderThickness * 0.6, // Base thickness for non-selected countries (can be 0)
                   ]
                 : settings.borderThickness * 0.6,
-              8, selectedCountry 
+              8,
+              selectedCountry
                 ? [
                     'case',
                     ['==', ['get', 'NAME'], selectedCountry],
-                    Math.max(settings.borderThickness * 5, 4),   // Selected country gets much thicker at higher zoom, minimum 4px
-                    settings.borderThickness * 1.5  // Base thickness * 1.5 for non-selected at higher zoom (can be 0)
+                    Math.max(settings.borderThickness * 5, 4), // Selected country gets much thicker at higher zoom, minimum 4px
+                    settings.borderThickness * 1.5, // Base thickness * 1.5 for non-selected at higher zoom (can be 0)
                   ]
-                : settings.borderThickness * 1.5
+                : settings.borderThickness * 1.5,
             ],
             'line-opacity': 1,
           },
@@ -148,8 +161,10 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 'interpolate',
                 ['exponential', 1],
                 ['zoom'],
-                3, Math.max(settings.borderThickness * 1.5, 1.5),
-                8, Math.max(settings.borderThickness * 3, 3)
+                3,
+                Math.max(settings.borderThickness * 1.5, 1.5),
+                8,
+                Math.max(settings.borderThickness * 3, 3),
               ],
               'line-opacity': 1,
             },
@@ -194,13 +209,16 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 'interpolate',
                 ['exponential', 1],
                 ['zoom'],
-                4, min,
-                8, max
+                4,
+                min,
+                8,
+                max,
               ],
               'text-padding': 5,
               'text-letter-spacing': 0.2,
               'text-max-width': 10,
-              'text-transform': settings.textCase === 'upper' ? 'uppercase' : 'none',
+              'text-transform':
+                settings.textCase === 'upper' ? 'uppercase' : 'none',
             },
           }}
         />
@@ -245,13 +263,16 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 'interpolate',
                 ['exponential', 1],
                 ['zoom'],
-                3, min,
-                6, max
+                3,
+                min,
+                6,
+                max,
               ],
               'text-padding': 3,
               'text-letter-spacing': 0.1,
               'text-max-width': 7,
-              'text-transform': settings.textCase === 'upper' ? 'uppercase' : 'none',
+              'text-transform':
+                settings.textCase === 'upper' ? 'uppercase' : 'none',
               'text-offset': [0, 2],
               'icon-allow-overlap': true,
               'icon-image': 'circle',
@@ -259,8 +280,10 @@ export default function MapSources({ data, places, selectedCountry }: MapSources
                 'interpolate',
                 ['exponential', 1],
                 ['zoom'],
-                3, 0.02,
-                8, 0.7
+                3,
+                0.02,
+                8,
+                0.7,
               ],
             },
           }}

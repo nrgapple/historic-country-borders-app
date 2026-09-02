@@ -4,19 +4,20 @@ export const SEO_CONFIG = {
   siteUrl: 'https://historicborders.app',
   defaultTitle: 'Historic Country Borders',
   titleTemplate: '%s | Historic Country Borders',
-  defaultDescription: 'Visualize country borders from different times in history (123,000 BC - 1994). Interactive historical maps showing how borders changed over time.',
-  
+  defaultDescription:
+    'Visualize country borders from different times in history (123,000 BC - 1994). Interactive historical maps showing how borders changed over time.',
+
   // Social media
   twitterHandle: '@historicborders',
-  
+
   // Images
   defaultOgImage: 'https://historicborders.app/og-image.png',
   favicon: '/favicon.ico',
-  
+
   // Colors and branding
   themeColor: '#6930c3',
   backgroundColor: '#252525',
-  
+
   // Keywords
   keywords: [
     'historical maps',
@@ -30,20 +31,20 @@ export const SEO_CONFIG = {
     'territorial changes',
     'world history',
     'cartography',
-    'border evolution'
+    'border evolution',
   ],
-  
+
   // Additional meta
   language: 'en',
   locale: 'en_US',
   author: 'Historic Borders Project',
-  
+
   // Structured data
   organization: {
     name: 'Historic Borders Project',
     url: 'https://historicborders.app',
-    logo: 'https://historicborders.app/logo.png'
-  }
+    logo: 'https://historicborders.app/logo.png',
+  },
 };
 
 export const generatePageTitle = (title?: string) => {
@@ -51,7 +52,10 @@ export const generatePageTitle = (title?: string) => {
   return `${title} | ${SEO_CONFIG.siteName}`;
 };
 
-export const generatePageDescription = (description?: string, year?: string) => {
+export const generatePageDescription = (
+  description?: string,
+  year?: string,
+) => {
   if (year && description) {
     return `Explore how country borders looked in the year ${year}. ${description}`;
   }
@@ -63,5 +67,7 @@ export const generatePageDescription = (description?: string, year?: string) => 
 
 export const generateCanonicalUrl = (path?: string) => {
   const cleanPath = path?.startsWith('/') ? path : `/${path || ''}`;
-  return `${SEO_CONFIG.siteUrl}${cleanPath}`.replace(/\/$/, '') || SEO_CONFIG.siteUrl;
-}; 
+  return (
+    `${SEO_CONFIG.siteUrl}${cleanPath}`.replace(/\/$/, '') || SEO_CONFIG.siteUrl
+  );
+};

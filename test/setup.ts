@@ -1,9 +1,9 @@
-import '@testing-library/jest-dom'
-import { vi } from 'vitest'
-import React from 'react'
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+import React from 'react';
 
 // Make React available globally for JSX
-global.React = React
+global.React = React;
 
 // Mock Mapbox GL JS
 Object.defineProperty(window, 'matchMedia', {
@@ -18,20 +18,20 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-}))
+}));
 
 // Mock URL.createObjectURL
 Object.defineProperty(URL, 'createObjectURL', {
   writable: true,
   value: vi.fn(() => 'mocked-url'),
-})
+});
 
 // Mock mapbox-gl
 vi.mock('mapbox-gl', () => ({
@@ -45,7 +45,7 @@ vi.mock('mapbox-gl', () => ({
       removeLayer: vi.fn(),
       removeSource: vi.fn(),
       getStyle: vi.fn(() => ({
-        imports: [{ data: { layers: [] } }]
+        imports: [{ data: { layers: [] } }],
       })),
       setStyle: vi.fn(),
       isStyleLoaded: vi.fn(() => true),
@@ -53,7 +53,7 @@ vi.mock('mapbox-gl', () => ({
     })),
     accessToken: 'mock-token',
   },
-}))
+}));
 
 // Mock react-map-gl
 vi.mock('react-map-gl', () => ({
@@ -62,4 +62,4 @@ vi.mock('react-map-gl', () => ({
   Layer: vi.fn(() => null),
   Popup: vi.fn(({ children }) => children),
   NavigationControl: vi.fn(() => null),
-})) 
+}));

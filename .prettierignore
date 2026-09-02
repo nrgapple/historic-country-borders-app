@@ -1,0 +1,8 @@
+.next/
+coverage/
+node_modules/
+out/
+playwright-report/
+public/sitemap.xml
+test-results/
+yarn.lock

@@ -53,10 +53,10 @@ export function stringToVibrantHexColor(inputString: string): string {
       diff === 0
         ? 0
         : max === r
-        ? ((g - b) / diff) % 6
-        : max === g
-        ? (b - r) / diff + 2
-        : (r - g) / diff + 4;
+          ? ((g - b) / diff) % 6
+          : max === g
+            ? (b - r) / diff + 2
+            : (r - g) / diff + 4;
     const s = max === 0 ? 0 : diff / max;
     const v = max / 255;
     return [h * 60, s, v];

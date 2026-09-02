@@ -5,6 +5,7 @@ The feedback system supports multiple storage backends: Discord webhooks and Air
 ## Overview
 
 The feedback system collects:
+
 - **Feedback ID**: Unique identifier (UUID) for each feedback submission
 - **Email** (optional): User's email address
 - **Message** (optional): User's feedback message
@@ -13,6 +14,7 @@ The feedback system collects:
 - **Metadata**: Additional data including timestamp, user agent, IP address, and custom metadata
 
 All feedback is automatically enhanced with:
+
 - ISO timestamp
 - User agent string
 - IP address (from headers)
@@ -23,12 +25,14 @@ All feedback is automatically enhanced with:
 See [DISCORD_SETUP.md](../DISCORD_SETUP.md) for detailed Discord webhook setup instructions.
 
 **Environment Variable:**
+
 ```bash
-NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
 ```
 
 **Discord Message Format:**
 The Discord webhook sends rich embed messages with:
+
 - **Color-coded embeds** based on rating (green for nice, orange for meh, red for bad)
 - **Environment indicator** (🔧 Development or 🚀 Production)
 - **Feedback ID** for tracking
@@ -49,26 +53,29 @@ The Discord webhook sends rich embed messages with:
 
 Create the following fields in your Feedback table:
 
-| Field Name | Field Type | Description |
-|------------|------------|-------------|
+| Field Name    | Field Type       | Description                                                                                       |
+| ------------- | ---------------- | ------------------------------------------------------------------------------------------------- |
 | `Feedback ID` | Single line text | **Unique identifier (UUID)** for each feedback submission - mark this field as unique in Airtable |
-| `Timestamp` | Date | ISO timestamp of feedback submission |
-| `Email` | Email | User's email (optional) |
-| `Message` | Long text | User's feedback message (optional) |
-| `Rating` | Single select | Options: `bad`, `meh`, `nice` |
-| `Visitor ID` | Single line text | Fingerprint-based visitor identifier (not unique - same user can submit multiple feedbacks) |
-| `Environment` | Single select | **Development** or **Production** - indicates whether feedback came from dev or deployment |
-| `Metadata` | Long text | JSON string of additional metadata |
+| `Timestamp`   | Date             | ISO timestamp of feedback submission                                                              |
+| `Email`       | Email            | User's email (optional)                                                                           |
+| `Message`     | Long text        | User's feedback message (optional)                                                                |
+| `Rating`      | Single select    | Options: `bad`, `meh`, `nice`                                                                     |
+| `Visitor ID`  | Single line text | Fingerprint-based visitor identifier (not unique - same user can submit multiple feedbacks)       |
+| `Environment` | Single select    | **Development** or **Production** - indicates whether feedback came from dev or deployment        |
+| `Metadata`    | Long text        | JSON string of additional metadata                                                                |
 
 **Field Configuration:**
+
 - **Environment field**: Create a single select field with options: `Development`, `Production`
 
-**Important:** 
+**Important:**
+
 - **Feedback ID** is the unique field - each feedback submission gets a unique UUID
 - Mark the `Feedback ID` field as **unique** in Airtable to prevent duplicate submissions
 - `Visitor ID` is NOT unique since the same user can submit multiple feedbacks
 
 **Field Configuration:**
+
 - **Rating field**: Create a single select field with options: `bad`, `meh`, `nice`
 - **Metadata field**: Store as long text (JSON string) for flexibility
 
@@ -109,7 +116,8 @@ AIRTABLE_BASE_ID=your_base_id_here
 AIRTABLE_TABLE_NAME=Feedback
 ```
 
-**Note:** 
+**Note:**
+
 - `AIRTABLE_TABLE_NAME` defaults to "Feedback" if not specified
 - Never commit these credentials to version control
 - Personal Access Tokens are more secure than API keys and can be scoped to specific bases
@@ -120,7 +128,7 @@ Add all configured services to your `.env.local` file:
 
 ```bash
 # Discord (optional but recommended for notifications)
-NEXT_PUBLIC_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
 
 # Airtable (optional)
 AIRTABLE_PERSONAL_ACCESS_TOKEN=your_personal_access_token
@@ -148,6 +156,7 @@ AIRTABLE_TABLE_NAME=Feedback
 ### Test the Feedback System
 
 1. Start your development server:
+
    ```bash
    yarn dev
    ```
@@ -237,6 +246,7 @@ Each feedback submission includes:
 ```
 
 **Key Points:**
+
 - `id` is a unique UUID generated for each feedback submission
 - `visitorId` is NOT unique - the same user can submit multiple feedbacks
 - Use `id` as the unique identifier in Airtable (mark the field as unique)
@@ -250,4 +260,3 @@ To add more metadata fields:
 3. For Airtable: Add new fields to your table schema
 
 The metadata object is flexible and can include any JSON-serializable data.
-

@@ -16,6 +16,7 @@ This app uses **Redis** to cache AI responses, improving performance and reducin
 If deploying to Vercel, you can use Vercel's Redis service:
 
 1. **Deploy to Vercel** (if not already deployed)
+
    ```bash
    npx vercel --prod
    ```
@@ -47,12 +48,14 @@ You can use any Redis provider (Redis Cloud, AWS ElastiCache, etc.):
 For local development, you can either:
 
 **A) Use Remote Redis** (recommended):
+
 ```bash
 # Add your Redis URL to .env.local
 REDIS_URL=redis://your-remote-redis-url
 ```
 
 **B) Use Redis locally** (advanced):
+
 ```bash
 # Install and run Redis locally
 brew install redis  # macOS
@@ -80,20 +83,25 @@ GEMINI_API_KEY=your_gemini_api_key_here
 ## Cache Behavior
 
 ### Cache Keys
+
 ```
 ai:{country_name}:{year}
 ```
+
 Examples:
+
 - `ai:france:1789`
 - `ai:holy_roman_empire:1500`
 - `ai:united_states:1776`
 
 ### Cache TTL
+
 - **Duration**: 1 hour (3600 seconds)
 - **Automatic expiration**: Yes
 - **Manual invalidation**: Not needed (content is historical)
 
 ### Cache Strategy
+
 1. **Check cache first** - Look for existing response
 2. **Cache miss** - Make API call to Gemini
 3. **Store result** - Cache successful responses for 1 hour
@@ -104,16 +112,20 @@ Examples:
 The app tracks comprehensive Redis cache analytics:
 
 ### Cache Hit/Miss Events
+
 - `cache_hit` - Response served from cache (faster)
 - `cache_miss` - No cached response, API call made
 - `cache_error` - Redis unavailable (fallback to API)
 
-### Cache Write Events  
+### Cache Write Events
+
 - `cache_write_success` - Response successfully cached
 - `cache_write_error` - Failed to cache (logs warning)
 
 ### Performance Benefits
+
 In Google Analytics, monitor:
+
 - **Cache hit ratio** - Higher is better (saves API calls)
 - **Response times** - Cache hits should be <100ms
 - **API usage** - Should decrease as cache warms up
@@ -123,11 +135,13 @@ In Google Analytics, monitor:
 ### Common Issues
 
 **"Redis cache error (continuing without cache)"**
+
 - Normal fallback behavior
 - App continues working without caching
 - Check Vercel Redis dashboard for database status
 
 **"Redis OOM error - cannot cache X MB value"**
+
 - **Problem**: Redis has reached its `maxmemory` limit and cannot store new values
 - **Impact**: Caching fails, but app continues working (falls back to API calls)
 - **Solutions**:
@@ -138,34 +152,39 @@ In Google Analytics, monitor:
        maxmemory-policy allkeys-lru
        ```
   2. **Increase maxmemory**: Upgrade your Redis plan or increase memory limit
-  3. **Reduce Cache Size**: 
+  3. **Reduce Cache Size**:
      - Reduce cache TTL (currently 24 hours for PA districts, 24 hours for AI responses)
      - Consider not caching very large values (>20MB)
   4. **Clear Cache**: Manually clear old cache entries (see Manual Cache Management below)
 - **Note**: The app handles OOM errors gracefully and continues working without caching
 
 **Slow first requests, fast subsequent ones**
+
 - Expected behavior - first request populates cache
 - Subsequent requests for same country/year are cached
 
 **Cache not working in development**
+
 - Ensure `.env.local` has REDIS_URL environment variable
 - Run `npx vercel env pull .env.local` to sync
 
 ### Vercel Redis Limits
 
 **Hobby Plan (Free)**:
+
 - 30,000 requests/month
 - 256 MB storage
 - Perfect for most use cases
 
 **Pro Plan**:
+
 - Higher limits available
 - See [Vercel Redis Pricing](https://vercel.com/docs/storage/vercel-redis/limits-and-pricing)
 
 ### Manual Cache Management
 
 **Clear cache** (if needed):
+
 ```bash
 # Using Redis CLI (connect to your Redis instance)
 redis-cli -u $REDIS_URL FLUSHALL
@@ -176,15 +195,17 @@ redis-cli -u $REDIS_URL
 ```
 
 **View cache contents**:
+
 ```bash
 # List all AI cache keys
 redis-cli -u $REDIS_URL KEYS "ai:*"
 
-# Get specific value  
+# Get specific value
 redis-cli -u $REDIS_URL GET "ai:france:1789"
 ```
 
 **Check Redis memory usage**:
+
 ```bash
 # Connect to Redis
 redis-cli -u $REDIS_URL
@@ -203,6 +224,7 @@ redis-cli -u $REDIS_URL
 ```
 
 **Configure eviction policy** (if you have access):
+
 ```bash
 # Set to evict least recently used keys when memory is full
 redis-cli -u $REDIS_URL CONFIG SET maxmemory-policy allkeys-lru

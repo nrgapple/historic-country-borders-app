@@ -1,5 +1,5 @@
-import React from "react";
-import cx from "classnames";
+import React from 'react';
+import cx from 'classnames';
 
 export default function FeedbackModalElementRate({
   children,
@@ -17,8 +17,8 @@ export default function FeedbackModalElementRate({
   return (
     <label
       className={cx(
-        "feedback-widget-form-rate-label",
-        isSelected && "selected"
+        'feedback-widget-form-rate-label',
+        isSelected && 'selected',
       )}
     >
       <input

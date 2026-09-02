@@ -8,13 +8,13 @@ interface ViewerTimelineProps {
   onChange: (year: string) => void;
 }
 
-export default function ViewerTimeline({ 
-  index, 
-  years, 
-  onChange 
+export default function ViewerTimeline({
+  index,
+  years,
+  onChange,
 }: ViewerTimelineProps) {
   const hide = useAppStateValue('hide');
-  
+
   return (
     <>
       {!hide && (
@@ -31,4 +31,4 @@ export default function ViewerTimeline({
       )}
     </>
   );
-} 
+}

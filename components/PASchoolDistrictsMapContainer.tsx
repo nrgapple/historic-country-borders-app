@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { usePASchoolDistricts } from '../hooks/usePASchoolDistricts';
 import toast from 'react-hot-toast';
 import DistrictInfo, { DistrictInfoData } from './DistrictInfo';
@@ -31,7 +26,9 @@ const DEFAULT_PA_VIEW = {
 
 export default function PASchoolDistrictsMapContainer() {
   const { data: { data, places } = {}, isLoading } = usePASchoolDistricts();
-  const [selectedInfo, setSelectedInfo] = useState<DistrictInfoData | undefined>();
+  const [selectedInfo, setSelectedInfo] = useState<
+    DistrictInfoData | undefined
+  >();
   const { viewState, updateMapView, isReady } = useMapQuery();
   const { settings } = useSettings();
   const hasSetStyleRef = useRef(false);
@@ -44,7 +41,10 @@ export default function PASchoolDistrictsMapContainer() {
   useEffect(() => {
     const id = 'loading';
     if (isLoading) {
-      toast.loading('Loading School Districts...', { id, position: 'bottom-right' });
+      toast.loading('Loading School Districts...', {
+        id,
+        position: 'bottom-right',
+      });
     } else {
       toast.dismiss(id);
     }
@@ -70,26 +70,35 @@ export default function PASchoolDistrictsMapContainer() {
               features: allFeatures,
             });
             const [minLng, minLat, maxLng, maxLat] = bboxResult;
-            
+
             // Fit map to bounds with padding (larger padding = more zoomed out)
             map.fitBounds(
-              [[minLng, minLat], [maxLng, maxLat]],
+              [
+                [minLng, minLat],
+                [maxLng, maxLat],
+              ],
               {
                 padding: { top: 100, bottom: 100, left: 100, right: 100 },
                 duration: 1000,
                 essential: true,
-              }
+              },
             );
             setInitialViewSet(true);
           }
         }
       } catch (error) {
-        console.warn('Failed to set initial PA bounds, using default view:', error);
+        console.warn(
+          'Failed to set initial PA bounds, using default view:',
+          error,
+        );
         // Fallback to default view
         if (mapRef.current?.getMap) {
           const map = mapRef.current.getMap();
           if (map.isStyleLoaded()) {
-            map.setCenter([DEFAULT_PA_VIEW.longitude, DEFAULT_PA_VIEW.latitude]);
+            map.setCenter([
+              DEFAULT_PA_VIEW.longitude,
+              DEFAULT_PA_VIEW.latitude,
+            ]);
             map.setZoom(DEFAULT_PA_VIEW.zoom);
           }
         }
@@ -133,54 +142,74 @@ export default function PASchoolDistrictsMapContainer() {
     // Don't set style as loaded here - wait for style.load event
   }, []);
 
-  const handleViewStateChange = useCallback(({ viewState: newViewState }: { viewState: any }) => {
-    // Use debounced update for smooth map movement
-    updateMapView(
-      newViewState.longitude, 
-      newViewState.latitude, 
-      newViewState.zoom
-    );
-  }, [updateMapView]);
+  const handleViewStateChange = useCallback(
+    ({ viewState: newViewState }: { viewState: any }) => {
+      // Use debounced update for smooth map movement
+      updateMapView(
+        newViewState.longitude,
+        newViewState.latitude,
+        newViewState.zoom,
+      );
+    },
+    [updateMapView],
+  );
 
-  const handleClick = useCallback(({ originalEvent, features, lngLat }: { originalEvent: any; features?: any[]; lngLat: any }) => {
-    if (!features?.length) {
-      setSelectedInfo(undefined);
-      return;
-    }
-    
-    const feature = features[0];
-    const districtName = feature.properties?.NAME;
-    const properties = feature.properties;
-    originalEvent.stopPropagation();
-    
-    if (districtName) {
-      setSelectedInfo({
-        districtName,
-        properties,
-      });
-      
-      ReactGA4.event('district_select', {
-        district_name: districtName,
-        selection_method: 'map_click',
-      });
-    }
-  }, []);
+  const handleClick = useCallback(
+    ({
+      originalEvent,
+      features,
+      lngLat,
+    }: {
+      originalEvent: any;
+      features?: any[];
+      lngLat: any;
+    }) => {
+      if (!features?.length) {
+        setSelectedInfo(undefined);
+        return;
+      }
+
+      const feature = features[0];
+      const districtName = feature.properties?.NAME;
+      const properties = feature.properties;
+      originalEvent.stopPropagation();
+
+      if (districtName) {
+        setSelectedInfo({
+          districtName,
+          properties,
+        });
+
+        ReactGA4.event('district_select', {
+          district_name: districtName,
+          selection_method: 'map_click',
+        });
+      }
+    },
+    [],
+  );
 
   const closeDistrictInfo = useCallback(() => {
     setSelectedInfo(undefined);
   }, []);
 
   // Use default PA view if no viewState from query params
-  const mapViewState = viewState && 
-    typeof viewState.longitude === 'number' && 
-    typeof viewState.latitude === 'number' && 
-    !isNaN(viewState.longitude) && 
-    !isNaN(viewState.latitude) 
-    ? viewState 
-    : DEFAULT_PA_VIEW;
+  const mapViewState =
+    viewState &&
+    typeof viewState.longitude === 'number' &&
+    typeof viewState.latitude === 'number' &&
+    !isNaN(viewState.longitude) &&
+    !isNaN(viewState.latitude)
+      ? viewState
+      : DEFAULT_PA_VIEW;
 
   return (
-    <div className="map-grid" data-testid="pa-school-districts-map-container">
+    <div
+      className="map-grid"
+      data-testid="pa-school-districts-map-container"
+      data-data-state={isLoading ? 'loading' : data ? 'ready' : 'unavailable'}
+      data-feature-count={data?.borders.features.length ?? 0}
+    >
       <MapboxDefaultMap
         key={isReady ? 'ready-pa-school-districts' : 'loading'}
         interactiveLayerIds={['districts']}
@@ -212,19 +241,16 @@ export default function PASchoolDistrictsMapContainer() {
       >
         {/* Only render MapSources when style is fully loaded and data is available */}
         {data && isStyleLoaded && (
-          <PASchoolDistrictsMapSources 
-            data={data} 
-            selectedDistrict={selectedInfo?.districtName} 
+          <PASchoolDistrictsMapSources
+            data={data}
+            selectedDistrict={selectedInfo?.districtName}
           />
         )}
       </MapboxDefaultMap>
-      
+
       {/* Show district info popup */}
       {selectedInfo && (
-        <DistrictInfo 
-          info={selectedInfo} 
-          onClose={closeDistrictInfo}
-        />
+        <DistrictInfo info={selectedInfo} onClose={closeDistrictInfo} />
       )}
     </div>
   );
