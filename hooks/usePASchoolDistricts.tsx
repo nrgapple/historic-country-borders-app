@@ -21,12 +21,36 @@ const generateTextbookColor = (inputString: string): string => {
   };
 
   const atlasColors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
-    '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA',
-    '#F1C40F', '#E74C3C', '#3498DB', '#2ECC71', '#9B59B6',
-    '#E67E22', '#1ABC9C', '#34495E', '#F39C12', '#D35400',
-    '#27AE60', '#2980B9', '#8E44AD', '#16A085', '#F4D03F',
-    '#58D68D', '#5DADE2', '#AF7AC5', '#F8D7DA', '#D5DBDB',
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#FFA07A',
+    '#98D8C8',
+    '#F7DC6F',
+    '#BB8FCE',
+    '#85C1E9',
+    '#F8C471',
+    '#82E0AA',
+    '#F1C40F',
+    '#E74C3C',
+    '#3498DB',
+    '#2ECC71',
+    '#9B59B6',
+    '#E67E22',
+    '#1ABC9C',
+    '#34495E',
+    '#F39C12',
+    '#D35400',
+    '#27AE60',
+    '#2980B9',
+    '#8E44AD',
+    '#16A085',
+    '#F4D03F',
+    '#58D68D',
+    '#5DADE2',
+    '#AF7AC5',
+    '#F8D7DA',
+    '#D5DBDB',
   ];
 
   const hashValue = Math.abs(hash(inputString));
@@ -38,18 +62,19 @@ const calculateCentroid = (coordinates: number[][][]): [number, number] => {
   if (!coordinates[0] || coordinates[0].length === 0) {
     return [0, 0];
   }
-  
+
   const ring = coordinates[0];
   const ringLength = ring.length;
-  
+
   // For very large polygons, sample points to avoid memory issues
   const maxSamplePoints = 500;
-  const step = ringLength > maxSamplePoints ? Math.ceil(ringLength / maxSamplePoints) : 1;
-  
+  const step =
+    ringLength > maxSamplePoints ? Math.ceil(ringLength / maxSamplePoints) : 1;
+
   let sumLng = 0;
   let sumLat = 0;
   let count = 0;
-  
+
   for (let i = 0; i < ringLength; i += step) {
     const point = ring[i];
     if (point && point.length >= 2) {
@@ -58,7 +83,7 @@ const calculateCentroid = (coordinates: number[][][]): [number, number] => {
       count++;
     }
   }
-  
+
   return count > 0 ? [sumLng / count, sumLat / count] : [0, 0];
 };
 
@@ -74,7 +99,7 @@ const processData = (data: FeatureCollection): CountryData => {
 
     const name = feature.properties.SCHOOL_NAM;
     const color = generateTextbookColor(name);
-    
+
     // Calculate area - skip if it fails
     let featureArea = 0;
     try {
@@ -89,10 +114,10 @@ const processData = (data: FeatureCollection): CountryData => {
     } catch (e) {
       // Area calculation is optional, continue without it
     }
-    
+
     // Use centroid for label placement - much faster and more reliable than polylabel
     const labelCoords = calculateCentroid(geometry.coordinates);
-    
+
     labels.push({
       type: 'Feature',
       geometry: {
@@ -112,7 +137,7 @@ const processData = (data: FeatureCollection): CountryData => {
         AVTS: feature.properties.AVTS,
       } as GeoJsonProperties,
     });
-    
+
     borders.push({
       type: 'Feature',
       geometry: feature.geometry,
@@ -148,7 +173,7 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 const isIndexedDBAvailable = (): boolean => {
   if (typeof window === 'undefined') return false;
   if (!window.indexedDB) return false;
-  
+
   // Some browsers (like Firefox in private mode) have indexedDB but it throws errors
   // We'll catch those errors in the actual operations
   return true;
@@ -171,7 +196,7 @@ const openDB = (): Promise<IDBDatabase> => {
         console.warn('IndexedDB open failed:', error?.name, error?.message);
         reject(error || new Error('IndexedDB open failed'));
       };
-      
+
       request.onsuccess = () => resolve(request.result);
 
       request.onupgradeneeded = (event) => {
@@ -241,7 +266,7 @@ const setCachedData = async (data: BordersEndpointData): Promise<void> => {
       const transaction = db.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const expiry = Date.now() + CACHE_TTL_MS;
-      
+
       const request = store.put({ data, expiry }, CACHE_KEY);
 
       request.onsuccess = () => {
@@ -292,38 +317,43 @@ const fetcher = async (url: string): Promise<BordersEndpointData> => {
     console.log('PA school districts cache hit (IndexedDB)');
     return cached;
   }
-  
+
   console.log('PA school districts cache miss - fetching from API');
-  
+
   // Fetch through our API route (which handles CORS)
   const response = await fetch(url);
-  
+
   if (!response.ok) {
-    throw new Error(`Failed to fetch PA school districts: ${response.statusText}`);
+    throw new Error(
+      `Failed to fetch PA school districts: ${response.statusText}`,
+    );
   }
-  
+
   // Note: Progress tracking doesn't work well through the API proxy
   // because the browser buffers the streamed response. We just show a loading toast instead.
-  const mapData = await response.json() as FeatureCollection;
-  
+  const mapData = (await response.json()) as FeatureCollection;
+
   // Process on client side
   const data = processData(mapData);
-  const places = { type: 'FeatureCollection', features: [] } as FeatureCollection;
-  
+  const places = {
+    type: 'FeatureCollection',
+    features: [],
+  } as FeatureCollection;
+
   const result = { data, places };
-  
+
   // Cache the processed data in IndexedDB (async, don't wait)
   setCachedData(result).catch((error) => {
     console.warn('Failed to cache PA school districts data:', error);
   });
-  
+
   return result;
 };
 
 export const usePASchoolDistricts = () => {
   const { data, error } = useSWR<BordersEndpointData>(
     PASDA_GEOJSON_URL,
-    fetcher
+    fetcher,
   );
 
   return {
@@ -332,4 +362,3 @@ export const usePASchoolDistricts = () => {
     isError: error,
   } as const;
 };
-

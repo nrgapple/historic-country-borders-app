@@ -26,8 +26,8 @@ const SchoolDistrictsPage = () => {
 
   return (
     <>
-      <Layout 
-        title="Pennsylvania School Districts" 
+      <Layout
+        title="Pennsylvania School Districts"
         url="https://historicborders.app/pa/school-districts"
         description="Interactive map of Pennsylvania school districts for 2025. Explore all 500 school districts across the state with detailed information."
       >
@@ -35,10 +35,7 @@ const SchoolDistrictsPage = () => {
           <PASchoolDistrictsMapContainer />
         </div>
       </Layout>
-      <PersistentUIToggle 
-        isUIHidden={hide}
-        onToggle={handleToggleUI}
-      />
+      <PersistentUIToggle isUIHidden={hide} onToggle={handleToggleUI} />
       <SettingsButton />
       <Toaster
         toastOptions={{
@@ -89,4 +86,3 @@ const SchoolDistrictsPage = () => {
 };
 
 export default SchoolDistrictsPage;
-

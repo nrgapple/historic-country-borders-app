@@ -12,19 +12,26 @@ export default function SettingsButton() {
   const handleToggleModal = () => {
     const newState = !isModalOpen;
     setIsModalOpen(newState);
-    
+
     if (newState) {
       // Track modal opening
       modalOpenTimeRef.current = Date.now();
       settingsInteractionCountRef.current = 0;
-      
+
       const hour = new Date().getHours();
-      const timeOfDay = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-      
+      const timeOfDay =
+        hour < 6
+          ? 'night'
+          : hour < 12
+            ? 'morning'
+            : hour < 18
+              ? 'afternoon'
+              : 'evening';
+
       ReactGA4.event('settings_open', {
         time_of_day: timeOfDay,
         hour_of_day: hour,
-        ui_element: 'settings_button'
+        ui_element: 'settings_button',
       });
     } else {
       handleCloseModal();
@@ -33,22 +40,32 @@ export default function SettingsButton() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    
+
     // Calculate session duration
-    const sessionDuration = modalOpenTimeRef.current ? Date.now() - modalOpenTimeRef.current : 0;
+    const sessionDuration = modalOpenTimeRef.current
+      ? Date.now() - modalOpenTimeRef.current
+      : 0;
     const sessionDurationSeconds = Math.round(sessionDuration / 1000);
-    
+
     // Determine engagement level based on session duration and interactions
-    const engagementLevel = sessionDuration < 3000 ? 'quick_look' : 
-                           sessionDuration < 10000 ? 'moderate_engagement' : 'deep_engagement';
-    
+    const engagementLevel =
+      sessionDuration < 3000
+        ? 'quick_look'
+        : sessionDuration < 10000
+          ? 'moderate_engagement'
+          : 'deep_engagement';
+
     ReactGA4.event('settings_close', {
       session_duration_ms: sessionDuration,
       session_duration_seconds: sessionDurationSeconds,
       interaction_count: settingsInteractionCountRef.current,
       engagement_level: engagementLevel,
-      session_quality: settingsInteractionCountRef.current === 0 ? 'no_interaction' : 
-                      settingsInteractionCountRef.current < 3 ? 'low_interaction' : 'high_interaction'
+      session_quality:
+        settingsInteractionCountRef.current === 0
+          ? 'no_interaction'
+          : settingsInteractionCountRef.current < 3
+            ? 'low_interaction'
+            : 'high_interaction',
     });
 
     // Reset tracking refs
@@ -89,8 +106,8 @@ export default function SettingsButton() {
           <span className="settings-button-icon">⚙️</span>
         </button>
       </div>
-      
+
       <SettingsModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
-} 
+}

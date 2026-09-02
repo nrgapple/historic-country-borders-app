@@ -40,22 +40,22 @@ describe('AI Compare API', () => {
 
   it('should require POST method', async () => {
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = { method: 'GET' } as any;
     const res = mockResponse as any;
 
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(405);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: '', 
-      error: 'Method not allowed' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: '',
+      error: 'Method not allowed',
     });
   });
 
   it('should validate required fields', async () => {
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = {
       method: 'POST',
       body: {
@@ -68,26 +68,27 @@ describe('AI Compare API', () => {
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: '', 
-      error: 'Country 1 name is required' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: '',
+      error: 'Country 1 name is required',
     });
   });
 
   it('should handle missing API key', async () => {
     delete process.env.GEMINI_API_KEY;
-    
+
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = mockRequest as any;
     const res = mockResponse as any;
 
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: '', 
-      error: 'AI comparison requires Gemini API key setup. Please check the README.' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: '',
+      error:
+        'AI comparison requires Gemini API key setup. Please check the README.',
     });
   });
 
@@ -96,15 +97,15 @@ describe('AI Compare API', () => {
     (redisCache.get as any).mockResolvedValue('Cached comparison result');
 
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = mockRequest as any;
     const res = mockResponse as any;
 
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: 'Cached comparison result' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: 'Cached comparison result',
     });
   });
 
@@ -116,17 +117,24 @@ describe('AI Compare API', () => {
     // Mock successful Gemini API response
     (global.fetch as any).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        candidates: [{
-          content: {
-            parts: [{ text: 'AI generated comparison between France and England in 1800' }]
-          }
-        }]
-      })
+      json: () =>
+        Promise.resolve({
+          candidates: [
+            {
+              content: {
+                parts: [
+                  {
+                    text: 'AI generated comparison between France and England in 1800',
+                  },
+                ],
+              },
+            },
+          ],
+        }),
     });
 
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = mockRequest as any;
     const res = mockResponse as any;
 
@@ -134,8 +142,8 @@ describe('AI Compare API', () => {
 
     expect(global.fetch).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: 'AI generated comparison between France and England in 1800' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: 'AI generated comparison between France and England in 1800',
     });
   });
 
@@ -148,20 +156,20 @@ describe('AI Compare API', () => {
       ok: false,
       status: 429,
       statusText: 'Too Many Requests',
-      text: () => Promise.resolve('Rate limit exceeded')
+      text: () => Promise.resolve('Rate limit exceeded'),
     });
 
     const { default: handler } = await import('../pages/api/ai-compare');
-    
+
     const req = mockRequest as any;
     const res = mockResponse as any;
 
     await handler(req, res);
 
     expect(res.status).toHaveBeenCalledWith(429);
-    expect(res.json).toHaveBeenCalledWith({ 
-      content: '', 
-      error: 'HTTP error! status: 429 - Too Many Requests' 
+    expect(res.json).toHaveBeenCalledWith({
+      content: '',
+      error: 'HTTP error! status: 429 - Too Many Requests',
     });
   });
 
@@ -177,4 +185,4 @@ describe('AI Compare API', () => {
     expect(country1.year).toBe('100');
     expect(country2.year).toBe('100');
   });
-}); 
+});

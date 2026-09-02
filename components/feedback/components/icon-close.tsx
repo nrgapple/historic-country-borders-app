@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-export default function IconClose({ size = 34, color = "#000", ...props }) {
+export default function IconClose({ size = 34, color = '#000', ...props }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

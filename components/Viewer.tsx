@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  convertYearString,
-  mapBCFormat,
-} from '../util/constants';
+import { convertYearString, mapBCFormat } from '../util/constants';
 import PersistentUIToggle from '../components/PersistentUIToggle';
 import SettingsButton from '../components/SettingsButton';
 import Layout from '../components/Layout';
@@ -30,16 +27,26 @@ export interface DataProps {
   currentYear?: string;
 }
 
-export default function Viewer({ years, user, id, config, currentYear }: DataProps) {
+export default function Viewer({
+  years,
+  user,
+  id,
+  config,
+  currentYear,
+}: DataProps) {
   const hide = useAppStateValue('hide');
   const setState = useAppStateSetter();
 
   // Use year routing instead of query parameters
-  const { currentYear: routedYear, setYear, isReady } = useYearRouting(currentYear);
-  
+  const {
+    currentYear: routedYear,
+    setYear,
+    isReady,
+  } = useYearRouting(currentYear);
+
   // Still use query for map state (lng, lat, zoom)
   const { query, updateQuery } = useQuery();
-  
+
   // Get the current year with proper validation and fallback
   const year = useMemo(() => {
     // If we have a routed year (from URL path), use it
@@ -64,7 +71,7 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
   // Only run after router is ready to avoid clearing query params during hydration
   useEffect(() => {
     if (!isReady) return; // Wait for router to be ready
-    
+
     // Only set random if no year is provided at all
     if (!routedYear && years.length > 0) {
       const randomYear = getRandomYear(years);
@@ -96,8 +103,8 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
 
   return (
     <>
-      <Layout 
-        title={config.name} 
+      <Layout
+        title={config.name}
         url={`https://historicborders.app${year ? `/year/${year}` : ''}`}
         year={year}
         description={`Explore how country borders looked in the year ${year}. Interactive historical map showing political boundaries and territories as they existed ${year} years ago.`}
@@ -110,8 +117,8 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
             ReactGA4.event('timeline_year_change', {
               new_year: y,
               previous_year: year,
-              year_index: years.findIndex(yr => yr.toString() === y),
-              navigation_method: 'timeline_control'
+              year_index: years.findIndex((yr) => yr.toString() === y),
+              navigation_method: 'timeline_control',
             });
           }}
         />
@@ -124,15 +131,12 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
             ReactGA4.event('map_interaction', {
               year: years[index],
               interaction_type: 'user_interaction',
-              map_year: convertYearString(mapBCFormat, years[index])
+              map_year: convertYearString(mapBCFormat, years[index]),
             });
           }}
         />
       </Layout>
-      <PersistentUIToggle 
-        isUIHidden={hide}
-        onToggle={handleToggleUI}
-      />
+      <PersistentUIToggle isUIHidden={hide} onToggle={handleToggleUI} />
       <SettingsButton />
       <Toaster
         toastOptions={{
@@ -181,5 +185,3 @@ export default function Viewer({ years, user, id, config, currentYear }: DataPro
     </>
   );
 }
-
-

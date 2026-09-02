@@ -18,9 +18,13 @@ export default function DistrictInfo({ info, onClose }: DistrictInfoProps) {
   const { districtName = '', properties } = info ?? {};
   const { settings } = useSettings();
   const provider = settings.infoProvider;
-  
+
   // Try Wikipedia search with district name
-  const { info: description, title: title, isLoading } = useCountryInfo(districtName, { provider });
+  const {
+    info: description,
+    title: title,
+    isLoading,
+  } = useCountryInfo(districtName, { provider });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],
@@ -56,15 +60,26 @@ export default function DistrictInfo({ info, onClose }: DistrictInfoProps) {
       AVTS: 'Career/Technical School',
     };
 
-    const relevantFields = Object.keys(displayFields).filter(key => 
-      properties[key] != null && properties[key] !== '' && properties[key] !== 0
+    const relevantFields = Object.keys(displayFields).filter(
+      (key) =>
+        properties[key] != null &&
+        properties[key] !== '' &&
+        properties[key] !== 0,
     );
 
     if (relevantFields.length === 0) return null;
 
     return (
-      <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #ccc' }}>
-        <h4 style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>District Information</h4>
+      <div
+        style={{
+          marginTop: '1rem',
+          paddingTop: '1rem',
+          borderTop: '1px solid #ccc',
+        }}
+      >
+        <h4 style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
+          District Information
+        </h4>
         <dl style={{ margin: 0 }}>
           {relevantFields.map((key) => (
             <div key={key} style={{ marginBottom: '0.5rem' }}>
@@ -87,8 +102,8 @@ export default function DistrictInfo({ info, onClose }: DistrictInfoProps) {
     <div className="country-info">
       <div className="country-info-header">
         <div className="country-info-title">{title || districtName}</div>
-        <button 
-          className="country-info-close" 
+        <button
+          className="country-info-close"
           onClick={onClose}
           aria-label="Close district information"
         >
@@ -100,7 +115,9 @@ export default function DistrictInfo({ info, onClose }: DistrictInfoProps) {
           <>📚 Loading information...</>
         ) : empty ? (
           <>
-            📖 No Wikipedia information available<br />for this district 😔
+            📖 No Wikipedia information available
+            <br />
+            for this district 😔
             {propertiesSection}
           </>
         ) : (
@@ -113,4 +130,3 @@ export default function DistrictInfo({ info, onClose }: DistrictInfoProps) {
     </div>
   );
 }
-

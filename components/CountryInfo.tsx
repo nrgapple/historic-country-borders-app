@@ -17,12 +17,21 @@ interface CountryInfoProps {
 
 const noData = 'Not Found';
 
-export default function CountryInfo({ info, year, onClose, onStartCompare }: CountryInfoProps) {
+export default function CountryInfo({
+  info,
+  year,
+  onClose,
+  onStartCompare,
+}: CountryInfoProps) {
   const { place = '' } = info ?? {};
   const { settings } = useSettings();
   const { compareState, startCompare } = useCompare();
   const provider = settings.infoProvider;
-  const { info: description, title: title, isLoading } = useCountryInfo(place, { provider, year });
+  const {
+    info: description,
+    title: title,
+    isLoading,
+  } = useCountryInfo(place, { provider, year });
   const empty = useMemo(
     () => !description || description.trim() === '' || description === noData,
     [description],
@@ -51,11 +60,11 @@ export default function CountryInfo({ info, year, onClose, onStartCompare }: Cou
         country_name: place,
         year: year,
         source: 'country_info_panel',
-        action_type: 'compare_button_click'
+        action_type: 'compare_button_click',
       });
 
       startCompare(place, year);
-      
+
       // Call the parent callback if provided
       onStartCompare?.(place, year);
     }
@@ -65,8 +74,8 @@ export default function CountryInfo({ info, year, onClose, onStartCompare }: Cou
     <div className="country-info">
       <div className="country-info-header">
         <div className="country-info-title">{title || place}</div>
-        <button 
-          className="country-info-close" 
+        <button
+          className="country-info-close"
           onClick={onClose}
           aria-label="Close country information"
         >
@@ -77,16 +86,20 @@ export default function CountryInfo({ info, year, onClose, onStartCompare }: Cou
         {isLoading ? (
           <>📚 Loading information...</>
         ) : empty ? (
-          <>📖 No information available<br />for this location 😔</>
+          <>
+            📖 No information available
+            <br />
+            for this location 😔
+          </>
         ) : (
           description
         )}
       </div>
-      
+
       {/* AI Compare Button - only show if feature is enabled and not loading/empty */}
       {settings.aiCompareEnabled && !isLoading && !empty && place && year && (
         <div className="country-info-actions">
-          <button 
+          <button
             className="country-info-compare-button"
             onClick={handleStartCompare}
             title="Compare this country with another using AI"
@@ -97,4 +110,4 @@ export default function CountryInfo({ info, year, onClose, onStartCompare }: Cou
       )}
     </div>
   );
-} 
+}

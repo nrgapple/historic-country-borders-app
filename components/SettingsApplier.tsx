@@ -8,9 +8,11 @@ export default function SettingsApplier() {
     if (typeof document === 'undefined') return;
 
     // Apply country opacity to CSS custom property
-    document.documentElement.style.setProperty('--country-opacity', settings.countryOpacity.toString());
-
+    document.documentElement.style.setProperty(
+      '--country-opacity',
+      settings.countryOpacity.toString(),
+    );
   }, [settings]);
 
   return null; // This component doesn't render anything
-} 
+}

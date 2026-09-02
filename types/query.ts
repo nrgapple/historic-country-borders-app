@@ -20,4 +20,4 @@ export const QUERY_PARAM_KEYS = {
   LONGITUDE: 'lng',
   LATITUDE: 'lat',
   ZOOM: 'zoom',
-} as const; 
+} as const;

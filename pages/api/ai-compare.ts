@@ -4,7 +4,8 @@ import { redisCache } from '../../lib/redis';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+const GEMINI_API_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 // Cache TTL in seconds (24 hours to reduce API calls and manage quota)
 const CACHE_TTL = 86400;
@@ -16,7 +17,7 @@ const CACHE_TTL = 86400;
  */
 const generateComparisonPrompt = (
   country1: { name: string; year: string },
-  country2: { name: string; year: string }
+  country2: { name: string; year: string },
 ): string => {
   return `Compare ${country1.name} in ${country1.year} with ${country2.name} in ${country2.year}. Be historically accurate for those exact time periods. Both entities might be:
 - Sovereign nations or kingdoms
@@ -53,7 +54,7 @@ interface AICompareResponse {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<AICompareResponse>
+  res: NextApiResponse<AICompareResponse>,
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ content: '', error: 'Method not allowed' });
@@ -62,26 +63,34 @@ export default async function handler(
   const { country1, country2 }: AICompareRequest = req.body;
 
   const startTime = Date.now();
-  
+
   if (!country1?.name || country1.name.trim() === '') {
-    return res.status(400).json({ content: '', error: 'Country 1 name is required' });
+    return res
+      .status(400)
+      .json({ content: '', error: 'Country 1 name is required' });
   }
 
   if (!country1?.year || country1.year.trim() === '') {
-    return res.status(400).json({ content: '', error: 'Country 1 year is required' });
+    return res
+      .status(400)
+      .json({ content: '', error: 'Country 1 year is required' });
   }
 
   if (!country2?.name || country2.name.trim() === '') {
-    return res.status(400).json({ content: '', error: 'Country 2 name is required' });
+    return res
+      .status(400)
+      .json({ content: '', error: 'Country 2 name is required' });
   }
 
   if (!country2?.year || country2.year.trim() === '') {
-    return res.status(400).json({ content: '', error: 'Country 2 year is required' });
+    return res
+      .status(400)
+      .json({ content: '', error: 'Country 2 year is required' });
   }
 
   // Create cache key
   const cacheKey = `ai-compare:${country1.name.toLowerCase().replace(/\s+/g, '_')}:${country1.year}:${country2.name.toLowerCase().replace(/\s+/g, '_')}:${country2.year}`;
-  
+
   try {
     // Try to get cached response first
     const cachedResponse = await redisCache.get<string>(cacheKey);
@@ -100,7 +109,7 @@ export default async function handler(
         country2_name: country2.name,
         country2_year: country2.year,
         cache_key: cacheKey,
-        cache_type: 'redis'
+        cache_type: 'redis',
       });
 
       return res.status(200).json({ content: cachedResponse });
@@ -120,14 +129,17 @@ export default async function handler(
       country2_name: country2.name,
       country2_year: country2.year,
       cache_key: cacheKey,
-      cache_type: 'redis'
+      cache_type: 'redis',
     });
   } catch (cacheError) {
     console.warn('Redis cache error (continuing without cache):', {
       country1,
       country2,
       cacheKey,
-      error: cacheError instanceof Error ? cacheError.message : 'Unknown cache error',
+      error:
+        cacheError instanceof Error
+          ? cacheError.message
+          : 'Unknown cache error',
       timestamp: new Date().toISOString(),
     });
 
@@ -139,7 +151,7 @@ export default async function handler(
       country2_year: country2.year,
       cache_key: cacheKey,
       error_type: 'cache_operation_failed',
-      cache_type: 'redis'
+      cache_type: 'redis',
     });
   }
 
@@ -161,12 +173,13 @@ export default async function handler(
       country2_name: country2.name,
       country2_year: country2.year,
       error_type: 'missing_api_key',
-      api_provider: 'gemini'
+      api_provider: 'gemini',
     });
 
-    return res.status(500).json({ 
-      content: '', 
-      error: 'AI comparison requires Gemini API key setup. Please check the README.' 
+    return res.status(500).json({
+      content: '',
+      error:
+        'AI comparison requires Gemini API key setup. Please check the README.',
     });
   }
 
@@ -178,7 +191,7 @@ export default async function handler(
     country2_year: country2.year,
     year_span: Math.abs(parseInt(country2.year) - parseInt(country1.year)),
     same_year: country1.year === country2.year,
-    api_provider: 'gemini'
+    api_provider: 'gemini',
   });
 
   try {
@@ -191,11 +204,15 @@ export default async function handler(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
         generationConfig: {
           temperature: 0.7,
           topP: 0.8,
@@ -204,29 +221,31 @@ export default async function handler(
         },
         safetySettings: [
           {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+          },
+        ],
       }),
     });
 
     const responseTime = Date.now() - startTime;
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unable to read error response');
+      const errorText = await response
+        .text()
+        .catch(() => 'Unable to read error response');
       console.error('Gemini API HTTP error:', {
         status: response.status,
         statusText: response.statusText,
@@ -247,7 +266,8 @@ export default async function handler(
             quotaExceeded = true;
             // Extract retry delay if available
             const retryInfo = errorData.error.details?.find(
-              (detail: any) => detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+              (detail: any) =>
+                detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo',
             );
             if (retryInfo?.retryDelay) {
               retryDelay = retryInfo.retryDelay;
@@ -265,7 +285,7 @@ export default async function handler(
           country2_year: country2.year,
           response_time_ms: Math.round(responseTime),
           api_provider: 'gemini',
-          error_code: 429
+          error_code: 429,
         });
 
         // Track response time for quota exceeded requests
@@ -276,14 +296,14 @@ export default async function handler(
           country2_year: country2.year,
           response_time_ms: Math.round(responseTime),
           request_status: 'quota_exceeded',
-          api_provider: 'gemini'
+          api_provider: 'gemini',
         });
 
         if (quotaExceeded) {
           const retryMessage = retryDelay ? ` (retry after ${retryDelay})` : '';
-          return res.status(429).json({ 
-            content: '', 
-            error: `AI service has reached its daily quota limit${retryMessage}. Please try again tomorrow.` 
+          return res.status(429).json({
+            content: '',
+            error: `AI service has reached its daily quota limit${retryMessage}. Please try again tomorrow.`,
           });
         }
       }
@@ -297,9 +317,14 @@ export default async function handler(
         error_code: response.status,
         response_time_ms: Math.round(responseTime),
         api_provider: 'gemini',
-        error_type: response.status === 429 ? 'rate_limit' : 
-                   response.status === 401 ? 'authentication' : 
-                   response.status >= 500 ? 'server_error' : 'client_error'
+        error_type:
+          response.status === 429
+            ? 'rate_limit'
+            : response.status === 401
+              ? 'authentication'
+              : response.status >= 500
+                ? 'server_error'
+                : 'client_error',
       });
 
       // Track response time for failed requests
@@ -310,17 +335,17 @@ export default async function handler(
         country2_year: country2.year,
         response_time_ms: Math.round(responseTime),
         request_status: 'error',
-        api_provider: 'gemini'
+        api_provider: 'gemini',
       });
 
-      return res.status(response.status).json({ 
-        content: '', 
-        error: `HTTP error! status: ${response.status} - ${response.statusText}` 
+      return res.status(response.status).json({
+        content: '',
+        error: `HTTP error! status: ${response.status} - ${response.statusText}`,
       });
     }
 
     const data = await response.json();
-    
+
     console.log('Gemini API response for comparison:', {
       country1,
       country2,
@@ -328,11 +353,15 @@ export default async function handler(
       hasContent: !!data.candidates,
       timestamp: new Date().toISOString(),
     });
-    
+
     // Handle Gemini API response format
-    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+    if (
+      data.candidates &&
+      data.candidates.length > 0 &&
+      data.candidates[0].content
+    ) {
       const content = data.candidates[0].content.parts[0].text || '';
-      
+
       console.log('AI compare text processing:', {
         country1,
         country2,
@@ -341,7 +370,7 @@ export default async function handler(
       });
 
       const trimmedContent = content.trim();
-      
+
       if (trimmedContent) {
         // Cache the successful response ONLY - we never cache error responses
         // This ensures only valid AI content is served from cache
@@ -365,16 +394,22 @@ export default async function handler(
             cache_key: cacheKey,
             content_length: trimmedContent.length,
             cache_type: 'redis',
-            ttl_seconds: CACHE_TTL
+            ttl_seconds: CACHE_TTL,
           });
         } catch (cacheWriteError) {
-          console.warn('Failed to cache AI compare response (continuing normally):', {
-            country1,
-            country2,
-            cacheKey,
-            error: cacheWriteError instanceof Error ? cacheWriteError.message : 'Unknown cache write error',
-            timestamp: new Date().toISOString(),
-          });
+          console.warn(
+            'Failed to cache AI compare response (continuing normally):',
+            {
+              country1,
+              country2,
+              cacheKey,
+              error:
+                cacheWriteError instanceof Error
+                  ? cacheWriteError.message
+                  : 'Unknown cache write error',
+              timestamp: new Date().toISOString(),
+            },
+          );
 
           // Track cache write error
           ReactGA4.event('ai_compare_cache_write_error', {
@@ -384,7 +419,7 @@ export default async function handler(
             country2_year: country2.year,
             cache_key: cacheKey,
             error_type: 'cache_write_failed',
-            cache_type: 'redis'
+            cache_type: 'redis',
           });
         }
 
@@ -397,7 +432,7 @@ export default async function handler(
           response_time_ms: Math.round(responseTime),
           content_length: trimmedContent.length,
           word_count: trimmedContent.split(/\s+/).length,
-          api_provider: 'gemini'
+          api_provider: 'gemini',
         });
 
         // Track response time for successful requests
@@ -408,7 +443,7 @@ export default async function handler(
           country2_year: country2.year,
           response_time_ms: Math.round(responseTime),
           request_status: 'success',
-          api_provider: 'gemini'
+          api_provider: 'gemini',
         });
 
         // Track response quality metrics
@@ -420,8 +455,15 @@ export default async function handler(
           country2_year: country2.year,
           content_length: trimmedContent.length,
           word_count: wordCount,
-          quality_rating: wordCount < 50 ? 'brief' : wordCount < 150 ? 'moderate' : 'detailed',
-          year_span: Math.abs(parseInt(country2.year) - parseInt(country1.year))
+          quality_rating:
+            wordCount < 50
+              ? 'brief'
+              : wordCount < 150
+                ? 'moderate'
+                : 'detailed',
+          year_span: Math.abs(
+            parseInt(country2.year) - parseInt(country1.year),
+          ),
         });
 
         return res.status(200).json({ content: trimmedContent });
@@ -434,11 +476,11 @@ export default async function handler(
           country2_year: country2.year,
           response_time_ms: Math.round(responseTime),
           api_provider: 'gemini',
-          error_type: 'empty_content'
+          error_type: 'empty_content',
         });
 
-        return res.status(200).json({ 
-          content: 'AI generated empty comparison response. Please try again.' 
+        return res.status(200).json({
+          content: 'AI generated empty comparison response. Please try again.',
         });
       }
     }
@@ -458,15 +500,15 @@ export default async function handler(
       country2_year: country2.year,
       response_time_ms: Math.round(responseTime),
       api_provider: 'gemini',
-      error_type: 'unexpected_format'
+      error_type: 'unexpected_format',
     });
-    
-    return res.status(200).json({ 
-      content: 'AI returned unexpected response format. Please try again.' 
+
+    return res.status(200).json({
+      content: 'AI returned unexpected response format. Please try again.',
     });
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     console.error('Gemini API error for comparison:', error);
     console.error('Error details:', {
       country1,
@@ -485,15 +527,21 @@ export default async function handler(
       error_message: error instanceof Error ? error.message : 'unknown_error',
       error_type: error instanceof Error ? error.name : 'UnknownError',
       response_time_ms: Math.round(responseTime),
-      api_provider: 'gemini'
+      api_provider: 'gemini',
     });
 
     // Track specific error categorization
-    const errorCategory = error instanceof Error && error.message.includes('429') ? 'rate_limit' :
-                         error instanceof Error && error.message.includes('fetch') ? 'network_error' :
-                         error instanceof Error && error.message.includes('401') ? 'authentication' :
-                         error instanceof Error && error.message.includes('timeout') ? 'timeout' : 'api_error';
-    
+    const errorCategory =
+      error instanceof Error && error.message.includes('429')
+        ? 'rate_limit'
+        : error instanceof Error && error.message.includes('fetch')
+          ? 'network_error'
+          : error instanceof Error && error.message.includes('401')
+            ? 'authentication'
+            : error instanceof Error && error.message.includes('timeout')
+              ? 'timeout'
+              : 'api_error';
+
     ReactGA4.event('ai_compare_error_categorized', {
       country1_name: country1.name,
       country1_year: country1.year,
@@ -502,7 +550,7 @@ export default async function handler(
       error_category: errorCategory,
       error_name: error instanceof Error ? error.name : 'UnknownError',
       response_time_ms: Math.round(responseTime),
-      api_provider: 'gemini'
+      api_provider: 'gemini',
     });
 
     // Track response time for failed requests
@@ -513,10 +561,13 @@ export default async function handler(
       country2_year: country2.year,
       response_time_ms: Math.round(responseTime),
       request_status: 'failed',
-      api_provider: 'gemini'
+      api_provider: 'gemini',
     });
-    
+
     // Return specific error message instead of generic fallback
-    return res.status(500).json({ content: '', error: 'Something went wrong with AI comparison. Please try again.' });
+    return res.status(500).json({
+      content: '',
+      error: 'Something went wrong with AI comparison. Please try again.',
+    });
   }
-} 
+}

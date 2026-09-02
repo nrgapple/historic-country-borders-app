@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
   // Initialize GA4 only on client side
   useEffect(() => {
     const isDevelopment = process.env.NODE_ENV === 'development';
-    
+
     if (process.env.NEXT_PUBLIC_GA_FOUR) {
       ReactGA4.initialize(process.env.NEXT_PUBLIC_GA_FOUR, {
         testMode: isDevelopment, // Enable test mode in development - prevents data from being sent to Google
@@ -26,9 +26,14 @@ export default function App({ Component, pageProps }: AppProps) {
 
       // Log the current configuration in development
       if (isDevelopment) {
-        console.log('[Analytics] GA4 initialized in TEST mode - data will NOT be sent to Google');
+        console.log(
+          '[Analytics] GA4 initialized in TEST mode - data will NOT be sent to Google',
+        );
         console.log('[Analytics] Test mode enabled for development');
-        console.log('[Analytics] Measurement ID:', process.env.NEXT_PUBLIC_GA_FOUR);
+        console.log(
+          '[Analytics] Measurement ID:',
+          process.env.NEXT_PUBLIC_GA_FOUR,
+        );
       }
     }
   }, []);
@@ -37,14 +42,14 @@ export default function App({ Component, pageProps }: AppProps) {
   useScrollLock(true, {
     allowedSelectors: [
       '.timeline-years-container',
-      '.popup-description', 
+      '.popup-description',
       '.country-info-description',
       '.mapboxgl-popup-content',
       '.compare-popup-content',
-      '.compare-history-list'
-    ]
+      '.compare-history-list',
+    ],
   });
-  
+
   return (
     <QueryProvider>
       <StateProvider>

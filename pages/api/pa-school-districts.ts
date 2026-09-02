@@ -1,6 +1,7 @@
 import { NextApiHandler } from 'next';
 
-const PASDA_GEOJSON_URL = 'https://www.pasda.psu.edu/json/PaSchoolDistricts2025_10.geojson';
+const PASDA_GEOJSON_URL =
+  'https://www.pasda.psu.edu/json/PaSchoolDistricts2025_10.geojson';
 
 // Proxy endpoint to fetch PASDA GeoJSON (bypasses CORS)
 // This API route fetches the data server-side where CORS doesn't apply
@@ -18,16 +19,16 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     // Fetch from PASDA server-side (no CORS restrictions)
     const response = await fetch(PASDA_GEOJSON_URL);
-    
+
     if (!response.ok) {
-      return res.status(response.status).json({ 
-        error: `Failed to fetch from PASDA: ${response.statusText}` 
+      return res.status(response.status).json({
+        error: `Failed to fetch from PASDA: ${response.statusText}`,
       });
     }
 
     // Disable Next.js response body buffering to enable streaming
     res.setHeader('Transfer-Encoding', 'chunked');
-    
+
     // If content-length is available, forward it for progress tracking
     const contentLength = response.headers.get('content-length');
     if (contentLength) {
@@ -48,7 +49,7 @@ const handler: NextApiHandler = async (req, res) => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        
+
         // Convert Uint8Array to Buffer for Node.js write
         const buffer = Buffer.from(value);
         res.write(buffer);
@@ -65,9 +66,9 @@ const handler: NextApiHandler = async (req, res) => {
   } catch (error) {
     console.error('Error proxying PASDA GeoJSON:', error);
     if (!res.writableEnded) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to fetch school districts data',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }

@@ -25,7 +25,8 @@ export default function Footer({
           <div className="footer-compact-title">🌎 HistoricBorders.app</div>
           {!!lastCommit && (
             <div className="footer-compact-update">
-              Updated: {lastCommit.toLocaleDateString('en-us', {
+              Updated:{' '}
+              {lastCommit.toLocaleDateString('en-us', {
                 month: 'short',
                 day: 'numeric',
                 year: 'numeric',
@@ -33,13 +34,20 @@ export default function Footer({
             </div>
           )}
         </div>
-        
+
         <div className="footer-compact-links">
-          <a href={dataUrl} className="footer-compact-link">📊 Data Source</a>
-          <a href="https://github.com/nrgapple/historic-country-borders-app" className="footer-compact-link">
+          <a href={dataUrl} className="footer-compact-link">
+            📊 Data Source
+          </a>
+          <a
+            href="https://github.com/nrgapple/historic-country-borders-app"
+            className="footer-compact-link"
+          >
             ⭐️ Star on GitHub
           </a>
-          <a href={discussionUrl} className="footer-compact-link">💬 Community</a>
+          <a href={discussionUrl} className="footer-compact-link">
+            💬 Community
+          </a>
         </div>
       </div>
     </div>

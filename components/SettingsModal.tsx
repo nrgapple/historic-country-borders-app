@@ -31,20 +31,43 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   if (!isOpen) return null;
 
-  const textSizeOptions: { value: TextSize; label: string; description: string }[] = [
+  const textSizeOptions: {
+    value: TextSize;
+    label: string;
+    description: string;
+  }[] = [
     { value: 'small', label: 'Small', description: 'Compact text' },
     { value: 'medium', label: 'Medium', description: 'Default size' },
     { value: 'large', label: 'Large', description: 'Easy to read' },
   ];
 
-  const textCaseOptions: { value: TextCase; label: string; description: string }[] = [
+  const textCaseOptions: {
+    value: TextCase;
+    label: string;
+    description: string;
+  }[] = [
     { value: 'regular', label: 'Regular', description: 'Normal case' },
     { value: 'upper', label: 'UPPERCASE', description: 'All capitals' },
   ];
 
-  const infoProviderOptions: { value: InfoProvider; label: string; description: string; icon: string }[] = [
-    { value: 'wikipedia', label: 'Wikipedia', description: 'Real-time Wikipedia content', icon: '📚' },
-    { value: 'ai', label: 'AI (Beta)', description: 'AI-generated historical context', icon: '🤖' },
+  const infoProviderOptions: {
+    value: InfoProvider;
+    label: string;
+    description: string;
+    icon: string;
+  }[] = [
+    {
+      value: 'wikipedia',
+      label: 'Wikipedia',
+      description: 'Real-time Wikipedia content',
+      icon: '📚',
+    },
+    {
+      value: 'ai',
+      label: 'AI (Beta)',
+      description: 'AI-generated historical context',
+      icon: '🤖',
+    },
   ];
 
   const opacityOptions = [
@@ -84,15 +107,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   return (
     <div className="settings-modal-overlay" onClick={onClose}>
-      <div 
-        className="settings-modal" 
+      <div
+        className="settings-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
       >
         <div className="settings-modal-header">
-          <h3 className="settings-modal-title" id="settings-modal-title">⚙️ Settings</h3>
+          <h3 className="settings-modal-title" id="settings-modal-title">
+            ⚙️ Settings
+          </h3>
           <button
             className="settings-modal-close"
             onClick={onClose}
@@ -126,7 +151,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <>
               {/* Information Provider Setting */}
               <div className="settings-section">
-                <div className="settings-section-title">🤖 Information Source</div>
+                <div className="settings-section-title">
+                  🤖 Information Source
+                </div>
                 <div className="settings-options">
                   {infoProviderOptions.map((option) => (
                     <button
@@ -134,12 +161,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       className={`settings-option ${
                         settings.infoProvider === option.value ? 'active' : ''
                       }`}
-                      onClick={() => updateSettings({ infoProvider: option.value })}
+                      onClick={() =>
+                        updateSettings({ infoProvider: option.value })
+                      }
                     >
                       <div className="settings-option-label">
                         {option.icon} {option.label}
                       </div>
-                      <div className="settings-option-description">{option.description}</div>
+                      <div className="settings-option-description">
+                        {option.description}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -147,20 +178,25 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
               {/* AI Compare Feature Setting */}
               <div className="settings-section">
-                <div className="settings-section-title">🔀 AI Compare Feature</div>
+                <div className="settings-section-title">
+                  🔀 AI Compare Feature
+                </div>
                 <div className="settings-options">
                   <button
                     className={`settings-option ${settings.aiCompareEnabled ? 'active' : ''}`}
-                    onClick={() => updateSettings({ aiCompareEnabled: !settings.aiCompareEnabled })}
+                    onClick={() =>
+                      updateSettings({
+                        aiCompareEnabled: !settings.aiCompareEnabled,
+                      })
+                    }
                   >
                     <div className="settings-option-label">
                       {settings.aiCompareEnabled ? '✅' : '❌'} AI Compare Mode
                     </div>
                     <div className="settings-option-description">
-                      {settings.aiCompareEnabled 
+                      {settings.aiCompareEnabled
                         ? 'Compare countries side-by-side with AI analysis'
-                        : 'Enable to compare countries/territories across time periods'
-                      }
+                        : 'Enable to compare countries/territories across time periods'}
                     </div>
                   </button>
                 </div>
@@ -172,16 +208,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <div className="settings-options">
                   <button
                     className={`settings-option ${settings.showLabels ? 'active' : ''}`}
-                    onClick={() => updateSettings({ showLabels: !settings.showLabels })}
+                    onClick={() =>
+                      updateSettings({ showLabels: !settings.showLabels })
+                    }
                   >
                     <div className="settings-option-label">
                       {settings.showLabels ? '👁️' : '🚫'} Show Labels
                     </div>
                     <div className="settings-option-description">
-                      {settings.showLabels 
+                      {settings.showLabels
                         ? 'Country and place labels are visible on the map'
-                        : 'Hide all text labels for a cleaner map view'
-                      }
+                        : 'Hide all text labels for a cleaner map view'}
                     </div>
                   </button>
                 </div>
@@ -199,8 +236,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       }`}
                       onClick={() => updateSettings({ textSize: option.value })}
                     >
-                      <div className="settings-option-label">{option.label}</div>
-                      <div className="settings-option-description">{option.description}</div>
+                      <div className="settings-option-label">
+                        {option.label}
+                      </div>
+                      <div className="settings-option-description">
+                        {option.description}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -218,8 +259,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       }`}
                       onClick={() => updateSettings({ textCase: option.value })}
                     >
-                      <div className="settings-option-label">{option.label}</div>
-                      <div className="settings-option-description">{option.description}</div>
+                      <div className="settings-option-label">
+                        {option.label}
+                      </div>
+                      <div className="settings-option-description">
+                        {option.description}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -227,7 +272,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
               {/* Country Opacity Setting */}
               <div className="settings-section">
-                <div className="settings-section-title">🎨 Country Color Opacity</div>
+                <div className="settings-section-title">
+                  🎨 Country Color Opacity
+                </div>
                 <div className="settings-opacity-grid">
                   {opacityOptions.map((option) => (
                     <button
@@ -235,7 +282,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       className={`settings-opacity-option ${
                         settings.countryOpacity === option.value ? 'active' : ''
                       }`}
-                      onClick={() => updateSettings({ countryOpacity: option.value })}
+                      onClick={() =>
+                        updateSettings({ countryOpacity: option.value })
+                      }
                       style={{
                         backgroundColor: `rgba(139, 69, 19, ${option.value})`,
                       }}
@@ -248,18 +297,28 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
               {/* Border Thickness Setting */}
               <div className="settings-section">
-                <div className="settings-section-title">📏 Border Thickness</div>
+                <div className="settings-section-title">
+                  📏 Border Thickness
+                </div>
                 <div className="settings-options">
                   {borderThicknessOptions.map((option) => (
                     <button
                       key={option.value}
                       className={`settings-option ${
-                        settings.borderThickness === option.value ? 'active' : ''
+                        settings.borderThickness === option.value
+                          ? 'active'
+                          : ''
                       }`}
-                      onClick={() => updateSettings({ borderThickness: option.value })}
+                      onClick={() =>
+                        updateSettings({ borderThickness: option.value })
+                      }
                     >
-                      <div className="settings-option-label">{option.label}</div>
-                      <div className="settings-option-description">{option.description}</div>
+                      <div className="settings-option-label">
+                        {option.label}
+                      </div>
+                      <div className="settings-option-description">
+                        {option.description}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -298,11 +357,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                       <div className="compare-history-item-header">
                         <div className="compare-countries">
                           <span className="country1">
-                            {comparison.country1.name} ({comparison.country1.year})
+                            {comparison.country1.name} (
+                            {comparison.country1.year})
                           </span>
                           <span className="vs">vs</span>
                           <span className="country2">
-                            {comparison.country2.name} ({comparison.country2.year})
+                            {comparison.country2.name} (
+                            {comparison.country2.year})
                           </span>
                         </div>
                         <div className="compare-date">
@@ -322,4 +383,4 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       </div>
     </div>
   );
-} 
+}

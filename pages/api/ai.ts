@@ -4,12 +4,13 @@ import { redisCache } from '../../lib/redis';
 
 // Google Gemini API - generous free tier (60 requests/minute, no credit card required)
 // Get your free API key at: https://ai.google.dev/gemini-api/docs/api-key
-// 
+//
 // QUOTA MANAGEMENT:
 // - Free tier: 500 requests per day per project
 // - To reduce quota usage: increase CACHE_TTL and implement request throttling
 // - Consider using a paid plan for higher quotas if needed
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+const GEMINI_API_URL =
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 // Cache TTL in seconds (24 hours to reduce API calls and manage quota)
 const CACHE_TTL = 86400;
@@ -49,7 +50,7 @@ interface AIResponse {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<AIResponse>
+  res: NextApiResponse<AIResponse>,
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ content: '', error: 'Method not allowed' });
@@ -58,9 +59,11 @@ export default async function handler(
   const { countryName, year }: AIRequest = req.body;
 
   const startTime = Date.now();
-  
+
   if (!countryName || countryName.trim() === '') {
-    return res.status(400).json({ content: '', error: 'Country name is required' });
+    return res
+      .status(400)
+      .json({ content: '', error: 'Country name is required' });
   }
 
   if (!year || year.trim() === '') {
@@ -69,7 +72,7 @@ export default async function handler(
 
   // Create cache key
   const cacheKey = `ai:${countryName.toLowerCase().replace(/\s+/g, '_')}:${year}`;
-  
+
   try {
     // Try to get cached response first
     const cachedResponse = await redisCache.get<string>(cacheKey);
@@ -86,7 +89,7 @@ export default async function handler(
         country_name: countryName,
         year: year,
         cache_key: cacheKey,
-        performance_benefit: 'cache_served'
+        performance_benefit: 'cache_served',
       });
 
       return res.status(200).json({ content: cachedResponse });
@@ -104,14 +107,17 @@ export default async function handler(
       country_name: countryName,
       year: year,
       cache_key: cacheKey,
-      cache_status: 'miss'
+      cache_status: 'miss',
     });
   } catch (cacheError) {
     console.warn('Redis cache error (continuing without cache):', {
       countryName,
       year,
       cacheKey,
-      error: cacheError instanceof Error ? cacheError.message : 'Unknown cache error',
+      error:
+        cacheError instanceof Error
+          ? cacheError.message
+          : 'Unknown cache error',
       timestamp: new Date().toISOString(),
     });
 
@@ -120,7 +126,10 @@ export default async function handler(
       country_name: countryName,
       year: year,
       error_type: 'cache_operation_failed',
-      error_message: cacheError instanceof Error ? cacheError.message : 'unknown_cache_error'
+      error_message:
+        cacheError instanceof Error
+          ? cacheError.message
+          : 'unknown_cache_error',
     });
   }
 
@@ -140,12 +149,13 @@ export default async function handler(
       country_name: countryName,
       year: year,
       error_type: 'configuration_error',
-      service: 'gemini_api'
+      service: 'gemini_api',
     });
 
-    return res.status(500).json({ 
-      content: '', 
-      error: 'AI information requires Gemini API key setup. Please check the README or switch to Wikipedia.' 
+    return res.status(500).json({
+      content: '',
+      error:
+        'AI information requires Gemini API key setup. Please check the README or switch to Wikipedia.',
     });
   }
 
@@ -154,7 +164,7 @@ export default async function handler(
     country_name: countryName,
     year: year,
     api_service: 'gemini',
-    request_type: 'historical_information'
+    request_type: 'historical_information',
   });
 
   try {
@@ -167,11 +177,15 @@ export default async function handler(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
         generationConfig: {
           temperature: 0.7,
           topP: 0.8,
@@ -180,29 +194,31 @@ export default async function handler(
         },
         safetySettings: [
           {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_HATE_SPEECH',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
           },
           {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+          },
+        ],
       }),
     });
 
     const responseTime = Date.now() - startTime;
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unable to read error response');
+      const errorText = await response
+        .text()
+        .catch(() => 'Unable to read error response');
       console.error('Gemini API HTTP error:', {
         status: response.status,
         statusText: response.statusText,
@@ -223,7 +239,8 @@ export default async function handler(
             quotaExceeded = true;
             // Extract retry delay if available
             const retryInfo = errorData.error.details?.find(
-              (detail: any) => detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo'
+              (detail: any) =>
+                detail['@type'] === 'type.googleapis.com/google.rpc.RetryInfo',
             );
             if (retryInfo?.retryDelay) {
               retryDelay = retryInfo.retryDelay;
@@ -239,14 +256,14 @@ export default async function handler(
           year: year,
           error_type: 'rate_limit',
           response_time_ms: Math.round(responseTime),
-          retry_delay: retryDelay || 'unknown'
+          retry_delay: retryDelay || 'unknown',
         });
 
         if (quotaExceeded) {
           const retryMessage = retryDelay ? ` (retry after ${retryDelay})` : '';
-          return res.status(429).json({ 
-            content: '', 
-            error: `AI service has reached its daily quota limit${retryMessage}. Please try again tomorrow or switch to Wikipedia for historical information.` 
+          return res.status(429).json({
+            content: '',
+            error: `AI service has reached its daily quota limit${retryMessage}. Please try again tomorrow or switch to Wikipedia for historical information.`,
           });
         }
       }
@@ -256,20 +273,25 @@ export default async function handler(
         country_name: countryName,
         year: year,
         error_code: response.status,
-        error_type: response.status === 404 ? 'not_found' : 
-                   response.status === 500 ? 'server_error' : 
-                   response.status === 429 ? 'rate_limit' : 'http_error',
-        response_time_ms: Math.round(responseTime)
+        error_type:
+          response.status === 404
+            ? 'not_found'
+            : response.status === 500
+              ? 'server_error'
+              : response.status === 429
+                ? 'rate_limit'
+                : 'http_error',
+        response_time_ms: Math.round(responseTime),
       });
 
-      return res.status(response.status).json({ 
-        content: '', 
-        error: `HTTP error! status: ${response.status} - ${response.statusText}` 
+      return res.status(response.status).json({
+        content: '',
+        error: `HTTP error! status: ${response.status} - ${response.statusText}`,
       });
     }
 
     const data = await response.json();
-    
+
     console.log('Gemini API response:', {
       countryName,
       year,
@@ -277,11 +299,15 @@ export default async function handler(
       hasContent: !!data.candidates,
       timestamp: new Date().toISOString(),
     });
-    
+
     // Handle Gemini API response format
-    if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+    if (
+      data.candidates &&
+      data.candidates.length > 0 &&
+      data.candidates[0].content
+    ) {
       const content = data.candidates[0].content.parts[0].text || '';
-      
+
       console.log('AI text processing:', {
         countryName,
         year,
@@ -290,7 +316,7 @@ export default async function handler(
       });
 
       const trimmedContent = content.trim();
-      
+
       if (trimmedContent) {
         // Cache the successful response ONLY - we never cache error responses
         // This ensures only valid AI content is served from cache
@@ -311,14 +337,17 @@ export default async function handler(
             year: year,
             cache_key: cacheKey,
             content_length: trimmedContent.length,
-            cache_ttl: CACHE_TTL
+            cache_ttl: CACHE_TTL,
           });
         } catch (cacheWriteError) {
           console.warn('Failed to cache AI response (continuing normally):', {
             countryName,
             year,
             cacheKey,
-            error: cacheWriteError instanceof Error ? cacheWriteError.message : 'Unknown cache write error',
+            error:
+              cacheWriteError instanceof Error
+                ? cacheWriteError.message
+                : 'Unknown cache write error',
             timestamp: new Date().toISOString(),
           });
 
@@ -327,7 +356,10 @@ export default async function handler(
             country_name: countryName,
             year: year,
             error_type: 'cache_write_failed',
-            error_message: cacheWriteError instanceof Error ? cacheWriteError.message : 'unknown_error'
+            error_message:
+              cacheWriteError instanceof Error
+                ? cacheWriteError.message
+                : 'unknown_error',
           });
         }
 
@@ -339,8 +371,9 @@ export default async function handler(
           content_length: trimmedContent.length,
           word_count: wordCount,
           response_time_ms: Math.round(responseTime),
-          content_quality: wordCount < 50 ? 'short' : wordCount < 150 ? 'medium' : 'detailed',
-          api_service: 'gemini'
+          content_quality:
+            wordCount < 50 ? 'short' : wordCount < 150 ? 'medium' : 'detailed',
+          api_service: 'gemini',
         });
 
         return res.status(200).json({ content: trimmedContent });
@@ -350,11 +383,12 @@ export default async function handler(
           country_name: countryName,
           year: year,
           response_time_ms: Math.round(responseTime),
-          api_service: 'gemini'
+          api_service: 'gemini',
         });
 
-        return res.status(200).json({ 
-          content: 'AI generated empty response. Please try again or switch to Wikipedia.' 
+        return res.status(200).json({
+          content:
+            'AI generated empty response. Please try again or switch to Wikipedia.',
         });
       }
     }
@@ -371,15 +405,16 @@ export default async function handler(
       country_name: countryName,
       year: year,
       error_type: 'unexpected_format',
-      api_service: 'gemini'
+      api_service: 'gemini',
     });
-    
-    return res.status(200).json({ 
-      content: 'AI returned unexpected response format. Please try again or switch to Wikipedia.' 
+
+    return res.status(200).json({
+      content:
+        'AI returned unexpected response format. Please try again or switch to Wikipedia.',
     });
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     console.error('Gemini API error:', error);
     console.error('Error details:', {
       countryName,
@@ -390,24 +425,36 @@ export default async function handler(
     });
 
     // Determine error type and provide appropriate message
-    let errorMessage = 'Something went wrong with AI information. Please try again or switch to Wikipedia.';
-    
+    let errorMessage =
+      'Something went wrong with AI information. Please try again or switch to Wikipedia.';
+
     if (error instanceof Error) {
       // Check if it's a quota/rate limit error
       if (error.message.includes('429')) {
-        errorMessage = 'AI service quota exceeded. Please try again later or switch to Wikipedia for historical information.';
+        errorMessage =
+          'AI service quota exceeded. Please try again later or switch to Wikipedia for historical information.';
       }
       // Check if it's a network error
-      else if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
-        errorMessage = 'Network connection issue. Please check your internet connection and try again.';
+      else if (
+        error.message.includes('fetch') ||
+        error.message.includes('network') ||
+        error.message.includes('Failed to fetch')
+      ) {
+        errorMessage =
+          'Network connection issue. Please check your internet connection and try again.';
       }
       // Check if it's an API key error
       else if (error.message.includes('401') || error.message.includes('403')) {
-        errorMessage = 'AI service authentication issue. Please check API key configuration.';
+        errorMessage =
+          'AI service authentication issue. Please check API key configuration.';
       }
       // Check if it's a timeout error
-      else if (error.message.includes('timeout') || error.message.includes('AbortError')) {
-        errorMessage = 'AI service request timed out. Please try again or switch to Wikipedia.';
+      else if (
+        error.message.includes('timeout') ||
+        error.message.includes('AbortError')
+      ) {
+        errorMessage =
+          'AI service request timed out. Please try again or switch to Wikipedia.';
       }
     }
 
@@ -415,16 +462,22 @@ export default async function handler(
     ReactGA4.event('ai_api_request_failed', {
       country_name: countryName,
       year: year,
-      error_type: error instanceof Error && error.message.includes('429') ? 'quota_exceeded' :
-                 error instanceof Error && error.message.includes('fetch') ? 'network_error' :
-                 error instanceof Error && error.message.includes('401') ? 'authentication_error' :
-                 error instanceof Error && error.message.includes('timeout') ? 'timeout_error' : 'unknown_error',
+      error_type:
+        error instanceof Error && error.message.includes('429')
+          ? 'quota_exceeded'
+          : error instanceof Error && error.message.includes('fetch')
+            ? 'network_error'
+            : error instanceof Error && error.message.includes('401')
+              ? 'authentication_error'
+              : error instanceof Error && error.message.includes('timeout')
+                ? 'timeout_error'
+                : 'unknown_error',
       error_name: error instanceof Error ? error.name : 'UnknownError',
       response_time_ms: Math.round(responseTime),
-      api_service: 'gemini'
+      api_service: 'gemini',
     });
-    
+
     // Return specific error message instead of generic fallback
     return res.status(500).json({ content: '', error: errorMessage });
   }
-} 
+}

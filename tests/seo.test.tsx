@@ -2,7 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
-import { SEO_CONFIG, generatePageTitle, generatePageDescription, generateCanonicalUrl } from '../config/seo';
+import {
+  SEO_CONFIG,
+  generatePageTitle,
+  generatePageDescription,
+  generateCanonicalUrl,
+} from '../config/seo';
 
 // Mock Next.js router
 vi.mock('next/router', () => ({
@@ -35,24 +40,38 @@ describe('SEO Configuration', () => {
 
   it('should generate correct page titles', () => {
     expect(generatePageTitle()).toBe('Historic Country Borders');
-    expect(generatePageTitle('Test Page')).toBe('Test Page | Historic Country Borders');
-    expect(generatePageTitle('Year 1500')).toBe('Year 1500 | Historic Country Borders');
+    expect(generatePageTitle('Test Page')).toBe(
+      'Test Page | Historic Country Borders',
+    );
+    expect(generatePageTitle('Year 1500')).toBe(
+      'Year 1500 | Historic Country Borders',
+    );
   });
 
   it('should generate correct page descriptions', () => {
     const defaultDesc = SEO_CONFIG.defaultDescription;
-    
+
     expect(generatePageDescription()).toBe(defaultDesc);
-    expect(generatePageDescription('Custom description')).toBe('Custom description');
-    expect(generatePageDescription(undefined, '1500')).toBe(`Explore how country borders looked in the year 1500. ${defaultDesc}`);
-    expect(generatePageDescription('Custom description', '1500')).toBe('Explore how country borders looked in the year 1500. Custom description');
+    expect(generatePageDescription('Custom description')).toBe(
+      'Custom description',
+    );
+    expect(generatePageDescription(undefined, '1500')).toBe(
+      `Explore how country borders looked in the year 1500. ${defaultDesc}`,
+    );
+    expect(generatePageDescription('Custom description', '1500')).toBe(
+      'Explore how country borders looked in the year 1500. Custom description',
+    );
   });
 
   it('should generate correct canonical URLs', () => {
     expect(generateCanonicalUrl()).toBe('https://historicborders.app');
     expect(generateCanonicalUrl('/')).toBe('https://historicborders.app');
-    expect(generateCanonicalUrl('/year/1500')).toBe('https://historicborders.app/year/1500');
-    expect(generateCanonicalUrl('year/1500')).toBe('https://historicborders.app/year/1500');
+    expect(generateCanonicalUrl('/year/1500')).toBe(
+      'https://historicborders.app/year/1500',
+    );
+    expect(generateCanonicalUrl('year/1500')).toBe(
+      'https://historicborders.app/year/1500',
+    );
   });
 });
 
@@ -61,7 +80,7 @@ describe('Layout Component SEO', () => {
     const { container } = render(
       <Layout>
         <div>Test content</div>
-      </Layout>
+      </Layout>,
     );
 
     // Check if head elements are rendered (Next.js Head component doesn't render in jsdom)
@@ -73,7 +92,7 @@ describe('Layout Component SEO', () => {
     const { container } = render(
       <Layout year="1500" title="Test Title">
         <div>Test content</div>
-      </Layout>
+      </Layout>,
     );
 
     expect(container).toBeTruthy();
@@ -85,13 +104,13 @@ describe('Layout Component SEO', () => {
       description: 'Custom description',
       url: 'https://example.com/custom',
       image: 'https://example.com/image.png',
-      year: '1776'
+      year: '1776',
     };
 
     const { container } = render(
       <Layout {...customProps}>
         <div>Test content</div>
-      </Layout>
+      </Layout>,
     );
 
     expect(container).toBeTruthy();
@@ -115,11 +134,11 @@ describe('SEO Meta Tags Structure', () => {
 
   it('should have valid structured data format', () => {
     const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": SEO_CONFIG.siteName,
-      "description": SEO_CONFIG.defaultDescription,
-      "url": SEO_CONFIG.siteUrl,
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: SEO_CONFIG.siteName,
+      description: SEO_CONFIG.defaultDescription,
+      url: SEO_CONFIG.siteUrl,
     };
 
     expect(structuredData['@context']).toBe('https://schema.org');
@@ -127,4 +146,4 @@ describe('SEO Meta Tags Structure', () => {
     expect(structuredData.name).toBe(SEO_CONFIG.siteName);
     expect(structuredData.url).toBe(SEO_CONFIG.siteUrl);
   });
-}); 
+});

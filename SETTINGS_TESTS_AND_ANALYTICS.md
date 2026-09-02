@@ -11,6 +11,7 @@ This document outlines the comprehensive testing suite and enhanced analytics im
 We've implemented comprehensive tests for all settings-related components using Vitest and React Testing Library:
 
 #### 1. SettingsContext Tests (`contexts/__tests__/SettingsContext.test.tsx`)
+
 - **Default Settings**: Verifies default settings values and analytics tracking
 - **Settings Updates**: Tests individual and bulk setting changes with analytics
 - **LocalStorage Integration**: Tests saving/loading, error handling, and data validation
@@ -19,6 +20,7 @@ We've implemented comprehensive tests for all settings-related components using 
 - **Error Handling**: Tests proper error handling outside provider context
 
 #### 2. SettingsModal Tests (`components/__tests__/SettingsModal.test.tsx`)
+
 - **Component Rendering**: Tests modal visibility states and UI elements
 - **Text Size Settings**: Tests all size options with user interactions
 - **Text Case Settings**: Tests regular/uppercase text case options
@@ -28,6 +30,7 @@ We've implemented comprehensive tests for all settings-related components using 
 - **Accessibility**: Tests ARIA labels, button roles, and keyboard navigation
 
 #### 3. SettingsButton Tests (`components/__tests__/SettingsButton.test.tsx`)
+
 - **Component Rendering**: Tests button rendering and icon display
 - **Modal Toggle**: Tests modal opening/closing functionality
 - **Analytics Tracking**: Tests comprehensive analytics events
@@ -35,6 +38,7 @@ We've implemented comprehensive tests for all settings-related components using 
 - **Settings Integration**: Tests persistence and context integration
 
 #### 4. SettingsApplier Tests (`components/__tests__/SettingsApplier.test.tsx`)
+
 - **CSS Property Application**: Tests country opacity CSS variable setting
 - **Body Class Management**: Tests text case class application
 - **SSR Compatibility**: Tests undefined document handling
@@ -42,6 +46,7 @@ We've implemented comprehensive tests for all settings-related components using 
 - **Performance**: Tests optimal re-rendering behavior
 
 #### 5. MapSources Tests (`components/__tests__/MapSources.test.tsx`)
+
 - **Settings Integration**: Tests text size and case application to map labels
 - **Country Opacity**: Tests opacity setting application to map layers
 - **Combined Settings**: Tests multiple settings working together
@@ -68,6 +73,7 @@ yarn test:coverage
 We've implemented comprehensive analytics tracking across multiple categories:
 
 #### 1. Settings Category
+
 - **Settings Usage Patterns**
   - `settings_default`: Tracks when default settings are used
   - `setting_changed`: Tracks individual setting modifications
@@ -93,6 +99,7 @@ We've implemented comprehensive analytics tracking across multiple categories:
   - `save_performance`: Tracks localStorage save performance metrics
 
 #### 2. Map Category
+
 - **Settings Impact**
   - `rendered_with_settings`: Tracks map rendering with current settings
   - `country_selected_with_settings`: Tracks country selection with settings context
@@ -100,6 +107,7 @@ We've implemented comprehensive analytics tracking across multiple categories:
   - `low_opacity_used` / `high_opacity_used`: Tracks extreme opacity preferences
 
 #### 3. Accessibility Category
+
 - **Accessibility Features**
   - `large_text_used`: Tracks large text setting usage for accessibility
 
@@ -110,9 +118,9 @@ All analytics events follow a consistent structure:
 ```typescript
 ReactGA4.event({
   category: 'Settings' | 'Map' | 'Accessibility',
-  action: string,           // Specific action being tracked
-  label: string,           // Additional context or value
-  value: number,           // Numeric value when relevant
+  action: string, // Specific action being tracked
+  label: string, // Additional context or value
+  value: number, // Numeric value when relevant
 });
 ```
 
@@ -137,18 +145,21 @@ The analytics provide insights into:
 ## 🎯 Key Benefits
 
 ### For Development
+
 - **Comprehensive Test Coverage**: Ensures settings functionality works correctly
 - **Regression Prevention**: Tests prevent breaking changes
 - **Component Integration**: Tests verify proper component interaction
 - **Error Handling**: Tests ensure graceful failure scenarios
 
 ### For Product Management
+
 - **User Behavior Data**: Understand how users interact with settings
 - **Feature Usage**: Track which settings are most/least used
 - **Accessibility Metrics**: Monitor accessibility feature adoption
 - **Performance Insights**: Track impact of settings on app performance
 
 ### For UX/UI Design
+
 - **Interaction Patterns**: Understand user preferences and behaviors
 - **Engagement Metrics**: Measure how users engage with settings
 - **Popular Configurations**: Identify common setting combinations
@@ -170,4 +181,4 @@ The analytics data enables:
 - Tests include mocking of localStorage and ReactGA4 for isolated testing
 - SSR compatibility is maintained throughout the implementation
 - Error handling includes both user-facing graceful degradation and developer analytics
-- Performance metrics help identify optimization opportunities 
+- Performance metrics help identify optimization opportunities

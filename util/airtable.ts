@@ -47,7 +47,7 @@ function getAirtableBase(): Airtable.Base | null {
  */
 export async function createFeedbackRecord(
   tableName: string,
-  data: FeedbackData
+  data: FeedbackData,
 ): Promise<boolean> {
   try {
     const base = getAirtableBase();
@@ -66,10 +66,10 @@ export async function createFeedbackRecord(
     // Adjust field names based on your Airtable schema
     const fields: Record<string, any> = {
       'Feedback ID': data.id, // Unique identifier for this feedback submission
-      'Timestamp': data.timestamp,
-      'Rating': data.rating,
+      Timestamp: data.timestamp,
+      Rating: data.rating,
       'Visitor ID': data.visitorId,
-      'Environment': environment, // Dev or Production
+      Environment: environment, // Dev or Production
     };
 
     // Add optional fields if they exist
@@ -108,4 +108,3 @@ export function isAirtableConfigured(): boolean {
     process.env.AIRTABLE_TABLE_NAME
   );
 }
-
