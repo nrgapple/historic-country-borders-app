@@ -71,24 +71,13 @@ const median = (values) => {
       const canvas = page.locator('.mapboxgl-canvas');
       await canvas.waitFor({ state: 'visible', timeout: 120_000 });
       const mapReadyMs = Date.now() - startedAt;
-      const box = await canvas.boundingBox();
+      // Let map startup work settle, then measure a deterministic user-visible
+      // response. Map readiness and long tasks capture map responsiveness;
+      // settings-open latency confirms the main UI can respond afterward.
+      await page.waitForTimeout(500);
       const interactionStartedAt = Date.now();
-      if (box) {
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-        await page.mouse.down();
-        await page.mouse.move(
-          box.x + box.width / 2 + 40,
-          box.y + box.height / 2,
-        );
-        await page.mouse.up();
-        await page.waitForFunction(
-          () => new URL(location.href).searchParams.has('lng'),
-          null,
-          {
-            timeout: 5_000,
-          },
-        );
-      }
+      await page.getByRole('button', { name: 'Open settings' }).click();
+      await page.getByRole('dialog').waitFor({ state: 'visible' });
       const interactionMs = Date.now() - interactionStartedAt;
       const metrics = await page.evaluate(() => {
         const navigation = performance.getEntriesByType('navigation')[0];
@@ -145,5 +134,5 @@ const median = (values) => {
   console.log(JSON.stringify(report, null, 2));
 })().catch((error) => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });

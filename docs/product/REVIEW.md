@@ -55,19 +55,21 @@
 - Deterministic three-run medians and the M3 production-preview baseline are recorded in `docs/M4_PERFORMANCE_REPORT.md`. Final local runs had no readiness errors; school map-ready median improved from 205 to 193 ms under the bounded local method.
 - CI enforces tighter JavaScript and data budgets. Static-export validation reports one public dynamic route, one internal Durable Object binding, zero Next API routes, and zero Pages Functions.
 - The scheduled uptime workflow and `yarn smoke:production` cover both critical map journeys with intended Worker requests of zero.
-- Production still returns Vercel HTTP 402. The DNS registrar is unidentified, DNSSEC is enabled, and the current Vercel target is not a working DNS rollback.
+- Optimized Worker candidate `6e87c859-f70d-458f-aec4-6f51c41bc4de` passes all nine static checks plus five repeated real-map loads with zero page errors. Candidate measurements show 53% lower school transfer and 49% faster school map readiness than the M3 preview baseline.
+- Repeated cold checks exposed and repaired an existing historical source/style race before DNS cutover; map sources now wait for Mapbox `isStyleLoaded()`.
+- Production still returns Vercel HTTP 402. The registrar is Squarespace Domains, DNSSEC is enabled, and authenticated DNS/Cloudflare-zone UI work remains.
 
 ### Assumptions requiring owner validation
 
 - The Cloudflare account remains Free with no paid add-on or automatic overage.
 - Registrar access can be located and the provider-supported DS/DNSSEC migration sequence can be followed.
-- The optimized Worker candidate passes real production maps, static tail isolation, feedback degradation, and Mapbox hostname restrictions.
-- A working rollback is established or the owner explicitly accepts the degraded Vercel DNS fallback.
+- The custom domain passes real production maps, static tail isolation, feedback degradation, and Mapbox hostname restrictions after DNS cutover.
+- Cloudflare account/zone dashboard evidence confirms Free-only operation and imported DNS records.
 
 ### Decision
 
 - Accepted: bounded payload/startup optimization, enforced budgets, static-only monitoring, dynamic-route inventory, and exact launch/rollback preparation.
-- Deferred pending owner: deploy optimized candidate, registrar/DNSSEC/custom-domain cutover, bot controls, alternate Worker-hostname retirement, production smoke, and 24-hour/seven-day quota/error reviews.
+- Deferred pending owner: Squarespace DNSSEC/nameserver and Cloudflare-zone/custom-domain cutover, bot controls, alternate Worker-hostname retirement, production smoke, and 24-hour/seven-day quota/error reviews. The owner explicitly rejected Vercel as a fallback; Cloudflare version rollback is retained.
 - Rejected: geometry simplification without topology/visual acceptance evidence; paid monitoring or automatic overage; implementing an M5 hypothesis.
 
 ### Post-launch review placeholder

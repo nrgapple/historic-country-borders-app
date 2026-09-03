@@ -38,4 +38,4 @@ FingerprintJS is an abuse-control input for the optional feedback endpoint, not 
 
 ### Domain cutover
 
-The owner can access GitHub and Vercel and can create a Cloudflare account. The current DNS registrar/account must be identified before launch.
+The registrar is Squarespace Domains and authenticated DNS/Cloudflare-zone UI work is required before launch. The owner explicitly declined Vercel as a fallback; Cloudflare retains the verified M3 Worker version for application rollback, while Vercel remains disabled pending retirement after the seven-day review.

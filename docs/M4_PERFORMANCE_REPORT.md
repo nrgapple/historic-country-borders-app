@@ -67,6 +67,17 @@ Final deterministic runs had zero navigation/map readiness errors. The school st
 
 Current measured values pass: 2,044.6 KiB total JS, 1,496.2 KiB largest chunk, 382.4/359.8 KiB initial map-route JS, 54,311.9 KiB historical total, 3,299.0 KiB largest historical payload, and 11,742.0/1,755.3 KiB raw/Brotli school data.
 
-## Pending production final
+## Deployed optimized candidate
 
-The optimized candidate must be deployed by the owner, then measured with the same three-run command and recorded here. Production cache, error, map responsiveness, quota, and Worker-use results cannot be claimed final before account/DNS intervention and cutover. No target in this report authorizes paid services or weaker source fidelity/accessibility.
+Cloudflare Worker version `6e87c859-f70d-458f-aec4-6f51c41bc4de` was deployed to the Worker hostname on 2026-09-03 UTC. The first optimized candidate exposed an existing historical-map race in cold repeated loads (`Style is not done loading`); data sources could mount before Mapbox completed its style. The candidate was superseded after requiring `isStyleLoaded()` before source mounting. Five cold acceptance loads (three historical, two school) then rendered 198 historical features and 500 districts with zero page errors.
+
+Three cold final runs produced:
+
+| Journey             |    FCP | Map ready | Data transfer | Data duration | Longest startup task | Post-startup settings response | Errors |
+| ------------------- | -----: | --------: | ------------: | ------------: | -------------------: | -----------------------------: | -----: |
+| Historical 1994     | 348 ms |    792 ms |     566,016 B |        367 ms |               130 ms |                         483 ms |      0 |
+| PA school districts | 344 ms |    989 ms |   3,883,612 B |        517 ms |               365 ms |                         791 ms |      0 |
+
+Against the M3 preview baseline, school transfer fell 53%, map readiness improved 49%, and data duration improved 19%. Compression negotiated by the observed production browser differs from the local Brotli estimate. Historical changes are mostly startup deferral and run/network variance because its map payload did not change. Long-task totals are not directly comparable because the hardened measurement now allows map startup to settle and verifies a visible settings response before collecting metrics; longest task remained effectively unchanged for school (364 vs 365 ms).
+
+All nine static smoke checks passed with expected cache controls and no compute marker. Final custom-domain cache/error/quota evidence and authoritative live-tail Worker isolation still require the DNS cutover. No target in this report authorizes paid services or weaker source fidelity/accessibility.

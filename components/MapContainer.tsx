@@ -24,7 +24,7 @@ export default function MapContainer({ year, user, id }: MapContainerProps) {
   const { viewState, updateMapView, isReady } = useMapQuery();
   const hasSetStyleRef = useRef(false);
   const mapRef = useRef<any>(null);
-  const [isWaitingForStyleLoad, setIsWaitingForStyleLoad] = useState(false);
+  const [isStyleLoaded, setIsStyleLoaded] = useState(false);
 
   useEffect(() => {
     const toastId = 'loading';
@@ -41,12 +41,13 @@ export default function MapContainer({ year, user, id }: MapContainerProps) {
   useEffect(() => setSelectedInfo(undefined), [data]);
 
   useEffect(() => {
-    setIsWaitingForStyleLoad(false);
+    setIsStyleLoaded(false);
     hasSetStyleRef.current = false;
   }, [isReady, year, user, id]);
 
   const handleStyleLoad = useCallback(({ target }: MapboxEvent) => {
-    setIsWaitingForStyleLoad(false);
+    if (!target.isStyleLoaded()) return;
+    setIsStyleLoaded(true);
     target.resize();
   }, []);
 
@@ -59,10 +60,12 @@ export default function MapContainer({ year, user, id }: MapContainerProps) {
     [handleStyleLoad],
   );
 
-  const handleStyleData = useCallback((_event: MapStyleDataEvent) => {
-    if (!hasSetStyleRef.current) {
-      setIsWaitingForStyleLoad(false);
+  const handleStyleData = useCallback((event: MapStyleDataEvent) => {
+    const target = (event as unknown as MapboxEvent).target;
+    if (!hasSetStyleRef.current && target.isStyleLoaded()) {
       hasSetStyleRef.current = true;
+      setIsStyleLoaded(true);
+      target.resize();
     }
   }, []);
 
@@ -97,7 +100,7 @@ export default function MapContainer({ year, user, id }: MapContainerProps) {
         key={isReady ? `ready-${user}-${id}` : 'loading'}
         interactiveLayerIds={['borders']}
         onStyleData={handleStyleData}
-        onLoad={() => setIsWaitingForStyleLoad(false)}
+        onLoad={handleStyleLoad}
         onClick={handleClick}
         initialViewState={viewState}
         onMove={({ viewState: nextViewState }) =>
@@ -117,7 +120,7 @@ export default function MapContainer({ year, user, id }: MapContainerProps) {
           }
         }}
       >
-        {places && data && !isWaitingForStyleLoad && (
+        {places && data && isStyleLoaded && (
           <MapSources
             data={data}
             places={places}

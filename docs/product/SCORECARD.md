@@ -2,26 +2,26 @@
 
 Status: M4 account-independent optimization and launch preparation complete; owner cutover required
 
-| Signal                          | Baseline                                       | Desired direction         | Evidence                                                                                 |
-| ------------------------------- | ---------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------- |
-| Production availability         | Failing: HTTP 402                              | Available                 | Vercel returns `DEPLOYMENT_DISABLED`                                                     |
-| Type-check                      | Passing on Node 22.23.2                        | Pass                      | `yarn type-check`                                                                        |
-| Unit/integration tests          | Passing: 192 tests                             | Pass                      | Historical/static data, deferred fingerprinting, production smoke, feedback, and school  |
-| Production build                | Passing as static export                       | Remain deterministic      | 57 generated pages; build uses only committed local map inputs; no Next API routes       |
-| Frozen install                  | Passing                                        | Pass                      | Lockfile synchronized; `yarn install --frozen-lockfile`                                  |
-| E2E critical journeys           | Passing: 15 cross-browser runs                 | Remain green              | Static deep links, BC year, 404, both maps, and feedback failure across three engines    |
-| School map load                 | Preview ready with 500 features/canvas         | Establish production rate | Live Chromium preview smoke test                                                         |
-| School source availability      | Pinned and validated                           | Refresh explicitly        | October 2025 PASDA source; 500 districts; 460 Polygon/40 MultiPolygon; SHA-256 recorded  |
-| Runtime map compute             | Zero in Cloudflare preview                     | Remain zero               | Direct assets plus live tail; 53 payloads total 55,615,413 bytes                         |
-| Runtime school compute          | Zero                                           | Remain zero               | Browser loads the 12,023,844-byte normalized static artifact                             |
-| Removed feature/caching surface | Removed end-to-end                             | Remain absent             | Source, dependency, and built-client searches; M1 validation                             |
-| Formatting                      | Passing repository-wide                        | Pass                      | `yarn format:check`                                                                      |
-| Lint                            | Passing with zero warnings                     | Pass                      | `yarn lint`                                                                              |
-| Coverage regression floors      | 44.12 lines / 82.19 branches / 64.28 functions | Raise over time           | Enforced by `yarn test:coverage`; HTML/LCOV uploaded in CI                               |
-| JavaScript build budget         | 2,044.6 KiB total; 1,496.2 KiB largest chunk   | Stay within tightened cap | 2,100 KiB total, 1,550 KiB chunk, and 400 KiB initial-route limits enforced              |
-| Cloudflare dynamic isolation    | Preview verified                               | Remain exact/bounded      | 1 public dynamic route, 1 internal DO, 0 Next APIs/Pages Functions; live-tail proof      |
-| Production uptime monitor       | Prepared; production still HTTP 402            | Pass after cutover        | Static-only scheduled workflow plus `yarn smoke:production`; intended Worker requests: 0 |
-| Relay execution                 | M4 owner intervention                          | Complete launch reviews   | `.pi-web/relays/*/{charter,status,log}.md`                                               |
+| Signal                          | Baseline                                       | Desired direction            | Evidence                                                                                |
+| ------------------------------- | ---------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
+| Production availability         | Failing: HTTP 402                              | Available                    | Vercel returns `DEPLOYMENT_DISABLED`                                                    |
+| Type-check                      | Passing on Node 22.23.2                        | Pass                         | `yarn type-check`                                                                       |
+| Unit/integration tests          | Passing: 192 tests                             | Pass                         | Historical/static data, deferred fingerprinting, production smoke, feedback, and school |
+| Production build                | Passing as static export                       | Remain deterministic         | 57 generated pages; build uses only committed local map inputs; no Next API routes      |
+| Frozen install                  | Passing                                        | Pass                         | Lockfile synchronized; `yarn install --frozen-lockfile`                                 |
+| E2E critical journeys           | Passing: 15 cross-browser runs                 | Remain green                 | Static deep links, BC year, 404, both maps, and feedback failure across three engines   |
+| School map load                 | Candidate ready with 500 features/canvas       | Establish custom-domain rate | Repeated live Chromium checks; 989 ms median map-ready                                  |
+| School source availability      | Pinned and validated                           | Refresh explicitly           | October 2025 PASDA source; 500 districts; 460 Polygon/40 MultiPolygon; SHA-256 recorded |
+| Runtime map compute             | Zero in Cloudflare preview                     | Remain zero                  | Direct assets plus live tail; 53 payloads total 55,615,413 bytes                        |
+| Runtime school compute          | Zero                                           | Remain zero                  | Browser loads the 12,023,844-byte normalized static artifact                            |
+| Removed feature/caching surface | Removed end-to-end                             | Remain absent                | Source, dependency, and built-client searches; M1 validation                            |
+| Formatting                      | Passing repository-wide                        | Pass                         | `yarn format:check`                                                                     |
+| Lint                            | Passing with zero warnings                     | Pass                         | `yarn lint`                                                                             |
+| Coverage regression floors      | 44.12 lines / 82.19 branches / 64.28 functions | Raise over time              | Enforced by `yarn test:coverage`; HTML/LCOV uploaded in CI                              |
+| JavaScript build budget         | 2,044.6 KiB total; 1,496.2 KiB largest chunk   | Stay within tightened cap    | 2,100 KiB total, 1,550 KiB chunk, and 400 KiB initial-route limits enforced             |
+| Cloudflare dynamic isolation    | Preview verified                               | Remain exact/bounded         | 1 public dynamic route, 1 internal DO, 0 Next APIs/Pages Functions; live-tail proof     |
+| Production uptime monitor       | Candidate static smoke passing; apex HTTP 402  | Pass after cutover           | Nine static checks plus scheduled workflow; intended Worker requests: 0                 |
+| Relay execution                 | M4 owner intervention                          | Complete launch reviews      | `.pi-web/relays/*/{charter,status,log}.md`                                              |
 
 ## Baseline notes
 

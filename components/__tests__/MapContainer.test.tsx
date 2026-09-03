@@ -52,6 +52,7 @@ vi.mock('../../util/MapboxDefaultMap', () => ({
     ...props
   }: any) => {
     mockMapClickHandler = onClick;
+    mockMapLoadHandler = onLoad;
     return (
       <div
         data-testid="mapbox-map"
@@ -108,6 +109,7 @@ const mockUseYearRouting = useYearRouting as any;
 
 // Store the click handler for testing
 let mockMapClickHandler: any = null;
+let mockMapLoadHandler: any = null;
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -138,6 +140,7 @@ describe('MapContainer', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockMapClickHandler = null;
+    mockMapLoadHandler = null;
 
     mockUseData.mockReturnValue({
       data: mockMapData,
@@ -155,10 +158,18 @@ describe('MapContainer', () => {
     });
   });
 
-  it('should render map container with mapbox map', () => {
+  it('waits for the complete map style before adding data sources', () => {
     render(<MapContainer {...defaultProps} />, { wrapper: TestWrapper });
 
     expect(screen.getByTestId('mapbox-map')).toBeInTheDocument();
+    expect(screen.queryByTestId('map-sources')).not.toBeInTheDocument();
+
+    act(() => {
+      mockMapLoadHandler({
+        target: { isStyleLoaded: () => true, resize: vi.fn() },
+      });
+    });
+
     expect(screen.getByTestId('map-sources')).toBeInTheDocument();
   });
 

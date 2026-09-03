@@ -7,14 +7,15 @@ This runbook is for `historicborders.app`. Account, registrar, DNS, billing, sec
 Observed on 2026-09-03 UTC:
 
 - Cloudflare candidate: `https://historic-borders.champtoday.workers.dev`;
-- last verified M3 version: `c3144834-a22a-4b6c-8269-22147af6f9aa`;
+- last verified M3 rollback version: `c3144834-a22a-4b6c-8269-22147af6f9aa`;
+- optimized candidate version: `6e87c859-f70d-458f-aec4-6f51c41bc4de`;
 - production apex: Vercel `76.76.21.21`, TTL 3600, returning HTTP 402 `DEPLOYMENT_DISABLED`;
 - `www.historicborders.app`: not resolving;
 - delegation: Google-hosted nameservers, NS TTL 21600;
 - DNSSEC: enabled with a parent DS record; and
-- registrar/DNS account owner: unidentified.
+- registrar: Squarespace Domains II LLC; authenticated registrar/DNS access is still required.
 
-The disabled Vercel deployment is **not a viable rollback target**. Do not cut over until the owner can access the registrar and either (a) re-enables and smoke-tests Vercel as a DNS rollback target or (b) explicitly accepts that DNS rollback restores a known 402 while Cloudflare version rollback remains the working application rollback.
+The owner explicitly declined Vercel as a fallback on 2026-09-03. Vercel remains disabled and outside the rollback plan. Cloudflare version rollback is the working application rollback; restoring the previous Google-hosted delegation would restore DNS records but no working web deployment. This provider-level limitation is accepted, and Vercel may be retired after the seven-day review.
 
 ## Roles and variables
 
@@ -41,7 +42,7 @@ Record these in the launch ticket, not in source:
    dig +noall +answer www.historicborders.app A
    ```
 
-3. Re-enable the existing Vercel deployment if it will be the DNS rollback target. Run `BASE_URL=https://historicborders.app yarn smoke:production`; it must pass before being called viable. Otherwise record the owner's explicit degraded DNS-rollback acceptance.
+3. Keep the disabled Vercel project unchanged through the seven-day review for record comparison only; do not route traffic to it or call it a fallback.
 4. Add `historicborders.app` to the Cloudflare Free account. Import **all** existing records and compare them line-by-line with the export before changing delegation. Do not activate paid Workers, paid add-ons, automatic overage, or unrelated proxy features.
 5. Follow the registrar and current DNS provider's documented DNSSEC migration sequence. Because a DS record exists, do not simply replace nameservers. Disable DNSSEC at the current provider/remove the parent DS at the registrar, then verify both resolvers return no DS:
 
@@ -115,7 +116,7 @@ Use only for broken Cloudflare delegation/zone/TLS, not an ordinary code regress
 3. Verify NS, DS, A/CNAME, mail records, TLS, and both resolvers. Run static smoke against the restored target.
 4. Remember that old NS TTL was 21600 seconds; escalation/communication may be required for up to the cached delegation period.
 
-If Vercel still returns 402, this rollback restores a known outage and requires the owner's explicit decision. Never delete the Cloudflare Worker/version while DNS rollback is propagating.
+Because Vercel is explicitly excluded, delegation rollback restores DNS records but no working web target. Prefer Cloudflare version rollback and never delete the Cloudflare Worker/version while DNS rollback is propagating.
 
 ## Free-tier, bot, and route acceptance
 

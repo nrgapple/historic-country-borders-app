@@ -57,11 +57,12 @@ Account authentication and secret changes require the owner; never paste credent
 
 M3 removed `GEMINI_API_KEY`, `REDIS_URL`, `NEXT_PUBLIC_GITHUB_API`, and `NEXT_PUBLIC_DISCORD_WEBHOOK_URL` from the linked Vercel project. Removal does not revoke credentials. Because the latter two were historically configured as public browser variables, the owner must revoke/rotate the old GitHub token and Discord webhook at their providers; neither is used by the Cloudflare deployment.
 
-The verified M3 preview is:
+The verified deployment is:
 
 - URL: <https://historic-borders.champtoday.workers.dev>
 - Worker: `historic-borders`
-- Verified final M3 version: `c3144834-a22a-4b6c-8269-22147af6f9aa`
+- Current optimized candidate: `6e87c859-f70d-458f-aec4-6f51c41bc4de`
+- Verified M3 rollback version: `c3144834-a22a-4b6c-8269-22147af6f9aa`
 - Verification date: 2026-09-03 UTC
 
 A temporary empty Pages project created during provider testing was deleted; Workers Static Assets is the sole deployment architecture.
