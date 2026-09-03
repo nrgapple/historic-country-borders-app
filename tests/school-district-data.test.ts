@@ -3,6 +3,7 @@ import path from 'path';
 import { describe, expect, it, vi } from 'vitest';
 
 const {
+  COORDINATE_PRECISION,
   normalizeSource,
   sha256,
   validateArtifact,
@@ -52,6 +53,26 @@ describe('school district data pipeline', () => {
     expect(
       first.data.labels.features.map((label: any) => label.geometry.type),
     ).toEqual(['Point', 'Point']);
+  });
+
+  it('rounds published coordinates to sub-meter precision', () => {
+    const highPrecision = structuredClone(fixture);
+    const ring = highPrecision.features[0].geometry.coordinates[0];
+    ring[0] = [-77.123456789, 40.987654321];
+    ring[ring.length - 1] = [...ring[0]];
+
+    const artifact = normalizeSource(highPrecision, provenance, {
+      expectedCount: 2,
+    });
+    const published = artifact.data.borders.features[0].geometry.coordinates[0];
+
+    expect(COORDINATE_PRECISION).toBe(6);
+    expect(published[0]).toEqual([-77.123457, 40.987654]);
+    expect(published[published.length - 1]).toEqual(published[0]);
+    expect(validateArtifact(artifact, provenance)).toEqual({
+      districtCount: 2,
+      geometryCounts: { Polygon: 1, MultiPolygon: 1 },
+    });
   });
 
   it('rejects empty, malformed, and unsupported source records explicitly', () => {

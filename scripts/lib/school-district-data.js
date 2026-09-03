@@ -23,6 +23,9 @@ const REQUIRED_PROPERTIES = [
 const ALLOWED_GEOMETRY_TYPES = ['Polygon', 'MultiPolygon'];
 const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
 const STALE_AFTER_MONTHS = 18;
+// Six decimal places preserve sub-meter source fidelity while substantially
+// reducing static transfer and JSON parse cost from unnecessary precision.
+const COORDINATE_PRECISION = 6;
 
 const atlasColors = [
   '#FF6B6B',
@@ -223,6 +226,16 @@ const pointInPolygon = (point, polygon) =>
   pointInRing(point, polygon[0]) &&
   polygon.slice(1).every((hole) => !pointInRing(point, hole));
 
+const roundCoordinates = (coordinates) =>
+  Array.isArray(coordinates)
+    ? coordinates.map(roundCoordinates)
+    : Number(coordinates.toFixed(COORDINATE_PRECISION));
+
+const roundGeometry = (geometry) => ({
+  ...geometry,
+  coordinates: roundCoordinates(geometry.coordinates),
+});
+
 const normalizedProperties = (properties, color, measuredArea) => ({
   NAME: properties.SCHOOL_NAM.trim(),
   COLOR: color,
@@ -242,15 +255,16 @@ const normalizeSource = (source, provenance, options = {}) => {
   const borders = [];
 
   source.features.forEach((feature) => {
-    const measuredArea = area(feature);
+    const geometry = roundGeometry(feature.geometry);
+    const measuredArea = area({ ...feature, geometry });
     const color = textbookColor(feature.properties.SCHOOL_NAM);
     const properties = normalizedProperties(
       feature.properties,
       color,
       measuredArea,
     );
-    const labelPolygon = selectLabelPolygon(feature.geometry);
-    const labelCoordinates = polylabel(labelPolygon, 0.01);
+    const labelPolygon = selectLabelPolygon(geometry);
+    const labelCoordinates = roundCoordinates(polylabel(labelPolygon, 0.01));
     validatePosition(labelCoordinates, `${properties.NAME} label`);
     if (!pointInPolygon(labelCoordinates, labelPolygon)) {
       fail(`${properties.NAME} label is outside its district geometry`);
@@ -258,7 +272,7 @@ const normalizeSource = (source, provenance, options = {}) => {
 
     borders.push({
       type: 'Feature',
-      geometry: feature.geometry,
+      geometry,
       properties,
     });
     labels.push({
@@ -390,6 +404,7 @@ const writeJsonAtomic = (filePath, value) => {
 
 module.exports = {
   ALLOWED_GEOMETRY_TYPES,
+  COORDINATE_PRECISION,
   EXPECTED_DISTRICT_COUNT,
   MAX_SOURCE_BYTES,
   REQUIRED_PROPERTIES,

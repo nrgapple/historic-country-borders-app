@@ -21,6 +21,8 @@
     "static:validate": "node scripts/validate-static-export.js",
     "cloudflare:check": "wrangler deploy --dry-run --outdir .wrangler/deploy-check",
     "cloudflare:deploy": "wrangler deploy",
+    "performance:measure": "node scripts/measure-map-performance.js",
+    "smoke:production": "node scripts/smoke-production.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . -f unix --max-warnings=0",

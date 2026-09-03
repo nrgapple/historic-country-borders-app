@@ -26,6 +26,14 @@ M3 measured 53 processed historical payloads at 55,615,413 bytes total (53 MiB),
 
 Cloudflare Pages rejected the required native rate-limit binding during the first preview attempt. Workers Static Assets provides the same free/unlimited direct asset path while allowing exact `run_worker_first` routing. Production checks then showed the native Rate Limiting binding was permissive enough not to enforce the required test threshold, so feedback now uses a strict SQLite Durable Object available within Workers Free allocations. This keeps all compute behind only `/api/feedback`; a live tail proved ordinary assets do not invoke Worker code.
 
+### Sub-meter school coordinate publication
+
+M4 measurements identified the PA school artifact as the dominant transfer bottleneck. Publishing coordinates to six decimal places retains sub-meter precision, source provenance, every coordinate pair/district/property, and geometry validation while reducing the artifact 41% raw and approximately 64% Brotli. Geometry simplification remains rejected until topology and visual acceptance tests justify changing source shapes.
+
+### Optional fingerprinting only after feedback intent
+
+FingerprintJS is an abuse-control input for the optional feedback endpoint, not a prerequisite for map browsing. It is dynamically loaded only after a visitor opens feedback, reducing ordinary startup code/CPU and privacy surface without weakening the feedback rate limit.
+
 ## Deferred
 
 ### Domain cutover

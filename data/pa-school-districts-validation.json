@@ -1,9 +1,9 @@
 {
-  "validatedAt": "2026-09-02T21:25:16.292Z",
+  "validatedAt": "2026-09-03T02:11:01.211Z",
   "sourceSha256": "d17163e4f6edd6d27266bad2d850ab063461e90610733056db8efa430ac3c993",
   "sourceBytes": 21161924,
-  "artifactSha256": "87d8e063979ab15181db699b46b1be90743c7626f271c506e04808eb5fe4061d",
-  "artifactBytes": 20379855,
+  "artifactSha256": "6e39e3939fb59e70c772eed630ab90405e8fc64107ccc13dfb8cd323b2536e9f",
+  "artifactBytes": 12023844,
   "districtCount": 500,
   "geometryCounts": { "Polygon": 460, "MultiPolygon": 40 },
   "requiredProperties": [

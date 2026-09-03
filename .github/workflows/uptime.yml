@@ -1,0 +1,32 @@
+name: Production uptime
+
+on:
+  schedule:
+    # Four static-only checks per day keep monitoring useful and bandwidth bounded.
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: HTTPS deployment to verify
+        required: false
+        default: https://historicborders.app
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-uptime
+  cancel-in-progress: true
+
+jobs:
+  static-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      BASE_URL: ${{ inputs.base_url || 'https://historicborders.app' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/smoke-production.js

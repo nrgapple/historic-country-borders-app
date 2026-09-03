@@ -96,10 +96,10 @@ M3 evidence on 2026-09-03:
 
 ## Custom-domain plan (M4 only)
 
-Before production cutover, locate the registrar/DNS account, attach `historicborders.app` to the Worker, verify TLS, and create a Cloudflare Redirect Rule from `www` to the apex while preserving path/query. `_redirects` intentionally contains no broad or host-level rewrite. Lower DNS TTL before the approved window. Do not change DNS before M4 approval.
+The authoritative account/DNS/DNSSEC procedure, go/no-go checks, exact validation commands, rollback thresholds, Free-plan checks, and post-launch review are in `docs/M4_LAUNCH_RUNBOOK.md`. DNS access remains owner-only. The current Vercel apex returns 402 and is not a viable DNS rollback target unless the owner first re-enables and smoke-tests it. `_redirects` intentionally contains no broad or host-level rewrite.
 
 ## Rollback
 
 Cloudflare retains Worker versions. Record the previous known-good version ID before each deploy. If validation fails, use Workers & Pages → `historic-borders` → Deployments to roll back traffic to the previous version, then repeat static and feedback smoke checks. Secret changes are separate from code versions and must be restored independently if changed.
 
-During M4 DNS cutover, restore previous DNS records within the rollback window if Worker routing or TLS fails. The committed static output remains portable to another static host. Do not delete content-hashed map assets while an active rollback version references them.
+During M4, prefer a Cloudflare Worker-version rollback while leaving the custom domain in place. A delegation rollback must follow the saved DNSSEC/DS sequence and may remain cached for the former 21,600-second NS TTL; follow `docs/M4_LAUNCH_RUNBOOK.md`. The committed static output remains portable to another static host. Do not delete content-hashed map assets while an active rollback version references them.

@@ -1,12 +1,12 @@
 # Runtime and crawler surface
 
-Status: M3 Cloudflare preview verified.
+Status: M4 account-independent controls prepared; production cutover pending owner access.
 
 ## Static requests
 
 The Next.js app uses `output: 'export'`. HTML for `/`, all 53 enumerated `/year/<year>` routes, `/pa/school-districts`, and the useful 404 is generated at build time. Historical content-hashed payloads and the PA school payload are immutable/local build inputs. Build and ordinary traffic make no GitHub or PASDA requests.
 
-Workers Static Assets uses asset-first delivery. `wrangler.toml` sets `run_worker_first = ["/api/feedback"]`, `not_found_handling = "404-page"`, and `serve_directly` is confirmed in the deployed version. Thus page HTML, Next assets, map data, sitemap, robots, and unknown routes do not execute Worker code. `yarn static:validate` fails if routing broadens.
+Workers Static Assets uses asset-first delivery. `wrangler.toml` sets `run_worker_first = ["/api/feedback"]`, `not_found_handling = "404-page"`, and `serve_directly` is confirmed in the deployed version. Thus page HTML, Next assets, map data, sitemap, robots, and unknown routes do not execute Worker code. The enforced inventory is one public dynamic route, one internal Durable Object binding, zero Next API routes, and zero Pages Functions; `yarn static:validate` fails if the public route broadens or an alternate application runtime appears.
 
 ## Approved dynamic operation
 

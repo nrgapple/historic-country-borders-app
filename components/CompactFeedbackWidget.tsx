@@ -22,7 +22,9 @@ export default function CompactFeedbackWidget({
     rating: '',
   });
   const [isSending, setIsSending] = useState(false);
-  const fingerprint = useFingerPrint();
+  // Fingerprinting is needed only for feedback abuse controls; defer its code
+  // and CPU cost until a visitor explicitly opens this optional widget.
+  const fingerprint = useFingerPrint(isOpen);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
