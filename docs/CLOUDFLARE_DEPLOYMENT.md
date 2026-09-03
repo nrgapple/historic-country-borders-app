@@ -2,19 +2,33 @@
 
 ## Architecture and free-tier boundary
 
-The Next.js app exports portable files to `out/`. Cloudflare Pages serves all HTML, JavaScript, crawler files, and map data as static assets. `public/_routes.json` allows Pages Functions to run for exactly `/api/feedback`; no wildcard Worker route may be added. Wikipedia is fetched directly by the browser from its CORS-enabled API.
+The Next.js app exports portable files to `out/`. Cloudflare **Workers Static Assets** serves all HTML, JavaScript, crawler files, and map data directly from the asset layer. Static asset requests are free and unlimited and do not invoke Worker code.
+
+`wrangler.toml` is the authoritative routing boundary:
+
+```toml
+[assets]
+directory = "./out"
+run_worker_first = ["/api/feedback"]
+not_found_handling = "404-page"
+```
+
+Only exact path `/api/feedback` runs `worker/index.ts`. `run_worker_first = true`, wildcard API routing, and broad rewrites are prohibited. Unknown paths use static `404.html`. Wikipedia is fetched directly by the browser from its CORS-enabled API.
 
 The committed limits are:
 
-- output: `out/` (`next.config.js` uses `output: 'export'`);
-- static files: fewer than 20,000 and no file larger than 25 MiB, checked by `yarn static:validate`;
+- Cloudflare account and Workers plan: **Free only**;
+- static files: fewer than 20,000 and no file larger than 25 MiB;
 - dynamic route: only `POST /api/feedback`;
-- feedback rate limit: 20 attempts per minute per Cloudflare location/client key via `FEEDBACK_RATE_LIMITER`;
-- Cloudflare plan: Free only. Do not enable a paid plan, paid add-on, paid rate-limiting rule, or automatic paid usage without owner approval.
+- feedback rate limit: a strict 20 attempts/minute/client enforced by a per-client SQLite-backed Durable Object;
+- feedback destinations: bounded at five seconds and successful if at least one stores; and
+- no paid plan, paid add-on, or automatic paid usage without owner approval.
 
-Relevant Cloudflare documentation: [static Next.js deployment](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/), [Functions routing](https://developers.cloudflare.com/pages/functions/routing/), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), and [rate-limit bindings](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/).
+Workers Free includes bounded Durable Object allocations; exceeding a Free allocation fails rather than authorizing paid usage. The native Workers Rate Limiting binding was rejected for this deployment because production burst checks did not enforce its configured threshold. The Durable Object implementation provides the deterministic bound required by the product.
 
-## Local/static validation
+Relevant Cloudflare documentation: [static assets](https://developers.cloudflare.com/workers/static-assets/), [selective Worker-first routing](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/), [asset billing and limits](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/), [Workers limits](https://developers.cloudflare.com/workers/platform/limits/), and [Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/).
+
+## Local validation
 
 Use Node 22 and Yarn Classic:
 
@@ -27,43 +41,65 @@ yarn cloudflare:check
 yarn preview -p 3000
 ```
 
-Then verify `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, and `/year/9999`. The unknown year must return the useful static 404. The local preview deliberately returns a bounded 503 at `/api/feedback`; this proves the static site remains useful when dynamic feedback is unavailable. `yarn test:e2e` automates these journeys across Chromium, Firefox, and WebKit.
+Verify `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, and `/year/9999`. The unknown year must return the useful static 404. Local static preview deliberately returns a bounded 503 at `/api/feedback`; this proves the site remains useful when dynamic feedback is unavailable. `yarn test:e2e` automates these journeys across Chromium, Firefox, and WebKit.
 
-## Owner-only preview setup
+`yarn cloudflare:check` performs a complete Wrangler dry-run, including the Worker, static assets, exact route, Durable Object binding, and migration.
 
-These steps require Cloudflare account access and are intentionally not performed by an automated Relay runner. Never paste credentials into chat or commit them.
+## Deployment
 
-1. Create/sign in to a Cloudflare account and confirm the account is on **Free** with no paid Workers/Pages subscription or paid rate-limiting product.
-2. Create a Pages project named `historic-borders` from this repository, or authenticate Wrangler and run `yarn cloudflare:deploy` after `yarn build`.
-3. For Git builds, configure Node 22, build command `yarn install --frozen-lockfile && yarn build`, and output directory `out`. Deployment builds must not run any `data:refresh*` command.
-4. Set build-time browser variables only as needed: `NEXT_PUBLIC_MAPBOX_TOKEN` (public URL-restricted token) and `NEXT_PUBLIC_GA_FOUR` (public measurement ID).
-5. In Pages secrets, set at least one feedback destination: `DISCORD_WEBHOOK_URL`, or the pair `AIRTABLE_PERSONAL_ACCESS_TOKEN` and `AIRTABLE_BASE_ID`; `AIRTABLE_TABLE_NAME` is optional and defaults to `Feedback`. These are Worker secrets, never `NEXT_PUBLIC_*` variables.
-6. Confirm Wrangler applies the `FEEDBACK_RATE_LIMITER` binding from `wrangler.toml`. If namespace `1001` conflicts in the account, choose another positive integer, commit that non-secret configuration change, and redeploy.
-7. Deploy to a `*.pages.dev` preview URL. Do not add DNS/custom domains during M3 verification.
+Account authentication and secret changes require the owner; never paste credentials into chat or commit them.
 
-## Preview acceptance and quota evidence
+1. Confirm the Cloudflare account is on Free with no paid Workers subscription or add-on.
+2. Build with Node 22 and the public `NEXT_PUBLIC_MAPBOX_TOKEN` and optional `NEXT_PUBLIC_GA_FOUR`. Never run a `data:refresh*` command during deployment.
+3. Run `yarn build`, `yarn static:validate`, `yarn cloudflare:check`, then `yarn cloudflare:deploy`.
+4. Configure at least one destination using `wrangler secret put`: `DISCORD_WEBHOOK_URL`, or `AIRTABLE_PERSONAL_ACCESS_TOKEN` plus `AIRTABLE_BASE_ID`; `AIRTABLE_TABLE_NAME` defaults to `Feedback`.
+5. Do not transfer obsolete Gemini, Redis, GitHub, or public webhook credentials.
 
-Record the preview URL and timestamp without recording secrets. In Cloudflare analytics, capture the Worker/Functions invocation baseline, then:
+M3 removed `GEMINI_API_KEY`, `REDIS_URL`, `NEXT_PUBLIC_GITHUB_API`, and `NEXT_PUBLIC_DISCORD_WEBHOOK_URL` from the linked Vercel project. Removal does not revoke credentials. Because the latter two were historically configured as public browser variables, the owner must revoke/rotate the old GitHub token and Discord webhook at their providers; neither is used by the Cloudflare deployment.
 
-1. load `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, a historical JSON asset, and the school JSON asset;
-2. verify response headers show static/cache delivery and that Worker/Functions invocations did **not** increase;
-3. request an unknown year and verify static HTTP 404 with useful links;
-4. select a country and verify the browser calls `https://en.wikipedia.org/w/api.php`, not a local API;
-5. submit one feedback request and verify this alone increments Functions invocations and returns a safe success/failure response;
-6. verify GET `/api/feedback` returns 405, cross-origin POST returns 403, and repeated requests reach 429;
-7. confirm Functions routes list only `/api/feedback` and `_routes.json` is deployed unchanged; and
-8. confirm current daily Worker usage remains well below the Free-plan request allowance and no billable subscription is active.
+The verified M3 preview is:
 
-A broad route, any page/data Worker invocation, a request to enable billing, or an inability to prove quota isolation blocks the milestone.
+- URL: <https://historic-borders.champtoday.workers.dev>
+- Worker: `historic-borders`
+- Verified final M3 version: `c3144834-a22a-4b6c-8269-22147af6f9aa`
+- Verification date: 2026-09-03 UTC
+
+A temporary empty Pages project created during provider testing was deleted; Workers Static Assets is the sole deployment architecture.
+
+## Preview and quota acceptance
+
+For each candidate deployment:
+
+1. record the version ID, URL, timestamp, and Free-plan status without recording secrets;
+2. load `/`, AD and BC years, `/pa/school-districts`, historical/school JSON, robots, sitemap, and an unknown route;
+3. verify static/cache responses contain no `X-HistoricBorders-Compute` header;
+4. verify unknown routes return static HTTP 404;
+5. verify country selection calls `https://en.wikipedia.org/w/api.php`, not a local API;
+6. verify GET feedback returns 405, cross-origin feedback returns 403, and valid configured feedback succeeds or fails safely;
+7. verify the twenty-first valid attempt in one minute returns 429;
+8. run `wrangler tail` while requesting ordinary pages/data and feedback—the tail must show only `/api/feedback` and its internal Durable Object call; and
+9. confirm account request/CPU/DO use remains within Free limits and no billable subscription is active.
+
+M3 evidence on 2026-09-03:
+
+- root, `/year/1994`, `/year/-100`, school page/data, historical data, robots, and sitemap returned 200;
+- `/year/9999` returned the useful static 404;
+- feedback GET returned 405 and cross-origin POST returned 403;
+- configured Airtable feedback returned 200 with `X-HistoricBorders-Compute: feedback` and `Cache-Control: no-store`;
+- a fake destination test produced safe failures for the first 20 accepted attempts and 429 on attempt 21; real secrets were restored and a subsequent submission returned 200;
+- a live tail captured only `/api/feedback` plus `FeedbackRateLimiter`, while five ordinary page/data/404 requests produced no Worker event; and
+- deployed version metadata confirmed `serve_directly: true`, static routing only for `/api/feedback`, `404-page`, all static header rules, three secret bindings, and one SQLite Durable Object binding.
 
 ## Crawler and bot controls
 
-`robots.txt` statically denies named AI/model-training crawlers while allowing ordinary search indexing. On the preview/production zone, enable AI Crawl Control for the eventual hostname. Evaluate Bot Fight Mode against all map journeys, direct Wikipedia, feedback, and ordinary search crawlers before enabling it; leave it off if it breaks required requests. Dashboard changes require owner access and must be recorded with the preview evidence.
+`robots.txt` statically denies named AI/model-training crawlers while allowing ordinary search indexing. AI Crawl Control and Bot Fight Mode require a Cloudflare-managed custom domain/zone, so configure and evaluate them during the M4 domain cutover. Leave Bot Fight Mode off if it breaks maps, direct Wikipedia, feedback, or legitimate search crawlers.
 
-## Custom-domain plan (M4 cutover only)
+## Custom-domain plan (M4 only)
 
-Before production cutover, locate the registrar/DNS account, add `historicborders.app` and `www.historicborders.app` to Pages, verify TLS, and create a Cloudflare Redirect Rule from `www` to the apex while preserving path/query. (`_redirects` intentionally contains no broad or host-level rewrite.) Lower DNS TTL before the approved window. Do not change DNS in M3.
+Before production cutover, locate the registrar/DNS account, attach `historicborders.app` to the Worker, verify TLS, and create a Cloudflare Redirect Rule from `www` to the apex while preserving path/query. `_redirects` intentionally contains no broad or host-level rewrite. Lower DNS TTL before the approved window. Do not change DNS before M4 approval.
 
 ## Rollback
 
-Cloudflare Pages retains prior deployments. If preview or production validation fails, promote the last known-good deployment in Pages and verify the critical journeys. During M4 DNS cutover, restore the previous DNS records within the rollback window if Pages/TLS fails. Because all map inputs are committed and builds are static, the same Git revision can also be rebuilt and deployed to another static host. Do not delete old content-hashed map assets while an active rollback deployment references them.
+Cloudflare retains Worker versions. Record the previous known-good version ID before each deploy. If validation fails, use Workers & Pages → `historic-borders` → Deployments to roll back traffic to the previous version, then repeat static and feedback smoke checks. Secret changes are separate from code versions and must be restored independently if changed.
+
+During M4 DNS cutover, restore previous DNS records within the rollback window if Worker routing or TLS fails. The committed static output remains portable to another static host. Do not delete content-hashed map assets while an active rollback version references them.

@@ -19,8 +19,8 @@
     "start": "node scripts/static-server.js",
     "preview": "node scripts/static-server.js",
     "static:validate": "node scripts/validate-static-export.js",
-    "cloudflare:check": "wrangler pages functions build --outdir .wrangler/functions-build",
-    "cloudflare:deploy": "wrangler pages deploy out --project-name historic-borders",
+    "cloudflare:check": "wrangler deploy --dry-run --outdir .wrangler/deploy-check",
+    "cloudflare:deploy": "wrangler deploy",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . -f unix --max-warnings=0",
@@ -83,7 +83,7 @@
     "typescript": "^5.0.4",
     "vitest": "^3.1.4",
     "webpack": "^5.97.1",
-    "wrangler": "4.36.0"
+    "wrangler": "4.128.0"
   },
   "engines": {
     "node": "22.x"

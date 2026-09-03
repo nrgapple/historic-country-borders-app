@@ -1,18 +1,35 @@
-interface RateLimiter {
-  limit(options: { key: string }): Promise<{ success: boolean }>;
+interface DurableObjectTransaction {
+  get<T>(key: string): Promise<T | undefined>;
+  put<T>(key: string, value: T): Promise<void>;
 }
 
-interface FeedbackEnv {
-  FEEDBACK_RATE_LIMITER: RateLimiter;
+interface DurableObjectStorage extends DurableObjectTransaction {
+  transaction<T>(
+    callback: (transaction: DurableObjectTransaction) => Promise<T>,
+  ): Promise<T>;
+  setAlarm(timestamp: number): Promise<void>;
+  delete(key: string): Promise<boolean>;
+}
+
+interface DurableObjectState {
+  storage: DurableObjectStorage;
+}
+
+interface DurableObjectStub {
+  fetch(input: Request): Promise<Response>;
+}
+
+interface DurableObjectNamespace {
+  idFromName(name: string): unknown;
+  get(id: unknown): DurableObjectStub;
+}
+
+export interface FeedbackEnv {
+  FEEDBACK_RATE_LIMITER: DurableObjectNamespace;
   DISCORD_WEBHOOK_URL?: string;
   AIRTABLE_PERSONAL_ACCESS_TOKEN?: string;
   AIRTABLE_BASE_ID?: string;
   AIRTABLE_TABLE_NAME?: string;
-}
-
-interface PagesContext {
-  request: Request;
-  env: FeedbackEnv;
 }
 
 type Rating = '' | 'nice' | 'meh' | 'bad';
@@ -112,8 +129,47 @@ const discordBody = (
   };
 };
 
-export async function onRequest(context: PagesContext): Promise<Response> {
-  const { request, env } = context;
+interface RateWindow {
+  startedAt: number;
+  count: number;
+}
+
+const RATE_LIMIT = 20;
+const RATE_PERIOD_MS = 60_000;
+
+export class FeedbackRateLimiter {
+  constructor(private readonly state: DurableObjectState) {}
+
+  async fetch(): Promise<Response> {
+    const now = Date.now();
+    const allowed = await this.state.storage.transaction(
+      async (transaction) => {
+        const current = await transaction.get<RateWindow>('window');
+        if (!current || now - current.startedAt >= RATE_PERIOD_MS) {
+          await transaction.put('window', { startedAt: now, count: 1 });
+          return true;
+        }
+        if (current.count >= RATE_LIMIT) return false;
+        await transaction.put('window', {
+          startedAt: current.startedAt,
+          count: current.count + 1,
+        });
+        return true;
+      },
+    );
+    await this.state.storage.setAlarm(now + RATE_PERIOD_MS);
+    return new Response(null, { status: allowed ? 204 : 429 });
+  }
+
+  async alarm(): Promise<void> {
+    await this.state.storage.delete('window');
+  }
+}
+
+export async function handleFeedback(
+  request: Request,
+  env: FeedbackEnv,
+): Promise<Response> {
   if (new URL(request.url).pathname !== '/api/feedback') {
     return json({ message: 'Not found' }, 404);
   }
@@ -159,8 +215,16 @@ export async function onRequest(context: PagesContext): Promise<Response> {
   if (!env.FEEDBACK_RATE_LIMITER)
     return json({ message: 'Feedback is temporarily unavailable' }, 503);
   const clientKey = request.headers.get('CF-Connecting-IP') || 'unknown';
-  const { success } = await env.FEEDBACK_RATE_LIMITER.limit({ key: clientKey });
-  if (!success) return json({ message: 'Too many feedback submissions' }, 429);
+  const limiterId = env.FEEDBACK_RATE_LIMITER.idFromName(clientKey);
+  const limitResponse = await env.FEEDBACK_RATE_LIMITER.get(limiterId).fetch(
+    new Request('https://rate-limiter.internal/check', { method: 'POST' }),
+  );
+  if (limitResponse.status === 429) {
+    return json({ message: 'Too many feedback submissions' }, 429);
+  }
+  if (!limitResponse.ok) {
+    return json({ message: 'Feedback is temporarily unavailable' }, 503);
+  }
 
   const payload = {
     user: (body.user || '') as string,
@@ -233,3 +297,11 @@ export async function onRequest(context: PagesContext): Promise<Response> {
   if (stored === 0) return json({ message: 'Failed to store feedback' }, 503);
   return json({ message: 'success', stored, total: operations.length }, 200);
 }
+
+const worker = {
+  fetch(request: Request, env: FeedbackEnv): Promise<Response> {
+    return handleFeedback(request, env);
+  },
+};
+
+export default worker;

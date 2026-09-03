@@ -33,7 +33,6 @@ function main() {
     'pa/school-districts.html',
     '_headers',
     '_redirects',
-    '_routes.json',
     'robots.txt',
     'sitemap.xml',
   ].forEach(requireFile);
@@ -43,16 +42,15 @@ function main() {
   );
   requireFile('data/pa-school-districts.json');
 
-  const routes = JSON.parse(
-    fs.readFileSync(requireFile('_routes.json'), 'utf8'),
-  );
+  const wrangler = fs.readFileSync(path.join(ROOT, 'wrangler.toml'), 'utf8');
   if (
-    routes.version !== 1 ||
-    JSON.stringify(routes.include) !== JSON.stringify(['/api/feedback']) ||
-    !Array.isArray(routes.exclude) ||
-    routes.exclude.length !== 0
+    !wrangler.includes('main = "worker/index.ts"') ||
+    !wrangler.includes('directory = "./out"') ||
+    !wrangler.includes('run_worker_first = ["/api/feedback"]') ||
+    !wrangler.includes('not_found_handling = "404-page"') ||
+    /run_worker_first\s*=\s*true/.test(wrangler)
   ) {
-    fail('_routes.json must invoke Functions only for /api/feedback');
+    fail('Workers Static Assets must execute code only for /api/feedback');
   }
 
   const headers = fs.readFileSync(requireFile('_headers'), 'utf8');
@@ -74,17 +72,13 @@ function main() {
 
   if (fs.existsSync(path.join(ROOT, 'pages', 'api')))
     fail('Next API routes remain in the static app');
-  const functionFiles = fs.existsSync(path.join(ROOT, 'functions'))
-    ? walk(path.join(ROOT, 'functions'))
-    : [];
-  const relativeFunctions = functionFiles.map((file) =>
-    path.relative(path.join(ROOT, 'functions'), file),
+  if (fs.existsSync(path.join(ROOT, 'functions')))
+    fail('Pages Functions remain; the exact Worker route is authoritative');
+  const workerFiles = walk(path.join(ROOT, 'worker')).map((file) =>
+    path.relative(path.join(ROOT, 'worker'), file),
   );
-  if (
-    JSON.stringify(relativeFunctions) !==
-    JSON.stringify([path.join('api', 'feedback.ts')])
-  ) {
-    fail(`unexpected dynamic functions: ${relativeFunctions.join(', ')}`);
+  if (JSON.stringify(workerFiles) !== JSON.stringify(['index.ts'])) {
+    fail(`unexpected Worker files: ${workerFiles.join(', ')}`);
   }
 
   const files = walk(OUT);
@@ -101,7 +95,7 @@ function main() {
     }
   }
   if (files.length > MAX_CLOUDFLARE_FILES)
-    fail(`file count ${files.length} exceeds Cloudflare Pages limit`);
+    fail(`file count ${files.length} exceeds Cloudflare static asset limit`);
   const oversized = files.find(
     (file) => fs.statSync(file).size > MAX_CLOUDFLARE_ASSET_BYTES,
   );

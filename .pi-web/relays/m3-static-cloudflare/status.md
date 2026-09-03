@@ -1,37 +1,29 @@
 # Relay Status: M3 Static-First Cloudflare Migration
 
-- State: BLOCKED — OWNER INPUT REQUIRED
-- Current position: All account-independent M3 implementation and local validation are complete on `upgrade/cloudflare-harness`; Cloudflare preview/account verification remains.
-- Last completed leg: 1 (local static migration)
-- Next leg to run: 2, only after the owner completes the non-secret preview setup below
-- Next task: Verify the Cloudflare preview, static-hit/Function quota isolation, Free-plan status, bot controls, and rollback evidence. If green, complete M3 and hand off once to M4.
+- State: COMPLETE — M3 exit gate passed; M4 handoff ready
+- Current position: M3 is implemented, validated, deployed, and quota-isolation verified on `upgrade/cloudflare-harness`.
+- Last completed leg: 2 (Cloudflare preview and account verification)
+- Next leg to run: none in this Relay
+- Next task: Start `m4-optimize-launch` leg 1 according to its charter.
 
-## Durable completion evidence
+## Completion evidence
 
-- 53 pinned historical payloads are validated and published as content-hashed static assets (55,615,413 bytes total), with source/output hashes, GPL-3.0 attribution, provenance, uncertainty, and five retained zero-area anomalies documented.
-- `output: 'export'` produces 57 pages and 198 deployable files; all year routes including long BC years, school districts, sitemap/robots, and a useful 404 are static.
-- All Next API routes are removed. Wikipedia is direct browser CORS. `_routes.json` permits only `/api/feedback`; the bounded Worker-native Function uses a Cloudflare rate-limit binding and safe failures.
-- `yarn validate` passes: 187 unit/integration tests, offline data validation, static export checks, Wrangler Function compilation, size budgets, and 15 cross-browser journeys.
-- Local `wrangler pages dev out` verified BC/school/data HTTP 200, unknown-year HTTP 404, feedback HTTP 503 without secrets, exact local rate binding, five valid header rules, and no redirect warnings.
+- Preview: <https://historic-borders.champtoday.workers.dev>; verified final version `c3144834-a22a-4b6c-8269-22147af6f9aa`.
+- 53 pinned historical payloads are validated content-hashed static assets (55,615,413 bytes), with source/output hashes, GPL-3.0 attribution, provenance, uncertainty, and five retained zero-area anomalies documented.
+- Workers Static Assets directly serves 57 generated pages and 197 deployable files. All year routes including long BC years, school districts, crawler files, map data, and useful 404 are static.
+- `run_worker_first = ["/api/feedback"]` is the only compute route. Live tail showed only feedback plus its internal Durable Object; ordinary page/data/404 requests emitted no Worker event.
+- Feedback uses a strict per-client SQLite Durable Object (20 attempts/minute), bounded input/destinations, no-store responses, and Airtable secrets transferred without printing/committing them. Attempt 21 returned 429; configured feedback returned 200.
+- Live Chromium rendered authenticated Mapbox canvases for 1994 (198 features), 100 BC (85), and school districts (500). Static route/status/header checks passed.
+- `yarn validate` passes: 188 unit/integration tests, offline data validation, static export and Wrangler dry-run, size budgets, and 15 cross-browser journeys.
+- Deployment, quota checks, Free-only boundaries, secrets, custom-domain plan, crawler controls, and rollback are documented in `docs/CLOUDFLARE_DEPLOYMENT.md`.
 
-## Owner action (account access; never share credentials)
+## Relevant context for M4
 
-Follow **Owner-only preview setup** and **Preview acceptance and quota evidence** in `docs/CLOUDFLARE_DEPLOYMENT.md`:
+- Keep Workers Static Assets asset-first and `/api/feedback` as the only Worker-first path.
+- Production DNS/custom domain, AI Crawl Control/Bot Fight Mode evaluation, optimization, uptime monitoring, and launch review belong to M4.
+- The empty experimental Pages project was deleted; `historic-borders` Worker is authoritative.
+- Obsolete Gemini, Redis, public GitHub-token, and public Discord-webhook variables were removed from Vercel. Provider removal does not revoke credentials: before production launch, the owner should revoke/rotate the historically public GitHub token and Discord webhook; neither is used by Cloudflare.
 
-1. Confirm a Cloudflare Free account/project with no paid subscription or add-on.
-2. Create/deploy the `historic-borders` Pages preview using Node 22, `yarn install --frozen-lockfile && yarn build`, and output `out`; never run data refresh in deployment.
-3. Configure public build variables and at least one feedback destination as Cloudflare secrets; confirm `FEEDBACK_RATE_LIMITER` is bound.
-4. Record the non-secret preview URL/timestamp and verify ordinary pages/data do not increase Function invocations, while only `/api/feedback` does.
-5. Record AI Crawl Control/Bot Fight Mode decisions, daily quota/free-plan evidence, and rollback availability. Do not change DNS.
-6. Resume Relay `m3-static-cloudflare` as leg 2 with that non-secret evidence.
+## Blockers / intervention
 
-## Relevant context
-
-- Deployment/account checklist: `docs/CLOUDFLARE_DEPLOYMENT.md`
-- Runtime boundary: `docs/RUNTIME_SURFACE.md`
-- Historical provenance: `docs/HISTORICAL_DATA.md`
-- M3 review/evidence: `docs/product/REVIEW.md`, `docs/product/SCORECARD.md`
-
-## Blocker / intervention
-
-Cloudflare account, secret, dashboard, and preview deployment actions require the owner. Do not spawn M4 until preview and quota isolation satisfy the charter finish line.
+None for M3. M4 must follow its own account/DNS/paid-risk intervention rules.

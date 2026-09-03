@@ -1,16 +1,16 @@
 # Feedback Worker setup
 
-Feedback is the only dynamic application route. Cloudflare Pages serves the static app and invokes `functions/api/feedback.ts` only for exact path `/api/feedback`, as enforced by `public/_routes.json`.
+Feedback is the only dynamic application route. Cloudflare Workers Static Assets serves the site directly and invokes `worker/index.ts` only for exact path `/api/feedback`, as enforced by `assets.run_worker_first` in `wrangler.toml`.
 
 ## Security and failure behavior
 
-The Function accepts JSON `POST` requests from the same origin, limits actual and declared bodies to 8 KiB, validates field types/lengths, applies the `FEEDBACK_RATE_LIMITER` platform binding, and bounds destination requests at five seconds. It returns `429` when limited and a non-secret `503` when configuration or destinations are unavailable. Responses use `Cache-Control: no-store`.
+The Worker accepts JSON `POST` requests from the same origin, limits actual and declared bodies to 8 KiB, validates field types/lengths, applies the strict per-client `FeedbackRateLimiter` SQLite Durable Object, and bounds destination requests at five seconds. It returns `429` when limited and a non-secret `503` when configuration or destinations are unavailable. Responses use `Cache-Control: no-store`.
 
 The accepted fields are rating (`nice`, `meh`, or `bad`), visitor ID, optional email/message, and bounded metadata. The browser remains usable if submission fails.
 
 ## Secrets
 
-Configure at least one destination in Cloudflare Pages **Secrets**:
+Configure at least one destination using Cloudflare Worker **Secrets** (`wrangler secret put`):
 
 | Variable                         | Purpose                                               |
 | -------------------------------- | ----------------------------------------------------- |
@@ -23,7 +23,7 @@ Never prefix these with `NEXT_PUBLIC_`, put them in `.env.example`, commit them,
 
 ## Discord
 
-Create a webhook for the intended channel and store its URL as `DISCORD_WEBHOOK_URL`. See `DISCORD_SETUP.md` for provider-specific creation steps. The Function sends a compact embed containing rating, generated feedback ID, visitor ID, timestamp, and optional email/message.
+Create a webhook for the intended channel and store its URL as `DISCORD_WEBHOOK_URL`. See `DISCORD_SETUP.md` for provider-specific creation steps. The Worker sends a compact embed containing rating, generated feedback ID, visitor ID, timestamp, and optional email/message.
 
 ## Airtable
 

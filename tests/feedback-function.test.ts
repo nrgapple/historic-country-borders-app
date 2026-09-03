@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { onRequest } from '../functions/api/feedback';
+import { FeedbackRateLimiter, handleFeedback } from '../worker';
 
 const payload = {
   user: '',
@@ -7,15 +7,20 @@ const payload = {
   rate: 'nice',
   visitorId: 'visitor-1',
 };
-const limiter = (success = true) => ({
-  limit: vi.fn().mockResolvedValue({ success }),
-});
+const limiter = (status = 204) => {
+  const stubFetch = vi.fn().mockResolvedValue(new Response(null, { status }));
+  return {
+    idFromName: vi.fn().mockReturnValue('limiter-id'),
+    get: vi.fn().mockReturnValue({ fetch: stubFetch }),
+    stubFetch,
+  };
+};
 const request = (body: unknown = payload, init: RequestInit = {}) =>
-  new Request('https://preview.historicborders.pages.dev/api/feedback', {
+  new Request('https://historic-borders.example.workers.dev/api/feedback', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Origin: 'https://preview.historicborders.pages.dev',
+      Origin: 'https://historic-borders.example.workers.dev',
       ...init.headers,
     },
     body: JSON.stringify(body),
@@ -23,7 +28,7 @@ const request = (body: unknown = payload, init: RequestInit = {}) =>
   });
 
 const invoke = (req: Request, env: Record<string, unknown>) =>
-  onRequest({ request: req, env } as never);
+  handleFeedback(req, env as never);
 
 describe('Cloudflare feedback function', () => {
   beforeEach(() => {
@@ -85,7 +90,7 @@ describe('Cloudflare feedback function', () => {
     expect(
       (
         await invoke(request(), {
-          FEEDBACK_RATE_LIMITER: limiter(false),
+          FEEDBACK_RATE_LIMITER: limiter(429),
           DISCORD_WEBHOOK_URL: 'https://discord.test',
         })
       ).status,
@@ -111,8 +116,32 @@ describe('Cloudflare feedback function', () => {
       stored: 1,
       total: 2,
     });
-    expect(rate.limit).toHaveBeenCalledWith({ key: 'unknown' });
+    expect(rate.idFromName).toHaveBeenCalledWith('unknown');
+    expect(rate.stubFetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('strictly limits the twenty-first request in one Durable Object window', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-09-03T00:00:00Z'));
+    const values = new Map<string, unknown>();
+    const storage = {
+      get: async <T>(key: string) => values.get(key) as T | undefined,
+      put: async <T>(key: string, value: T) => void values.set(key, value),
+      transaction: async <T>(callback: (transaction: unknown) => Promise<T>) =>
+        callback(storage),
+      setAlarm: vi.fn().mockResolvedValue(undefined),
+      delete: async (key: string) => values.delete(key),
+    };
+    const durableLimiter = new FeedbackRateLimiter({ storage } as never);
+
+    for (let requestNumber = 1; requestNumber <= 20; requestNumber += 1) {
+      expect((await durableLimiter.fetch()).status).toBe(204);
+    }
+    expect((await durableLimiter.fetch()).status).toBe(429);
+    await durableLimiter.alarm();
+    expect((await durableLimiter.fetch()).status).toBe(204);
+    vi.useRealTimers();
   });
 
   it('fails safely when storage is absent or unavailable', async () => {

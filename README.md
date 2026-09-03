@@ -30,7 +30,7 @@ Open <http://localhost:3000>.
 | `NEXT_PUBLIC_MAPBOX_TOKEN` | Browser  | Public, URL-restricted Mapbox map token |
 | `NEXT_PUBLIC_GA_FOUR`      | Browser  | Optional GA4 measurement ID             |
 
-Feedback secrets are configured only on the isolated Cloudflare Function, not exposed to the Next.js build. Never place a secret in a variable prefixed with `NEXT_PUBLIC_`. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
+Feedback secrets are configured only on the isolated Cloudflare Worker, not exposed to the Next.js build. Never place a secret in a variable prefixed with `NEXT_PUBLIC_`. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
 
 ## Validation
 
@@ -52,7 +52,7 @@ Tests use fixtures and do not require production credentials or live third-party
 
 ## Architecture and data
 
-The application exports static HTML and committed map assets for Cloudflare Pages. Normal pages and map assets invoke no Worker; only the exactly routed, bounded feedback Function is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
+The application exports static HTML and committed map assets for Cloudflare Workers Static Assets. Normal pages and map assets invoke no Worker code; only the exactly routed, bounded feedback Worker path is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
 
 - Historical map data: [source, pin, validation, and uncertainty](docs/HISTORICAL_DATA.md)
 - Country descriptions: [Wikipedia](https://www.wikipedia.org/)
