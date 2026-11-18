@@ -31,12 +31,13 @@ const PROPERTY = {
   headOfStateOffice: 'P1906',
   positionHeld: 'P39',
   capitalOf: 'P1376',
+  coordinateLocation: 'P625',
 };
 
 /** Properties kept when entity JSON is trimmed for the local cache. */
 const KEPT_PROPERTIES = Object.values(PROPERTY);
 /** Bump when KEPT_PROPERTIES changes so cached trimmed entities refetch. */
-const TRIM_VERSION = 3;
+const TRIM_VERSION = 4;
 
 /**
  * Classes a reconciled territory must reach through P31/P279*. Polity-like
@@ -517,6 +518,59 @@ function trimEntity(entity) {
   };
 }
 
+const EARTH = 'http://www.wikidata.org/entity/Q2';
+const COORDINATE_DECIMALS = 5;
+/** Best-rank points closer than this are one place recorded twice. */
+const COORDINATE_SPREAD_KM = 10;
+
+function haversineKm([lon1, lat1], [lon2, lat2]) {
+  const radians = Math.PI / 180;
+  const a =
+    Math.sin(((lat2 - lat1) * radians) / 2) ** 2 +
+    Math.cos(lat1 * radians) *
+      Math.cos(lat2 * radians) *
+      Math.sin(((lon2 - lon1) * radians) / 2) ** 2;
+  return 2 * 6371.0088 * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+/**
+ * The Earth coordinate location (P625) of an entity, as
+ * `{ coordinates: [lon, lat] }` rounded to five decimals, or `{ issue }`:
+ * "missing" when it has none, "ambiguous" when best-rank values lie more than
+ * COORDINATE_SPREAD_KM apart (Wikidata often records a city twice at
+ * slightly different points; the first statement is used then). Deprecated
+ * statements, other globes, and out-of-range values are ignored.
+ */
+function earthCoordinates(entity) {
+  const usable = (entity?.claims?.[PROPERTY.coordinateLocation] || []).filter(
+    (claim) => {
+      const value = claim.mainsnak?.datavalue?.value;
+      return (
+        claim.rank !== 'deprecated' &&
+        claim.mainsnak?.snaktype === 'value' &&
+        value &&
+        (value.globe === undefined || value.globe === EARTH) &&
+        Number.isFinite(value.latitude) &&
+        Number.isFinite(value.longitude) &&
+        Math.abs(value.latitude) <= 90 &&
+        Math.abs(value.longitude) <= 180
+      );
+    },
+  );
+  const preferred = usable.filter((claim) => claim.rank === 'preferred');
+  const round = (value) => Number(value.toFixed(COORDINATE_DECIMALS));
+  const points = (preferred.length ? preferred : usable).map((claim) => {
+    const { latitude, longitude } = claim.mainsnak.datavalue.value;
+    return [round(longitude), round(latitude)];
+  });
+  if (!points.length) return { issue: 'missing' };
+  if (
+    points.some((point) => haversineKm(points[0], point) > COORDINATE_SPREAD_KM)
+  )
+    return { issue: 'ambiguous' };
+  return { coordinates: points[0] };
+}
+
 /** Year from which an open-ended state's undated capital is trusted. */
 const UNTIMED_CAPITAL_FROM = 1800;
 
@@ -571,6 +625,9 @@ module.exports = {
   untimedCapitalPlausible,
   EXCLUDED_CLASSES,
   TRIM_VERSION,
+  COORDINATE_SPREAD_KM,
+  earthCoordinates,
+  haversineKm,
   officeHolderClaims,
   MAX_OPEN_TERM_YEARS,
   POLITY_ROOTS,

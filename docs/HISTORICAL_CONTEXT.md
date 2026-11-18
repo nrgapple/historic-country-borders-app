@@ -13,6 +13,8 @@ Everything is static. Facts come from an explicit, reviewed refresh; ordinary bu
 | `data/historical-context-facts.json`    | yes       | no      | Pinned facts snapshot: per entity revision ID (`lastrevid`), retrieval time, and the trimmed claims publication reads.  |
 | `data/historical-context.json`          | yes       | yes     | Year → `/data/context/<year>.<hash>.json` manifest (about 3 KB).                                                        |
 | `public/data/context/*.json`            | yes       | no      | One immutable file per published year: facts valid in that year keyed by NAME, plus `changes` versus the previous year. |
+| `public/data/context/*.capitals.*.json` | yes       | no      | One immutable file per year of capital points `{ name, t, qid }` for the remaster map (see Capital points).             |
+| `data/historical-capitals.json`         | yes       | no      | Capitals manifest: URL, hash, bytes and counts per year, and every rejected capital with its reason.                    |
 | `.cache/wikidata/`                      | no        | no      | Gitignored raw-response cache (trimmed entities, searches, Wikipedia title lookups) so reruns are cheap.                |
 
 ## Commands
@@ -22,6 +24,7 @@ yarn data:reconcile:context            # network: NAME → QID mapping (slow, ca
 yarn data:refresh:context              # network: facts snapshot + per-year files (cached)
 yarn data:refresh:context --refresh    # same, ignoring the cache (a real update)
 yarn data:refresh:context --offline    # rebuild published files from the committed snapshot
+yarn data:refresh:context --coordinates # network: add capital coordinates (P625) to the committed snapshot only
 yarn data:validate:context             # offline; part of yarn data:validate
 ```
 
@@ -122,7 +125,42 @@ Precision is respected: decade, century, and millennium values become ranges cov
 
 The UI states that differences can come from the source maps as well as from history.
 
-Validation (`yarn data:validate:context`) checks the mapping against the published territory names, the snapshot's pinned revisions and retrieval times, and that every override is applied. It then rebuilds every year file from the committed snapshot and payloads and requires byte-for-byte equality with the published files and manifest. `yarn size:check` budgets the context files at 96 KiB for the largest and 2 MiB in total.
+Validation (`yarn data:validate:context`) checks the mapping against the published territory names, the snapshot's pinned revisions and retrieval times, and that every override is applied. It then rebuilds every year file and every capitals file from the committed snapshot, payloads and split year files and requires byte-for-byte equality with the published files and manifests. `yarn size:check` budgets the context files at 96 KiB for the largest and 2 MiB in total.
+
+## Capital points
+
+The remaster map marks each territory's capital. Positions come from Wikidata **coordinate location (P625)** of the capital items the facts already name.
+
+**Fetching.** The snapshot's `referenced` entry for every capital item (any P36 value of a snapshot entity) carries either `coordinates: [lon, lat]` or `coordinateIssue`, plus `coordinateRevision`, the item revision read. The full refresh fills these. `--coordinates` adds them to the committed snapshot and leaves every other pinned fact alone. Both use the same cache, batching and politeness rules as the rest of the refresh. At the 2026-11-18 run, 555 capital items took 12 requests.
+
+**Choosing one point.** Deprecated statements, non-Earth globes and out-of-range values are ignored, and preferred rank beats normal. Wikidata often records a city twice at slightly different points. If every best-rank point lies within 10 km of the first, the first statement's point is used. Otherwise the capital is `ambiguous`; with no usable value it is `missing`. Coordinates are rounded to five decimals.
+
+**Publication.** `<year>.capitals.<hash>.json` is a FeatureCollection of points:
+
+```json
+{
+  "type": "Feature",
+  "geometry": { "type": "Point", "coordinates": [28.97602, 41.01224] },
+  "properties": { "name": "Constantinople", "t": 1306, "qid": "Q16869" }
+}
+```
+
+`name` is the capital's English label, `t` is the territory id in that year's split index (`docs/HISTORICAL_DATA.md`), and `qid` is the capital item.
+
+A point is published only when:
+
+- the capital is in that year's context file, so it passed the validity, rank and untimed-capital rules above; and
+- the point lies inside the territory's polygons, or within **50 km** of their border. Distance is measured on an equirectangular projection centred on the point, accurate to well under 1% at that scale.
+
+Everything else goes to `rejected` in `data/historical-capitals.json` with a reason: `outside territory` (with `distanceKm`), `coordinates missing`, `coordinates ambiguous`, `coordinates not fetched`, `territory not in the split index`, or `capital has no label`.
+
+Observed at the committed snapshot: 1,583 capital points across the 53 years (1492: 14, 1815: 47, 1914: 62) and 42 rejections. 37 were outside their territory and 5 had no coordinates. The rejections are mostly a capital that moved or a map that differs from Wikidata. Examples:
+
+- Bern lies 116 km from the 1994–2010 "Switzerland" feature, an upstream sliver (see `docs/HISTORICAL_DATA.md` "Blank names").
+- Constantinople lies 404 km from the Byzantine Empire of 1400.
+- Hanseongbu's Wikidata point is 13,679 km from Coree.
+
+The capitals files depend on split territory ids, so a historical refresh that changes names or ids needs `yarn data:refresh:context --offline`; validation fails until then. `yarn size:check` budgets the largest capitals file at 48 KiB (24 KiB observed).
 
 ## Attribution
 

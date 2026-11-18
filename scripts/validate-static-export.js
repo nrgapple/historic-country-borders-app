@@ -3,6 +3,8 @@ const path = require('path');
 const historicalManifest = require('../data/historical-manifest.json');
 const historicalAssets = require('../data/historical-assets.json');
 const historicalContext = require('../data/historical-context.json');
+const historicalSplit = require('../data/historical-split-assets.json');
+const historicalCapitals = require('../data/historical-capitals.json');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'out');
@@ -43,6 +45,14 @@ function main() {
   );
   Object.values(historicalContext.years).forEach((url) =>
     requireFile(url.replace(/^\//, '')),
+  );
+  Object.values(historicalSplit.years).forEach((entry) =>
+    ['polygons', 'labels', 'index'].forEach((kind) =>
+      requireFile(entry[kind].url.replace(/^\//, '')),
+    ),
+  );
+  Object.values(historicalCapitals.years).forEach((entry) =>
+    requireFile(entry.url.replace(/^\//, '')),
   );
   requireFile('data/pa-school-districts.json');
 
