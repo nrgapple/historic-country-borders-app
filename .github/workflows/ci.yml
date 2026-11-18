@@ -73,8 +73,16 @@ jobs:
     # Safe-area (iPhone insets), responsive widths and forced-dark suites from
     # playwright.layout.config.ts, run against the production remaster build.
     # A report, not a deploy gate: the deploy job does not wait for it.
+    # The map renders in software on CI runners (~13 s a test), so the 351
+    # tests are split across six parallel shards (Actions minutes are free
+    # for this public repository).
+    name: layout (${{ matrix.shard }}/6)
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
     steps:
@@ -96,14 +104,14 @@ jobs:
           done
           cat serve.log
           exit 1
-      - run: yarn test:layout
+      - run: yarn test:layout --shard=${{ matrix.shard }}/6
         env:
           BASE_URL: http://127.0.0.1:4410
       - name: Upload layout-test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: layout-report
+          name: layout-report-${{ matrix.shard }}
           path: |
             playwright-report/
             test-results/
