@@ -131,6 +131,23 @@ The tiles carry five layers:
 
 **Unverified until P0:** whether Workers Static Assets compresses `application/x-protobuf`. See `docs/BASEMAP.md`.
 
+### PA street basemap and district tiles for the remaster (2026-11, P5 and T8)
+
+**Observed.**
+
+- Protomaps names residential streets only from z14; its z12–13 tiles carry main roads and a few unnamed minor roads.
+- A native z13 tree is 13,109 files and z14 is 48,830; the remaster's gate is 16,000 files including T2's 1,368.
+- The current district artifact is 11.5 MiB raw (1.71 MiB Brotli-11) and takes 560–660 ms to `JSON.parse` on a fast Mac before MapLibre indexes it again.
+- This Mac has no Docker context, tippecanoe or Go `pmtiles` binary.
+
+**Decision.**
+
+- **Street basemap.** `yarn data:refresh:pa-basemap` reads one pinned Protomaps daily build over coalesced HTTP Range requests in pure Node (`pmtiles@4.5.0`, `vt-pbf`) and commits a static z0–12 tree in which each z12 tile carries z14's streets: 3,864 files, 36.8 MiB (24.2 MiB Brotli-5), largest 107 KiB. Water, streets, places and state and county lines only. The tree lives in `data/pa-basemap/<build>/` so the legacy Next export never ships it. See `docs/PA_BASEMAP.md`.
+- **Districts.** A z11 vector-tile tree at extent 8192 (a 1.8 m grid, 838 files) built offline from the committed artifact in `yarn remaster:build`, plus a 138 KiB property index. The state view needs 31–63 KiB of tiles. See `docs/PA_SCHOOL_DISTRICTS.md` ("Remaster data format").
+- **No missing-tile requests.** Both trees ship a coverage index; the page's `pa-tiles://` protocol fetches only covered tiles, and MapLibre overzooms the nearest parent outside the state.
+
+**Recommendation.** Keep the R2/PMTiles option from plan §5 in reserve: the remaster now deploys 6,570 files, so the static tree has room to grow (for example, z13 streets around the cities) before the gate matters.
+
 ### Self-hosted OFL fonts and prebuilt map glyphs (remaster, 2026-11)
 
 Observed: the remaster's Classic-atlas design (plan §2.1) uses Alegreya, Alegreya SC and Alegreya Sans, and offers Atkinson Hyperlegible Next as projector text. Published names also use Canadian syllabics, Cherokee, Osage, IPA letters and combining marks. MapLibre 6.19 draws a glyph locally with TinySDF at 3.29 ms per glyph under 4× CPU, against 0.09 ms to decode it from a prebuilt PBF (`remaster-spike/results/glyph-raster.json`). Wrangler sends `.pbf` without a Content-Type.

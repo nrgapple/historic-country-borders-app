@@ -236,6 +236,7 @@ Checked 2026-11-17 against the npm registry and official documentation or releas
      - **Estimate, not measured:** about 10k files at z13, which fits under the 20,000-file Free limit alongside ~1.3k other files.
      - Overzoom z13 to z16 for street names.
      - Gate: the CI file-count budget must stay below 16,000.
+     - **Measured in P5 (2026-11-18, `docs/PA_BASEMAP.md`):** built in pure Node (`pmtiles` npm over coalesced Range requests; no Docker or tippecanoe). Protomaps names residential streets only from z14, so the published tree is z0–12 with z14's streets folded into z12: 3,864 files, 36.8 MiB. Any z13 tree is 13,109 files. The page overzooms to z15.
   2. **R2 option.** If the file budget is exceeded, or after the custom-domain cutover, move to one immutable `pa-<build>.pmtiles` on R2 behind a first-party subdomain such as `tiles.historicborders.app`. Use the Range acceptance test already written in the data-source study.
 - **Fonts and map glyphs, self-hosted OFL only.**
   - **UI fonts.** Alegreya (400/500 italic/700), Alegreya SC (500/700) and Alegreya Sans (500/700), as Latin and Latin Extended WOFF2 from `@fontsource`. Atkinson Hyperlegible Next loads only for the large-text setting. All come from our origin with `font-display: swap`, and each family's `LICENSE` is shipped and credited in About.
