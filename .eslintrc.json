@@ -1,5 +1,8 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
   "ignorePatterns": [
     ".next/",
     "coverage/",
@@ -9,7 +12,8 @@
     "playwright-report/",
     "public/",
     "remaster-spike/",
-    "test-results/"
+    "test-results/",
+    "design/"
   ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",

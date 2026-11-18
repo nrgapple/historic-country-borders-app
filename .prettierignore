@@ -11,3 +11,6 @@ data/historical-context-facts.json
 test-results/
 yarn.lock
 remaster-spike/
+
+# Static design reference mockups (Direction A spec), not app code.
+design/
