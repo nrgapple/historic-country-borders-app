@@ -10,7 +10,9 @@ export const useFingerPrint = (enabled = true) => {
     const getFingerprint = async () => {
       const { default: FingerprintJS } =
         await import('@fingerprintjs/fingerprintjs');
-      const fp = await FingerprintJS.load();
+      // monitoring: false stops FingerprintJS's usage ping to openfpcdn.io,
+      // so the feedback form contacts no third-party host.
+      const fp = await FingerprintJS.load({ monitoring: false });
       const result = await fp.get();
       if (active) setFingerprint(result.visitorId);
     };

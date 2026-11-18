@@ -27,6 +27,7 @@ describe('useFingerPrint', () => {
     rerender({ enabled: true });
     await waitFor(() => expect(result.current).toBe('visitor-123'));
     expect(load).toHaveBeenCalledOnce();
+    expect(load).toHaveBeenCalledWith({ monitoring: false });
     expect(get).toHaveBeenCalledOnce();
   });
 });
