@@ -1,14 +1,22 @@
 /**
  * The data contract between the Classic-atlas style (T6) and the tracks that
- * produce its inputs: T1 (year files), T2 (basemap tiles and relief) and T3
- * (glyph fontstacks). Every source id, source-layer, attribute name, URL and
- * fontstack the style reads is named here and nowhere else, so integrating a
- * track's real output is a one-line change in this file.
+ * produce its inputs. Every source id, source-layer, attribute name, URL and
+ * fontstack the style reads is named here and nowhere else.
  *
- * Values marked STAND-IN point at assets built by `scripts/build-standins.mjs`
- * from the design spike's prepared data (`design/living-atlas/data/`). They
- * follow the same contract, so swapping them changes no other code.
+ * - T1 year data: docs/HISTORICAL_DATA.md ("Split year files") and
+ *   docs/HISTORICAL_CONTEXT.md ("Capital points").
+ * - T2 basemap: docs/BASEMAP.md ("Layer contract"), data/basemap-manifest.json.
+ * - T3 glyphs: docs/FONTS.md ("Map fontstacks"), data/map-fonts.json.
+ *
+ * `style.test.ts` checks these values against the manifests and runs T3's
+ * `checkStyleFontstacks`, so a rebuilt basemap or glyph set that moves a URL
+ * fails the tests instead of silently 404ing.
  */
+import {
+  attribution as basemapAttribution,
+  relief,
+  tiles,
+} from '../../../../data/basemap-manifest.json';
 
 /* ---- Sources ------------------------------------------------------------ */
 
@@ -27,13 +35,15 @@ export const SOURCE = {
   relief: 'relief',
 } as const;
 
-/** T2 basemap tiles. STAND-IN: swap to `/basemap/{z}/{x}/{y}.pbf` when T2 lands. */
-export const BASEMAP_TILES = '/basemap-standin/{z}/{x}/{y}.pbf';
-export const BASEMAP_MAXZOOM = 5;
+/** T2 basemap tiles, read from data/basemap-manifest.json (about 1 kB of it is bundled). */
+export const BASEMAP_TILES: string = tiles.url;
+export const BASEMAP_MINZOOM: number = tiles.minzoom;
+export const BASEMAP_MAXZOOM: number = tiles.maxzoom;
+export const BASEMAP_ATTRIBUTION: string = basemapAttribution;
 
 /** T2 source-layers inside the basemap tiles. */
 export const BASEMAP_LAYER = {
-  /** Ocean mask: the world minus land, in 30° cells. Painted over territory fills. */
+  /** Ocean mask: the world minus land, cut on the z3 tile grid. Painted over territory fills. */
   ocean: 'ocean',
   /** Coastline rings as LineStrings (see `COAST_ATTR`). */
   coast: 'coast',
@@ -42,17 +52,17 @@ export const BASEMAP_LAYER = {
   /** River centrelines. Attributes: `name`, `rank`. */
   rivers: 'rivers',
   /** Sea and ocean label points (polylabel). Attributes: `name`, `kind`, `rank`. */
-  marine: 'marine',
+  marine: 'marine_labels',
 } as const;
 
 /**
- * Coastline feature attributes. Ring winding follows RFC 7946 (land on the
- * left in lon/lat), so a **positive** `line-offset` moves a stroke seaward.
+ * Coastline feature attributes. Water is always on the right of the line
+ * (RFC 7946 rings), so a **positive** `line-offset` moves a stroke seaward.
  */
 export const COAST_ATTR = {
   /**
-   * Area in km² enclosed by the ring: the landmass for an outer ring, the
-   * enclosed water body for a hole. Waterlines need ≥ `WATERLINE_MIN_KM2`.
+   * Geodesic area in km² of the land polygon the ring bounds (holes
+   * subtracted, ≥ 1, always present). Waterlines need ≥ `WATERLINE_MIN_KM2`.
    */
   landmassKm2: 'landmass_km2',
 } as const;
@@ -67,13 +77,16 @@ export const FEATURE_ATTR = {
 /** Natural Earth `featurecla` value that marks an ocean (vs. sea, bay, gulf…). */
 export const MARINE_KIND_OCEAN = 'ocean';
 
-/** T2 relief image. STAND-IN: swap the URL when T2 publishes its WebP. */
+/** T2 relief: one Web Mercator WebP with its image-source corner coordinates. */
 export const RELIEF = {
-  url: '/relief-standin/relief.webp',
-  /** Web Mercator image; its corners span 180°W–180°E at these latitudes. */
-  north: 76,
-  south: -58,
-} as const;
+  url: relief.url,
+  coordinates: relief.coordinates as [
+    [number, number],
+    [number, number],
+    [number, number],
+    [number, number],
+  ],
+};
 
 /* ---- Year data (T1) ----------------------------------------------------- */
 
@@ -83,30 +96,30 @@ export const RELIEF = {
  * per RFC 7946, so a **negative** `line-offset` moves a stroke inward.
  */
 export const BORDER_ATTR = {
-  /** Wash index. 0–29 (legacy colour slots, folded onto 12 washes) or 30 = unknown. */
+  /** Wash index 0–11 (Direction A's 12 washes). Anything else draws the fallback wash. */
   wash: 'c',
-  /** 1 when the territory is a dependency (colony, protectorate, vassal); absent or 0 otherwise. */
+  /** 1 when the territory is a dependency (colony, protectorate, vassal); absent otherwise. */
   dependency: 'dep',
-  /** The overlord's territory id (same id space as the feature ids) for a dependency. */
+  /** The direct overlord's territory id (same id space as the feature ids), with `dep`. */
   overlord: 'ov',
-  /** The overlord's wash index (same scale as `wash`), so the tint needs no lookup. */
-  overlordWash: 'ovc',
+  /** The overlord's wash index (0–11), with `dep`, so the tint needs no lookup. */
+  overlordWash: 'oc',
 } as const;
 
 /** Label and place points share one source; a feature has `n` or `p`. */
 export const LABEL_ATTR = {
   /** Territory name. */
   name: 'n',
-  /** Territory area, in the unit given by `AREA_TO_KM2`. */
+  /** Territory area of the largest part, in km² (rounded). */
   area: 'a',
-  /** Place (city) name. */
+  /** Place name. */
   place: 'p',
-  /** Optional place class; `PLACE_KIND_SITE` marks an archaeological site (T1). */
+  /** Place class: `city`, or `PLACE_KIND_SITE` for an archaeological site. */
   placeKind: 'k',
 } as const;
 
-/** The spike's year files carry the source `AREA` in m². Set to 1 if T1 emits km². */
-export const AREA_TO_KM2 = 1e-6;
+/** T1 publishes `a` in km² already. */
+export const AREA_TO_KM2 = 1;
 export const PLACE_KIND_SITE = 'site';
 
 /** Feature-state keys set on `SOURCE.borders` features by `setSelection()`. */
@@ -118,31 +131,50 @@ export const FEATURE_STATE = {
 } as const;
 
 /**
- * T1 per-year capitals: GeoJSON points, one per territory that has a known
- * capital in that year. STAND-IN: the spike's year manifest gains a
- * `capitals` URL built from a hand-made table (`scripts/standin-metadata.mjs`).
+ * T1 per-year capitals, `public/data/context/<year>.capitals.<hash>.json`
+ * (URLs in data/historical-capitals.json): points within 50 km of their territory.
  */
 export const CAPITAL_ATTR = {
+  /** English label of the capital. */
   name: 'name',
   /** Territory id in the same year's id space as `SOURCE.borders`. */
-  territory: 'tid',
-  /** Wikidata QID of the place, or null. Not drawn; carried for the panel. */
+  territory: 't',
+  /** Wikidata item of the capital. Not drawn; carried for the panel. */
   qid: 'qid',
 } as const;
 
 /* ---- Glyphs and fontstacks (T3) ------------------------------------------ */
 
-/** STAND-IN: swap to `/glyphs/{fontstack}/{range}.pbf` when T3 lands. */
-export const GLYPHS_URL = '/glyphs-standin/{fontstack}/{range}.pbf';
+/**
+ * `glyphs.url` from data/map-fonts.json. It is pinned here rather than
+ * imported because the manifest's `glyphs` key is 31 kB of per-face data the
+ * map does not need; `style.test.ts` fails if the two ever differ.
+ */
+export const GLYPHS_URL = '/glyphs/4085cf4e0756/{fontstack}/{range}.pbf';
 
-/** Every map fontstack, named as in plan §5. T3 must publish each directory. */
+/** Map-page CSS that names faces after each fontstack (combining-mark clusters). */
+export const MAP_ALIASES_CSS = '/fonts/map-aliases.css';
+/** Load only while Projector text is on. */
+export const PROJECTOR_CSS = '/fonts/projector.css';
+
+/**
+ * T3's published fontstacks (docs/FONTS.md), each used as a single-element
+ * `text-font` array. Fallback scripts are merged into every stack.
+ */
 export const FONTSTACK = {
+  /** State names. */
   stateMedium: 'Alegreya SC Medium',
+  /** State names above 250,000 km², and the selected territory. */
   stateBold: 'Alegreya SC Bold',
+  /** Sea and ocean names. */
   seaItalic: 'Alegreya Medium Italic',
+  /** River names, and archaeological-site names (owner: ruins take an italic label). */
   riverItalic: 'Alegreya Italic',
+  /** City and capital names. */
   city: 'Alegreya Regular',
+  /** Projector text: water, cities and small labels (Atkinson has no italic stack). */
   projectorMedium: 'Atkinson Hyperlegible Next Medium',
+  /** Projector text: state names, uppercase plus tracking. */
   projectorBold: 'Atkinson Hyperlegible Next Bold',
 } as const;
 
@@ -154,7 +186,7 @@ export const MARKER = {
   capital: 'hb-capital',
   /** ∴, the conventional mark for ruins. */
   site: 'hb-site',
-  /** Dependency hatch tile, one per wash: `${hatchPrefix}${0..11}`, plus `${hatchPrefix}x` for unknown. */
+  /** Dependency hatch tile, one per wash: `${hatchPrefix}${0..11}`, plus `${hatchPrefix}x` for an unknown wash. */
   hatchPrefix: 'hb-hatch-',
 } as const;
 

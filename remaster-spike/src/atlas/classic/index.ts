@@ -29,5 +29,6 @@ export {
   applyStyleOptions,
   addRelief,
   setSelection,
+  loadMapFontCss,
   type YearUrls,
 } from './style';

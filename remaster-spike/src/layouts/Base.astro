@@ -1,8 +1,9 @@
 ---
 import 'maplibre-gl/dist/maplibre-gl.css';
 import '../styles/global.css';
-interface Props { title: string; description: string; path: string; preload?: { href: string; as: string; type?: string }[] }
-const { title, description, path, preload = [] } = Astro.props;
+import { MAP_ALIASES_CSS } from '../atlas/classic/contract';
+interface Props { title: string; description: string; path: string; preload?: { href: string; as: string; type?: string }[]; mapPage?: boolean }
+const { title, description, path, preload = [], mapPage = false } = Astro.props;
 const canonical = new URL(path, 'https://historicborders.app').href;
 ---
 <!doctype html>
@@ -21,6 +22,8 @@ const canonical = new URL(path, 'https://historicborders.app').href;
     <meta name="color-scheme" content="only light" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     {preload.map((p) => <link rel="preload" href={p.href} as={p.as} type={p.type} crossorigin="anonymous" />)}
+    {/* T3 alias faces named after each map fontstack (docs/FONTS.md); files load only when used. */}
+    {mapPage && <link rel="stylesheet" href={MAP_ALIASES_CSS} data-hb-map-font={MAP_ALIASES_CSS} />}
   </head>
   <body>
     <slot />

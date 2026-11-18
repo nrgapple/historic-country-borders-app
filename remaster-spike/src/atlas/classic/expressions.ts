@@ -35,7 +35,7 @@ const e = (v: unknown) => v as Expr;
 
 /* ---- Washes ---------------------------------------------------------------- */
 
-/** Wash for a data index: 0–29 fold onto the 12 washes; anything else is unknown. */
+/** Wash for a data index 0–11; anything else is the fallback wash. */
 export const washFor = (index: number | null | undefined): Wash =>
   Number.isInteger(index) && index! >= 0 && index! < WASH_SLOTS
     ? WASHES[index! % WASHES.length]

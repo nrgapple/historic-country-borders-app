@@ -1,73 +1,75 @@
 # Classic-atlas map style (T6)
 
-Status: implemented on branch `t3/classic-atlas-map-style` for remaster track T6 (plan §9.7). It renders today on stand-in data. Integrating T1, T2 and T3 means changing values in one contract file.
+Status: implemented on branch `t3/classic-atlas-map-style` for remaster track T6 (plan §9.7), integrated with the published outputs of T1 (`t3/historical-data-pipeline` @ `91812f5`), T2 (`t3/build-static-vector-basemap` @ `e63a4c4`) and T3 (`t3/self-host-fonts-glyphs` @ `5db4b01`), which are merged into this branch.
 
 The style module lives at `remaster-spike/src/atlas/classic/` and is re-exported from `remaster-spike/src/atlas/style.ts`, the spike's style-module location. It targets MapLibre GL JS 6.19.
 
-| File             | Holds                                                                                                    |
-| ---------------- | -------------------------------------------------------------------------------------------------------- |
-| `contract.ts`    | Every source id, source-layer, attribute, URL, fontstack, image and layer id the style reads             |
-| `tokens.ts`      | Direction A map colours, the 12 washes with darker edges, the dependency tint                            |
-| `options.ts`     | `MapSettings` (same shape as the app's `Settings`), selection, `lowPower`, `projectorText`               |
-| `expressions.ts` | Pure expression builders: washes, settings mapping, label sizing, capitals, the waterline rule           |
-| `layers.ts`      | The layer stack in plan §2.1 order                                                                       |
-| `style.ts`       | `classicAtlasStyle()`, `applyStyleOptions()`, `setSelection()`, `addRelief()`                            |
-| `lowPower.ts`    | The low-power rule and its device heuristic                                                              |
-| `markers.ts`     | City dot, capital star-in-circle, ruins ∴ and the per-wash dependency hatch, drawn once on a canvas      |
-| `neatline.ts`    | Degree-ladder neatline (SVG overlay), a single rule on phones                                            |
-| `grain.ts`       | Paper-grain overlay (DOM)                                                                                |
-| `legend.ts`      | Legend metadata for the map key: only the classes actually drawn                                         |
-| `style.test.ts`  | 36 unit tests: spec validation, washes, dependencies, settings mapping, waterline rule, capitals, legend |
+| File             | Holds                                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contract.ts`    | Every source id, source-layer, attribute, URL, fontstack, image and layer id the style reads                                                      |
+| `tokens.ts`      | Direction A map colours, the 12 washes with darker edges, the dependency tint                                                                     |
+| `options.ts`     | `MapSettings` (same shape as the app's `Settings`), selection, `lowPower`, `projectorText`                                                        |
+| `expressions.ts` | Pure expression builders: washes, settings mapping, label sizing, capitals, the waterline rule                                                    |
+| `layers.ts`      | The layer stack in plan §2.1 order                                                                                                                |
+| `style.ts`       | `classicAtlasStyle()`, `applyStyleOptions()`, `setSelection()`, `addRelief()`, `loadMapFontCss()`                                                 |
+| `lowPower.ts`    | The low-power rule and its device heuristic                                                                                                       |
+| `markers.ts`     | City dot, capital star-in-circle, ruins ∴ and the per-wash dependency hatch, drawn once on a canvas                                               |
+| `neatline.ts`    | Degree-ladder neatline (SVG overlay), a single rule on phones                                                                                     |
+| `grain.ts`       | Paper-grain overlay (DOM)                                                                                                                         |
+| `legend.ts`      | Legend metadata for the map key: only the classes actually drawn                                                                                  |
+| `style.test.ts`  | 38 unit tests: spec validation, washes, dependencies, settings mapping, waterline rule, capitals, legend, manifest drift and T3's fontstack check |
 
-## Contract for T1, T2 and T3
+## Contract with T1, T2 and T3
 
-Names come from the plan where it names them. Where it doesn't, they are chosen here and listed so the producing track can match them. Each `STAND-IN` value is a single swap in `contract.ts`.
+Every producer name lives in `contract.ts`. The tests check it against the producers' own manifests and checks, so a rebuild that moves a URL or renames a layer fails `yarn test`:
 
-**T2, basemap** (`BASEMAP_TILES`, today `/basemap-standin/{z}/{x}/{y}.pbf`, z0–5). Source-layers:
+- `BASEMAP_TILES`, `RELIEF` and `BASEMAP_LAYER` are checked against `data/basemap-manifest.json`;
+- `GLYPHS_URL` and `FONTSTACK` are checked against `data/map-fonts.json`;
+- every style variant passes T3's `checkStyleFontstacks`. It also passes `yarn data:validate:fonts --style <style.json>` for the default, selected, Projector-text and low-power variants, while a bogus stack fails it.
 
-| Source-layer | Geometry   | Attributes             | Notes                                                                                                                                |
-| ------------ | ---------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `ocean`      | Polygon    | none                   | World minus land, in 30° cells, painted over territory fills                                                                         |
-| `coast`      | LineString | `landmass_km2`         | One feature per land ring, wound RFC 7946 (land on the left), so a positive `line-offset` is seaward. Area enclosed by the ring, km² |
-| `lakes`      | Polygon    | `name`, `rank`         |                                                                                                                                      |
-| `rivers`     | LineString | `name`, `rank`         | Natural Earth `scalerank`                                                                                                            |
-| `marine`     | Point      | `name`, `kind`, `rank` | `kind` is Natural Earth `featurecla`; `ocean` is uppercased and widely tracked. Atlantic label point moved into the European view    |
+**T2, basemap** (`docs/BASEMAP.md`, "Layer contract"). The tiles URL, zoom range, attribution and relief are imported from `data/basemap-manifest.json`; only about 1 kB of it is bundled.
 
-**T2, relief** (`RELIEF`): one Web Mercator WebP spanning 180°W–180°E and 76°N–58°S, today `/relief-standin/relief.webp`. It is loaded after the first idle by `addRelief()`.
+- **Source**: `/tiles/basemap/ne-5.1.2-r1/{z}/{x}/{y}.pbf`, z0–5.
+- **`ocean`**: painted over every border layer.
+- **`coast`**: carries `landmass_km2`. Water is on the right, so a positive `line-offset` goes seaward, as the waterlines need. Only `landmass_km2 ≥ 5000` gets waterlines.
+- **`lakes` and `rivers`**: `rank`, `name`.
+- **`marine_labels`**: `name`, `kind`, `rank`. `kind == 'ocean'` is uppercased and widely tracked.
+- **Relief**: `/basemap/ne-5.1.2-r1/relief.webp`, an image source with the manifest's `coordinates`. It is added after the first idle.
 
-**T3, glyphs** (`GLYPHS_URL`, today `/glyphs-standin/{fontstack}/{range}.pbf`). Fontstack directories, exactly:
+**T3, glyphs** (`docs/FONTS.md`, "Map fontstacks").
 
-- `Alegreya SC Medium`
-- `Alegreya SC Bold`
-- `Alegreya Medium Italic`
-- `Alegreya Italic`
-- `Alegreya Regular`
-- `Atkinson Hyperlegible Next Medium`
-- `Atkinson Hyperlegible Next Bold`
+- **Glyphs URL**: `/glyphs/4085cf4e0756/{fontstack}/{range}.pbf`, pinned as `GLYPHS_URL`. It isn't imported because the manifest's `glyphs` key is 31 kB of per-face data; a test enforces equality.
+- **Fontstacks**: each is a single-element `text-font` array.
+  - `Alegreya SC Medium` / `Alegreya SC Bold`: states, Bold above 250,000 km² and for the selection.
+  - `Alegreya Medium Italic`: seas and oceans.
+  - `Alegreya Italic`: rivers, and archaeological-site names.
+  - `Alegreya Regular`: cities and capitals.
+  - `Atkinson Hyperlegible Next Medium` / `Bold`: Projector text.
+- **Site names in italic.** This deliberately differs from T3's suggested use ("Alegreya Regular: city, capital and site names"): the owner asked for italic ruin labels. `Alegreya Italic` carries the same 13 glyph ranges as every other stack, so site names have full coverage.
+- **CSS.** Map pages load `/fonts/map-aliases.css`, statically in the spike's `Base.astro` (`mapPage`), and again through `loadMapFontCss()`, which is idempotent. It loads `/fonts/projector.css` only when Projector text is on.
 
-**T1, year data.**
+**T1, year data** (`docs/HISTORICAL_DATA.md`, "Split year files").
 
-- **Borders**: GeoJSON polygons with numeric feature `id` (the index into the year's territory list). Properties:
-  - `c`: wash index 0–29, or 30 for unknown;
+- **Polygons**: `id` is the shared territory id, set through feature-state on selection. Properties:
+  - `c`: wash 0–11;
   - `dep`: 1 for a dependency;
-  - `ov`: the overlord's territory id;
-  - `ovc`: the overlord's wash index.
+  - `ov`: the overlord id;
+  - `oc`: the overlord's wash.
+- **Labels**: `n` (name) and `a` (km², so `AREA_TO_KM2 = 1`).
+- **Places**: `p` (name) and `k` (`city` or `site`).
+- **Capitals**: `public/data/context/<year>.capitals.<hash>.json`, with URLs in `data/historical-capitals.json`. Properties are `name`, `t` (territory id) and `qid`.
 
-  Polygons must be wound per RFC 7946.
+The spike's `yarn data` now copies these committed files (`scripts/build-data.mjs`, `scripts/copy-map-assets.mjs`) instead of building stand-ins.
 
-- **Labels and places**: one source.
-  - Territory label points carry `n` (name) and `a` (area, scaled by `AREA_TO_KM2`; today m², so `1e-6`).
-  - Places carry `p` (name) and an optional `k` (`site` for an archaeological site).
-- **Capitals**: GeoJSON points with `name`, `tid` (territory id, same id space as the borders) and `qid`.
+Notes for T1, observed in the review screenshots:
 
-Two notes for T1:
-
-- Today `ov` is resolved from the loaded tiles with `querySourceFeatures`. Adding the dependency ids to the year index would let `setSelection()` take them directly, through its `dependencyIds` argument.
-- In 1914 the United Kingdom and France share one source colour, so their colonies get the same tint (smalt). Distinct overlord washes are a data-side fix.
+- **Dependency ids.** `setSelection()` finds a selection's dependencies in the loaded tiles (`ov` = selected id). Adding dependency ids to the year index would let the controller pass them through `setSelection(..., dependencyIds)`.
+- **British Raj.** In 1914 the British Raj is not marked as a dependency. Its source `SUBJECTO` is "United Kingdom", which is not a feature that year, so it is not tinted or emphasised when the United Kingdom is selected. The United Kingdom and France also share one source colour, so their colonies get the same smalt tint.
+- **Place names.** "Ziz, Palermo" still shows the source's raw place name.
 
 ## What the style draws
 
-- **Washes.** The 12 hand-tinted washes are selected by `c`. The 30 legacy slots fold onto them with `c % 12`. Fills are drawn at 62% at the default opacity setting.
+- **Washes.** The 12 hand-tinted washes are selected by `c` (0–11); anything else draws the fallback wash. Fills are drawn at 62% at the default opacity setting.
 - **Edge bands.** A Grenzkolorit band runs inside every border: 3–9 px of the darker pigment, offset inward, at 50% with a 1.5 px blur.
 - **Selection.** Uses a madder fill, an inner band and a line. It is set through feature-state only, so changing the selection never re-tiles the borders.
 - **State labels.** Alegreya SC, sized by `log10(km²)` and zoom, with a 13 px floor (projector minimum). The selected territory gets a fixed 18–28 px bold label and the top sort key.
@@ -102,7 +104,7 @@ Owner additions:
 
 ## Screenshots
 
-Taken with `node remaster-spike/scripts/style-review.mjs` against `yarn build` output on the review page `/review/<year>`, a full-bleed map with the neatline and grain. Desktop is 1440×900 @1x and phone is 390×844 @2x, framed as in the design mocks. The review page has no panel, so the desktop map runs under the space the mock gives the panel.
+Taken on the real T1/T2/T3 data with `node remaster-spike/scripts/style-review.mjs` against `yarn build` output, with no page errors or failed requests (the script reports any 4xx/5xx) on the review page `/review/<year>`, a full-bleed map with the neatline and grain. Desktop is 1440×900 @1x and phone is 390×844 @2x, framed as in the design mocks. The review page has no panel, so the desktop map runs under the space the mock gives the panel.
 
 | View                                                        | File                                                                                   |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -118,12 +120,12 @@ Taken with `node remaster-spike/scripts/style-review.mjs` against `yarn build` o
 
 Compared with `design/living-atlas/shots/a-classic-atlas-*.png`, the render keeps the mock's character: the same washes, edge bands, madder selection, small-caps hierarchy, ocean over borders, waterlines and neatline. Differences:
 
-- **Places.** The mock shows a curated list of 16 cities. The style draws every place, with collision, so more city names appear, and "Ziz, Palermo" shows the source's raw name. A place rank and name fixes belong to T1.
+- **Places.** The mock shows a curated list of 16 cities. The style draws every place, with collision, so more city names appear. A place rank belongs to T1.
 - **Capital marker.** The mock marked the capital with a ring and dot. The owner-approved star-in-circle replaces it.
 
 ## Per-decoration cost
 
-Measured 2026-11-18 with `node remaster-spike/scripts/profile-style.mjs` against `yarn build` output. Raw data is in `remaster-spike/results/style-profile-cpu{1,4}x.{json,txt}`.
+Measured 2026-11-18 with `node remaster-spike/scripts/profile-style.mjs` against `yarn build` output, before T1/T2/T3 were merged. The stand-ins then in use carried the same content: the same 1:50m Natural Earth layers and relief, the same historical polygons converted by the spike, and Alegreya glyph PBFs. The decorations' relative costs therefore carry over; P0 re-measures on the Chromebook. Raw data is in `remaster-spike/results/style-profile-cpu{1,4}x.{json,txt}`.
 
 **Method.**
 
@@ -173,8 +175,9 @@ Measured 2026-11-18 with `node remaster-spike/scripts/profile-style.mjs` against
 cd remaster-spike
 source ~/.nvm/nvm.sh && nvm use 22.23.5
 yarn install --frozen-lockfile
-yarn data            # includes the T1/T2/T3 stand-ins (scripts/build-standins.mjs, scripts/standin-metadata.mjs)
-yarn test            # 36 style tests
+yarn data            # copies T1 split files, T2 basemap and T3 glyphs/fonts from the repo
+yarn test --maxWorkers=2   # 38 style tests
+(cd .. && yarn data:validate:fonts --style <style.json>)
 yarn build && node scripts/serve.mjs dist 4400 &
 node scripts/style-review.mjs http://127.0.0.1:4400          # screenshots into this folder
 node scripts/profile-style.mjs http://127.0.0.1:4400 --cpu=1 # and --cpu=4

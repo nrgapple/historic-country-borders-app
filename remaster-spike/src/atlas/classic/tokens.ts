@@ -28,15 +28,15 @@ export const WASHES: readonly Wash[] = [
   { name: 'straw green', fill: '#D9DBA8', edge: '#868A3C' },
 ];
 
-/** Used for wash index 30 (unknown source colour) and anything out of range. */
+/** Used for a missing or out-of-range wash index. */
 export const FALLBACK_WASH: Wash = {
   name: 'unknown',
   fill: '#E2D8C0',
   edge: '#9C8B66',
 };
 
-/** The data's wash index runs 0–29 (legacy colour slots); 30 means unknown. */
-export const WASH_SLOTS = 30;
+/** T1 publishes the wash index `c` (and `oc`) as 0–11, one per wash. */
+export const WASH_SLOTS = WASHES.length;
 
 export const COLOR = {
   ink: '#2A2017',

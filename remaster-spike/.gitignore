@@ -9,6 +9,4 @@ public/glyphs/
 src/data/years.json
 test-results/
 public/fonts/
-public/basemap-standin/
-public/relief-standin/
-public/glyphs-standin/
+public/tiles/

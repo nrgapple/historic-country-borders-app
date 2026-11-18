@@ -10,6 +10,7 @@ import {
   applyStyleOptions,
   classicAtlasStyle,
   detectLowPower,
+  loadMapFontCss,
   LAYER,
   SOURCE,
   setSelection,
@@ -49,6 +50,7 @@ export function mountMap(container: HTMLElement, initial: Partial<ClassicStyleOp
   const view = readView();
   // Low-power default from device hints, decided before the style is built.
   let options = withDefaults({ ...initial, lowPower: initial.lowPower ?? probeLowPower() });
+  loadMapFontCss(document, options.projectorText);
   const map = new MLMap({
     container,
     style: classicAtlasStyle(origin, {}, options),
@@ -162,6 +164,7 @@ export function mountMap(container: HTMLElement, initial: Partial<ClassicStyleOp
     /** Settings, Projector text or low-power changed. */
     setOptions(partial: Partial<ClassicStyleOptions>) {
       options = withDefaults({ ...options, ...partial, settings: { ...options.settings, ...partial.settings } });
+      loadMapFontCss(document, options.projectorText);
       applyStyleOptions(map, options);
     },
     flyToBounds(b: [number, number, number, number]) {

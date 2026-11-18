@@ -10,7 +10,7 @@ export function getStaticPaths() {
 }
 const { year } = Astro.props as { year: number };
 ---
-<Base title={`Style review · ${year}`} description="Classic-atlas map style review harness." path={`/review/${year}`}>
+<Base mapPage title={`Style review · ${year}`} description="Classic-atlas map style review harness." path={`/review/${year}`}>
   <StyleReview client:only="react" year={year} />
 </Base>
 <style is:global>

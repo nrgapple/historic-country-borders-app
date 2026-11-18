@@ -6,6 +6,7 @@
  *   map.once('idle', () => addRelief(map, origin, options));    // after first paint
  *   applyStyleOptions(map, options);                            // Settings, Projector text, lowPower
  *   setSelection(map, selection, options);                      // paint-only for borders
+ *   loadMapFontCss(document, options.projectorText);            // T3 alias faces
  */
 import type {
   FilterSpecification,
@@ -14,12 +15,16 @@ import type {
   StyleSpecification,
 } from 'maplibre-gl';
 import {
+  BASEMAP_ATTRIBUTION,
   BASEMAP_MAXZOOM,
+  BASEMAP_MINZOOM,
   BASEMAP_TILES,
   BORDER_ATTR,
   FEATURE_STATE,
   GLYPHS_URL,
   LAYER,
+  MAP_ALIASES_CSS,
+  PROJECTOR_CSS,
   RELIEF,
   SOURCE,
 } from './contract';
@@ -62,10 +67,9 @@ export function classicAtlasStyle(
       [SOURCE.basemap]: {
         type: 'vector',
         tiles: [`${origin}${BASEMAP_TILES}`],
-        minzoom: 0,
+        minzoom: BASEMAP_MINZOOM,
         maxzoom: BASEMAP_MAXZOOM,
-        attribution:
-          'Coasts, rivers, relief: <a href="https://www.naturalearthdata.com/">Natural Earth</a>',
+        attribution: `Coasts, rivers, relief: ${BASEMAP_ATTRIBUTION}`,
       },
       [SOURCE.graticule]: geojson(undefined, { data: graticule(10) as never }),
       [SOURCE.borders]: geojson(urls.borders, {
@@ -119,12 +123,7 @@ export function addRelief(
   map.addSource(SOURCE.relief, {
     type: 'image',
     url: `${origin}${RELIEF.url}`,
-    coordinates: [
-      [-180, RELIEF.north],
-      [180, RELIEF.north],
-      [180, RELIEF.south],
-      [-180, RELIEF.south],
-    ],
+    coordinates: RELIEF.coordinates,
   });
   map.addLayer(reliefLayer(withDefaults(partial)), LAYER.edgeBand);
 }
@@ -166,4 +165,27 @@ export function setSelection(
       { [FEATURE_STATE.overlordSelected]: true },
     );
   }
+}
+
+/**
+ * Adds T3's map font CSS to the page: `map-aliases.css` always (MapLibre draws
+ * combining-mark clusters locally with the fontstack name as the CSS family),
+ * `projector.css` only while Projector text is on. No font file downloads
+ * until a face is used. Idempotent.
+ */
+export function loadMapFontCss(
+  doc: Document,
+  projectorText: boolean,
+  origin = '',
+) {
+  const ensure = (href: string) => {
+    if (doc.head.querySelector(`link[data-hb-map-font="${href}"]`)) return;
+    const link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `${origin}${href}`;
+    link.dataset.hbMapFont = href;
+    doc.head.append(link);
+  };
+  ensure(MAP_ALIASES_CSS);
+  if (projectorText) ensure(PROJECTOR_CSS);
 }

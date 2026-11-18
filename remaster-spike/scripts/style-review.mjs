@@ -144,6 +144,13 @@ for (const shot of SHOTS) {
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
+  page.on('response', (r) => {
+    if (r.status() >= 400)
+      errors.push(`${r.status()} ${new URL(r.url()).pathname}`);
+  });
+  page.on('requestfailed', (r) =>
+    errors.push(`failed ${new URL(r.url()).pathname}`),
+  );
   await page.goto(
     `${base}/review/${shot.year}?${q({ lowPower: '0', ...shot.query })}`,
   );

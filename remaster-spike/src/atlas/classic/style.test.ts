@@ -6,9 +6,20 @@ import {
   type StylePropertySpecification,
 } from '@maplibre/maplibre-gl-style-spec';
 import type { LayerSpecification } from 'maplibre-gl';
+import basemapManifest from '../../../../data/basemap-manifest.json';
+import fontManifest from '../../../../data/map-fonts.json';
+import { createRequire } from 'node:module';
 import {
   AREA_TO_KM2,
+  BASEMAP_LAYER,
+  BASEMAP_MAXZOOM,
+  BASEMAP_MINZOOM,
+  BASEMAP_TILES,
   BORDER_ATTR,
+  CAPITAL_ATTR,
+  FALLBACK_WASH,
+  GLYPHS_URL,
+  RELIEF,
   CAPITAL_MINZOOM,
   COAST_ATTR,
   COLOR,
@@ -37,6 +48,13 @@ import {
   type ClassicStyleOptions,
   type MapSettings,
 } from './index';
+
+// T3's own style check (CommonJS, in the repo root).
+const mapFonts = createRequire(import.meta.url)(
+  '../../../../scripts/lib/map-fonts.js',
+) as {
+  checkStyleFontstacks(style: unknown, manifest: unknown): string[];
+};
 
 /* ---- Helpers: evaluate a layer property with MapLibre's own expression engine ---- */
 
@@ -192,13 +210,17 @@ describe('classicAtlasStyle', () => {
 /* ---- Washes and dependencies ---------------------------------------------------- */
 
 describe('washes', () => {
-  it('folds the 30 legacy slots onto the 12 washes and maps unknown to the fallback', () => {
+  it('maps wash index 0–11 onto the 12 washes and anything else to the fallback', () => {
     const fill = layer(layersFor(), LAYER.territoryFill);
-    for (const c of [0, 5, 11, 12, 23, 29])
+    for (const c of [0, 5, 11])
       expect(
         toHex(evaluate(fill, 'paint', 'fill-color', { props: { c } })),
-      ).toBe(WASHES[c % 12].fill);
-    expect(washFor(30).name).toBe('unknown');
+      ).toBe(WASHES[c].fill);
+    for (const c of [12, 30, null])
+      expect(
+        toHex(evaluate(fill, 'paint', 'fill-color', { props: { c } })),
+      ).toBe(FALLBACK_WASH.fill);
+    expect(washFor(12).name).toBe('unknown');
     expect(washFor(-1).name).toBe('unknown');
     expect(washFor(2.5).name).toBe('unknown');
   });
@@ -217,14 +239,14 @@ describe('washes', () => {
       c: 4,
       [BORDER_ATTR.dependency]: 1,
       [BORDER_ATTR.overlord]: 9,
-      [BORDER_ATTR.overlordWash]: 21,
+      [BORDER_ATTR.overlordWash]: 9,
     };
     const tint = toHex(
       evaluate(layer(l, LAYER.territoryFill), 'paint', 'fill-color', {
         props: dep,
       }),
     );
-    expect(tint).toBe(dependencyTint(WASHES[21 % 12]));
+    expect(tint).toBe(dependencyTint(WASHES[9]));
     const lum = (hex: string) =>
       [1, 3, 5].reduce((s, i) => s + parseInt(hex.slice(i, i + 2), 16), 0);
     expect(lum(tint)).toBeGreaterThan(lum(WASHES[9].fill));
@@ -240,12 +262,12 @@ describe('washes', () => {
   it('hatches only dependencies, in the overlord’s pigment, and drops the hatch in low power', () => {
     const hatch = layer(layersFor(), LAYER.dependencyHatch);
     expect(passes(hatch, { props: { c: 1 } })).toBe(false);
-    expect(passes(hatch, { props: { c: 1, dep: 1, ovc: 14 } })).toBe(true);
+    expect(passes(hatch, { props: { c: 1, dep: 1, oc: 2 } })).toBe(true);
     expect(
-      evaluate(hatch, 'paint', 'fill-pattern', { props: { dep: 1, ovc: 14 } }),
+      evaluate(hatch, 'paint', 'fill-pattern', { props: { dep: 1, oc: 2 } }),
     ).toMatchObject({ name: `${MARKER.hatchPrefix}2` });
     expect(
-      evaluate(hatch, 'paint', 'fill-pattern', { props: { dep: 1, ovc: 30 } }),
+      evaluate(hatch, 'paint', 'fill-pattern', { props: { dep: 1, oc: 12 } }),
     ).toMatchObject({ name: `${MARKER.hatchPrefix}x` });
     expect(
       layer(layersFor({ lowPower: true }), LAYER.dependencyHatch).layout
@@ -529,8 +551,8 @@ describe('places and capitals', () => {
     expect(others.minzoom).toBe(CAPITAL_MINZOOM);
     expect(selected.minzoom).toBeUndefined();
     expect(mark.layout?.['icon-ignore-placement']).toBe(true);
-    const paris = { props: { name: 'Paris', tid: 12 } };
-    const berlin = { props: { name: 'Berlin', tid: 4 } };
+    const paris = { props: { name: 'Paris', t: 12 } };
+    const berlin = { props: { name: 'Berlin', t: 4 } };
     expect([passes(selected, paris), passes(selected, berlin)]).toEqual([
       true,
       false,
@@ -650,7 +672,55 @@ describe('contract', () => {
       wash: 'c',
       dependency: 'dep',
       overlord: 'ov',
-      overlordWash: 'ovc',
+      overlordWash: 'oc',
     });
+    expect(LABEL_ATTR).toEqual({
+      name: 'n',
+      area: 'a',
+      place: 'p',
+      placeKind: 'k',
+    });
+    expect(CAPITAL_ATTR).toEqual({ name: 'name', territory: 't', qid: 'qid' });
+    expect(AREA_TO_KM2).toBe(1);
+  });
+
+  it('matches T2’s basemap manifest and layer contract', () => {
+    expect(BASEMAP_TILES).toBe(basemapManifest.tiles.url);
+    expect([BASEMAP_MINZOOM, BASEMAP_MAXZOOM]).toEqual([
+      basemapManifest.tiles.minzoom,
+      basemapManifest.tiles.maxzoom,
+    ]);
+    expect(RELIEF.url).toBe(basemapManifest.relief.url);
+    expect(RELIEF.coordinates).toEqual(basemapManifest.relief.coordinates);
+    expect(Object.values(BASEMAP_LAYER).sort()).toEqual(
+      Object.keys(basemapManifest.layers).sort(),
+    );
+    const used = new Set(
+      layersFor()
+        .map((l) => (l as { 'source-layer'?: string })['source-layer'])
+        .filter(Boolean),
+    );
+    for (const sl of used)
+      expect(Object.keys(basemapManifest.layers)).toContain(sl);
+  });
+
+  it('matches T3’s glyph manifest: URL, and every text-font a published single stack', () => {
+    expect(GLYPHS_URL).toBe(fontManifest.glyphs.url);
+    expect(Object.values(FONTSTACK).sort()).toEqual(
+      Object.keys(fontManifest.glyphs.fontstacks).sort(),
+    );
+    const variants: Parameters<typeof opts>[0][] = [
+      {},
+      { selected: { id: 1, name: 'Ottoman Empire' } },
+      {
+        projectorText: true,
+        settings: { textCase: 'upper', textSize: 'large' },
+      },
+      { lowPower: true, settings: { showLabels: false } },
+    ];
+    for (const o of variants) {
+      const style = classicAtlasStyle('', {}, opts(o));
+      expect(mapFonts.checkStyleFontstacks(style, fontManifest)).toEqual([]);
+    }
   });
 });

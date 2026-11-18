@@ -7,13 +7,12 @@
     "node": ">=22.23.4 <23"
   },
   "scripts": {
-    "data": "node scripts/build-data.mjs && node scripts/build-basemap.mjs && node scripts/build-glyphs.mjs && node scripts/build-standins.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/copy-map-assets.mjs",
     "data:formats": "node --expose-gc scripts/measure-formats.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "node scripts/serve.mjs dist 4400",
     "measure": "node scripts/measure.mjs",
-    "data:standins": "node scripts/build-standins.mjs",
     "test": "vitest run"
   },
   "dependencies": {
