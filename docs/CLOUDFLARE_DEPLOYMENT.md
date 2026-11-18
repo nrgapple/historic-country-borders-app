@@ -104,3 +104,17 @@ The authoritative account/DNS/DNSSEC procedure, go/no-go checks, exact validatio
 Cloudflare retains Worker versions. Record the previous known-good version ID before each deploy. If validation fails, use Workers & Pages → `historic-borders` → Deployments to roll back traffic to the previous version, then repeat static and feedback smoke checks. Secret changes are separate from code versions and must be restored independently if changed.
 
 During M4, prefer a Cloudflare Worker-version rollback while leaving the custom domain in place. A delegation rollback must follow the saved DNSSEC/DS sequence and may remain cached for the former 21,600-second NS TTL; follow `docs/M4_LAUNCH_RUNBOOK.md`. The committed static output remains portable to another static host. Do not delete content-hashed map assets while an active rollback version references them.
+
+## GitHub Actions deploys
+
+Builds and deploys run in GitHub Actions; local `wrangler deploy` is only a fallback.
+
+- `CI` (`.github/workflows/ci.yml`) runs `yarn quality` and the three-browser journeys on every pull request and on `main`.
+- `Preview` (`.github/workflows/preview.yml`) builds each same-repository pull request with the real public Mapbox token and uploads it with `wrangler versions upload --preview-alias pr-<number>`. Production traffic does not move. The workflow comments the preview URL on the pull request.
+- `Deploy` (`.github/workflows/deploy.yml`) runs after `CI` succeeds for a push to `main`, or by manual dispatch. It builds, validates the static export, runs `wrangler deploy`, and smoke-tests `vars.PRODUCTION_URL`, which defaults to the Worker hostname until the custom domain is live.
+
+Repository secrets: `CLOUDFLARE_API_TOKEN` (the "Edit Cloudflare Workers" template, scoped to this account), `CLOUDFLARE_ACCOUNT_ID`, and `NEXT_PUBLIC_MAPBOX_TOKEN` (public and URL-restricted). Optional repository variables: `PRODUCTION_URL` and `NEXT_PUBLIC_GA_FOUR`.
+
+Mapbox URL restrictions must allow the production hosts and the preview hosts, `https://*-historic-borders.champtoday.workers.dev`. Otherwise previews render no basemap.
+
+Rollback: use Workers & Pages → `historic-borders` → Deployments to route traffic back to the previous version. Then revert the commit on `main` so the next deploy does not reintroduce the problem.
