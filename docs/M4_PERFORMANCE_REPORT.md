@@ -62,7 +62,7 @@ Final deterministic runs had zero navigation/map readiness errors. The school st
 - total generated JavaScript <= 2,100 KiB;
 - largest JavaScript chunk <= 1,550 KiB;
 - initial JavaScript for each map route <= 400 KiB;
-- historical payloads <= 55 MiB total and <= 3,500 KiB each;
+- historical payloads <= 38 MiB total and <= 2,900 KiB each (tightened from 55 MiB/3,500 KiB by the addendum below);
 - school payload <= 12,000 KiB raw and <= 1,850 KiB Brotli.
 
 Current measured values pass: 2,044.6 KiB total JS, 1,496.2 KiB largest chunk, 382.4/359.8 KiB initial map-route JS, 54,311.9 KiB historical total, 3,299.0 KiB largest historical payload, and 11,742.0/1,755.3 KiB raw/Brotli school data.
@@ -81,3 +81,20 @@ Three cold final runs produced:
 Against the M3 preview baseline, school transfer fell 53%, map readiness improved 49%, and data duration improved 19%. Compression negotiated by the observed production browser differs from the local Brotli estimate. Historical changes are mostly startup deferral and run/network variance because its map payload did not change. Long-task totals are not directly comparable because the hardened measurement now allows map startup to settle and verifies a visible settings response before collecting metrics; longest task remained effectively unchanged for school (364 vs 365 ms).
 
 All nine static smoke checks passed with expected cache controls and no compute marker. Final custom-domain cache/error/quota evidence and authoritative live-tail Worker isolation still require the DNS cutover. No target in this report authorizes paid services or weaker source fidelity/accessibility.
+
+## Addendum: historical coordinate rounding (2026-11-18 UTC)
+
+Observed facts: the historical pipeline now publishes coordinates at five decimal places (about 1.1 m) and drops consecutive duplicate positions. The pinned upstream commit `62d8f1a03a71f2d3ff17f2d166f7553f256bce68` did not change. Brotli estimates use `node:zlib` at quality 11 per file, summed. These are byte measurements, not browser timings.
+
+| Metric                  |     Before |      After | Change |
+| ----------------------- | ---------: | ---------: | -----: |
+| Total raw (53 payloads) | 55,615,413 | 37,207,476 | -33.1% |
+| Total Brotli estimate   | 14,165,944 |  7,234,964 | -48.9% |
+| Largest raw (1492)      |  3,378,139 |  2,775,816 | -17.8% |
+| 1492 Brotli estimate    |    763,919 |    528,271 | -30.8% |
+| 1994 raw (default year) |  1,845,282 |  1,212,202 | -34.3% |
+| 1994 Brotli estimate    |    423,046 |    215,044 | -49.2% |
+
+All byte values are in bytes. Feature, label, place, and zero-area counts are unchanged in every year. 208 rings in 28 years would collapse below four positions after rounding and keep their original coordinates. All of them are upstream slivers less than a metre wide or already degenerate. Historical route-initial JavaScript is unchanged (382.5 KiB). The browser bundles `data/historical-assets.json`, so the fallback count is recorded once, not per year. `yarn size:check` now enforces 38 MiB total and 2,900 KiB largest. Those limits leave about 7% headroom.
+
+Assumption: the smaller input should lower parse time and memory, most of all on low-end devices. No production Web Vitals were measured for this change.

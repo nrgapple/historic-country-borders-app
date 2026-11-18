@@ -3,6 +3,7 @@ const path = require('path');
 const manifest = require('../data/historical-manifest.json');
 const {
   buildPayload,
+  countFallbackRings,
   sha256,
   sourceYear,
   validateBorderSource,
@@ -94,6 +95,9 @@ async function main() {
   );
   validatePlacesSource(placesSource.value);
 
+  // Recorded once at manifest level: the browser bundles this manifest, so
+  // per-year review-only counts would add to every route's JavaScript.
+  let roundingFallbackRings = 0;
   const assets = await mapWithConcurrency(manifest.years, async (year) => {
     const fileName = `world_${sourceYear(year)}.geojson`;
     console.log(`Refreshing ${fileName}...`);
@@ -103,6 +107,10 @@ async function main() {
       buildPayload(year, borderSource.value, placesSource.value),
       fileName,
     );
+    const fallbackRings = countFallbackRings(payload);
+    if (fallbackRings > 0)
+      console.log(`${fileName}: kept ${fallbackRings} unrounded ring(s)`);
+    roundingFallbackRings += fallbackRings;
     const json = `${JSON.stringify(payload)}\n`;
     const digest = sha256(json);
     const assetName = `${sourceYear(year)}.${digest.slice(0, 16)}.json`;
@@ -141,9 +149,13 @@ async function main() {
       },
     },
     refreshedAt: new Date().toISOString(),
+    roundingFallbackRings,
     assets: Object.fromEntries(assets),
   };
   writeAtomically(ASSET_MANIFEST, `${JSON.stringify(nextManifest, null, 2)}\n`);
+  console.log(
+    `Kept ${roundingFallbackRings} unrounded ring(s) that would collapse when rounded`,
+  );
   console.log(
     `Published ${assets.length} immutable historical payloads and ${ASSET_MANIFEST}`,
   );

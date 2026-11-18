@@ -30,6 +30,10 @@ Cloudflare Pages rejected the required native rate-limit binding during the firs
 
 M4 measurements identified the PA school artifact as the dominant transfer bottleneck. Publishing coordinates to six decimal places retains sub-meter precision, source provenance, every coordinate pair/district/property, and geometry validation while reducing the artifact 41% raw and approximately 64% Brotli. Geometry simplification remains rejected until topology and visual acceptance tests justify changing source shapes.
 
+### Five-decimal historical coordinate publication
+
+Observed: the 53 historical payloads carried ~15-significant-digit coordinates (55,615,413 bytes raw, ~14.2 MB Brotli), while the upstream borders are hand-drawn approximations with roughly kilometre-level accuracy. Decision: the historical pipeline publishes border, label, and place coordinates at five decimal places (~1.1 m), drops consecutive duplicate positions created by rounding, and keeps a ring's original coordinates only when rounding would collapse it below four positions (208 rings at the pinned commit). This reduced total payloads 33% raw and 49% Brotli, without removing features, names, colors, or source properties, and without changing the pinned source. Area and label placement still use source geometry, so zero-area anomaly reporting is unchanged. Five rather than six decimals (the school standard) is justified by the much coarser source accuracy. Geometry simplification remains rejected for the same reason as for school districts.
+
 ### Optional fingerprinting only after feedback intent
 
 FingerprintJS is an abuse-control input for the optional feedback endpoint, not a prerequisite for map browsing. It is dynamically loaded only after a visitor opens feedback, reducing ordinary startup code/CPU and privacy surface without weakening the feedback rate limit.
