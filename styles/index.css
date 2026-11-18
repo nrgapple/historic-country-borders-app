@@ -1435,10 +1435,24 @@ kbd {
   }
 
   .place-panel {
-    max-height: calc(100% - 150px);
+    max-height: calc(100% - 180px);
     /* The header alone can exceed that height in phone landscape; scroll the
        whole panel so nothing spills past it into the home indicator. */
     overflow-y: auto;
+  }
+}
+
+/* Phone landscape: short but wide. Keep the header on one row (brand, year,
+   tools) so it doesn't eat the height the map and place panel need. */
+@media (max-height: 520px) and (min-width: 641px) {
+  .timeline__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'lead step trail';
+    padding: 4px 6px 0 10px;
+  }
+
+  .timeline__current-value {
+    font-size: 1.75rem;
   }
 }
 

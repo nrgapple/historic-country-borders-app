@@ -126,45 +126,57 @@ describe("today's tokens (styles/index.css)", () => {
   });
 });
 
-describe('Direction A tokens (design/living-atlas/a-classic-atlas.html)', () => {
-  // Until the remaster's token file exists, the Direction A mock is the
-  // source of truth. Point this at the token file when T5 adds it.
-  const tokens = readTokens(read('design/living-atlas/a-classic-atlas.html'));
-  const eras = ['prehistory', 'ancient', 'medieval', 'early-modern', 'modern'];
-  const grounds = ['paper', 'paper-2', 'sheet'];
+const DIRECTION_A_MOCK = 'design/living-atlas/a-classic-atlas.html';
 
-  it('meets WCAG AA for ink on every ground and era wash', () => {
-    expectAA(
-      tokens,
-      allPairs(
-        ['ink', 'ink-2'],
-        [...grounds, ...eras.map((era) => `era-${era}-wash`)],
-      ),
-    );
-  });
+// The design mock lives on the remaster branch; skip on branches without it.
+describe.skipIf(!fs.existsSync(path.join(process.cwd(), DIRECTION_A_MOCK)))(
+  'Direction A tokens (design/living-atlas/a-classic-atlas.html)',
+  () => {
+    // Until the remaster's token file exists, the Direction A mock is the
+    // source of truth. Point this at the token file when T5 adds it.
+    const tokens = readTokens(read(DIRECTION_A_MOCK));
+    const eras = [
+      'prehistory',
+      'ancient',
+      'medieval',
+      'early-modern',
+      'modern',
+    ];
+    const grounds = ['paper', 'paper-2', 'sheet'];
 
-  it('meets WCAG AA for each era accent where the UI uses it', () => {
-    // The era of the year sets --accent: era labels and the panel eyebrow sit
-    // on paper, the active era band on its own wash, and the primary button
-    // is sheet on the accent.
-    expectAA(
-      tokens,
-      eras.flatMap((era) => [
-        ...allPairs([`era-${era}`], [...grounds, `era-${era}-wash`]),
-        { foreground: 'sheet', background: `era-${era}` },
-      ]),
-      // Observed 2026-11-17: the design spike checked only the Medieval
-      // accent. Prehistory and Ancient fall short on their own washes and
-      // Prehistory on the recessed fact box (4.02, 4.33 and 4.37:1).
-      [
-        'era-prehistory on paper-2',
-        'era-prehistory on era-prehistory-wash',
-        'era-ancient on era-ancient-wash',
-      ],
-    );
-  });
+    it('meets WCAG AA for ink on every ground and era wash', () => {
+      expectAA(
+        tokens,
+        allPairs(
+          ['ink', 'ink-2'],
+          [...grounds, ...eras.map((era) => `era-${era}-wash`)],
+        ),
+      );
+    });
 
-  it('meets 3:1 for the focus ring', () => {
-    expectAA(tokens, allPairs(['focus'], grounds, AA_LARGE_OR_GRAPHIC));
-  });
-});
+    it('meets WCAG AA for each era accent where the UI uses it', () => {
+      // The era of the year sets --accent: era labels and the panel eyebrow sit
+      // on paper, the active era band on its own wash, and the primary button
+      // is sheet on the accent.
+      expectAA(
+        tokens,
+        eras.flatMap((era) => [
+          ...allPairs([`era-${era}`], [...grounds, `era-${era}-wash`]),
+          { foreground: 'sheet', background: `era-${era}` },
+        ]),
+        // Observed 2026-11-17: the design spike checked only the Medieval
+        // accent. Prehistory and Ancient fall short on their own washes and
+        // Prehistory on the recessed fact box (4.02, 4.33 and 4.37:1).
+        [
+          'era-prehistory on paper-2',
+          'era-prehistory on era-prehistory-wash',
+          'era-ancient on era-ancient-wash',
+        ],
+      );
+    });
+
+    it('meets 3:1 for the focus ring', () => {
+      expectAA(tokens, allPairs(['focus'], grounds, AA_LARGE_OR_GRAPHIC));
+    });
+  },
+);
