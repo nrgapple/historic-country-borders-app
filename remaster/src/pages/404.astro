@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import { BrandMark } from '../components/Icon';
+---
+<Base title="Map not found" description="That historical map year is not available." path="/404" noindex>
+  <main class="landing">
+    <div class="landing__inner">
+      <p class="landing__brand"><BrandMark size={34} /> Historic Borders</p>
+      <h1 class="landing__title">That map is not available</h1>
+      <p class="landing__lede">The year or page in this link is not one of the published Historic Borders maps.</p>
+      <p class="landing__actions">
+        <a class="button button--primary" href="/">Open a random year</a>
+        <a class="button" href="/year/1914">See the world in 1914</a>
+        <a class="button" href="/pa/school-districts">Open Pennsylvania school districts</a>
+      </p>
+    </div>
+  </main>
+</Base>

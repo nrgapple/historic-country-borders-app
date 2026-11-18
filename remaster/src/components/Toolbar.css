@@ -1,0 +1,110 @@
+/* Brand, toolbar and the header's tool group. */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--ink);
+}
+
+.brand-mark {
+  display: block;
+  flex: none;
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand__name {
+  font: 700 21px/1 var(--font-sc);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.brand__subtitle {
+  margin-top: 3px;
+  font: italic 400 14px/1.2 var(--font-serif);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.brand__compact {
+  display: none;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brand__compact-title {
+  font: 700 15px/1.1 var(--font-sc);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand__compact-detail {
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.topbar__tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.restore-controls {
+  background: var(--sheet);
+  border-color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .brand__subtitle {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .brand__text {
+    display: none;
+  }
+
+  .brand__compact {
+    display: flex;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 699px) {
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .toolbar {
+    gap: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .icon-button {
+    width: 36px;
+    height: 36px;
+  }
+}

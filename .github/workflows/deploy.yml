@@ -28,10 +28,8 @@ jobs:
       name: production
       url: ${{ vars.PRODUCTION_URL || 'https://historicborders.app' }}
     env:
-      NEXT_TELEMETRY_DISABLED: '1'
-      # Public, URL-restricted token baked into the static bundle.
-      NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
-      NEXT_PUBLIC_GA_FOUR: ${{ vars.NEXT_PUBLIC_GA_FOUR }}
+      # Optional Google Analytics ID, baked into the static bundle.
+      PUBLIC_GA_FOUR: ${{ vars.NEXT_PUBLIC_GA_FOUR }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,12 +45,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           missing=0
-          for name in NEXT_PUBLIC_MAPBOX_TOKEN CLOUDFLARE_API_TOKEN; do
+          for name in CLOUDFLARE_API_TOKEN; do
             if [ -z "${!name}" ]; then echo "::error::Missing secret $name"; missing=1; fi
           done
           exit $missing
-      - run: yarn build
-      - run: yarn static:validate
+      # Production serves the Astro remaster (remaster/dist). No Mapbox.
+      - run: yarn remaster:build
+      - run: node scripts/validate-remaster-dist.js
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -1,0 +1,110 @@
+{
+  "buildId": "ne-5.1.2-r1",
+  "generatedBy": "yarn data:refresh:basemap",
+  "naturalEarthVersion": "5.1.2",
+  "license": "Public domain. Natural Earth terms of use: https://www.naturalearthdata.com/about/terms-of-use/ (credit optional; kept).",
+  "attribution": "<a href=\"https://www.naturalearthdata.com/\">Natural Earth</a>",
+  "sources": {
+    "ne_50m_land": "e874b27a51d146452be360cafb3cc50c86001074a67d534113e6534682f9826b",
+    "ne_50m_lakes": "d350b75978b26fe839b797c2c529b2fb8f47fb3983c03f4964e36d5df9378a52",
+    "ne_50m_rivers_lake_centerlines": "f286e0ce978fde999ca2d7a78c764be08542e19b63cded52b05c12d5173ccc51",
+    "ne_50m_geography_marine_polys": "6fe58083e0cc5c7fad9e396970e28a8580bbd8770cfa4d1d7b5a34423e912f97",
+    "ne_110m_land": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+    "GRAY_50M_SR": "4e6ff23dec315c00c018c030250ea3157630f83cabb0ff4bee0ebade8647bd6d"
+  },
+  "layers": {
+    "ocean": {
+      "sourceFeatures": 137
+    },
+    "coast": {
+      "sourceFeatures": 1422
+    },
+    "lakes": {
+      "sourceFeatures": 412
+    },
+    "rivers": {
+      "sourceFeatures": 359
+    },
+    "marine_labels": {
+      "sourceFeatures": 118
+    }
+  },
+  "tiles": {
+    "path": "public/tiles/basemap/ne-5.1.2-r1",
+    "url": "/tiles/basemap/ne-5.1.2-r1/{z}/{x}/{y}.pbf",
+    "format": "Mapbox Vector Tile v2, extent 4096, served as application/x-protobuf",
+    "minzoom": 0,
+    "maxzoom": 5,
+    "extent": 4096,
+    "buffer": 64,
+    "tolerance": 3,
+    "files": 1365,
+    "bytes": 1614286,
+    "digest": "06c63511fe8ac5cbb82b8742f52670933a75520a2df499eb0d0be76bfd2c75c4",
+    "zooms": {
+      "0": {
+        "tiles": 1,
+        "bytes": 73781,
+        "largest": 73781
+      },
+      "1": {
+        "tiles": 4,
+        "bytes": 114772,
+        "largest": 40761
+      },
+      "2": {
+        "tiles": 16,
+        "bytes": 172112,
+        "largest": 25090
+      },
+      "3": {
+        "tiles": 64,
+        "bytes": 273468,
+        "largest": 21193
+      },
+      "4": {
+        "tiles": 256,
+        "bytes": 390214,
+        "largest": 9566
+      },
+      "5": {
+        "tiles": 1024,
+        "bytes": 589939,
+        "largest": 5758
+      }
+    }
+  },
+  "relief": {
+    "path": "public/basemap/ne-5.1.2-r1/relief.webp",
+    "url": "/basemap/ne-5.1.2-r1/relief.webp",
+    "width": 2048,
+    "height": 1091,
+    "bytes": 578004,
+    "sha256": "9a9ebac4836dce602ac8dc415938f907139c86bcdde523e10540f6d4447c88f5",
+    "coordinates": [
+      [-180, 76],
+      [180, 76],
+      [180, -58],
+      [-180, -58]
+    ],
+    "recipe": {
+      "north": 76,
+      "south": -58,
+      "width": 2048,
+      "shadow": [96, 72, 44],
+      "light": [255, 250, 236],
+      "maxShadow": 0.5,
+      "maxLight": 0.42,
+      "quality": 62,
+      "alphaQuality": 60
+    }
+  },
+  "globe": {
+    "path": "public/basemap/ne-5.1.2-r1/land-110m.geojson",
+    "url": "/basemap/ne-5.1.2-r1/land-110m.geojson",
+    "features": 127,
+    "bytes": 74742,
+    "sha256": "856e6bae8fa89857e4f960921ee8d0221ff1fed2b1de372441f3a596c5f7949a"
+  },
+  "tilejson": "/basemap/ne-5.1.2-r1/tiles.json"
+}

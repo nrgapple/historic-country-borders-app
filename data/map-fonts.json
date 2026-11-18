@@ -1,0 +1,2596 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/build-map-fonts.js",
+  "names": {
+    "files": 212,
+    "distinct": 3279,
+    "codePoints": 216,
+    "codePointsSha256": "3b8717c7defbd6255a1b8e9c687d44845dac340d02b3e0f5e36ac89a3047b8ac",
+    "clusters": 20,
+    "ranges": [
+      "0-255",
+      "256-511",
+      "512-767",
+      "768-1023",
+      "4864-5119",
+      "5120-5375",
+      "5376-5631",
+      "5632-5887",
+      "7680-7935",
+      "8192-8447",
+      "42752-43007",
+      "66560-66815"
+    ],
+    "scripts": [
+      {
+        "script": "Latin",
+        "codePoints": 129,
+        "example": " Kelteminar culture"
+      },
+      {
+        "script": "Canadian_Aboriginal",
+        "codePoints": 33,
+        "example": "Anishinabewaki ᐊᓂᔑᓈᐯᐗᑭ"
+      },
+      {
+        "script": "Common",
+        "codePoints": 28,
+        "example": " Kelteminar culture"
+      },
+      {
+        "script": "Osage",
+        "codePoints": 11,
+        "example": "𐓏𐒰𐓓𐒰𐓓𐒷  𐒼𐓂𐓊𐒻  𐓆𐒻𐒿𐒷  𐓀𐒰^𐓓𐒰^(Osage)"
+      },
+      {
+        "script": "Inherited",
+        "codePoints": 6,
+        "example": "Denendeh (Dënësųłinë́ Nëné)"
+      },
+      {
+        "script": "Cherokee",
+        "codePoints": 6,
+        "example": "ᏣᎳᎫᏪᏘᏱ Tsalaguwetiyi (Cherokee, East)"
+      },
+      {
+        "script": "Greek",
+        "codePoints": 3,
+        "example": "kòréβahώ (korebaju/Koreguaje)"
+      }
+    ]
+  },
+  "glyphs": {
+    "buildId": "cdf13ca70db8",
+    "url": "/glyphs/cdf13ca70db8/{fontstack}/{range}.pbf",
+    "renderer": {
+      "method": "Chromium canvas text + @mapbox/tiny-sdf",
+      "chromium": "151.0.7922.34",
+      "tinySdf": "2.3.0",
+      "fontSize": 24,
+      "buffer": 3,
+      "radius": 8,
+      "cutoff": 0.25,
+      "topAdjustment": 27
+    },
+    "fontstacks": {
+      "Alegreya SC Medium": {
+        "group": "default",
+        "use": "State and territory names",
+        "weight": 500,
+        "style": "normal",
+        "sources": [
+          "@fontsource/alegreya-sc 500 normal",
+          "Noto Sans 500 normal (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 500 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 500 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/alegreya-sc-latin-500-normal.98b4a138b6.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02BB-02BC",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-latin-ext-500-normal.fae2927855.woff2",
+            "unicode-range": [
+              "U+0100-0130",
+              "U+0132-0199",
+              "U+019C-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-vietnamese-500-normal.5fcb1b4db1.woff2",
+            "unicode-range": [
+              "U+0102-0103",
+              "U+0110-0111",
+              "U+0128-0129",
+              "U+0168-0169",
+              "U+01A0-01A1",
+              "U+01AF-01B0",
+              "U+0300-0301",
+              "U+0303-0304",
+              "U+0308-0309",
+              "U+0323",
+              "U+0329",
+              "U+1EA0-1EF9",
+              "U+20AB"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-greek-500-normal.ff94b2ed78.woff2",
+            "unicode-range": [
+              "U+0370-0377",
+              "U+037A-037F",
+              "U+0384-038A",
+              "U+038C",
+              "U+038E-03A1",
+              "U+03A3-03FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-500-normal.62a4010810.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-500-normal.6851bd9395.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 79323,
+            "glyphs": 191,
+            "sha256": "66ddbe8a3ee38087abf08a4eeef87155c778d783fb8faefc4cdfed312ffe9b45"
+          },
+          "256-511": {
+            "bytes": 91086,
+            "glyphs": 170,
+            "sha256": "d867696f1e3f049d5f8b895acb034ef1710fff470448830183e88a769f387d6e"
+          },
+          "512-767": {
+            "bytes": 29325,
+            "glyphs": 73,
+            "sha256": "3c164cb73606cfa87d64a5fa8c41f2cf9823ed8ea50c8e7b616c77063aebf563"
+          },
+          "768-1023": {
+            "bytes": 37457,
+            "glyphs": 93,
+            "sha256": "15ffbc20881887d8c28b4ff338447500a17e877d836d900574a618167e692e86"
+          },
+          "4864-5119": {
+            "bytes": 3966,
+            "glyphs": 6,
+            "sha256": "ce5f5b41e09034780aeee3959f54f58fb60083199fe4491b3e25488768b823d0"
+          },
+          "5120-5375": {
+            "bytes": 9962,
+            "glyphs": 24,
+            "sha256": "2e350738c7ce349a224869d6f76ed54e0b68fed20b12d7080c4e676d4e8dabe2"
+          },
+          "5376-5631": {
+            "bytes": 3750,
+            "glyphs": 8,
+            "sha256": "c5f8cbae7a285c259b69c31ec6a4e8872ee46a70506bf56c14253382a323d239"
+          },
+          "5632-5887": {
+            "bytes": 678,
+            "glyphs": 1,
+            "sha256": "d6bc0399b7bb293fb1981409c2dfa11d0a2c562d70f8a4e5da3695a01e7f2d19"
+          },
+          "7680-7935": {
+            "bytes": 93221,
+            "glyphs": 164,
+            "sha256": "a61a56fa42052cd394aa19a3267614dcb2192bb719419125c4bf8b9d6aa8b61b"
+          },
+          "8192-8447": {
+            "bytes": 12505,
+            "glyphs": 39,
+            "sha256": "40e91b75eed708c9d0b5ffcabd7cb4da15f13a8ad20a6576ef7db16f3d8357aa"
+          },
+          "42752-43007": {
+            "bytes": 556,
+            "glyphs": 3,
+            "sha256": "cdf164c3f72d00e63ea0a9440de58b9bb3d2247e0de521885d2fe6ced87edeb2"
+          },
+          "66560-66815": {
+            "bytes": 6197,
+            "glyphs": 11,
+            "sha256": "07a99d4b445aa58177ca6504b17d6ea38895df794c35d9543c3c822eff4883a8"
+          }
+        }
+      },
+      "Alegreya SC Bold": {
+        "group": "default",
+        "use": "State names above 250,000 km²",
+        "weight": 700,
+        "style": "normal",
+        "sources": [
+          "@fontsource/alegreya-sc 700 normal",
+          "Noto Sans 700 normal (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 700 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 700 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/alegreya-sc-latin-700-normal.988821cdcc.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02BB-02BC",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-latin-ext-700-normal.42e3b3a352.woff2",
+            "unicode-range": [
+              "U+0100-0130",
+              "U+0132-0199",
+              "U+019C-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-vietnamese-700-normal.ecfcce992e.woff2",
+            "unicode-range": [
+              "U+0102-0103",
+              "U+0110-0111",
+              "U+0128-0129",
+              "U+0168-0169",
+              "U+01A0-01A1",
+              "U+01AF-01B0",
+              "U+0300-0301",
+              "U+0303-0304",
+              "U+0308-0309",
+              "U+0323",
+              "U+0329",
+              "U+1EA0-1EF9",
+              "U+20AB"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-sc-greek-700-normal.869c830213.woff2",
+            "unicode-range": [
+              "U+0370-0377",
+              "U+037A-037F",
+              "U+0384-038A",
+              "U+038C",
+              "U+038E-03A1",
+              "U+03A3-03FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-700-normal.4e57b50c40.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-700-normal.aaae28ff5d.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 81630,
+            "glyphs": 191,
+            "sha256": "91a664a62e2a16818b871a2549c1124020b54eb8be5fdb84ff525fc3f2ed58fe"
+          },
+          "256-511": {
+            "bytes": 94360,
+            "glyphs": 170,
+            "sha256": "0f1f02d010308ce5630565357addb2d346811bd49c320912280414f7dc0f8020"
+          },
+          "512-767": {
+            "bytes": 30348,
+            "glyphs": 73,
+            "sha256": "b52afb918f0604d77259183aab8e0fb29b416fe284d196c53ea15d59a78c36ef"
+          },
+          "768-1023": {
+            "bytes": 38924,
+            "glyphs": 93,
+            "sha256": "ae6b3bde83ee56036df6168389868fee68ac824f5091f8ac6f06938417e695ed"
+          },
+          "4864-5119": {
+            "bytes": 4088,
+            "glyphs": 6,
+            "sha256": "a53c28b3c6acddbae0c701d6be3fdb97357bb34668ca7426e46daf162e4e637f"
+          },
+          "5120-5375": {
+            "bytes": 10377,
+            "glyphs": 24,
+            "sha256": "ec06b6f78ff5558a85df40bcd0e9a7bcc6434f3e898559141f3a1e051273ca70"
+          },
+          "5376-5631": {
+            "bytes": 3900,
+            "glyphs": 8,
+            "sha256": "2969fb77850ddf24759d223fd819a9f4744c7a37a14b384c98aca9bb79dee490"
+          },
+          "5632-5887": {
+            "bytes": 701,
+            "glyphs": 1,
+            "sha256": "b25c6c0238d2ce3f116ae29da37b5378541b7268dca4058ec59152547ed1278b"
+          },
+          "7680-7935": {
+            "bytes": 97563,
+            "glyphs": 164,
+            "sha256": "10a3201568e5f6c55d00682d0e629979896ded23866390e924c8720053974d72"
+          },
+          "8192-8447": {
+            "bytes": 12848,
+            "glyphs": 39,
+            "sha256": "197d77aed58455bdf9351b0b8b713f0595600bb2c21fef5b398e116c8670c83a"
+          },
+          "42752-43007": {
+            "bytes": 588,
+            "glyphs": 3,
+            "sha256": "b493a296d2305ace90eb92dbeac842f18410a768b2f3ed788305347b8604df7b"
+          },
+          "66560-66815": {
+            "bytes": 6195,
+            "glyphs": 11,
+            "sha256": "9908452ca7c259f65b73bab7a83a11bfb379d74b1f461a92d117168cbcb2b33a"
+          }
+        }
+      },
+      "Alegreya Medium Italic": {
+        "group": "default",
+        "use": "Sea and ocean names",
+        "weight": 500,
+        "style": "italic",
+        "sources": [
+          "@fontsource/alegreya 500 italic",
+          "Noto Sans 500 italic (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 500 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 500 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/alegreya-latin-500-italic.654e31dba1.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02BB-02BC",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-latin-ext-500-italic.9e9c02074f.woff2",
+            "unicode-range": [
+              "U+0100-0130",
+              "U+0132-0199",
+              "U+019C-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-vietnamese-500-italic.a3b3cf2f55.woff2",
+            "unicode-range": [
+              "U+0102-0103",
+              "U+0110-0111",
+              "U+0128-0129",
+              "U+0168-0169",
+              "U+01A0-01A1",
+              "U+01AF-01B0",
+              "U+0300-0301",
+              "U+0303-0304",
+              "U+0308-0309",
+              "U+0323",
+              "U+0329",
+              "U+1EA0-1EF9",
+              "U+20AB"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-greek-500-italic.58d523df95.woff2",
+            "unicode-range": [
+              "U+0370-0377",
+              "U+037A-037F",
+              "U+0384-038A",
+              "U+038C",
+              "U+038E-03A1",
+              "U+03A3-03FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-500-italic.5d80dac302.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-500-normal.62a4010810.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-500-normal.6851bd9395.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 79961,
+            "glyphs": 191,
+            "sha256": "3982ba7ee30b7a788000ffd9e257ae39dd3b39d169039705c2d74e773d2d9db9"
+          },
+          "256-511": {
+            "bytes": 95707,
+            "glyphs": 178,
+            "sha256": "a33f72872de2776cc798fa81e967fafb545e0507f09e15a09020b350dda1ebb3"
+          },
+          "512-767": {
+            "bytes": 30045,
+            "glyphs": 76,
+            "sha256": "32cb069fb4d626f6630fd63b2f47eeded6a0a8feaf861bc79581bba5f64843bc"
+          },
+          "768-1023": {
+            "bytes": 37910,
+            "glyphs": 93,
+            "sha256": "34d51234b6da9b7e5ebd21a5754b16e79e2aea26e8fb6d6db1a5bf3c18758985"
+          },
+          "4864-5119": {
+            "bytes": 3970,
+            "glyphs": 6,
+            "sha256": "4ed7ba1d7eb5268eef44f8dcb4e5a7a924f7157b1acdee63a7f6c84ca1d21663"
+          },
+          "5120-5375": {
+            "bytes": 9966,
+            "glyphs": 24,
+            "sha256": "37af266c70dd26a87374843e67176a98bbee2bf06179a307b94ccf952886f95a"
+          },
+          "5376-5631": {
+            "bytes": 3754,
+            "glyphs": 8,
+            "sha256": "0209366fab8d856a8f80969e6c16e49c4f11f84270f352302fa123f661e5bbfd"
+          },
+          "5632-5887": {
+            "bytes": 682,
+            "glyphs": 1,
+            "sha256": "fac0dd23b6c9ad400e5e66d73eaf8ef43a988fb0755d52a9d657c30715b43f08"
+          },
+          "7680-7935": {
+            "bytes": 91918,
+            "glyphs": 164,
+            "sha256": "19c4bcee1d5970e69db560992b65cc601086b0e38cd701e74e0fb12b1cf45572"
+          },
+          "8192-8447": {
+            "bytes": 12747,
+            "glyphs": 39,
+            "sha256": "89faaddc743d6271be8f39cd1370b391c3bf268d4c3c847eb221a814302255e6"
+          },
+          "42752-43007": {
+            "bytes": 643,
+            "glyphs": 3,
+            "sha256": "3c6d768c1fb2f376e2caf193dbc4f4f74ecaa89e0fd7e7d982b2561982390c05"
+          },
+          "66560-66815": {
+            "bytes": 6201,
+            "glyphs": 11,
+            "sha256": "1b0f4048d00ef207fc58a22332d5b721af23bd120d4e973c5f358184b39ab6c9"
+          }
+        }
+      },
+      "Alegreya Italic": {
+        "group": "default",
+        "use": "River and lake names",
+        "weight": 400,
+        "style": "italic",
+        "sources": [
+          "@fontsource/alegreya 400 italic",
+          "Noto Sans 400 italic (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 400 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 400 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/alegreya-latin-400-italic.9be8976a11.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02BB-02BC",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-latin-ext-400-italic.27550192ee.woff2",
+            "unicode-range": [
+              "U+0100-0130",
+              "U+0132-0199",
+              "U+019C-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-vietnamese-400-italic.4079de18ae.woff2",
+            "unicode-range": [
+              "U+0102-0103",
+              "U+0110-0111",
+              "U+0128-0129",
+              "U+0168-0169",
+              "U+01A0-01A1",
+              "U+01AF-01B0",
+              "U+0300-0301",
+              "U+0303-0304",
+              "U+0308-0309",
+              "U+0323",
+              "U+0329",
+              "U+1EA0-1EF9",
+              "U+20AB"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-greek-400-italic.46ba1d9670.woff2",
+            "unicode-range": [
+              "U+0370-0377",
+              "U+037A-037F",
+              "U+0384-038A",
+              "U+038C",
+              "U+038E-03A1",
+              "U+03A3-03FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-400-italic.fa80731f0b.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-400-normal.5e2fbcc21f.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-400-normal.b126c74089.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 77927,
+            "glyphs": 191,
+            "sha256": "8aa630b91df8bb155d4303ac78ada6d54132842f2b1e9a857a71dd7100e5f3e6"
+          },
+          "256-511": {
+            "bytes": 93113,
+            "glyphs": 178,
+            "sha256": "11304e9fe83a71a0ea20a4f465fba9fab562d13fa8bf8dbe9fb395b07a7ed571"
+          },
+          "512-767": {
+            "bytes": 29046,
+            "glyphs": 76,
+            "sha256": "2f2d7de8e807f3f6753cde0c9f9e596938e94436816edccd529b824cbea089cb"
+          },
+          "768-1023": {
+            "bytes": 37132,
+            "glyphs": 93,
+            "sha256": "d26c1b85fd21f8b4f221fc95b3ea8ce5e20027770f6a373b270b2dcc5a89f4d4"
+          },
+          "4864-5119": {
+            "bytes": 3888,
+            "glyphs": 6,
+            "sha256": "f4bfcbf6eefca629c49028121667e18a279a4dd6094239c8480819b9182f80ea"
+          },
+          "5120-5375": {
+            "bytes": 9821,
+            "glyphs": 24,
+            "sha256": "1f27c4ef2706247fdb9a2b01c0bfd24a698884b86143b2ee121e08114b8af248"
+          },
+          "5376-5631": {
+            "bytes": 3698,
+            "glyphs": 8,
+            "sha256": "3c03f4dbca194bd3a071b796113d670c81cea960257cd211bf78c5cab909c451"
+          },
+          "5632-5887": {
+            "bytes": 675,
+            "glyphs": 1,
+            "sha256": "4a4f6bc7c520761b5d209a2b2c9c3ac654f4e1b9b2ea99c021710fb09014aa1d"
+          },
+          "7680-7935": {
+            "bytes": 88978,
+            "glyphs": 164,
+            "sha256": "01806aea6a4caa5cdfe2dbfacb6e4f4927137f770bd47717475983d4133bcde3"
+          },
+          "8192-8447": {
+            "bytes": 12401,
+            "glyphs": 39,
+            "sha256": "2e2d1fe4eac16c836a6d0413b941a17342c1965931a708d3dc131fdabb712dda"
+          },
+          "42752-43007": {
+            "bytes": 571,
+            "glyphs": 3,
+            "sha256": "87c695c7d2fae722c2f87fbdc010a7f8702f28529e42f27f8632211d68e24454"
+          },
+          "66560-66815": {
+            "bytes": 6194,
+            "glyphs": 11,
+            "sha256": "d82cfe9cbb92bf554c7bc8661294c056357258ffd10bb7c9ad7a4c97876abcc4"
+          }
+        }
+      },
+      "Alegreya Regular": {
+        "group": "default",
+        "use": "City, capital and site names",
+        "weight": 400,
+        "style": "normal",
+        "sources": [
+          "@fontsource/alegreya 400 normal",
+          "Noto Sans 400 normal (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 400 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 400 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/alegreya-latin-400-normal.7cbcf38a5e.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02BB-02BC",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-latin-ext-400-normal.2f7d416d7c.woff2",
+            "unicode-range": [
+              "U+0100-0130",
+              "U+0132-0199",
+              "U+019C-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-vietnamese-400-normal.b3d078c427.woff2",
+            "unicode-range": [
+              "U+0102-0103",
+              "U+0110-0111",
+              "U+0128-0129",
+              "U+0168-0169",
+              "U+01A0-01A1",
+              "U+01AF-01B0",
+              "U+0300-0301",
+              "U+0303-0304",
+              "U+0308-0309",
+              "U+0323",
+              "U+0329",
+              "U+1EA0-1EF9",
+              "U+20AB"
+            ]
+          },
+          {
+            "url": "/fonts/files/alegreya-greek-400-normal.7aac3d3bdf.woff2",
+            "unicode-range": [
+              "U+0370-0377",
+              "U+037A-037F",
+              "U+0384-038A",
+              "U+038C",
+              "U+038E-03A1",
+              "U+03A3-03FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-400-normal.5e2fbcc21f.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-400-normal.b126c74089.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 77684,
+            "glyphs": 191,
+            "sha256": "00e6d1f4447fd92e16131ce5a4e1d34544b28d6bbc301cbbbb3325e54c10e7b0"
+          },
+          "256-511": {
+            "bytes": 92442,
+            "glyphs": 178,
+            "sha256": "9a269b7b788cd4238d60c1c86c0d0133b4b47446f68f924667b01349bf3e7730"
+          },
+          "512-767": {
+            "bytes": 29137,
+            "glyphs": 76,
+            "sha256": "63f9714c8882515363057c8708e938f1b44a46f64cbf6d681035e37284e6016f"
+          },
+          "768-1023": {
+            "bytes": 36975,
+            "glyphs": 93,
+            "sha256": "b6aad7f37feade1165c913cce3c1f0e92d4ade0926629eee10ac3f47ee6e1c56"
+          },
+          "4864-5119": {
+            "bytes": 3889,
+            "glyphs": 6,
+            "sha256": "f771007563f0e2da356156d63486015adee6e74afac69a2784c6a740a69cf788"
+          },
+          "5120-5375": {
+            "bytes": 9822,
+            "glyphs": 24,
+            "sha256": "c6078f4ea42ee5355d69f7efc1fd105e79bb7297a45db50b34fde1a8028a3871"
+          },
+          "5376-5631": {
+            "bytes": 3699,
+            "glyphs": 8,
+            "sha256": "eaa37f028f5959b4289234f6865f0b1d93040702a78ffdd2e9876c98929e9fab"
+          },
+          "5632-5887": {
+            "bytes": 676,
+            "glyphs": 1,
+            "sha256": "941b8de9da4da57661ddbbd98d0fd480c2ed3226f90a385a299651a9fe6b1cea"
+          },
+          "7680-7935": {
+            "bytes": 88933,
+            "glyphs": 164,
+            "sha256": "f222d65be3386f4ddfd3bef27c8fdd5a9179a77181b2d819267ed032d5692b94"
+          },
+          "8192-8447": {
+            "bytes": 12307,
+            "glyphs": 39,
+            "sha256": "a14cde9adbd966a50946cc9eb10ee338f5457d6d9edafa9668b32d1575e7f70b"
+          },
+          "42752-43007": {
+            "bytes": 524,
+            "glyphs": 3,
+            "sha256": "ee047cae385ea880bb055c96bb6a901274697a9763e37a9ab8fabd56071a0c16"
+          },
+          "66560-66815": {
+            "bytes": 6195,
+            "glyphs": 11,
+            "sha256": "6803db20f9397e27a709ef6fe7874122da478a87f9394767d36ef85d1c806f40"
+          }
+        }
+      },
+      "Atkinson Hyperlegible Next Medium": {
+        "group": "projector",
+        "use": "Projector text: water, cities and small labels",
+        "weight": 500,
+        "style": "normal",
+        "sources": [
+          "@fontsource/atkinson-hyperlegible-next 500 normal",
+          "Noto Sans 500 normal (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 500 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 500 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/atkinson-hyperlegible-next-latin-500-normal.f5243b80fb.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/atkinson-hyperlegible-next-latin-ext-500-normal.0b3a72e74f.woff2",
+            "unicode-range": [
+              "U+0100-0128",
+              "U+012A-0130",
+              "U+0132-014A",
+              "U+014E-015C",
+              "U+015E-0168",
+              "U+016A-0199",
+              "U+019C-01EA",
+              "U+01EC-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-0258",
+              "U+025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02AF",
+              "U+02B1-02B6",
+              "U+02B8-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E0C",
+              "U+1E0E-1E24",
+              "U+1E26-1E47",
+              "U+1E49-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-500-normal.62a4010810.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-500-normal.6851bd9395.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 81174,
+            "glyphs": 189,
+            "sha256": "f5085debf20408e7376077664b9746396fd48c5f008962d3b2fe1a4f7c413506"
+          },
+          "256-511": {
+            "bytes": 52953,
+            "glyphs": 104,
+            "sha256": "5b5ab95bf81f6f955539ca71dc3274ebc9478c2b3f17ed1a4ad22299f8a3f5ae"
+          },
+          "512-767": {
+            "bytes": 9869,
+            "glyphs": 29,
+            "sha256": "2d57ecdbb1b2b5471e640fe57d69c72e076ca24c02a84e4d2bf6af42ef37781e"
+          },
+          "768-1023": {
+            "bytes": 3012,
+            "glyphs": 11,
+            "sha256": "4aea5a86ea905ec07ce6714364cd447f014bba820fde3f8b9c8f764af05def98"
+          },
+          "4864-5119": {
+            "bytes": 3981,
+            "glyphs": 6,
+            "sha256": "7f2e1b8d8147a82608c287c95cc1bb6ef2666dc0db6674b3b6b08779a98d4118"
+          },
+          "5120-5375": {
+            "bytes": 9977,
+            "glyphs": 24,
+            "sha256": "6b3e6ef0cf6198eebbea595c86e541e669fd3d745310bdb9c1a5ac9110c85ccc"
+          },
+          "5376-5631": {
+            "bytes": 3765,
+            "glyphs": 8,
+            "sha256": "6ca67ce9d3fc5085b2e47d19cb704a5e6a78877c142a4bfb72b39a0d04e8808e"
+          },
+          "5632-5887": {
+            "bytes": 693,
+            "glyphs": 1,
+            "sha256": "dffe56b808a3d124e3bf93a091f6c1255b4900e10f97fac7d763ad740420b123"
+          },
+          "7680-7935": {
+            "bytes": 8373,
+            "glyphs": 14,
+            "sha256": "7593af1aab8a27b4728910985bbf10fb8ef0a11080f5144758f80d762ab68a35"
+          },
+          "8192-8447": {
+            "bytes": 4938,
+            "glyphs": 19,
+            "sha256": "b97c750a9a285ac7933c4c8dcac75ab96d73e402e0617984570782bce9775e67"
+          },
+          "42752-43007": {
+            "bytes": 261,
+            "glyphs": 1,
+            "sha256": "e2c310d72d7543ab8eab82651c76acab38b3993b95ae73bb67c1c4a769478a95"
+          },
+          "66560-66815": {
+            "bytes": 6212,
+            "glyphs": 11,
+            "sha256": "8a67d731c124d167e5e4d0e96e75a2731cb4f65d2a87880fe32fe07ed976cd6f"
+          }
+        }
+      },
+      "Atkinson Hyperlegible Next Bold": {
+        "group": "projector",
+        "use": "Projector text: state names (uppercase plus letter-spacing)",
+        "weight": 700,
+        "style": "normal",
+        "sources": [
+          "@fontsource/atkinson-hyperlegible-next 700 normal",
+          "Noto Sans 700 normal (google/fonts 7af0d90, subset)",
+          "@fontsource/noto-sans-cherokee 700 normal",
+          "@fontsource/noto-sans-canadian-aboriginal 700 normal",
+          "@fontsource/noto-sans-osage 400 normal"
+        ],
+        "faces": [
+          {
+            "url": "/fonts/files/atkinson-hyperlegible-next-latin-700-normal.0dbe07ed76.woff2",
+            "unicode-range": [
+              "U+0000-00FF",
+              "U+0131",
+              "U+0152-0153",
+              "U+02C6",
+              "U+02DA",
+              "U+02DC",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+2000-2026",
+              "U+2028-206F",
+              "U+20AC",
+              "U+2122",
+              "U+2191",
+              "U+2193",
+              "U+2212",
+              "U+2215",
+              "U+FEFF",
+              "U+FFFD"
+            ]
+          },
+          {
+            "url": "/fonts/files/atkinson-hyperlegible-next-latin-ext-700-normal.acd5d07716.woff2",
+            "unicode-range": [
+              "U+0100-0128",
+              "U+012A-0130",
+              "U+0132-014A",
+              "U+014E-015C",
+              "U+015E-0168",
+              "U+016A-0199",
+              "U+019C-01EA",
+              "U+01EC-01EF",
+              "U+01F1-023A",
+              "U+023C",
+              "U+023E-0240",
+              "U+0242-0258",
+              "U+025A",
+              "U+025C-0267",
+              "U+026A",
+              "U+026D-0288",
+              "U+028A-028B",
+              "U+028D-0293",
+              "U+0296-02AF",
+              "U+02B1-02B6",
+              "U+02B8-02BA",
+              "U+02BD-02BF",
+              "U+02C1-02C5",
+              "U+02C7-02CC",
+              "U+02CE-02D7",
+              "U+02DD-02FF",
+              "U+0304",
+              "U+0308",
+              "U+0329",
+              "U+1D00-1DBF",
+              "U+1E00-1E0C",
+              "U+1E0E-1E24",
+              "U+1E26-1E47",
+              "U+1E49-1E9F",
+              "U+1EF2-1EFF",
+              "U+2020",
+              "U+20A0-20AB",
+              "U+20AD-20C0",
+              "U+2113",
+              "U+2C60-2C7F",
+              "U+A720-A788",
+              "U+A78A-A7FF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
+            "unicode-range": [
+              "U+0057",
+              "U+0061-0063",
+              "U+0065",
+              "U+0067",
+              "U+006C-006E",
+              "U+0070-0071",
+              "U+0074",
+              "U+0077-0079",
+              "U+0129",
+              "U+0131",
+              "U+014B-014D",
+              "U+015D",
+              "U+0169",
+              "U+019A-019B",
+              "U+01EB",
+              "U+01F0",
+              "U+023B",
+              "U+023D",
+              "U+0241",
+              "U+0259",
+              "U+025B",
+              "U+0268-0269",
+              "U+026B-026C",
+              "U+0289",
+              "U+028C",
+              "U+0294-0295",
+              "U+02B0",
+              "U+02B7",
+              "U+02BB-02BC",
+              "U+02C0",
+              "U+0302",
+              "U+0313",
+              "U+0323",
+              "U+0328",
+              "U+0331",
+              "U+03B2",
+              "U+03B8",
+              "U+03CE",
+              "U+1E0D",
+              "U+1E25",
+              "U+1E48",
+              "U+1EA1",
+              "U+1EC7",
+              "U+2027",
+              "U+207F",
+              "U+A789"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-cherokee-cherokee-700-normal.4e57b50c40.woff2",
+            "unicode-range": [
+              "U+0300-0302",
+              "U+0304",
+              "U+030B-030C",
+              "U+0323-0324",
+              "U+0330-0331",
+              "U+13A0-13FF",
+              "U+AB70-ABBF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-700-normal.aaae28ff5d.woff2",
+            "unicode-range": [
+              "U+02C7",
+              "U+02D8-02D9",
+              "U+02DB",
+              "U+0307",
+              "U+1400-167F",
+              "U+18B0-18F5",
+              "U+25CC",
+              "U+11AB0-11ABF"
+            ]
+          },
+          {
+            "url": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+            "unicode-range": [
+              "U+0301",
+              "U+0304",
+              "U+030B",
+              "U+0358",
+              "U+25CC",
+              "U+104B0-104FF"
+            ]
+          }
+        ],
+        "ranges": {
+          "0-255": {
+            "bytes": 84747,
+            "glyphs": 189,
+            "sha256": "4c8195c492c98411fe687d7e7c48c7883cf326bee15d9dbea8382ccbf98a85e7"
+          },
+          "256-511": {
+            "bytes": 55335,
+            "glyphs": 104,
+            "sha256": "ca0836bd8935e97c515c9b1fa04a0ae592fb09027a35879985eafaf5d62b8c67"
+          },
+          "512-767": {
+            "bytes": 10538,
+            "glyphs": 29,
+            "sha256": "b8bcbd77dac530924991e108e882c232083d3c95df055d0cbbb6e497df817390"
+          },
+          "768-1023": {
+            "bytes": 3215,
+            "glyphs": 11,
+            "sha256": "d96e60d699db47382692d887587c06ea00328937df6a4616e354ced0ca8bb8e2"
+          },
+          "4864-5119": {
+            "bytes": 4103,
+            "glyphs": 6,
+            "sha256": "3062d7c6e84a499b6ed6b20b7d82b6d8ca7f453dcc271a49316fce9a446d036b"
+          },
+          "5120-5375": {
+            "bytes": 10392,
+            "glyphs": 24,
+            "sha256": "3b7ddc18a8cb379836167de938f271444e31856f6337262faaf60332ac2b622a"
+          },
+          "5376-5631": {
+            "bytes": 3915,
+            "glyphs": 8,
+            "sha256": "d13d24c6370d9db1ddcadaad6f5924a704d9ff3304a7d891bb43a3855cd24620"
+          },
+          "5632-5887": {
+            "bytes": 716,
+            "glyphs": 1,
+            "sha256": "ed55c1b892d9b476dbce0f1db5d946aaf3e395dade062f624a24bccb041c093e"
+          },
+          "7680-7935": {
+            "bytes": 8833,
+            "glyphs": 14,
+            "sha256": "a2218756a1a47254206cc354fb9efc58c2554d61d376b45e6363774c19e16609"
+          },
+          "8192-8447": {
+            "bytes": 5317,
+            "glyphs": 19,
+            "sha256": "325269da331d0c637765462497b331369118bf61229927bcb7bdf613a884daf4"
+          },
+          "42752-43007": {
+            "bytes": 278,
+            "glyphs": 1,
+            "sha256": "c46eea12f7ddba95c294989f2131291b770f6a2902d1d5b96e6fa95a5d7dd24f"
+          },
+          "66560-66815": {
+            "bytes": 6210,
+            "glyphs": 11,
+            "sha256": "5105d1696b2b37a6c4f6c0a3752d3e99746a97757d6c68d9951dc1a3930c57e2"
+          }
+        }
+      }
+    }
+  },
+  "fonts": {
+    "css": {
+      "default": {
+        "path": "/fonts/atlas.css",
+        "bytes": 15420,
+        "sha256": "e21caccd9b43b212305d83bd0a0931b8a3299d30ac74f677700deee5fcbc2cc9"
+      },
+      "map": {
+        "path": "/fonts/map-aliases.css",
+        "bytes": 16318,
+        "sha256": "843a0a4aa519d666c2d86e4d65e2fd8f4dd8e545f14c1b855a22ee2291a82799"
+      },
+      "projector": {
+        "path": "/fonts/projector.css",
+        "bytes": 10505,
+        "sha256": "09f58986362c29699b57e1779fbd9a9b0ab56b47a15e1e59c865fd91f0b3827b"
+      }
+    },
+    "ui": {
+      "default": [
+        "/fonts/files/alegreya-greek-400-normal.7aac3d3bdf.woff2",
+        "/fonts/files/alegreya-vietnamese-400-normal.b3d078c427.woff2",
+        "/fonts/files/alegreya-latin-ext-400-normal.2f7d416d7c.woff2",
+        "/fonts/files/alegreya-latin-400-normal.7cbcf38a5e.woff2",
+        "/fonts/files/alegreya-greek-400-italic.46ba1d9670.woff2",
+        "/fonts/files/alegreya-vietnamese-400-italic.4079de18ae.woff2",
+        "/fonts/files/alegreya-latin-ext-400-italic.27550192ee.woff2",
+        "/fonts/files/alegreya-latin-400-italic.9be8976a11.woff2",
+        "/fonts/files/alegreya-greek-500-italic.58d523df95.woff2",
+        "/fonts/files/alegreya-vietnamese-500-italic.a3b3cf2f55.woff2",
+        "/fonts/files/alegreya-latin-ext-500-italic.9e9c02074f.woff2",
+        "/fonts/files/alegreya-latin-500-italic.654e31dba1.woff2",
+        "/fonts/files/alegreya-greek-700-normal.d94cc9a3f3.woff2",
+        "/fonts/files/alegreya-vietnamese-700-normal.182714677e.woff2",
+        "/fonts/files/alegreya-latin-ext-700-normal.3fe9918699.woff2",
+        "/fonts/files/alegreya-latin-700-normal.1c582501ce.woff2",
+        "/fonts/files/alegreya-sc-greek-500-normal.ff94b2ed78.woff2",
+        "/fonts/files/alegreya-sc-vietnamese-500-normal.5fcb1b4db1.woff2",
+        "/fonts/files/alegreya-sc-latin-ext-500-normal.fae2927855.woff2",
+        "/fonts/files/alegreya-sc-latin-500-normal.98b4a138b6.woff2",
+        "/fonts/files/alegreya-sc-greek-700-normal.869c830213.woff2",
+        "/fonts/files/alegreya-sc-vietnamese-700-normal.ecfcce992e.woff2",
+        "/fonts/files/alegreya-sc-latin-ext-700-normal.42e3b3a352.woff2",
+        "/fonts/files/alegreya-sc-latin-700-normal.988821cdcc.woff2",
+        "/fonts/files/alegreya-sans-greek-500-normal.f789069e47.woff2",
+        "/fonts/files/alegreya-sans-vietnamese-500-normal.3fb778de69.woff2",
+        "/fonts/files/alegreya-sans-latin-ext-500-normal.578e520318.woff2",
+        "/fonts/files/alegreya-sans-latin-500-normal.55b61d22cc.woff2",
+        "/fonts/files/alegreya-sans-greek-700-normal.cd66767708.woff2",
+        "/fonts/files/alegreya-sans-vietnamese-700-normal.960cf8c764.woff2",
+        "/fonts/files/alegreya-sans-latin-ext-700-normal.8f289f338a.woff2",
+        "/fonts/files/alegreya-sans-latin-700-normal.5acd19a588.woff2",
+        "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
+        "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
+        "/fonts/files/noto-sans-cherokee-cherokee-400-normal.5e2fbcc21f.woff2",
+        "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-400-normal.b126c74089.woff2",
+        "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2"
+      ],
+      "projector": [
+        "/fonts/files/atkinson-hyperlegible-next-latin-ext-400-normal.0f9e442184.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-400-normal.5cb240a4d9.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-ext-400-italic.d78c26d0c1.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-400-italic.59bc0e9656.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-ext-500-normal.0b3a72e74f.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-500-normal.f5243b80fb.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-ext-700-normal.acd5d07716.woff2",
+        "/fonts/files/atkinson-hyperlegible-next-latin-700-normal.0dbe07ed76.woff2"
+      ]
+    },
+    "files": [
+      {
+        "path": "/fonts/files/alegreya-greek-400-italic.46ba1d9670.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "greek",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8560,
+        "sha256": "46ba1d9670c9f124e01b931068e62e22ea1d6d7727996f6683335fdec5f34bb3"
+      },
+      {
+        "path": "/fonts/files/alegreya-greek-400-normal.7aac3d3bdf.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "greek",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8104,
+        "sha256": "7aac3d3bdf8818261f528c2fdd09fa471fdd7df8cef6dc7375ae7fd9526ad00c"
+      },
+      {
+        "path": "/fonts/files/alegreya-greek-500-italic.58d523df95.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "greek",
+        "weight": 500,
+        "style": "italic",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8772,
+        "sha256": "58d523df95cd19d68a7b3888fedb70cc11c3e1ebbf0702dd5feb6d9567b53e39"
+      },
+      {
+        "path": "/fonts/files/alegreya-greek-700-normal.d94cc9a3f3.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "greek",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8568,
+        "sha256": "d94cc9a3f3f7b3b2ea5adb3e9eb80a786cda69445937d6df40a09aba82f8bb0f"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-400-italic.9be8976a11.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 23156,
+        "sha256": "9be8976a11463895bb4d590973a684c1c96616b7e40a03333151efa8c7210241"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-400-normal.7cbcf38a5e.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 22884,
+        "sha256": "7cbcf38a5ef682a8b9e2ef4a330b31a08b33bf1ae08e338267c0d1292479c68a"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-500-italic.654e31dba1.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin",
+        "weight": 500,
+        "style": "italic",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 24392,
+        "sha256": "654e31dba1d4273655d9a97c36f3456a90c4dc77c070d8d78d7cadd0af9ed518"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-700-normal.1c582501ce.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 24352,
+        "sha256": "1c582501cee54f7137a80732266cbd3f0e9ef1f0e85d093228fb4f4db852df4e"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-ext-400-italic.27550192ee.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin-ext",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 20524,
+        "sha256": "27550192eeb67db7db1ff877e24b8b5e6acefe351d3b4f1941bc19c31c7029f2"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-ext-400-normal.2f7d416d7c.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin-ext",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 19920,
+        "sha256": "2f7d416d7c40459b8f24ee9f4d2e14b963b29c67912de517615a2f2cfe292aa4"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-ext-500-italic.9e9c02074f.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin-ext",
+        "weight": 500,
+        "style": "italic",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 21380,
+        "sha256": "9e9c02074f21d1de5be638e96e7d7b2ba31725d1531dcbb81e16033338ceb960"
+      },
+      {
+        "path": "/fonts/files/alegreya-latin-ext-700-normal.3fe9918699.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "latin-ext",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 21612,
+        "sha256": "3fe9918699e06164c1a8a28f26ce87925f769f95bb6692a852d71cf1a3906b43"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-greek-500-normal.f789069e47.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "greek",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8784,
+        "sha256": "f789069e47f6f937e2e5402260f9cb325ad9a7bdb89981004ebaccc662aaa8c9"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-greek-700-normal.cd66767708.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "greek",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 8932,
+        "sha256": "cd66767708639f6e9e152362ec29ee0d9c970be275df698a416866a77b9b746c"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-latin-500-normal.55b61d22cc.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "latin",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 23928,
+        "sha256": "55b61d22cc7afd0bca94d17a84f0e92963b8f5216dbfbde56b2f6cf530c9b2dd"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-latin-700-normal.5acd19a588.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "latin",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 23976,
+        "sha256": "5acd19a588614d23e52b741a21dd8555178ab4932c3195c6d8fb4b296f84acae"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-latin-ext-500-normal.578e520318.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "latin-ext",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 21500,
+        "sha256": "578e5203186650ae0a335692f1ecc71b0591f569f3bbeae7bfcf55874e199514"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-latin-ext-700-normal.8f289f338a.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "latin-ext",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 21868,
+        "sha256": "8f289f338a955d3a9d51cd59a0a99e96627fe54d3c54859f4eeeacb9f24b80bc"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-vietnamese-500-normal.3fb778de69.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "vietnamese",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 9096,
+        "sha256": "3fb778de6971f21ce0ae1e708336e72bd79129a7856f9fe77db39170dc8369b9"
+      },
+      {
+        "path": "/fonts/files/alegreya-sans-vietnamese-700-normal.960cf8c764.woff2",
+        "source": "@fontsource/alegreya-sans",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+        "subset": "vietnamese",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 9368,
+        "sha256": "960cf8c7641349aa730c07e31948d6a475b34252afa341df88831d92c88a941d"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-greek-500-normal.ff94b2ed78.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "greek",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 12104,
+        "sha256": "ff94b2ed7801cbc7151e58bd21280b71860d259037c96449a8837b7c8d4093e1"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-greek-700-normal.869c830213.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "greek",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF",
+        "bytes": 12028,
+        "sha256": "869c830213a4a127345a02a197048114b9c3aa3584cc3d33703a4d50ee01f85a"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-latin-500-normal.98b4a138b6.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "latin",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 30880,
+        "sha256": "98b4a138b6117d621a122a7c8590aa945720e4953d926b921a61e0d3f96a02c9"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-latin-700-normal.988821cdcc.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "latin",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 30660,
+        "sha256": "988821cdcc03a1c0f7587143e4d921582595c5bcd803061863f7c3be7dd0d4b8"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-latin-ext-500-normal.fae2927855.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "latin-ext",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 31944,
+        "sha256": "fae2927855146328875e379a3f0dcd5ab26629413347838b32190ea441b1a4b7"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-latin-ext-700-normal.42e3b3a352.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "latin-ext",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0100-0130,U+0132-0199,U+019C-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 31656,
+        "sha256": "42e3b3a35260c3626cb1e5fb71a134da3e856a8820d4ab757261fc383aa762f5"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-vietnamese-500-normal.5fcb1b4db1.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "vietnamese",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 12380,
+        "sha256": "5fcb1b4db1173aa6274c1825c084e68d35e71c44a17ca17356256e8afc58fb4a"
+      },
+      {
+        "path": "/fonts/files/alegreya-sc-vietnamese-700-normal.ecfcce992e.woff2",
+        "source": "@fontsource/alegreya-sc",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+        "subset": "vietnamese",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 12312,
+        "sha256": "ecfcce992e6e7fdb44636e288a87651464f608790dadd5c04abcc9641a549f49"
+      },
+      {
+        "path": "/fonts/files/alegreya-vietnamese-400-italic.4079de18ae.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "vietnamese",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 7000,
+        "sha256": "4079de18aef65f325b8385da7cbd0190b5d0df41e2281344c0e0e87c04470c96"
+      },
+      {
+        "path": "/fonts/files/alegreya-vietnamese-400-normal.b3d078c427.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "vietnamese",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 6564,
+        "sha256": "b3d078c427591934fd7fdbdea42dd34d43f6404d5adfb24f44053041c5e3f8c6"
+      },
+      {
+        "path": "/fonts/files/alegreya-vietnamese-500-italic.a3b3cf2f55.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "vietnamese",
+        "weight": 500,
+        "style": "italic",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 7284,
+        "sha256": "a3b3cf2f554669019075bcbbc89e362b429e35425318564e18552e9202e80bc8"
+      },
+      {
+        "path": "/fonts/files/alegreya-vietnamese-700-normal.182714677e.woff2",
+        "source": "@fontsource/alegreya",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-alegreya.txt",
+        "subset": "vietnamese",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB",
+        "bytes": 6972,
+        "sha256": "182714677e7fdb84e2f5a05a3b062b46f62a6ccbbf97416710110a1f8f4a6303"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-400-italic.59bc0e9656.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 14152,
+        "sha256": "59bc0e965694b9409ac2684c6c8d08994f4fee8a474bc63c4653714f8f441435"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-400-normal.5cb240a4d9.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 12096,
+        "sha256": "5cb240a4d99ab7e6fc3a4d4e6d11d89789fdffe9c86a8384000d662c53283f6f"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-500-normal.f5243b80fb.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 12620,
+        "sha256": "f5243b80fbcabc6756a4f67a2843a581216ecb89019a789335b85c924f05702e"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-700-normal.0dbe07ed76.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+        "bytes": 12732,
+        "sha256": "0dbe07ed7679407db9d90f747d5ca3bd1b2bb7ccbcbe41c8246cfc6d2c7bc3bc"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-ext-400-italic.d78c26d0c1.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin-ext",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 7872,
+        "sha256": "d78c26d0c18f8d0f81efde4aa48a05d8e4d01c696a2683c1d1bdb8471ed0e827"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-ext-400-normal.0f9e442184.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin-ext",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 7376,
+        "sha256": "0f9e442184b58992113a9b26c0b85c380410a60e5f8f3ddc03c54fe80f81bbe8"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-ext-500-normal.0b3a72e74f.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin-ext",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 7548,
+        "sha256": "0b3a72e74f915124c73048d3a6970463c9d2f14d3877ccb1f2cd0d7e33e0c5d6"
+      },
+      {
+        "path": "/fonts/files/atkinson-hyperlegible-next-latin-ext-700-normal.acd5d07716.woff2",
+        "source": "@fontsource/atkinson-hyperlegible-next",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+        "subset": "latin-ext",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "bytes": 7556,
+        "sha256": "acd5d0771650ceddafa2beb172dc7ada45581f7641db03a70f4a13677ce799d1"
+      },
+      {
+        "path": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-400-normal.b126c74089.woff2",
+        "source": "@fontsource/noto-sans-canadian-aboriginal",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-canadian-aboriginal.txt",
+        "subset": "canadian-aboriginal",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+02C7,U+02D8-02D9,U+02DB,U+0307,U+1400-167F,U+18B0-18F5,U+25CC,U+11AB0-11ABF",
+        "bytes": 21572,
+        "sha256": "b126c740892e46958dccaab43ff561630c560488c8823533a012275608ca348e"
+      },
+      {
+        "path": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-500-normal.6851bd9395.woff2",
+        "source": "@fontsource/noto-sans-canadian-aboriginal",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-canadian-aboriginal.txt",
+        "subset": "canadian-aboriginal",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+02C7,U+02D8-02D9,U+02DB,U+0307,U+1400-167F,U+18B0-18F5,U+25CC,U+11AB0-11ABF",
+        "bytes": 23512,
+        "sha256": "6851bd9395cbf584181a70e7286ab238dfa4dba9d92056dac6a86ab711e069c6"
+      },
+      {
+        "path": "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-700-normal.aaae28ff5d.woff2",
+        "source": "@fontsource/noto-sans-canadian-aboriginal",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-canadian-aboriginal.txt",
+        "subset": "canadian-aboriginal",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+02C7,U+02D8-02D9,U+02DB,U+0307,U+1400-167F,U+18B0-18F5,U+25CC,U+11AB0-11ABF",
+        "bytes": 23848,
+        "sha256": "aaae28ff5dbacdcb763d00aaeebce07c85ec80f5e0faae77f4b0bcc65fa966e5"
+      },
+      {
+        "path": "/fonts/files/noto-sans-cherokee-cherokee-400-normal.5e2fbcc21f.woff2",
+        "source": "@fontsource/noto-sans-cherokee",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-cherokee.txt",
+        "subset": "cherokee",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0300-0302,U+0304,U+030B-030C,U+0323-0324,U+0330-0331,U+13A0-13FF,U+AB70-ABBF",
+        "bytes": 23764,
+        "sha256": "5e2fbcc21febc571d1d383d99201535766bdbb30eaf2be6eea5118d3ff1fdec3"
+      },
+      {
+        "path": "/fonts/files/noto-sans-cherokee-cherokee-500-normal.62a4010810.woff2",
+        "source": "@fontsource/noto-sans-cherokee",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-cherokee.txt",
+        "subset": "cherokee",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0300-0302,U+0304,U+030B-030C,U+0323-0324,U+0330-0331,U+13A0-13FF,U+AB70-ABBF",
+        "bytes": 26792,
+        "sha256": "62a4010810ba2d1c31b23da02fc1320dc9e61249286941312426c501a486056d"
+      },
+      {
+        "path": "/fonts/files/noto-sans-cherokee-cherokee-700-normal.4e57b50c40.woff2",
+        "source": "@fontsource/noto-sans-cherokee",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-cherokee.txt",
+        "subset": "cherokee",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0300-0302,U+0304,U+030B-030C,U+0323-0324,U+0330-0331,U+13A0-13FF,U+AB70-ABBF",
+        "bytes": 26588,
+        "sha256": "4e57b50c407833686c0b868f675c0f6edbba9259a07da9c82ea0f4f19cad85b0"
+      },
+      {
+        "path": "/fonts/files/noto-sans-names-400-italic.fa80731f0b.woff2",
+        "source": "https://github.com/google/fonts ofl/notosans/NotoSans-Italic[wdth,wght].ttf",
+        "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+        "license": "/fonts/licenses/LICENSE-noto-sans.txt",
+        "subset": "names",
+        "weight": 400,
+        "style": "italic",
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7856,
+        "sha256": "fa80731f0b1014e225ef5abe004726f6df08c3b3bf2d73b480a7448a3dc9c5b6"
+      },
+      {
+        "path": "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
+        "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
+        "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+        "license": "/fonts/licenses/LICENSE-noto-sans.txt",
+        "subset": "names",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7580,
+        "sha256": "4a6ec51aa557b07ab140ce32ed6b11a6d3e8895333b995e9ca97a3ec3bb8838d"
+      },
+      {
+        "path": "/fonts/files/noto-sans-names-500-italic.5d80dac302.woff2",
+        "source": "https://github.com/google/fonts ofl/notosans/NotoSans-Italic[wdth,wght].ttf",
+        "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+        "license": "/fonts/licenses/LICENSE-noto-sans.txt",
+        "subset": "names",
+        "weight": 500,
+        "style": "italic",
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 8040,
+        "sha256": "5d80dac3023c48742ecc944e85dd8ddc4d9cf366ff47c7faf64aded52e40dbfa"
+      },
+      {
+        "path": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
+        "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
+        "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+        "license": "/fonts/licenses/LICENSE-noto-sans.txt",
+        "subset": "names",
+        "weight": 500,
+        "style": "normal",
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7700,
+        "sha256": "26ab62cc96aa60ddddb0de16e388199e217fb1e1aacb4217739c1162d42b79d8"
+      },
+      {
+        "path": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
+        "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
+        "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+        "license": "/fonts/licenses/LICENSE-noto-sans.txt",
+        "subset": "names",
+        "weight": 700,
+        "style": "normal",
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7744,
+        "sha256": "2d6de1b50ccbd06bb4c3c27b12614d3ea2469a74f296a518224b9241c5647eb7"
+      },
+      {
+        "path": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",
+        "source": "@fontsource/noto-sans-osage",
+        "version": "5.3.0",
+        "license": "/fonts/licenses/LICENSE-noto-sans-osage.txt",
+        "subset": "osage",
+        "weight": 400,
+        "style": "normal",
+        "unicodeRange": "U+0301,U+0304,U+030B,U+0358,U+25CC,U+104B0-104FF",
+        "bytes": 9232,
+        "sha256": "2876d99b2a5664a1d6a4e4b7ded7a58be5e6c8f880ba47c050c54b5d6a186dcf"
+      }
+    ]
+  },
+  "licenses": [
+    {
+      "font": "Alegreya",
+      "source": "@fontsource/alegreya@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-alegreya.txt",
+      "sha256": "a616403914fd16d254244f482b348af457a54f7e79a7919daec24129c1bd3571",
+      "copyright": [
+        "Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya)"
+      ]
+    },
+    {
+      "font": "Alegreya Sans",
+      "source": "@fontsource/alegreya-sans@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-alegreya-sans.txt",
+      "sha256": "88e1533e966154efb4a5279bbbc919d94e85d2a0d864849ecd6e1506b74a38c2",
+      "copyright": [
+        "Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans)"
+      ]
+    },
+    {
+      "font": "Alegreya SC",
+      "source": "@fontsource/alegreya-sc@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-alegreya-sc.txt",
+      "sha256": "dab9d2ecdcf11426976361261d19ffc222c0748f28dc79e285cf6412479d8bd4",
+      "copyright": [
+        "Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya)"
+      ]
+    },
+    {
+      "font": "Atkinson Hyperlegible Next",
+      "source": "@fontsource/atkinson-hyperlegible-next@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-atkinson-hyperlegible-next.txt",
+      "sha256": "474a034e99845062f661855caaa505880d0e9009deddc2727a92795eab374955",
+      "copyright": [
+        "Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors (https://github.com/googlefonts/atkinson-hyperlegible-next)"
+      ]
+    },
+    {
+      "font": "Noto Sans",
+      "source": "https://github.com/google/fonts @ 7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-noto-sans.txt",
+      "sha256": "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a",
+      "copyright": [
+        "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)"
+      ]
+    },
+    {
+      "font": "Noto Sans Canadian Aboriginal",
+      "source": "@fontsource/noto-sans-canadian-aboriginal@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-noto-sans-canadian-aboriginal.txt",
+      "sha256": "c5a587b738f68e78c260ab0d3bb5c71e3e9a769299d3c6f7e73e71354b9dd0f9",
+      "copyright": [
+        "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/canadian-aboriginal)"
+      ]
+    },
+    {
+      "font": "Noto Sans Cherokee",
+      "source": "@fontsource/noto-sans-cherokee@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-noto-sans-cherokee.txt",
+      "sha256": "e863ca65b67d48d8f8ff6ec48fd7b18ebd19ff316f3d7f045966c3d3e65887b2",
+      "copyright": [
+        "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/cherokee)"
+      ]
+    },
+    {
+      "font": "Noto Sans Osage",
+      "source": "@fontsource/noto-sans-osage@5.3.0",
+      "license": "OFL-1.1",
+      "path": "/fonts/licenses/LICENSE-noto-sans-osage.txt",
+      "sha256": "63827e916c4b2fb4809263143ff111f44d575dfa04e26127a68291037c9156e5",
+      "copyright": [
+        "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/osage)"
+      ]
+    }
+  ]
+}

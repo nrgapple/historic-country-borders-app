@@ -1,0 +1,111 @@
+/* Pennsylvania school districts (P5): the top bar's plate title in place of
+   the timeline, the stale-source note and the panel's boundary-source block.
+   Breakpoints follow the year pages: finder collapse below 1280 px (the
+   PlaceFinder's own rule), compact brand at <= 860 px, phone at <= 699 px. */
+
+.pa-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px 12px;
+  min-width: 0;
+}
+
+.pa-bar__leading,
+.pa-bar__trailing {
+  min-width: 0;
+}
+
+.pa-bar__plate {
+  min-width: 0;
+  text-align: center;
+}
+
+.pa-bar__title {
+  margin: 0;
+  font: 700 clamp(18px, 2.1vw, 30px) / 1.05 var(--font-sc);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pa-bar__meta {
+  margin: 4px 0 0;
+  min-height: 1.3em;
+  font: italic 400 15px/1.3 var(--font-serif);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pa-bar__meta a {
+  color: var(--ink-2);
+}
+
+.pa-banner {
+  margin: 0;
+  padding: 6px 24px;
+  border-top: 1px solid var(--hair);
+  background: var(--alert-wash);
+  color: var(--alert-ink);
+  font-size: 15px;
+}
+
+.pa-provenance {
+  margin-top: 18px;
+}
+
+.pa-provenance p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.pa-provenance__caveat {
+  font-style: italic;
+}
+
+/* The districts list: below the fold while the map runs, the page itself
+   without WebGL or JavaScript (the same rules as the year pages' list). */
+.territories .pa-county {
+  break-inside: avoid;
+  margin: 0 0 10px;
+}
+
+.territories .pa-county h3 {
+  margin: 0 0 2px;
+  font: 700 15px/1.2 var(--font-sc);
+  letter-spacing: 0.04em;
+}
+
+.territories .pa-county ul {
+  columns: 1;
+  margin: 0;
+}
+
+.territories .pa-counties {
+  columns: 3 16ch;
+  padding: 0;
+}
+
+@media (max-width: 860px) {
+  .pa-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 0 12px 8px;
+  }
+
+  .pa-bar__plate {
+    display: none;
+  }
+}
+
+@media (max-width: 699px) {
+  .pa-banner {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}

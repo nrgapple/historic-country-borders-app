@@ -60,6 +60,108 @@ Observed: the place panel showed only border-source properties and a Wikipedia s
 
 Decision: an explicit, network-using refresh (`yarn data:reconcile:context`, `yarn data:refresh:context`) maps territory NAMEs to Wikidata items. It is conservative: exact name or Wikipedia title, polity type, and date checks; ambiguous or unmatched names get no facts. It then pins each entity's revision in a committed snapshot and publishes one small immutable context file per year. A file holds only facts definitely valid in that year, plus a "What changed" summary computed from our own border payloads. The browser bundles only a year → URL manifest and fetches one static file per year. Builds, page views, and crawlers never contact Wikidata, and `yarn data:validate:context` rebuilds every file from the snapshot offline. Each fact links to its Wikidata source, and the panel credits "Facts: Wikidata". This amends "Wikipedia-only country information": Wikipedia remains the only prose source; Wikidata adds short structured facts and nothing is generated. See `docs/HISTORICAL_CONTEXT.md`.
 
+### Split historical year files for the remaster (2026-11, T1)
+
+Observed: the remaster hands map data to MapLibre's worker by URL (`docs/product/REMASTER_PLAN.md` §6). The combined per-year payload mixes polygons, labels and places with every source property. Direction A needs inward line offsets, which require RFC 7946 winding. Six source borders had an empty or whitespace-only `NAME` that passed validation. Upstream places have no type, so ruins were drawn as living cities.
+
+Decision:
+
+- **Split files.** Each year also publishes three content-hashed files, recorded in `data/historical-split-assets.json`:
+  - polygons with only a territory `id`, the atlas wash `c` (legacy slot mod 12, as in the approved mock) and dependency fields `dep`/`ov`/`oc`, rewound to RFC 7946;
+  - labels (`n`, `a` in km²) and places (`p`, `k` city/site);
+  - a territory index (`NAME`, `PARTOF`, `SUBJECTO`, `BORDERPRECISION`, an antimeridian-aware `bbox`, the label point).
+- **Offline rebuild.** The split files are a pure function of the committed combined payloads and a reviewed place-class file, so `yarn data:validate` rebuilds them offline and requires byte-for-byte equality.
+- **Combined files kept.** The combined files keep their shape for production until P4. They change only by removing blank names and trimming padded ones (15 files).
+- **Blank names.** A blank NAME is never published. The split files fall back to the source's own `ABBREVN` (recorded as `nameFrom`). Otherwise the polygon stays on the map without an id or label. No name is invented, so the 1994–2010 Swiss polygon stays unnamed until a reviewed override exists.
+- **Archaeological sites.** They come from `data/historical-place-classes.json`, a sourced, reviewed list checked against upstream on refresh like the end-date overrides: 11 places, some with a `from` year.
+- **Capital points.** Capital points per year combine Wikidata P625 (pinned in the context snapshot, fetched by the explicit refresh) with the split polygons. They are published only when inside or within 50 km of the territory, and every rejection is listed for review.
+- **Budgets.** `yarn size:check` budgets split files at Brotli-5 and encodes the plan's vector-tile trigger: at most five polygon years above 300 KiB.
+
+Rejected alternatives:
+
+- Rewinding or slimming the combined files would change production payloads for no production benefit.
+- Taking ABBREVN in the combined files would add names the committed Wikidata mapping has not reconciled.
+- `.geojson` file names: their content type on Workers Static Assets is unverified until P0, and `.json` is compressed.
+
+### First-party Natural Earth basemap for the remaster (2026-11, track T2)
+
+**Observed.**
+
+- The historical polygons overrun coastlines; parts of the Black Sea and Adriatic lie inside territories.
+- The remaster drops Mapbox (plan §5) and must not add third-party map hosts.
+- Workers Static Assets allows 20,000 files per deployment, and the plan reserves room for a ~10k-file PA street tree under a 16,000-file gate.
+- Natural Earth is public domain and frozen at v5.1.2.
+
+**Decision.** An explicit, network-using refresh, `yarn data:refresh:basemap`, builds one static z/x/y vector-tile tree and two assets from pinned, hash-checked Natural Earth files:
+
+- the tree is `/tiles/basemap/<build>/{z}/{x}/{y}.pbf`;
+- the assets are a tinted relief WebP and 1:110m land for the locator globe.
+
+The tiles carry five layers:
+
+- an `ocean` mask (world minus land, cut on the z3 tile grid), which the style paints over the territory fills;
+- `coast`, wound with water on the right and tagged `landmass_km2` for the waterline rule;
+- `lakes`;
+- `rivers`;
+- `marine_labels`.
+
+**Max zoom: z5, by measurement.**
+
+- Every candidate keeps the full 1:50m detail at its top zoom.
+- z5 is 1,365 files and 1.6 MB, with a 2 px worst snap at the app's z10.
+- z6 would be 5,461 files for 1 px. z7 exceeds 20,000.
+
+**Placeholders.** Inland tiles are written as tiny valid placeholders, so the pyramid is complete and nothing 404s.
+
+**Delivery.** `_headers` serves `.pbf`/`.mvt` tiles as `application/x-protobuf`, which is compressible, and caches both trees as immutable per build.
+
+**Validation.** `yarn data:validate:basemap`, part of `yarn data:validate`, checks offline:
+
+- pins and hashes;
+- the complete pyramid;
+- a tree digest against the manifest;
+- byte and file budgets (≤ 1,500 files);
+- the layer contract in every tile.
+
+**Rejected.**
+
+- **30° mask cells,** because tile-aligned cells hide seams.
+- **Packing the globe land into tiles.** The canvas globe needs whole rings.
+- **PMTiles.** It needs Range requests, which Workers Static Assets does not honor.
+
+**Unverified until P0:** whether Workers Static Assets compresses `application/x-protobuf`. See `docs/BASEMAP.md`.
+
+### PA street basemap and district tiles for the remaster (2026-11, P5 and T8)
+
+**Observed.**
+
+- Protomaps names residential streets only from z14; its z12–13 tiles carry main roads and a few unnamed minor roads.
+- A native z13 tree is 13,109 files and z14 is 48,830; the remaster's gate is 16,000 files including T2's 1,368.
+- The current district artifact is 11.5 MiB raw (1.71 MiB Brotli-11) and takes 560–660 ms to `JSON.parse` on a fast Mac before MapLibre indexes it again.
+- This Mac has no Docker context, tippecanoe or Go `pmtiles` binary.
+
+**Decision.**
+
+- **Street basemap.** `yarn data:refresh:pa-basemap` reads one pinned Protomaps daily build over coalesced HTTP Range requests in pure Node (`pmtiles@4.5.0`, `vt-pbf`) and commits a static z0–12 tree in which each z12 tile carries z14's streets: 3,864 files, 36.8 MiB (24.2 MiB Brotli-5), largest 107 KiB. Water, streets, places and state and county lines only. The tree lives in `data/pa-basemap/<build>/` so the legacy Next export never ships it. See `docs/PA_BASEMAP.md`.
+- **Districts.** A z11 vector-tile tree at extent 8192 (a 1.8 m grid, 838 files) built offline from the committed artifact in `yarn remaster:build`, plus a 138 KiB property index. The state view needs 31–63 KiB of tiles. See `docs/PA_SCHOOL_DISTRICTS.md` ("Remaster data format").
+- **No missing-tile requests.** Both trees ship a coverage index; the page's `pa-tiles://` protocol fetches only covered tiles, and MapLibre overzooms the nearest parent outside the state.
+
+**Recommendation.** Keep the R2/PMTiles option from plan §5 in reserve: the remaster now deploys 6,570 files, so the static tree has room to grow (for example, z13 streets around the cities) before the gate matters.
+
+### Self-hosted OFL fonts and prebuilt map glyphs (remaster, 2026-11)
+
+Observed: the remaster's Classic-atlas design (plan §2.1) uses Alegreya, Alegreya SC and Alegreya Sans, and offers Atkinson Hyperlegible Next as projector text. Published names also use Canadian syllabics, Cherokee, Osage, IPA letters and combining marks. MapLibre 6.19 draws a glyph locally with TinySDF at 3.29 ms per glyph under 4× CPU, against 0.09 ms to decode it from a prebuilt PBF (`remaster-spike/results/glyph-raster.json`). Wrangler sends `.pbf` without a Content-Type.
+
+Decision: the fonts are self-hosted OFL WOFF2s from pinned `@fontsource` packages, plus a HarfBuzz subset of the full Noto Sans pinned by `google/fonts` commit and SHA-256. They ship with their license copies and content-hashed names. An explicit build step, `yarn data:refresh:fonts`, renders SDF glyph PBFs for seven fixed fontstacks into a content-addressed `/glyphs/<buildId>/` tree. It emits only the 256-codepoint ranges that published names use, and merges Noto fallbacks into each stack. Alias `@font-face` rules named after the fontstacks keep MapLibre's locally drawn grapheme clusters in the same fonts. `_headers` serves glyphs as immutable `application/x-protobuf`. `yarn data:validate:fonts` fails when any published codepoint lacks a glyph in any stack, when files drift from `data/map-fonts.json`, or when a license copy is missing. The style uses PBF glyphs, not `font-faces`, because main-thread time on Chromebooks matters more than about 250 KB of cacheable glyph bytes. See `docs/FONTS.md`.
+
+### Production cut over to the remaster (P4, 2026-11-18)
+
+Observed: the owner asked for the remaster to replace production directly, with no staged or parallel release; traffic is low.
+
+Decision: `wrangler.toml` and `wrangler.preview.toml` serve `remaster/dist/`. Deploy and Preview build it with `yarn remaster:build` and check it with `scripts/validate-remaster-dist.js` (required pages, Cloudflare Free file limits). The production smoke test reads the remaster's split 1994 polygons and hashed PA district index. The Mapbox token is no longer used or required. The `/api/feedback` Worker and its Durable Object are unchanged. The plan's temporary legacy PA asset directory was not needed because the PA page was remastered first.
+
+Rollback: revert the cutover commit on `main`; Deploy rebuilds and redeploys the Next.js export.
+
 ## Deferred
 
 ### Domain cutover

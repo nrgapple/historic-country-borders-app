@@ -11,6 +11,10 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/e2e/**',
+      // The remaster has its own Vitest (React 19) config: yarn remaster:test.
+      'remaster/**',
+      // The spike has its own package.json and tests (cd remaster-spike && yarn test).
+      'remaster-spike/**',
       // Real-browser component tests run in vitest.browser.config.ts.
       '**/*.browser.test.*',
       '**/dist/**',

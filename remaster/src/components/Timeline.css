@@ -1,0 +1,426 @@
+/* Timeline (Direction A): plate-title year, watercolour era washes framed in
+   ink above an alternating ladder track, a madder-diamond thumb, the
+   selected year always printed. Breakpoints: two rows at <= 860 px (iPad
+   mini portrait and phones, plan §2.3), phone type at <= 699 px. */
+
+.timeline {
+  padding: 0 24px;
+  min-width: 0;
+}
+
+.timeline__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.timeline__leading {
+  justify-self: start;
+  min-width: 0;
+}
+
+.timeline__trailing {
+  justify-self: end;
+  min-width: 0;
+}
+
+.timeline__stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 84px;
+  height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 17px/1 var(--font-serif);
+  cursor: pointer;
+}
+
+.timeline__step--next {
+  justify-content: flex-end;
+}
+
+.timeline__step:hover:not(:disabled) {
+  background: var(--paper-2);
+}
+
+.timeline__step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.timeline__step svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* A native select over the large year opens the platform's own picker. */
+.timeline__current {
+  position: relative;
+  min-width: 190px;
+  padding: 0 8px;
+  text-align: center;
+}
+
+.timeline__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  /* 16 px stops iOS zooming into the picker. */
+  font-size: 16px;
+}
+
+.timeline__current:has(.timeline__select:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.timeline__current-display {
+  display: block;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.timeline__current-value {
+  /* inline-block: an inline span's box is the font's full content area, which
+     overhangs the header's first row; this keeps it to the line height. */
+  display: inline-block;
+  font: 700 52px/0.95 var(--font-serif);
+  font-variant-numeric: lining-nums;
+  letter-spacing: -0.01em;
+}
+
+.timeline__current-suffix {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  vertical-align: 8px;
+  font: 700 20px/1 var(--font-sc);
+  letter-spacing: 0.08em;
+  /* Lowercase in Alegreya SC sets true small caps: "ad", "bc". */
+  text-transform: lowercase;
+}
+
+.timeline__current-suffix svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+.timeline__current-era {
+  display: block;
+  margin-top: 4px;
+  font: 700 15px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.timeline__current-range {
+  margin-left: 6px;
+  font: italic 400 15px/1 var(--font-serif);
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+/* Ruler: the era row, the track and the printed years share one hit area. */
+.timeline__ruler {
+  position: relative;
+  margin-top: 12px;
+  padding-bottom: 6px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+
+.timeline__eras {
+  display: flex;
+  height: 26px;
+  border: 1px solid var(--ink);
+  border-bottom: 0;
+}
+
+.timeline__era {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-left: 1px solid var(--ink);
+}
+
+.timeline__era:first-child {
+  border-left: 0;
+}
+
+.timeline__era[data-era='prehistory'] {
+  background: var(--era-prehistory-wash);
+}
+.timeline__era[data-era='ancient'] {
+  background: var(--era-ancient-wash);
+}
+.timeline__era[data-era='medieval'] {
+  background: var(--era-medieval-wash);
+}
+.timeline__era[data-era='early-modern'] {
+  background: var(--era-early-modern-wash);
+}
+.timeline__era[data-era='modern'] {
+  background: var(--era-modern-wash);
+}
+
+.timeline__era[data-active] {
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+.timeline__era-label {
+  overflow: hidden;
+  font: 700 14px/1 var(--font-sc);
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.timeline__era[data-active] .timeline__era-label {
+  color: var(--accent-on-wash);
+}
+
+/* An alternating ladder like the degree border of an engraved map: one
+   segment per published year. */
+.timeline__track {
+  position: relative;
+  height: 16px;
+  border: 1px solid var(--ink);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--sheet) 0 calc(100% / var(--years, 53)),
+    var(--ink) calc(100% / var(--years, 53)) calc(200% / var(--years, 53))
+  );
+  touch-action: none;
+}
+
+.timeline__track:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.timeline__baseline {
+  display: none;
+}
+
+.timeline__tick {
+  position: absolute;
+  top: 100%;
+  width: 1px;
+  height: 5px;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+
+.timeline__tick[data-major] {
+  height: 9px;
+}
+
+.timeline__thumb {
+  position: absolute;
+  top: -9px;
+  z-index: 2;
+  width: 2px;
+  height: 34px;
+  background: var(--accent);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.timeline__thumb::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border: 2px solid var(--sheet);
+  box-shadow: 0 0 0 1px var(--accent);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.timeline__hover {
+  position: absolute;
+  bottom: calc(100% + 34px);
+  z-index: 3;
+  padding: 2px 6px;
+  border: 1px solid var(--ink);
+  background: var(--sheet);
+  font: 500 14px/1.2 var(--font-serif);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.timeline__labels {
+  position: relative;
+  height: 26px;
+  margin-top: 10px;
+}
+
+.timeline__label {
+  position: absolute;
+  top: 0;
+  padding: 2px 0 6px;
+  white-space: nowrap;
+  font: 500 15px/1 var(--font-serif);
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink);
+  transform: translateX(-50%);
+}
+
+.timeline__label[data-edge='start'] {
+  transform: translateX(-4px);
+}
+
+.timeline__label[data-edge='end'] {
+  transform: translateX(calc(-100% + 4px));
+}
+
+.timeline__label[data-active] {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.timeline[data-dragging] .timeline__thumb {
+  height: 38px;
+}
+
+/* --------------------------------------------- Narrow screens (§2.3) */
+
+/* Laptops and landscape tablets: smaller steps, the year stays centred. */
+@media (max-width: 1100px) {
+  .timeline__step {
+    min-width: 0;
+  }
+
+  .timeline__current {
+    min-width: 160px;
+  }
+
+  .timeline__current-value {
+    font-size: 46px;
+  }
+}
+
+/* Two rows on phones and small tablets (iPad mini portrait): brand and tools
+   above, the year stepper below, so nothing overlaps. */
+@media (max-width: 860px) {
+  .timeline {
+    padding: 0 12px;
+  }
+
+  .timeline__head {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'lead trail'
+      'step step';
+    row-gap: 6px;
+  }
+
+  .timeline__leading {
+    grid-area: lead;
+  }
+
+  .timeline__trailing {
+    grid-area: trail;
+  }
+
+  .timeline__stepper {
+    grid-area: step;
+    justify-self: center;
+    gap: 10px;
+  }
+
+  .timeline__step {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .timeline__step-label {
+    display: none;
+  }
+}
+
+@media (max-width: 699px) {
+  .timeline__current {
+    min-width: 0;
+  }
+
+  .timeline__current-value {
+    font-size: 40px;
+  }
+
+  .timeline__current-suffix {
+    font-size: 16px;
+    vertical-align: 5px;
+  }
+
+  .timeline__current-era {
+    font-size: 13px;
+  }
+
+  .timeline__current-range {
+    display: none;
+  }
+
+  .timeline__ruler {
+    margin-top: 8px;
+  }
+
+  .timeline__eras {
+    height: 22px;
+  }
+
+  .timeline__era {
+    padding: 0 4px;
+  }
+
+  .timeline__era-label {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .timeline__labels {
+    height: 22px;
+    margin-top: 8px;
+  }
+
+  .timeline__label {
+    font-size: 14px;
+  }
+}
+
+/* Short landscape screens (phones, small projectors at low resolution). */
+@media (max-height: 520px) {
+  .timeline__eras {
+    display: none;
+  }
+
+  .timeline__current-value {
+    font-size: 34px;
+  }
+}

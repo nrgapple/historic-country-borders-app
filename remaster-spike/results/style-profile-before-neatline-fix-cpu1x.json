@@ -1,0 +1,239 @@
+{
+  "measured": "2026-11-18T05:49:43.142Z",
+  "method": "Chromium new headless, host GPU, vsync off, 1440x900 @2x, 1x CPU throttle, pan 6px/frame",
+  "cpuThrottle": 1,
+  "rounds": 3,
+  "frames": 150,
+  "results": {
+    "1492": {
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+      "rows": [
+        {
+          "config": "baseline (all decorations)",
+          "mapMedian": 5,
+          "mapP95": 16,
+          "frameMedian": 12.5,
+          "frameP95": 29.2,
+          "savedMap": null,
+          "savedFrame": null,
+          "n": 435
+        },
+        {
+          "config": "edge bands",
+          "mapMedian": 5.3,
+          "mapP95": 18.5,
+          "frameMedian": 12.8,
+          "frameP95": 31.1,
+          "savedMap": -0.3,
+          "savedFrame": -0.3,
+          "n": 435
+        },
+        {
+          "config": "waterlines (all 4)",
+          "mapMedian": 5,
+          "mapP95": 17.8,
+          "frameMedian": 12.5,
+          "frameP95": 31.6,
+          "savedMap": 0,
+          "savedFrame": 0,
+          "n": 435
+        },
+        {
+          "config": "waterlines 2-4 (keep innermost)",
+          "mapMedian": 4.7,
+          "mapP95": 10.1,
+          "frameMedian": 11.8,
+          "frameP95": 27.3,
+          "savedMap": 0.3,
+          "savedFrame": 0.7,
+          "n": 435
+        },
+        {
+          "config": "relief",
+          "mapMedian": 4.6,
+          "mapP95": 11.6,
+          "frameMedian": 11.9,
+          "frameP95": 29.7,
+          "savedMap": 0.4,
+          "savedFrame": 0.6,
+          "n": 435
+        },
+        {
+          "config": "graticule",
+          "mapMedian": 4.5,
+          "mapP95": 9.6,
+          "frameMedian": 10.9,
+          "frameP95": 23.8,
+          "savedMap": 0.5,
+          "savedFrame": 1.6,
+          "n": 435
+        },
+        {
+          "config": "selection band + line",
+          "mapMedian": 4.8,
+          "mapP95": 17.1,
+          "frameMedian": 12.5,
+          "frameP95": 30.1,
+          "savedMap": 0.2,
+          "savedFrame": 0,
+          "n": 435
+        },
+        {
+          "config": "dependency hatch",
+          "mapMedian": 5,
+          "mapP95": 18.7,
+          "frameMedian": 12.2,
+          "frameP95": 32.7,
+          "savedMap": 0,
+          "savedFrame": 0.3,
+          "n": 435
+        },
+        {
+          "config": "paper grain (DOM)",
+          "mapMedian": 5.2,
+          "mapP95": 10.9,
+          "frameMedian": 12.6,
+          "frameP95": 29,
+          "savedMap": -0.2,
+          "savedFrame": -0.1,
+          "n": 435
+        },
+        {
+          "config": "neatline (DOM)",
+          "mapMedian": 4.3,
+          "mapP95": 12.6,
+          "frameMedian": 7.8,
+          "frameP95": 22.9,
+          "savedMap": 0.7,
+          "savedFrame": 4.7,
+          "n": 435
+        },
+        {
+          "config": "lowPower rule",
+          "mapMedian": 4.8,
+          "mapP95": 14.3,
+          "frameMedian": 12.6,
+          "frameP95": 29.1,
+          "savedMap": 0.2,
+          "savedFrame": -0.1,
+          "n": 435
+        }
+      ]
+    },
+    "1914": {
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4, Unspecified Version)",
+      "rows": [
+        {
+          "config": "baseline (all decorations)",
+          "mapMedian": 5.4,
+          "mapP95": 21.5,
+          "frameMedian": 22.8,
+          "frameP95": 71.3,
+          "savedMap": null,
+          "savedFrame": null,
+          "n": 435
+        },
+        {
+          "config": "edge bands",
+          "mapMedian": 5.5,
+          "mapP95": 23.1,
+          "frameMedian": 25.5,
+          "frameP95": 69.8,
+          "savedMap": -0.1,
+          "savedFrame": -2.7,
+          "n": 435
+        },
+        {
+          "config": "waterlines (all 4)",
+          "mapMedian": 5.2,
+          "mapP95": 21.3,
+          "frameMedian": 22.6,
+          "frameP95": 57.1,
+          "savedMap": 0.2,
+          "savedFrame": 0.2,
+          "n": 435
+        },
+        {
+          "config": "waterlines 2-4 (keep innermost)",
+          "mapMedian": 5.4,
+          "mapP95": 24,
+          "frameMedian": 27.5,
+          "frameP95": 76.7,
+          "savedMap": 0,
+          "savedFrame": -4.7,
+          "n": 435
+        },
+        {
+          "config": "relief",
+          "mapMedian": 5.3,
+          "mapP95": 22.3,
+          "frameMedian": 24.7,
+          "frameP95": 74.7,
+          "savedMap": 0.1,
+          "savedFrame": -1.9,
+          "n": 435
+        },
+        {
+          "config": "graticule",
+          "mapMedian": 5.1,
+          "mapP95": 22.9,
+          "frameMedian": 25.3,
+          "frameP95": 75.8,
+          "savedMap": 0.3,
+          "savedFrame": -2.5,
+          "n": 435
+        },
+        {
+          "config": "selection band + line",
+          "mapMedian": 5.4,
+          "mapP95": 22.5,
+          "frameMedian": 27.1,
+          "frameP95": 73.3,
+          "savedMap": 0,
+          "savedFrame": -4.3,
+          "n": 435
+        },
+        {
+          "config": "dependency hatch",
+          "mapMedian": 5.2,
+          "mapP95": 20.2,
+          "frameMedian": 23.9,
+          "frameP95": 66.4,
+          "savedMap": 0.2,
+          "savedFrame": -1.1,
+          "n": 435
+        },
+        {
+          "config": "paper grain (DOM)",
+          "mapMedian": 5.5,
+          "mapP95": 22.5,
+          "frameMedian": 24.9,
+          "frameP95": 64.7,
+          "savedMap": -0.1,
+          "savedFrame": -2.1,
+          "n": 435
+        },
+        {
+          "config": "neatline (DOM)",
+          "mapMedian": 4.7,
+          "mapP95": 19,
+          "frameMedian": 10.4,
+          "frameP95": 31.3,
+          "savedMap": 0.7,
+          "savedFrame": 12.4,
+          "n": 435
+        },
+        {
+          "config": "lowPower rule",
+          "mapMedian": 4.7,
+          "mapP95": 20.2,
+          "frameMedian": 23.1,
+          "frameP95": 57,
+          "savedMap": 0.7,
+          "savedFrame": -0.3,
+          "n": 435
+        }
+      ]
+    }
+  }
+}

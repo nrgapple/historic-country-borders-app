@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "name": "Wikidata",
+    "license": "CC0-1.0",
+    "properties": [
+      "P36",
+      "P625"
+    ],
+    "retrievedAt": "2026-11-18T02:13:08.759Z"
+  },
+  "maxDistanceKm": 50,
+  "years": {
+    "100": {
+      "url": "/data/context/100.capitals.fab17aca28cb7e3b.json",
+      "sha256": "fab17aca28cb7e3be775475cd8518534d174e17cf2c4e92ae5b268e9e835be6a",
+      "bytes": 1402,
+      "capitals": 10,
+      "rejected": 0
+    },
+    "200": {
+      "url": "/data/context/200.capitals.0415beebb3f989c3.json",
+      "sha256": "0415beebb3f989c35aa18bcedf10baf72c13f93988f1dd014cedd0b9e4d56c02",
+      "bytes": 986,
+      "capitals": 7,
+      "rejected": 0
+    },
+    "300": {
+      "url": "/data/context/300.capitals.dd0151af8f759665.json",
+      "sha256": "dd0151af8f759665173cd17b5068bade4737e99133f61c1e55228ba2069a53de",
+      "bytes": 857,
+      "capitals": 6,
+      "rejected": 0
+    },
+    "400": {
+      "url": "/data/context/400.capitals.c1d0abd7230f1c7d.json",
+      "sha256": "c1d0abd7230f1c7d2ff3ff0484c508999b24a7d0ce2c8669b133f9e61d9c3427",
+      "bytes": 1409,
+      "capitals": 10,
+      "rejected": 0
+    },
+    "500": {
+      "url": "/data/context/500.capitals.d69e564690d12891.json",
+      "sha256": "d69e564690d12891446c4e61409079b8d0d99568daa8c06389d44d354ece9359",
+      "bytes": 1815,
+      "capitals": 13,
+      "rejected": 2
+    },
+    "600": {
+      "url": "/data/context/600.capitals.2c2f9e245aca83dd.json",
+      "sha256": "2c2f9e245aca83dd900045a259be472770c286e0bbba98a5ab575008ed68bcaf",
+      "bytes": 2647,
+      "capitals": 19,
+      "rejected": 0
+    },
+    "700": {
+      "url": "/data/context/700.capitals.87cff553bdd8b698.json",
+      "sha256": "87cff553bdd8b698540d9c83a561bf2a06ede2ec6530f8e9be69eda46e9aba99",
+      "bytes": 2232,
+      "capitals": 16,
+      "rejected": 1
+    },
+    "800": {
+      "url": "/data/context/800.capitals.d413826035c25fd0.json",
+      "sha256": "d413826035c25fd03b5f60b124c74f25b891b2c504a04f8aafaed7b42340e0ca",
+      "bytes": 2260,
+      "capitals": 16,
+      "rejected": 1
+    },
+    "900": {
+      "url": "/data/context/900.capitals.6f503c97e1b58bef.json",
+      "sha256": "6f503c97e1b58bef37715b71bbbdd75d9fbb07a16592c821a4ab0c1c0645a15d",
+      "bytes": 2814,
+      "capitals": 20,
+      "rejected": 3
+    },
+    "1000": {
+      "url": "/data/context/1000.capitals.bfd6738dc8d1ba06.json",
+      "sha256": "bfd6738dc8d1ba06df116d92b266877e139df4c7c7979cd97693d419fd822b2c",
+      "bytes": 2344,
+      "capitals": 17,
+      "rejected": 1
+    },
+    "1100": {
+      "url": "/data/context/1100.capitals.ec4e244d268467e1.json",
+      "sha256": "ec4e244d268467e1b73eec739d1ad7ec14054ebf25445b3558885212cba92d64",
+      "bytes": 3159,
+      "capitals": 23,
+      "rejected": 0
+    },
+    "1200": {
+      "url": "/data/context/1200.capitals.eee16a5e8b2e7373.json",
+      "sha256": "eee16a5e8b2e7373eb5f82982ff3ba17d26dfbfdd5ba9df444fa8ed70ecad061",
+      "bytes": 2080,
+      "capitals": 15,
+      "rejected": 0
+    },
+    "1279": {
+      "url": "/data/context/1279.capitals.a5ae4bec221888e6.json",
+      "sha256": "a5ae4bec221888e68b5015249957956b896d25d8b16402700b74759b9db03c97",
+      "bytes": 1946,
+      "capitals": 14,
+      "rejected": 0
+    },
+    "1300": {
+      "url": "/data/context/1300.capitals.50645693988f9ce9.json",
+      "sha256": "50645693988f9ce937f299787c2856194446c4ccda7c03e9bc8effbc4f4d8c4f",
+      "bytes": 2078,
+      "capitals": 15,
+      "rejected": 0
+    },
+    "1400": {
+      "url": "/data/context/1400.capitals.4a655b0b283e410d.json",
+      "sha256": "4a655b0b283e410d4614dafe4cab5f6c7e6b7966131803f76fc59164a6f53fa4",
+      "bytes": 2761,
+      "capitals": 20,
+      "rejected": 1
+    },
+    "1492": {
+      "url": "/data/context/1492.capitals.cd81844c11e59366.json",
+      "sha256": "cd81844c11e593660377c51b050dab24d9bc9bcc5356bf474490c3066de6ed7f",
+      "bytes": 1933,
+      "capitals": 14,
+      "rejected": 2
+    },
+    "1500": {
+      "url": "/data/context/1500.capitals.ed9999d26bb25985.json",
+      "sha256": "ed9999d26bb25985a48ce5655ea1cd28ccf75a8f8a1c43661484f93e09b88165",
+      "bytes": 2333,
+      "capitals": 17,
+      "rejected": 2
+    },
+    "1530": {
+      "url": "/data/context/1530.capitals.e3c9161a410cd31d.json",
+      "sha256": "e3c9161a410cd31dbb9a6149c82988a3f7d854a625057333241d1a9e8a266ae3",
+      "bytes": 1948,
+      "capitals": 14,
+      "rejected": 3
+    },
+    "1600": {
+      "url": "/data/context/1600.capitals.55a56af1b2ee89a6.json",
+      "sha256": "55a56af1b2ee89a65f819c5127b30a2d8fb3a56d44af7fe88a786effff41a3a2",
+      "bytes": 2622,
+      "capitals": 19,
+      "rejected": 0
+    },
+    "1650": {
+      "url": "/data/context/1650.capitals.45a0265b271f1e06.json",
+      "sha256": "45a0265b271f1e06fc7262531571f00b78d81b4aadb1440382296b74cc731f0e",
+      "bytes": 3049,
+      "capitals": 22,
+      "rejected": 1
+    },
+    "1700": {
+      "url": "/data/context/1700.capitals.fb44a1f6020ac9fe.json",
+      "sha256": "fb44a1f6020ac9fee74b4bda0278e842aafcca7e175e3f609379f037903e106f",
+      "bytes": 3285,
+      "capitals": 24,
+      "rejected": 0
+    },
+    "1715": {
+      "url": "/data/context/1715.capitals.6e7f843627ffcc93.json",
+      "sha256": "6e7f843627ffcc934d9aceb5313ae1b148cdfa10a686dea94877f3a594225db8",
+      "bytes": 2885,
+      "capitals": 21,
+      "rejected": 2
+    },
+    "1783": {
+      "url": "/data/context/1783.capitals.ad8043bc8c4ea8ba.json",
+      "sha256": "ad8043bc8c4ea8ba6c961c2dd6cd9b5969ef2636a1f7afe9f91b308739073cec",
+      "bytes": 3318,
+      "capitals": 24,
+      "rejected": 2
+    },
+    "1800": {
+      "url": "/data/context/1800.capitals.fa3e5aedbe459798.json",
+      "sha256": "fa3e5aedbe4597985ab6405bd6d03eb1195bf79c4391a0a0a7aa66ca8d42d867",
+      "bytes": 5090,
+      "capitals": 37,
+      "rejected": 3
+    },
+    "1815": {
+      "url": "/data/context/1815.capitals.fdb3d953f3233cba.json",
+      "sha256": "fdb3d953f3233cbab97463a0003896b37881fed19ee6e1aedf8a646733981baa",
+      "bytes": 6422,
+      "capitals": 47,
+      "rejected": 3
+    },
+    "1880": {
+      "url": "/data/context/1880.capitals.b34d6434dd2bbe97.json",
+      "sha256": "b34d6434dd2bbe97e1e810ee4f9adf56c545b2f2f6b2f3a5e388eb5d7b132faf",
+      "bytes": 7768,
+      "capitals": 57,
+      "rejected": 5
+    },
+    "1900": {
+      "url": "/data/context/1900.capitals.31d53a0317dddad9.json",
+      "sha256": "31d53a0317dddad9b248b9a36fbea27557dbc824f5afaaaeae985b330e0c4924",
+      "bytes": 7377,
+      "capitals": 54,
+      "rejected": 2
+    },
+    "1914": {
+      "url": "/data/context/1914.capitals.e9dfcb36f2d17260.json",
+      "sha256": "e9dfcb36f2d17260bcce1fa89af7a2820016fc682dff2c7082e149bcd8de1d76",
+      "bytes": 8577,
+      "capitals": 63,
+      "rejected": 2
+    },
+    "1920": {
+      "url": "/data/context/1920.capitals.ec556123e2913d01.json",
+      "sha256": "ec556123e2913d01df2ea72024a21a3ad283aeaae4fa69cf151e8d36cebbb733",
+      "bytes": 8994,
+      "capitals": 66,
+      "rejected": 1
+    },
+    "1930": {
+      "url": "/data/context/1930.capitals.e63af047cdeeb579.json",
+      "sha256": "e63af047cdeeb5797665108c8479175f0bc7a44233f4f9e6695d256da023e64a",
+      "bytes": 8859,
+      "capitals": 65,
+      "rejected": 0
+    },
+    "1938": {
+      "url": "/data/context/1938.capitals.a22102317c4cebab.json",
+      "sha256": "a22102317c4cebaba4dd44692dc7e43d064873aad261a5972ed2b4695d9a1ae4",
+      "bytes": 10462,
+      "capitals": 77,
+      "rejected": 1
+    },
+    "1945": {
+      "url": "/data/context/1945.capitals.a2228d2579abb2ec.json",
+      "sha256": "a2228d2579abb2ec8a3fd3baa902e1d5ad5a1c339da0351c792f0ca5ff710e3a",
+      "bytes": 9786,
+      "capitals": 72,
+      "rejected": 0
+    },
+    "1960": {
+      "url": "/data/context/1960.capitals.736608ea2984b738.json",
+      "sha256": "736608ea2984b738f7c89ed29e8c7e7cc7635acb4f2b56bcf63b0762609468b0",
+      "bytes": 13210,
+      "capitals": 98,
+      "rejected": 0
+    },
+    "1994": {
+      "url": "/data/context/1994.capitals.d74bd086d3ec4f53.json",
+      "sha256": "d74bd086d3ec4f5371309616020ad58dec1d5026c809bea353d17486b9fa2ef0",
+      "bytes": 23604,
+      "capitals": 175,
+      "rejected": 0
+    },
+    "2000": {
+      "url": "/data/context/2000.capitals.35bdf7cbcd9c25a6.json",
+      "sha256": "35bdf7cbcd9c25a676a539784d5da25db57d9c2df14ce7e8635d6fe43cb80c54",
+      "bytes": 23600,
+      "capitals": 175,
+      "rejected": 0
+    },
+    "2010": {
+      "url": "/data/context/2010.capitals.b3f09a4727eae220.json",
+      "sha256": "b3f09a4727eae2200503119c07159efee9a7524253a2b0e77bafa72dbbf75a3e",
+      "bytes": 24284,
+      "capitals": 180,
+      "rejected": 0
+    },
+    "-123000": {
+      "url": "/data/context/bc123000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-10000": {
+      "url": "/data/context/bc10000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-8000": {
+      "url": "/data/context/bc8000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-5000": {
+      "url": "/data/context/bc5000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-4000": {
+      "url": "/data/context/bc4000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-3000": {
+      "url": "/data/context/bc3000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-2000": {
+      "url": "/data/context/bc2000.capitals.6d18edfe75b31491.json",
+      "sha256": "6d18edfe75b3149104038dcbca4d0096bbcb923f0f9fa4b49f4815344e75bb90",
+      "bytes": 43,
+      "capitals": 0,
+      "rejected": 0
+    },
+    "-1500": {
+      "url": "/data/context/bc1500.capitals.e986b0eeec0fcb01.json",
+      "sha256": "e986b0eeec0fcb01d5d003aa5a13f378fad162faa43618f451dbf029b8042096",
+      "bytes": 175,
+      "capitals": 1,
+      "rejected": 0
+    },
+    "-1000": {
+      "url": "/data/context/bc1000.capitals.e986b0eeec0fcb01.json",
+      "sha256": "e986b0eeec0fcb01d5d003aa5a13f378fad162faa43618f451dbf029b8042096",
+      "bytes": 175,
+      "capitals": 1,
+      "rejected": 0
+    },
+    "-700": {
+      "url": "/data/context/bc700.capitals.e986b0eeec0fcb01.json",
+      "sha256": "e986b0eeec0fcb01d5d003aa5a13f378fad162faa43618f451dbf029b8042096",
+      "bytes": 175,
+      "capitals": 1,
+      "rejected": 0
+    },
+    "-500": {
+      "url": "/data/context/bc500.capitals.db049ec1b3f6e593.json",
+      "sha256": "db049ec1b3f6e593f5528727398192609251e3999182427702f8229af8988b20",
+      "bytes": 734,
+      "capitals": 5,
+      "rejected": 1
+    },
+    "-400": {
+      "url": "/data/context/bc400.capitals.e085dab18439ab7b.json",
+      "sha256": "e085dab18439ab7b4f6d75c770290ca295852b50fc062f67b7aa5eb435291dd1",
+      "bytes": 448,
+      "capitals": 3,
+      "rejected": 0
+    },
+    "-323": {
+      "url": "/data/context/bc323.capitals.b8c391f76259ce98.json",
+      "sha256": "b8c391f76259ce989a6d24fe88846577480c7493e7a5b7ccce73230fb5475059",
+      "bytes": 593,
+      "capitals": 4,
+      "rejected": 0
+    },
+    "-300": {
+      "url": "/data/context/bc300.capitals.3bcf488af551e404.json",
+      "sha256": "3bcf488af551e40411f432a0685c2eb1ceeb3d5f7bbd195a0cc15dbe8921ce7a",
+      "bytes": 991,
+      "capitals": 7,
+      "rejected": 0
+    },
+    "-200": {
+      "url": "/data/context/bc200.capitals.c71a35b35a085798.json",
+      "sha256": "c71a35b35a085798063cd116e55a3aacc07d470c738cf79e28a87a40e78cca72",
+      "bytes": 1001,
+      "capitals": 7,
+      "rejected": 0
+    },
+    "-100": {
+      "url": "/data/context/bc100.capitals.24ad8e6330b879c0.json",
+      "sha256": "24ad8e6330b879c0ef9336321ec3d61b6c4c5bc3044cd56dc01d5eeeb0f86174",
+      "bytes": 1000,
+      "capitals": 7,
+      "rejected": 0
+    },
+    "-1": {
+      "url": "/data/context/bc1.capitals.5ec18bc4b475eb85.json",
+      "sha256": "5ec18bc4b475eb855c6f4ab76a63d2ba49299a550564b1fcf2481c9991a57f39",
+      "bytes": 1267,
+      "capitals": 9,
+      "rejected": 0
+    }
+  },
+  "rejected": [
+    {
+      "year": -500,
+      "name": "Magadha",
+      "qid": "Q863683",
+      "label": "Rajgir",
+      "reason": "outside territory",
+      "distanceKm": 138
+    },
+    {
+      "year": 500,
+      "name": "Funan",
+      "qid": "Q3563897",
+      "label": "Vyadhapura",
+      "reason": "coordinates missing"
+    },
+    {
+      "year": 500,
+      "name": "Pandyas",
+      "qid": "Q228405",
+      "label": "Madurai",
+      "reason": "outside territory",
+      "distanceKm": 102
+    },
+    {
+      "year": 700,
+      "name": "Visigothic Kingdom",
+      "qid": "Q5836",
+      "label": "Toledo",
+      "reason": "outside territory",
+      "distanceKm": 291
+    },
+    {
+      "year": 800,
+      "name": "Nan Chao",
+      "qid": "Q855228",
+      "label": "Dali",
+      "reason": "outside territory",
+      "distanceKm": 230
+    },
+    {
+      "year": 900,
+      "name": "Cholas",
+      "qid": "Q2135463",
+      "label": "Puhar",
+      "reason": "outside territory",
+      "distanceKm": 215
+    },
+    {
+      "year": 900,
+      "name": "Great Moravia",
+      "qid": "Q1131299",
+      "label": "Veligrad",
+      "reason": "coordinates missing"
+    },
+    {
+      "year": 900,
+      "name": "Nan Chao",
+      "qid": "Q855228",
+      "label": "Dali",
+      "reason": "outside territory",
+      "distanceKm": 230
+    },
+    {
+      "year": 1000,
+      "name": "Pratiharas",
+      "qid": "Q614890",
+      "label": "Kannauj",
+      "reason": "outside territory",
+      "distanceKm": 87
+    },
+    {
+      "year": 1400,
+      "name": "Byzantine Empire",
+      "qid": "Q16869",
+      "label": "Constantinople",
+      "reason": "outside territory",
+      "distanceKm": 404
+    },
+    {
+      "year": 1492,
+      "name": "Champa",
+      "qid": "Q7929221",
+      "label": "Vijaya",
+      "reason": "outside territory",
+      "distanceKm": 215
+    },
+    {
+      "year": 1492,
+      "name": "Coree",
+      "qid": "Q624467",
+      "label": "Hanseongbu",
+      "reason": "outside territory",
+      "distanceKm": 13679
+    },
+    {
+      "year": 1500,
+      "name": "Bahmani Kingdom",
+      "qid": "Q461922",
+      "label": "Bidar",
+      "reason": "outside territory",
+      "distanceKm": 171
+    },
+    {
+      "year": 1500,
+      "name": "Champa",
+      "qid": "Q7929221",
+      "label": "Vijaya",
+      "reason": "outside territory",
+      "distanceKm": 215
+    },
+    {
+      "year": 1530,
+      "name": "Astrakhan Khanate",
+      "qid": "Q2477836",
+      "label": "Xacitarxan",
+      "reason": "outside territory",
+      "distanceKm": 213
+    },
+    {
+      "year": 1530,
+      "name": "Kazan Khanate",
+      "qid": "Q900",
+      "label": "Kazan",
+      "reason": "outside territory",
+      "distanceKm": 280
+    },
+    {
+      "year": 1530,
+      "name": "Safavid Empire",
+      "qid": "Q80053",
+      "label": "Tabriz",
+      "reason": "outside territory",
+      "distanceKm": 370
+    },
+    {
+      "year": 1650,
+      "name": "Dutch Brazil",
+      "qid": "Q2671184",
+      "label": "Mauritsstad",
+      "reason": "coordinates missing"
+    },
+    {
+      "year": 1715,
+      "name": "Holy Roman Empire",
+      "qid": "Q1741",
+      "label": "Vienna",
+      "reason": "outside territory",
+      "distanceKm": 186
+    },
+    {
+      "year": 1715,
+      "name": "Prussia",
+      "qid": "Q64",
+      "label": "Berlin",
+      "reason": "outside territory",
+      "distanceKm": 391
+    },
+    {
+      "year": 1783,
+      "name": "Bagirmi",
+      "qid": "Q764968",
+      "label": "Massenya",
+      "reason": "outside territory",
+      "distanceKm": 60
+    },
+    {
+      "year": 1783,
+      "name": "Portuguese East Africa",
+      "qid": "Q3889",
+      "label": "Maputo",
+      "reason": "outside territory",
+      "distanceKm": 780
+    },
+    {
+      "year": 1800,
+      "name": "Bagirmi",
+      "qid": "Q764968",
+      "label": "Massenya",
+      "reason": "outside territory",
+      "distanceKm": 60
+    },
+    {
+      "year": 1800,
+      "name": "Portuguese East Africa",
+      "qid": "Q3889",
+      "label": "Maputo",
+      "reason": "outside territory",
+      "distanceKm": 780
+    },
+    {
+      "year": 1800,
+      "name": "Siam",
+      "qid": "Q1861",
+      "label": "Bangkok",
+      "reason": "outside territory",
+      "distanceKm": 201
+    },
+    {
+      "year": 1815,
+      "name": "Brunswick",
+      "qid": "Q2773",
+      "label": "Brunswick",
+      "reason": "outside territory",
+      "distanceKm": 66
+    },
+    {
+      "year": 1815,
+      "name": "Dutch East Indies",
+      "qid": "Q1199713",
+      "label": "Batavia",
+      "reason": "outside territory",
+      "distanceKm": 330
+    },
+    {
+      "year": 1815,
+      "name": "Portuguese East Africa",
+      "qid": "Q3889",
+      "label": "Maputo",
+      "reason": "outside territory",
+      "distanceKm": 356
+    },
+    {
+      "year": 1880,
+      "name": "Bokhara Khanate",
+      "qid": "Q5764",
+      "label": "Bukhara",
+      "reason": "outside territory",
+      "distanceKm": 132
+    },
+    {
+      "year": 1880,
+      "name": "Kanem-Bornu",
+      "qid": "Q3342340",
+      "label": "Njimi",
+      "reason": "coordinates missing"
+    },
+    {
+      "year": 1880,
+      "name": "Portuguese Guinea",
+      "qid": "Q3739",
+      "label": "Bissau",
+      "reason": "outside territory",
+      "distanceKm": 64
+    },
+    {
+      "year": 1880,
+      "name": "Sultanate of Damagaram",
+      "qid": "Q204365",
+      "label": "Zinder",
+      "reason": "outside territory",
+      "distanceKm": 282
+    },
+    {
+      "year": 1880,
+      "name": "Wassoulou Empire",
+      "qid": "Q866634",
+      "label": "Bissandugu",
+      "reason": "outside territory",
+      "distanceKm": 222
+    },
+    {
+      "year": 1900,
+      "name": "Kanem-Bornu",
+      "qid": "Q3342340",
+      "label": "Njimi",
+      "reason": "coordinates missing"
+    },
+    {
+      "year": 1900,
+      "name": "Portuguese Guinea",
+      "qid": "Q3739",
+      "label": "Bissau",
+      "reason": "outside territory",
+      "distanceKm": 64
+    },
+    {
+      "year": 1914,
+      "name": "British Somaliland",
+      "qid": "Q191718",
+      "label": "Berbera",
+      "reason": "outside territory",
+      "distanceKm": 381
+    },
+    {
+      "year": 1914,
+      "name": "Italian Somaliland",
+      "qid": "Q2449",
+      "label": "Mogadishu",
+      "reason": "outside territory",
+      "distanceKm": 679
+    },
+    {
+      "year": 1920,
+      "name": "Ottoman Sultanate",
+      "qid": "Q16869",
+      "label": "Constantinople",
+      "reason": "outside territory",
+      "distanceKm": 100
+    },
+    {
+      "year": 1938,
+      "name": "French Equatorial Africa",
+      "qid": "Q3844",
+      "label": "Brazzaville",
+      "reason": "outside territory",
+      "distanceKm": 228
+    }
+  ]
+}

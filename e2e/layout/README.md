@@ -63,7 +63,7 @@ A control is checked for overlap only if a hit test at its center reaches it. Co
 **Forced dark.** Chromium runs with `--enable-features=WebContentsForceDark` and WebKit with `colorScheme: 'dark'`. Each run checks:
 
 - the `color-scheme` meta tag reads `only light`;
-- `:root` computes `color-scheme: only light`;
+- `:root` computes `color-scheme: only light` (serialized by Chromium and WebKit as `light only`);
 - the backgrounds of the body, top bar, and place panel match a light-mode reference load.
 
 Chromium also compares a top-bar screenshot against a browser without force-dark, and allows at most 1% of pixels to change. A self-test first confirms that force-dark really darkens an unprotected white page, so the pixel check can't pass vacuously.

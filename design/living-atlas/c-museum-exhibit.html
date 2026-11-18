@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D2226">
+<title>Museum Exhibit · Historic Borders</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script src="data/historical-1492.js"></script>
+<script src="data/natural-earth.js"></script>
+<script src="data/relief-c.js"></script>
+<script src="data/glyphs-c.js"></script>
+<script src="shared/atlas.js"></script>
+<style>
+/* Self-hosted OFL fonts: Spectral + Spectral SC (Production Type), Libre Franklin (Impallari Type). */
+@font-face { font-family: "Spectral"; font-weight: 400; src: url(fonts/spectral-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Spectral"; font-weight: 600; src: url(fonts/spectral-latin-600-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Spectral"; font-weight: 400; font-style: italic; src: url(fonts/spectral-latin-400-italic.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Spectral SC"; font-weight: 500; src: url(fonts/spectral-sc-latin-500-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Spectral SC"; font-weight: 600; src: url(fonts/spectral-sc-latin-600-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Libre Franklin"; font-weight: 400; src: url(fonts/libre-franklin-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Libre Franklin"; font-weight: 500; src: url(fonts/libre-franklin-latin-500-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Libre Franklin"; font-weight: 600; src: url(fonts/libre-franklin-latin-600-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Libre Franklin"; font-weight: 700; src: url(fonts/libre-franklin-latin-700-normal.woff2) format("woff2"); font-display: swap; }
+
+:root {
+  /* Gallery wall */
+  --wall: #1D2226;
+  --wall-2: #272D32;
+  --wall-line: #3D454C;
+  --on-wall: #F2EEE6;       /* 13.9:1 on --wall */
+  --on-wall-2: #BCC3C9;     /* 9.0:1 on --wall */
+  /* Object label card */
+  --card: #F4F1EA;
+  --card-ink: #1D2226;      /* 14.2:1 on --card */
+  --card-ink-2: #4D545B;    /* 6.8:1 on --card */
+  --card-line: #D6D0C4;
+  /* Era accents: a light tone for the wall, a deep tone for the card */
+  --era-prehistory: #E2A75C;   --era-prehistory-deep: #8A5512;
+  --era-ancient: #EB977F;      --era-ancient-deep: #9C3B26;
+  --era-medieval: #9DBDE6;     --era-medieval-deep: #2C5A8F;
+  --era-early-modern: #93CBAE; --era-early-modern-deep: #2D6A4B;
+  --era-modern: #DDA6C3;       --era-modern-deep: #8C3463;
+  --accent: var(--era-medieval);
+  --accent-deep: var(--era-medieval-deep);
+  --focus: #FFD166;
+
+  --serif: "Spectral", Georgia, serif;
+  --sc: "Spectral SC", "Spectral", Georgia, serif;
+  --sans: "Libre Franklin", system-ui, sans-serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  color-scheme: only light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--wall); color: var(--on-wall); font: 17px/1.5 var(--sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.app {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  display: grid; grid-template-rows: auto 1fr;
+  padding-left: var(--safe-left); padding-right: var(--safe-right);
+}
+
+/* ---------------- Timeline: the gallery rail ---------------- */
+.timeline { padding: calc(var(--safe-top) + 14px) 28px 0; }
+.tl-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--on-wall); text-decoration: none; }
+.brand__mark { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--on-wall-2); font: 600 15px/1 var(--sc); letter-spacing: .04em; text-transform: lowercase; }
+.brand__name { display: block; font: 700 15px/1.2 var(--sans); letter-spacing: .22em; text-transform: uppercase; }
+.brand__sub { display: block; margin-top: 4px; font: italic 400 16px/1.2 var(--serif); color: var(--on-wall-2); }
+
+.stepper { display: flex; align-items: center; gap: 20px; }
+.step {
+  display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 12px;
+  border: 1px solid var(--wall-line); border-radius: 3px; background: transparent;
+  font: 500 16px/1 var(--sans); color: var(--on-wall); cursor: pointer;
+}
+.step svg { width: 16px; height: 16px; }
+.step:hover { border-color: var(--on-wall-2); }
+.year { border: 0; background: none; padding: 0; text-align: center; cursor: pointer; color: var(--on-wall); min-width: 200px; }
+.year__value { font: 400 58px/1 var(--serif); letter-spacing: -.01em; }
+.year__suffix { font: 500 22px/1 var(--sc); letter-spacing: .06em; margin-left: 4px; text-transform: lowercase; }
+.year__era { display: block; margin-top: 6px; font: 600 13px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+.year__era span { color: var(--on-wall-2); font-weight: 500; letter-spacing: .08em; }
+
+.tools { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+.find { display: flex; align-items: center; gap: 10px; height: 44px; min-width: 220px; padding: 0 14px; border-bottom: 1px solid var(--on-wall-2); color: var(--on-wall-2); font: 400 16px/1 var(--sans); }
+.find svg { width: 18px; height: 18px; color: var(--on-wall); }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 3px; background: none; color: var(--on-wall); cursor: pointer; }
+.icon-btn:hover { background: var(--wall-2); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+.ruler { position: relative; margin-top: 14px; padding-bottom: 8px; user-select: none; }
+.tl-eras { display: flex; gap: 6px; height: 28px; }
+.tl-era { min-width: 0; display: flex; align-items: flex-end; padding: 0 0 7px; border-bottom: 3px solid var(--wall-line); overflow: hidden; white-space: nowrap; }
+.tl-era__label { font: 600 13px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--on-wall-2); overflow: hidden; }
+.tl-era[data-era=prehistory] { border-color: var(--era-prehistory); }
+.tl-era[data-era=ancient] { border-color: var(--era-ancient); }
+.tl-era[data-era=medieval] { border-color: var(--era-medieval); }
+.tl-era[data-era=early-modern] { border-color: var(--era-early-modern); }
+.tl-era[data-era=modern] { border-color: var(--era-modern); }
+.tl-era[data-active] .tl-era__label { color: var(--accent); }
+.tl-era[data-active] { border-bottom-width: 6px; padding-bottom: 4px; }
+
+.tl-track { position: relative; height: 16px; cursor: pointer; }
+.tl-tick { position: absolute; top: 4px; width: 1px; height: 6px; background: #7D868E; transform: translateX(-50%); }
+.tl-tick[data-major] { height: 11px; background: var(--on-wall-2); }
+.tl-thumb { position: absolute; top: -14px; width: 3px; height: 22px; background: var(--on-wall); transform: translateX(-50%); z-index: 2; }
+.tl-thumb::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 11px; height: 11px; border-radius: 50%; background: var(--on-wall); transform: translateX(-50%); box-shadow: 0 0 0 3px var(--wall); }
+.tl-labels { position: relative; height: 22px; margin-top: 6px; }
+.tl-label { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; font: 500 14px/1 var(--sans); color: var(--on-wall-2); font-variant-numeric: tabular-nums; }
+.tl-label[data-edge=start] { transform: translateX(-2px); }
+.tl-label[data-edge=end] { transform: translateX(calc(-100% + 2px)); }
+.tl-label[data-active] { color: var(--on-wall); font-weight: 700; }
+
+/* ---------------- Stage: the framed print ---------------- */
+.stage { position: relative; min-height: 0; display: grid; grid-template-columns: 1fr 420px; grid-template-rows: 1fr auto; gap: 0 20px; padding: 8px 28px 0; }
+.print { position: relative; min-height: 0; padding: 10px; background: #EDE9E0; box-shadow: 0 0 0 1px #000, 0 18px 40px -18px rgba(0,0,0,.8); }
+.print::after { content: ""; position: absolute; inset: 10px; box-shadow: inset 0 0 0 1px rgba(29, 34, 38, .55); pointer-events: none; }
+#map { position: absolute; inset: 10px; }
+
+.caption { grid-column: 1; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 2px calc(16px + var(--safe-bottom)); }
+.caption__text { margin: 0; font: italic 400 16px/1.35 var(--serif); color: var(--on-wall-2); max-width: 640px; }
+.caption__text b { font: 600 13px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; font-style: normal; color: var(--on-wall); margin-right: 8px; }
+.caption__tools { display: flex; align-items: center; gap: 22px; }
+.scalebar { min-width: 120px; }
+.scalebar__bar { display: flex; height: 6px; border: 1px solid var(--on-wall); }
+.scalebar__bar span { flex: 1; }
+.scalebar__bar span:first-child, .scalebar__bar span:nth-child(3) { background: var(--on-wall); }
+.scalebar__nums { display: flex; justify-content: space-between; margin-top: 4px; font: 500 13px/1 var(--sans); color: var(--on-wall-2); }
+.north { display: grid; justify-items: center; gap: 2px; font: 600 12px/1 var(--sans); letter-spacing: .12em; color: var(--on-wall); }
+.north svg { width: 14px; height: 22px; }
+.zoom { display: flex; border: 1px solid var(--wall-line); border-radius: 3px; }
+.zoom button { width: 44px; height: 40px; border: 0; background: none; color: var(--on-wall); font: 400 22px/1 var(--sans); cursor: pointer; }
+.zoom button + button { border-left: 1px solid var(--wall-line); }
+
+/* ---------------- Object label ---------------- */
+.panel { grid-column: 2; grid-row: 1 / span 2; min-height: 0; display: flex; flex-direction: column; margin-bottom: calc(16px + var(--safe-bottom)); background: var(--card); color: var(--card-ink); }
+.panel__scroll { overflow: auto; padding: 26px 28px 18px; }
+.panel__head { display: flex; justify-content: space-between; gap: 12px; }
+.eyebrow { margin: 0; font: 600 13px/1.2 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); }
+.panel h2 { margin: 8px 0 0; font: 600 36px/1.05 var(--serif); letter-spacing: -.01em; }
+.tombstone { margin: 8px 0 0; font: 400 16px/1.45 var(--sans); color: var(--card-ink); }
+.tombstone span { color: var(--card-ink-2); }
+.close { color: var(--card-ink); margin: -8px -10px 0 0; }
+.close:hover { background: #E8E3D8; }
+
+.details { margin: 18px 0 0; border-top: 2px solid var(--card-ink); }
+.details div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--card-line); }
+.details dt { font: 600 13px/1.6 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--card-ink-2); }
+.details dd { margin: 0; font: 400 18px/1.35 var(--serif); }
+.details dd small { display: block; font: 400 14px/1.35 var(--sans); color: var(--card-ink-2); }
+.details__source { margin: 8px 0 0; font: 400 13px/1.4 var(--sans); color: var(--card-ink-2); }
+
+.lede { margin: 22px 0 0; font: 400 21px/1.4 var(--serif); }
+.extract { margin: 10px 0 0; font: 400 17px/1.6 var(--serif); }
+.h3 { margin: 24px 0 8px; font: 600 13px/1.2 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--card-ink-2); }
+.chron { margin: 0; padding: 0; list-style: none; }
+.chron li { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 6px 0; border-top: 1px solid var(--card-line); font: 400 16px/1.4 var(--serif); }
+.chron b { font: 600 15px/1.55 var(--sans); font-variant-numeric: tabular-nums; }
+.chron li[data-now] { border-top: 2px solid var(--accent-deep); color: var(--accent-deep); }
+.chron li[data-now] span { font-style: italic; }
+
+.credit { margin: 20px 0 0; padding-top: 10px; border-top: 1px solid var(--card-line); font: 400 13px/1.5 var(--sans); color: var(--card-ink-2); }
+.credit a { color: var(--accent-deep); font-weight: 600; }
+
+.panel__foot { display: flex; gap: 10px; padding: 12px 28px 14px; border-top: 1px solid var(--card-line); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid var(--card-ink); border-radius: 3px; background: transparent; font: 600 14px/1 var(--sans); letter-spacing: .06em; white-space: nowrap; text-transform: uppercase; cursor: pointer; color: var(--card-ink); }
+.btn svg { width: 16px; height: 16px; }
+.btn--primary { background: var(--card-ink); color: var(--card); }
+.sheet-handle { display: none; }
+
+@media (max-width: 699px) {
+  .timeline { padding: calc(var(--safe-top) + 6px) 12px 0; }
+  .tl-head { grid-template-columns: auto 1fr auto; gap: 6px; }
+  .brand__sub, .find, .tools .icon-btn:not(.keep) { display: none; }
+  .brand__name { display: none; }
+  .brand__mark { width: 34px; height: 34px; font-size: 14px; }
+  .tombstone span { display: none; }
+  .stepper { gap: 6px; justify-content: center; }
+  .step { width: 44px; padding: 0; justify-content: center; }
+  .step__label { display: none; }
+  .year { min-width: 0; }
+  .year__value { font-size: 42px; }
+  .year__suffix { font-size: 18px; }
+  .year__era { font-size: 11px; letter-spacing: .16em; }
+  .year__era span { display: none; }
+  .ruler { margin-top: 8px; padding-bottom: 4px; }
+  .tl-eras { gap: 3px; height: 22px; }
+  .tl-era__label { font-size: 11px; letter-spacing: .06em; }
+  .tl-label { font-size: 13px; }
+
+  .stage { display: block; padding: 4px 8px 0; }
+  .print { position: absolute; inset: 4px 8px 0; padding: 6px; }
+  .print::after { inset: 6px; }
+  #map { inset: 6px; }
+  .caption { position: absolute; left: 22px; top: 18px; z-index: 3; padding: 8px 10px; background: rgba(29,34,38,.88); border-radius: 3px; }
+  .caption__text, .zoom, .north { display: none; }
+  .scalebar { min-width: 0; }
+
+  /* Bottom sheet: the label card rises over the print; padding clears the home indicator. */
+  .panel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 47%; margin: 0; border-radius: 12px 12px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,.45); }
+  .sheet-handle { display: block; width: 40px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: var(--card-line); }
+  .panel__scroll { padding: 6px 18px 10px; }
+  .panel h2 { font-size: 30px; margin-top: 4px; }
+  .tombstone { font-size: 15px; }
+  .details { margin-top: 12px; }
+  .details div { grid-template-columns: 96px 1fr; padding: 7px 0; }
+  .panel__foot { padding: 10px 18px calc(10px + var(--safe-bottom)); }
+  .panel__foot .btn { flex: 1; padding: 0 8px; }
+  .wide { display: none; }
+}
+
+.sim-device { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+.sim-device__island { position: absolute; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 20px; background: #000; box-shadow: 0 0 0 1px #333; }
+.sim-device__home { position: absolute; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #111; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="timeline" aria-label="Timeline">
+    <div class="tl-head">
+      <a class="brand" href="#" aria-label="Historic Borders"><span class="brand__mark" aria-hidden="true">HB</span><span><span class="brand__name">Historic Borders</span><span class="brand__sub">Maps of the world through time</span></span></a>
+      <div class="stepper">
+        <button class="step" type="button" aria-label="Previous year: 1400 AD"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3L5 8l5 5"/></svg><span class="step__label">1400</span></button>
+        <button class="year" type="button" aria-label="Choose a year. Current year 1492 AD">
+          <span class="year__value">1492</span><span class="year__suffix">AD</span>
+          <span class="year__era">Medieval <span>· 500–1499</span></span>
+        </button>
+        <button class="step" type="button" aria-label="Next year: 1500 AD"><span class="step__label">1500</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg></button>
+      </div>
+      <div class="tools">
+        <div class="find" role="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg>Find a place in 1492</div>
+        <button class="icon-btn keep" type="button" aria-label="Find a place"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Map settings"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h9M15 6h2M3 14h3M9 14h8"/><circle cx="13.5" cy="6" r="1.8"/><circle cx="7.5" cy="14" r="1.8"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Present to class"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="10"/><path d="M10 13.5v3M6.5 17h7"/></svg></button>
+        <button class="icon-btn keep" type="button" aria-label="About this map"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.2"/></svg></button>
+      </div>
+    </div>
+    <div class="ruler">
+      <div class="tl-eras" aria-hidden="true"></div>
+      <div class="tl-track" role="slider" tabindex="0" aria-label="Map year" aria-valuemin="0" aria-valuemax="52" aria-valuenow="32" aria-valuetext="1492 AD"></div>
+      <div class="tl-labels" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="print"><div id="map" role="region" aria-label="Map of the world in 1492"></div></div>
+
+    <div class="caption">
+      <p class="caption__text"><b>1492</b>Europe, North Africa and Southwest Asia. Borders are reconstructions; many were approximate or contested. Historical Basemaps (GPL-3.0); Natural Earth.</p>
+      <div class="caption__tools">
+        <div class="scalebar"><div class="scalebar__bar"><span></span><span></span><span></span><span></span></div><div class="scalebar__nums"></div></div>
+        <div class="north" aria-label="North is up"><svg viewBox="0 0 14 22"><path d="M7 0l6 20-6-4-6 4z" fill="#F2EEE6"/></svg>N</div>
+        <div class="zoom"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button></div>
+      </div>
+    </div>
+
+    <aside class="panel" aria-labelledby="panel-title">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <div class="panel__scroll">
+        <div class="panel__head">
+          <div>
+            <p class="eyebrow">Territory · 1492</p>
+            <h2 id="panel-title">Ottoman Empire</h2>
+            <p class="tombstone">Empire, 1299–1922 <span>· Southeast Europe and Anatolia</span></p>
+          </div>
+          <button class="icon-btn close" type="button" aria-label="Close details for Ottoman Empire"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+        </div>
+
+        <dl class="details">
+          <div><dt>Capital</dt><dd>Constantinople<small>today Istanbul</small></dd></div>
+          <div><dt>Ruler</dt><dd>Bayezid II<small>Sultan, reigned 1481–1512</small></dd></div>
+          <div><dt>Vassal</dt><dd>Crimean Khanate</dd></div>
+          <div><dt>Borders</dt><dd>Approximate<small>as recorded by the source</small></dd></div>
+        </dl>
+        <p class="details__source">Facts from Wikidata (CC0)</p>
+
+        <h3 class="h3">Empire overview</h3>
+        <p class="lede">The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century.</p>
+        <p class="extract">It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire. The Ottomans ended the Byzantine Empire with the conquest of Constantinople in 1453 under Mehmed II.</p>
+
+        <h3 class="h3">Key dates</h3>
+        <ol class="chron">
+          <li><b>1299</b><span>Osman I founds the dynasty in Anatolia</span></li>
+          <li><b>1453</b><span>Mehmed II takes Constantinople</span></li>
+          <li data-now><b>1492</b><span>The year of this map</span></li>
+          <li><b>1517</b><span>Selim I defeats the Mamluk Sultanate</span></li>
+          <li><b>1529</b><span>First siege of Vienna</span></li>
+          <li><b>1922</b><span>The sultanate is abolished</span></li>
+        </ol>
+
+        <p class="credit">Overview: Wikipedia, <a href="https://en.wikipedia.org/wiki/Ottoman_Empire">“Ottoman Empire”</a>, CC BY-SA 4.0. Borders: Historical Basemaps, GPL-3.0.</p>
+      </div>
+      <div class="panel__foot">
+        <button class="btn btn--primary" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6.5 9.5l3-3M5 7.5L3.5 9a2.5 2.5 0 003.5 3.5L8.5 11M11 8.5L12.5 7A2.5 2.5 0 009 3.5L7.5 5"/></svg><span>Copy link</span></button>
+        <button class="btn" type="button">Compare 1400</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+HB.applySafeAreaSimulation();
+
+/* Museum tones: stone, clay, sage, slate, ochre. Quiet, so the selection can speak. */
+const PALETTE = [
+  { fill: '#D9B9A3', edge: '#8E644A' }, // clay
+  { fill: '#C2CDB1', edge: '#66784F' }, // sage
+  { fill: '#DCCB9F', edge: '#8C7638' }, // ochre
+  { fill: '#C4C3D3', edge: '#62617E' }, // slate violet
+  { fill: '#B9CCCB', edge: '#56757A' }, // celadon
+  { fill: '#D9BFC0', edge: '#8A5E62' }, // rosewood
+  { fill: '#CFC6B4', edge: '#77694E' }, // stone
+  { fill: '#C9D3A9', edge: '#6E7F43' }, // lichen
+  { fill: '#E0C2A1', edge: '#94683A' }, // sienna
+  { fill: '#BCC6D6', edge: '#58687F' }, // pewter blue
+];
+const INK = '#23272B';
+const LAND = '#F1EEE7';
+const WATER = '#D3DCDB';
+const WATER_INK = '#3B5960'; // 5.4:1 on WATER
+const ACCENT = '#2C5A8F';
+const SELECTED = 'Ottoman Empire';
+
+const style = {
+  version: 8,
+  glyphs: 'local://glyphs/{fontstack}/{range}.pbf',
+  sources: {
+    ocean: { type: 'geojson', data: HB_NE.ocean },
+    coast: { type: 'geojson', data: HB_NE.coast },
+    lakes: { type: 'geojson', data: HB_NE.lakes },
+    rivers: { type: 'geojson', data: HB_NE.rivers },
+    marine: { type: 'geojson', data: HB.marine() },
+    graticule: { type: 'geojson', data: HB.graticule(10) },
+    relief: { type: 'image', url: 'local://relief.webp', coordinates: HB.reliefCoordinates() },
+    borders: { type: 'geojson', data: HB_1492.borders },
+    labels: { type: 'geojson', data: HB_1492.labels },
+    places: { type: 'geojson', data: HB_1492.places },
+  },
+  layers: [
+    { id: 'land', type: 'background', paint: { 'background-color': LAND } },
+    // The selection keeps full colour; everything else steps back.
+    { id: 'territory-fill', type: 'fill', source: 'borders',
+      paint: { 'fill-color': ['case', ['==', ['get', 'NAME'], SELECTED], '#D3B07E', HB.colorMatch(PALETTE, 'fill', '#DDD8CC')],
+        'fill-opacity': ['case', ['==', ['get', 'NAME'], SELECTED], 0.95, 0.5] } },
+    { id: 'relief', type: 'raster', source: 'relief', paint: { 'raster-opacity': 0.95, 'raster-fade-duration': 0 } },
+    { id: 'territory-border', type: 'line', source: 'borders', layout: { 'line-join': 'round' },
+      paint: { 'line-color': HB.colorMatch(PALETTE, 'edge', '#7D766A'), 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 0.6, 6, 1.2], 'line-opacity': 0.9 } },
+    { id: 'selected-line', type: 'line', source: 'borders', filter: ['==', ['get', 'NAME'], SELECTED], layout: { 'line-join': 'round' },
+      paint: { 'line-color': INK, 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.6, 6, 2.6] } },
+    { id: 'ocean', type: 'fill', source: 'ocean', paint: { 'fill-color': WATER } },
+    { id: 'graticule', type: 'line', source: 'graticule', paint: { 'line-color': '#5E6B6E', 'line-width': 0.5, 'line-opacity': 0.35 } },
+    { id: 'coast', type: 'line', source: 'coast', paint: { 'line-color': '#62767A', 'line-width': 0.8 } },
+    { id: 'lakes', type: 'fill', source: 'lakes', paint: { 'fill-color': WATER } },
+    { id: 'lake-shore', type: 'line', source: 'lakes', paint: { 'line-color': '#62767A', 'line-width': 0.6 } },
+    { id: 'rivers', type: 'line', source: 'rivers', filter: ['<=', ['get', 'rank'], 6], layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#6E8E95', 'line-width': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'rank'], [1, 2], 0.9, 0.5], 6, ['match', ['get', 'rank'], [1, 2], 2, 1.1]] } },
+    { id: 'river-labels', type: 'symbol', source: 'rivers', minzoom: 3.2, filter: ['all', ['<=', ['get', 'rank'], 2], ['has', 'name']],
+      layout: { 'symbol-placement': 'line', 'text-field': ['get', 'name'], 'text-font': ['Spectral Italic'], 'text-size': 14, 'text-letter-spacing': 0.06, 'symbol-spacing': 500, 'text-max-angle': 30, 'text-offset': [0, -0.6] },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': 'rgba(241,238,231,.9)', 'text-halo-width': 1.6 } },
+    { id: 'sea-labels', type: 'symbol', source: 'marine', filter: ['<=', ['get', 'rank'], 3],
+      layout: { 'text-field': ['get', 'name'], 'text-font': ['Spectral Medium Italic'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'kind'], 'ocean', 16, 13], 5, ['match', ['get', 'kind'], 'ocean', 23, 18]],
+        'text-letter-spacing': ['match', ['get', 'kind'], 'ocean', 0.2, 0.08], 'text-max-width': 7 },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': 'rgba(211,220,219,.9)', 'text-halo-width': 1.2 } },
+    { id: 'places', type: 'symbol', source: 'places', filter: HB.placeFilter, minzoom: 2.5,
+      layout: { 'icon-image': ['match', HB.placeKind, 'ruin', 'm-ruin', 'm-city'], 'text-field': HB.placeName,
+        'text-font': ['Libre Franklin Medium'], 'text-size': 13,
+        'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.7, 'text-justify': 'auto' },
+      paint: { 'text-color': INK, 'text-halo-color': 'rgba(241,238,231,.95)', 'text-halo-width': 1.6 } },
+    { id: 'selected-capital', type: 'symbol', source: 'places', filter: ['==', ['get', 'name'], 'Constantinople'],
+      layout: { 'icon-image': 'm-capital', 'text-field': ['get', 'name'], 'text-font': ['Libre Franklin Medium'], 'text-size': 15,
+        'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.9, 'icon-allow-overlap': true },
+      paint: { 'text-color': INK, 'text-halo-color': 'rgba(241,238,231,.95)', 'text-halo-width': 1.8 } },
+    { id: 'state-labels', type: 'symbol', source: 'labels', filter: ['>', ['get', 'AREA'], 18000],
+      layout: {
+        'text-field': ['get', 'NAME'],
+        'text-font': ['step', ['get', 'AREA'], ['literal', ['Spectral SC Medium']], 250000, ['literal', ['Spectral SC SemiBold']]],
+        'text-size': HB.areaSize([12, 14, 17, 21], { special: { name: SELECTED, sizes: [18, 28] } }),
+        'text-letter-spacing': ['step', ['get', 'AREA'], 0.04, 200000, 0.09, 1000000, 0.15],
+        'text-max-width': 8, 'text-line-height': 1.1,
+        'symbol-sort-key': ['match', ['get', 'NAME'], SELECTED, -1e12, ['-', 0, ['get', 'AREA']]],
+        'text-padding': 4,
+      },
+      paint: { 'text-color': ['match', ['get', 'NAME'], SELECTED, '#111417', '#3A3F44'], 'text-halo-color': 'rgba(241,238,231,.92)', 'text-halo-width': 1.8 } },
+  ],
+};
+
+HB.beforeMap = (m) => HB.addMarkers(m, { ink: INK, paper: '#F4F1EA', accent: INK, capital: 'square' });
+HB.renderRuler(document.querySelector('.ruler'), 1492, {
+  charPx: 7.4, padPx: 16,
+  eraLabel: (span, px) => {
+    const c = HB.isPhone() ? 8 : 10.4;
+    return span.era.label.length * c + 6 <= px ? span.era.label : span.era.short.length * c + 2 <= px ? span.era.short : '';
+  },
+});
+
+HB.createMap({
+  container: 'map',
+  style,
+  view: () => HB.isPhone()
+    ? { bounds: [[20, 35], [44, 45]], padding: { top: 64, bottom: document.querySelector('.panel').offsetHeight + 6, left: 12, right: 12 } }
+    : { bounds: [[-11, 29], [55, 57]], padding: 16 },
+  onReady: (m) => { m.on('moveend', () => drawScale(m)); drawScale(m); },
+});
+
+function drawScale(m) {
+  const { km, px } = HB.scaleFor(m, HB.isPhone() ? 110 : 160);
+  document.querySelector('.scalebar__bar').style.width = `${px}px`;
+  const nums = document.querySelector('.scalebar__nums');
+  nums.style.width = `${px + 2}px`;
+  nums.innerHTML = `<span>0</span><span>${km.toLocaleString('en-US')} km</span>`;
+}
+</script>
+</body>
+</html>

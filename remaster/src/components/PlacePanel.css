@@ -1,0 +1,384 @@
+/* The place panel as a gazetteer page (Direction A): a right-hand page over
+   the map frame, a bottom sheet inside the dvh shell on phones. */
+
+.place-panel {
+  position: absolute;
+  z-index: 5;
+  top: var(--frame-inset);
+  right: var(--frame-inset);
+  /* Plan §2.2 rule 3: the panel ends above the home indicator. */
+  bottom: max(var(--frame-inset), var(--safe-bottom));
+  width: min(var(--panel-width), calc(100% - 2 * var(--frame-inset)));
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sheet);
+  border-left: 1px solid var(--ink);
+  box-shadow: -10px 0 24px -16px rgba(42, 32, 23, 0.5);
+}
+
+.place-panel__handle {
+  display: none;
+}
+
+.place-panel__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 22px 26px 18px;
+}
+
+.place-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.place-panel__eyebrow {
+  margin: 0;
+  font: 700 14px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.place-panel__title {
+  margin: 4px 0 0;
+  font: 700 38px/1.05 var(--font-serif);
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
+}
+
+.place-panel__subtitle {
+  margin: 6px 0 0;
+  font: italic 400 16px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.place-panel__factbox {
+  margin: 18px 0 0;
+  padding: 4px 14px 8px;
+  background: var(--paper-2);
+  border-top: 3px double var(--ink);
+  border-bottom: 3px double var(--ink);
+}
+
+.place-panel__facts-title {
+  margin: 8px 0 2px;
+  font: 700 13px/1 var(--font-sc);
+  letter-spacing: 0.2em;
+  color: var(--ink-2);
+}
+
+.place-panel__facts {
+  margin: 0;
+}
+
+.place-panel__fact {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.place-panel__fact:last-child {
+  border-bottom: 0;
+}
+
+.place-panel__facts dt {
+  font: 700 14px/1.45 var(--font-sc);
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.place-panel__facts dd {
+  margin: 0;
+  font: 400 17px/1.35 var(--font-serif);
+  overflow-wrap: anywhere;
+}
+
+.place-panel__facts dd a {
+  color: var(--ink);
+  text-decoration-color: var(--hair);
+  text-underline-offset: 3px;
+}
+
+.place-panel__facts dd small {
+  display: block;
+  font: italic 400 14px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.place-panel__approx {
+  width: 26px;
+  height: 8px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.place-panel__facts-source {
+  margin: 6px 0 0;
+  font: italic 400 13px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.place-panel__extract {
+  margin: 0;
+  font: 400 17px/1.55 var(--font-serif);
+  hyphens: auto;
+}
+
+.place-panel__extract::first-letter {
+  float: left;
+  padding: 6px 8px 0 0;
+  font: 700 62px/0.8 var(--font-serif);
+  font-variant-numeric: lining-nums;
+  color: var(--accent);
+}
+
+.place-panel__match,
+.place-panel__status,
+.place-panel__note {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.place-panel__image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 180px;
+  margin: 12px 0 0;
+  border: 1px solid var(--hair);
+}
+
+.place-panel__source {
+  margin: 10px 0 0;
+  font: 400 14px/1.4 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.place-panel__source a {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.place-panel__source a svg {
+  margin-left: 2px;
+  vertical-align: -2px;
+}
+
+.place-panel__foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 26px;
+  border-top: 1px solid var(--hair);
+  background: var(--sheet);
+}
+
+.skeleton {
+  display: grid;
+  gap: 8px;
+}
+
+.skeleton__line {
+  height: 12px;
+  background: var(--paper-2);
+}
+
+.skeleton__line--short {
+  width: 60%;
+}
+
+/* Copy link */
+.copy-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.copy-link__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-link__status {
+  font: italic 400 14px/1.2 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.copy-link__manual {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* Key dates lifespan bar */
+.lifespan__figure {
+  position: relative;
+  padding: 4px 0 30px;
+}
+
+.lifespan__track {
+  position: relative;
+  height: 12px;
+  margin: 0 6px;
+}
+
+.lifespan__span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ink);
+  background: var(--accent-wash);
+}
+
+/* Approximate bounds fade out instead of ending at a hard rule. */
+.lifespan__span[data-soft-start] {
+  border-left-color: transparent;
+  background: linear-gradient(90deg, transparent, var(--accent-wash) 22%);
+}
+
+.lifespan__span[data-soft-end] {
+  border-right-color: transparent;
+  background: linear-gradient(90deg, var(--accent-wash) 78%, transparent);
+}
+
+.lifespan__span[data-soft-start][data-soft-end] {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-wash) 22%,
+    var(--accent-wash) 78%,
+    transparent
+  );
+}
+
+.lifespan__marker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  border: 2px solid var(--sheet);
+  box-shadow: 0 0 0 1px var(--accent);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.lifespan__figure[data-placement='before'] .lifespan__marker,
+.lifespan__figure[data-placement='after'] .lifespan__marker {
+  background: var(--sheet);
+}
+
+.lifespan__ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font: 700 15px/1.2 var(--font-serif);
+  font-variant-numeric: lining-nums;
+}
+
+.lifespan__marker-label {
+  position: absolute;
+  bottom: 4px;
+  margin-left: 6px;
+  white-space: nowrap;
+  font: 700 15px/1.2 var(--font-serif);
+  color: var(--accent);
+  transform: translateX(-50%);
+}
+
+.lifespan__marker-label[data-edge='start'] {
+  transform: translateX(-6px);
+}
+
+.lifespan__marker-label[data-edge='end'] {
+  transform: translateX(calc(-100% + 6px));
+}
+
+.lifespan__source {
+  margin: 0;
+  font: italic 400 13px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+/* Phone: a bottom sheet inside the dvh shell; its button row clears the
+   home indicator. */
+@media (max-width: 699px) {
+  .place-panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    /* Plan §2.2 rule 3: a bottom sheet keeps clear of the home indicator. */
+    bottom: max(var(--frame-inset), var(--safe-bottom));
+    width: auto;
+    max-height: 47%;
+    border-left: 0;
+    border-top: 3px double var(--ink);
+    box-shadow: 0 -10px 24px -16px rgba(42, 32, 23, 0.5);
+  }
+
+  .place-panel__handle {
+    display: block;
+    flex: none;
+    width: 44px;
+    height: 5px;
+    margin: 8px auto 0;
+    border-radius: 3px;
+    background: var(--hair);
+  }
+
+  .place-panel__scroll {
+    padding: 8px 18px 10px;
+  }
+
+  .place-panel__title {
+    font-size: 30px;
+  }
+
+  .place-panel__factbox {
+    margin-top: 12px;
+  }
+
+  .place-panel__fact {
+    grid-template-columns: 96px minmax(0, 1fr);
+    padding: 6px 0;
+  }
+
+  .place-panel__foot {
+    padding: 10px 18px;
+  }
+
+  .place-panel__foot .button {
+    flex: 1;
+  }
+}
+
+@media (max-height: 520px) and (max-width: 699px) {
+  .place-panel {
+    max-height: calc(100% - 24px);
+  }
+}
+
+/* Very short screens (a phone in landscape with Safari's toolbars): the
+   button row scrolls with the page instead of being pinned, so it never
+   squeezes into the bottom inset. */
+@media (max-height: 360px) {
+  .place-panel {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .place-panel__scroll {
+    flex: none;
+    overflow: visible;
+  }
+}
+
+@media print {
+  .place-panel__foot {
+    display: none;
+  }
+}

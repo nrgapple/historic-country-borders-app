@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import { BrandMark } from '../components/Icon';
+import historicalManifest from '@repo/data/historical-manifest.json';
+import { formatYear, formatYearLong, yearPath } from '../lib/years';
+
+const years = historicalManifest.years;
+// Visitors are sent to a random year, as before, by a tiny inline script that
+// runs before anything else loads. The static markup doubles as a crawlable
+// index of every year.
+const redirect = `(function(){try{var y=${JSON.stringify(years)};location.replace('/year/'+y[Math.floor(Math.random()*y.length)]+location.search);}catch(e){}})();`;
+---
+<Base path="/">
+  <script is:inline set:html={redirect} />
+  <main class="landing">
+    <div class="landing__inner">
+      <p class="landing__brand"><BrandMark size={34} /> Historic Borders</p>
+      <h1 class="landing__title">
+        An atlas of world borders, {formatYearLong(years[0])} to {formatYearLong(years[years.length - 1])}
+      </h1>
+      <p class="landing__lede">Opening a random year…</p>
+      <nav aria-label="All years">
+        <ul class="year-index">{years.map((year) => <li><a href={yearPath(year)}>{formatYear(year)}</a></li>)}</ul>
+      </nav>
+      <p class="landing__more"><a href="/pa/school-districts">Pennsylvania school districts map</a></p>
+    </div>
+  </main>
+</Base>

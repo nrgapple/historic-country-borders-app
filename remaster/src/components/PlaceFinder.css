@@ -1,0 +1,180 @@
+/* "Find a place": an inline field from 1280 px, a search button below
+   (every iPad, including landscape) that opens the field over the header. */
+
+.place-finder {
+  position: relative;
+  min-width: 0;
+}
+
+.place-finder__toggle,
+.place-finder__close {
+  display: none;
+}
+
+.place-finder__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.place-finder__icon {
+  position: absolute;
+  left: 12px;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.place-finder__input {
+  width: 210px;
+  height: 42px;
+  padding: 0 12px 0 38px;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: italic 400 16px/1 var(--font-serif);
+}
+
+.place-finder__input:not(:placeholder-shown) {
+  font-style: normal;
+}
+
+.place-finder__input::placeholder {
+  color: var(--ink-2);
+  opacity: 1;
+}
+
+.place-finder__input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.place-finder__list,
+.place-finder__empty {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: max(100%, 300px);
+  max-width: calc(100vw - 32px - var(--safe-left) - var(--safe-right));
+  margin: 0;
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  box-shadow: 0 10px 24px -14px rgba(42, 32, 23, 0.55);
+}
+
+.place-finder__list {
+  max-height: min(60dvh, 420px);
+  overflow-y: auto;
+  padding: 4px;
+  list-style: none;
+}
+
+.place-finder__list[hidden] {
+  display: none;
+}
+
+.place-finder__empty {
+  padding: 10px 12px;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.place-finder__option {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 10px 8px 12px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.place-finder__option[aria-selected='true'] {
+  background: var(--accent-wash);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.place-finder__name {
+  font: 500 17px/1.25 var(--font-serif);
+}
+
+.place-finder__option[aria-selected='true'] .place-finder__name {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.place-finder__detail {
+  font: italic 400 14px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+@media (max-width: 1279px) {
+  .place-finder[data-collapsible] .place-finder__toggle {
+    display: inline-grid;
+  }
+
+  .place-finder[data-collapsible]:not([data-expanded]) .place-finder__field {
+    display: none;
+  }
+
+  /* Position against the header so the field can span its first row. */
+  .place-finder[data-collapsible][data-expanded] {
+    position: static;
+  }
+
+  /* The open field covers only the tools column, never the year. */
+  .place-finder[data-expanded] .place-finder__field {
+    position: absolute;
+    top: calc(var(--safe-top) + 4px);
+    left: auto;
+    right: 12px;
+    width: min(360px, 26%);
+    z-index: 21;
+    gap: 4px;
+    padding: 2px;
+    background: var(--paper);
+  }
+
+  .place-finder[data-expanded] .place-finder__input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 40px;
+  }
+
+  .place-finder[data-expanded] .place-finder__close {
+    display: inline-grid;
+  }
+
+  .place-finder[data-expanded] .place-finder__list,
+  .place-finder[data-expanded] .place-finder__empty {
+    top: calc(var(--safe-top) + 52px);
+    left: auto;
+    right: 12px;
+    width: min(360px, 26%);
+    max-width: none;
+  }
+}
+
+/* Two-row header: the first row holds only the brand and tools, so the open
+   field spans it; the year sits in the second row. */
+@media (max-width: 860px) {
+  .place-finder[data-expanded] .place-finder__field,
+  .place-finder[data-expanded] .place-finder__list,
+  .place-finder[data-expanded] .place-finder__empty {
+    left: 12px;
+    width: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  .place-finder__option[aria-selected='true'] {
+    outline: 2px solid Highlight;
+  }
+}
+
+@media print {
+  .place-finder {
+    display: none;
+  }
+}

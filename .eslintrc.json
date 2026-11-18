@@ -8,7 +8,10 @@
     "out/",
     "playwright-report/",
     "public/",
-    "test-results/"
+    "remaster-spike/",
+    "remaster/",
+    "test-results/",
+    "design/"
   ],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",

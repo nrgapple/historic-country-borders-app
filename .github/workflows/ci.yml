@@ -96,3 +96,37 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  remaster:
+    # The Astro + MapLibre remaster in remaster/ (not deployed until the P4 cutover).
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      ASTRO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - run: yarn remaster:build
+      - run: yarn remaster:type-check
+      - run: yarn remaster:test
+      # The remaster pins its own Playwright; `yarn --cwd remaster playwright`
+      # resolves the root app's older one and installs the wrong browsers.
+      - run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
+        working-directory: remaster
+      - run: yarn remaster:test:e2e
+      - name: Upload remaster browser-test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: remaster-playwright-report
+          path: |
+            remaster/playwright-report/
+            remaster/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

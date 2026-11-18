@@ -46,6 +46,8 @@ const checkResponse = async (
 const runProductionSmoke = async ({
   baseUrl,
   historicalAssetPath,
+  // The remaster serves a content-hashed district index under /data/pa/.
+  schoolAssetPath = '/data/pa-school-districts.json',
   fetchImpl = fetch,
 }) => {
   assert(
@@ -59,9 +61,11 @@ const runProductionSmoke = async ({
     { path: '/pa/school-districts', content: 'Pennsylvania school districts' },
     { path: historicalAssetPath, method: 'HEAD', cache: IMMUTABLE_CACHE },
     {
-      path: '/data/pa-school-districts.json',
+      path: schoolAssetPath,
       method: 'HEAD',
-      cache: SCHOOL_CACHE,
+      cache: schoolAssetPath.startsWith('/data/pa/')
+        ? IMMUTABLE_CACHE
+        : SCHOOL_CACHE,
     },
     { path: '/robots.txt', content: 'GPTBot' },
     { path: '/sitemap.xml', content: '/pa/school-districts' },

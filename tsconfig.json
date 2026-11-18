@@ -20,6 +20,6 @@
     "incremental": true,
     "types": ["vitest/globals"]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "remaster-spike", "remaster"],
   "include": ["**/*.ts", "**/*.tsx"]
 }

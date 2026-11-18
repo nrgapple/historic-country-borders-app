@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Basemap review</title>
+    <link rel="stylesheet" href="/maplibre/maplibre-gl.css" />
+    <style>
+      :root {
+        --paper: #f1e9d6;
+        --ink: #2a2017;
+        --ink-2: #554536;
+      }
+      html,
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          14px/1.35 Georgia,
+          serif;
+      }
+      main {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding: 12px;
+      }
+      figure {
+        margin: 0;
+      }
+      .map {
+        height: 440px;
+        border: 1px solid var(--ink);
+      }
+      figcaption {
+        padding-top: 6px;
+        color: var(--ink-2);
+      }
+      figcaption b {
+        color: var(--ink);
+      }
+      header {
+        padding: 12px 12px 0;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      header p {
+        margin: 2px 0 0;
+        color: var(--ink-2);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Basemap review: <span id="build"></span></h1>
+      <p>
+        Plain review colours over the layer contract (docs/BASEMAP.md). The real
+        Classic-atlas style is written separately. 1492 territory fills are
+        drawn under the ocean mask, as the production layer order requires.
+      </p>
+    </header>
+    <main>
+      <figure>
+        <div class="map" id="world"></div>
+        <figcaption>
+          <b>World, z1.4.</b> Ocean mask, coast, z0–2 lakes and rivers, ocean
+          names, relief. Waterlines only around landmasses ≥ 5,000 km².
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="map" id="sea"></div>
+        <figcaption>
+          <b>Black Sea and Adriatic, z3.85.</b> Territory fills overrun the
+          coast; the mask paints the water back. Two waterlines (3.5 ≤ z &lt;
+          5).
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="map" id="aegean"></div>
+        <figcaption>
+          <b>Aegean, z6.2</b> (z5 tiles overzoomed). Coast stroke only, no
+          waterlines at z ≥ 5. Rivers and lakes at full 1:50m detail.
+        </figcaption>
+      </figure>
+    </main>
+    <script type="module">
+      import * as maplibregl from '/maplibre/maplibre-gl.mjs';
+
+      const manifest = await (
+        await fetch('/data/basemap-manifest.json')
+      ).json();
+      const history = await (await fetch('/data/historical/1492.json')).json();
+      document.getElementById('build').textContent = manifest.buildId;
+      const origin = location.origin;
+      const WATER = '#BFD2D0';
+      const COAST = '#3F5F61';
+      const FILLS = [
+        '#E4ADA0',
+        '#C9D7A8',
+        '#EBCF8E',
+        '#C9B8D8',
+        '#A9CFC9',
+        '#E2BFA4',
+      ];
+      const sourceColors = [
+        ...new Set(
+          history.data.borders.features.map((f) =>
+            String(f.properties.COLOR).toUpperCase(),
+          ),
+        ),
+      ];
+      const fillColor = [
+        'match',
+        ['upcase', ['to-string', ['get', 'COLOR']]],
+        ...sourceColors.flatMap((c, i) => [c, FILLS[i % FILLS.length]]),
+        '#DDD0B4',
+      ];
+      // The plan's waterline rule: four below z3.5, two to z5, none from z5,
+      // and only around landmasses of at least 5,000 km².
+      const waterlines = [2.5, 5.5, 9.5, 14.5].map((offset, i) => ({
+        id: `waterline-${i}`,
+        type: 'line',
+        source: 'basemap',
+        'source-layer': 'coast',
+        maxzoom: i < 2 ? 5 : 3.5,
+        filter: ['>=', ['get', 'landmass_km2'], 5000],
+        paint: {
+          'line-color': '#5F8A8C',
+          'line-width': 0.6,
+          'line-offset': offset,
+          'line-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            2,
+            0.62 - i * 0.13,
+            5,
+            0.25 - i * 0.05,
+          ],
+        },
+      }));
+      const style = {
+        version: 8,
+        glyphs: `${origin}/glyphs/{fontstack}/{range}.pbf`,
+        sources: {
+          basemap: {
+            type: 'vector',
+            tiles: [`${origin}${manifest.tiles.url}`],
+            minzoom: 0,
+            maxzoom: manifest.tiles.maxzoom,
+            attribution: manifest.attribution,
+          },
+          relief: {
+            type: 'image',
+            url: `${origin}${manifest.relief.url}`,
+            coordinates: manifest.relief.coordinates,
+          },
+          borders: { type: 'geojson', data: history.data.borders },
+        },
+        layers: [
+          {
+            id: 'land',
+            type: 'background',
+            paint: { 'background-color': '#F1E8D0' },
+          },
+          {
+            id: 'territory-fill',
+            type: 'fill',
+            source: 'borders',
+            paint: { 'fill-color': fillColor, 'fill-opacity': 0.9 },
+          },
+          {
+            id: 'relief',
+            type: 'raster',
+            source: 'relief',
+            paint: { 'raster-opacity': 0.9, 'raster-fade-duration': 0 },
+          },
+          {
+            id: 'territory-border',
+            type: 'line',
+            source: 'borders',
+            paint: { 'line-color': '#2A2017', 'line-width': 0.7 },
+          },
+          {
+            id: 'ocean',
+            type: 'fill',
+            source: 'basemap',
+            'source-layer': 'ocean',
+            paint: { 'fill-color': WATER },
+          },
+          ...waterlines,
+          {
+            id: 'coast',
+            type: 'line',
+            source: 'basemap',
+            'source-layer': 'coast',
+            paint: { 'line-color': COAST, 'line-width': 0.9 },
+          },
+          {
+            id: 'lakes',
+            type: 'fill',
+            source: 'basemap',
+            'source-layer': 'lakes',
+            paint: { 'fill-color': WATER },
+          },
+          {
+            id: 'lake-shore',
+            type: 'line',
+            source: 'basemap',
+            'source-layer': 'lakes',
+            paint: { 'line-color': COAST, 'line-width': 0.6 },
+          },
+          {
+            id: 'rivers',
+            type: 'line',
+            source: 'basemap',
+            'source-layer': 'rivers',
+            layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: {
+              'line-color': '#4F8187',
+              'line-width': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                2,
+                ['match', ['get', 'rank'], [1, 2], 0.9, 0.5],
+                6,
+                ['match', ['get', 'rank'], [1, 2], 2, 1.2],
+              ],
+            },
+          },
+          {
+            id: 'marine-labels',
+            type: 'symbol',
+            source: 'basemap',
+            'source-layer': 'marine_labels',
+            filter: [
+              '<=',
+              ['get', 'rank'],
+              ['step', ['zoom'], 0, 2, 1, 3, 2, 4, 4],
+            ],
+            layout: {
+              'text-field': [
+                'case',
+                ['==', ['get', 'kind'], 'ocean'],
+                ['upcase', ['get', 'name']],
+                ['get', 'name'],
+              ],
+              'text-font': ['Alegreya Medium Italic'],
+              'text-size': ['match', ['get', 'kind'], 'ocean', 15, 13],
+              'text-letter-spacing': [
+                'match',
+                ['get', 'kind'],
+                'ocean',
+                0.35,
+                0.16,
+              ],
+              'text-max-width': 7,
+            },
+            paint: {
+              'text-color': '#2F5960',
+              'text-halo-color': WATER,
+              'text-halo-width': 1.4,
+            },
+          },
+        ],
+      };
+      // `?view=lon,lat,zoom` renders that camera in every panel (ad-hoc checks).
+      const custom = new URLSearchParams(location.search)
+        .get('view')
+        ?.split(',')
+        .map(Number);
+      const views = {
+        world: { center: [10, 22], zoom: 1.4 },
+        sea: { center: [25, 42.3], zoom: 3.85 },
+        aegean: { center: [25, 38.6], zoom: 6.2 },
+      };
+      const maps = Object.entries(views).map(
+        ([id, view]) =>
+          new Promise((resolve) => {
+            const map = new maplibregl.Map({
+              container: id,
+              style,
+              ...(custom
+                ? { center: custom.slice(0, 2), zoom: custom[2] }
+                : view),
+              attributionControl: { compact: false },
+              fadeDuration: 0,
+              canvasContextAttributes: { preserveDrawingBuffer: true },
+            });
+            map.once('idle', resolve);
+          }),
+      );
+      await Promise.all(maps);
+      window.__ready = true;
+    </script>
+  </body>
+</html>

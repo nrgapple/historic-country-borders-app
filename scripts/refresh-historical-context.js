@@ -11,8 +11,14 @@
  * 4. builds public/data/context/<year>.<hash>.json from the snapshot and our
  *    own border payloads, and the bundled manifest data/historical-context.json.
  *
+ * 5. builds public/data/context/<year>.capitals.<hash>.json capital points
+ *    from the snapshot's capital coordinates (P625) and the split year files,
+ *    with the review manifest data/historical-capitals.json.
+ *
  * Flags: --refresh ignores the local response cache (use for a real update);
- * --offline rebuilds the published files from the committed snapshot only.
+ * --offline rebuilds the published files from the committed snapshot only;
+ * --coordinates adds capital coordinates to the committed snapshot without
+ * refetching anything else (cached, 50 ids per request).
  */
 const fs = require('fs');
 const path = require('path');
@@ -28,15 +34,22 @@ const {
 } = require('./lib/historical-context');
 const {
   PROPERTY,
+  earthCoordinates,
   englishLabel,
   itemValues,
   officeHolderClaims,
 } = require('./lib/wikidata');
+const {
+  buildCapitalFiles,
+  capitalIds,
+  loadSplitYears,
+} = require('./lib/historical-capitals');
 
 const ROOT = path.join(__dirname, '..');
 const MAPPING = path.join(ROOT, 'data', 'historical-entities.json');
 const SNAPSHOT = path.join(ROOT, 'data', 'historical-context-facts.json');
 const MANIFEST = path.join(ROOT, 'data', 'historical-context.json');
+const CAPITALS_MANIFEST = path.join(ROOT, 'data', 'historical-capitals.json');
 const OUTPUT_DIRECTORY = path.join(ROOT, 'public', 'data', 'context');
 const CACHE = path.join(ROOT, '.cache', 'wikidata');
 const FACT_PROPERTIES = [
@@ -51,6 +64,46 @@ const FACT_PROPERTIES = [
 ];
 
 const log = (message) => console.log(message);
+
+/** Snapshot fields for a capital's coordinate location (P625). */
+function coordinateFields(entity) {
+  const result = earthCoordinates(entity);
+  return {
+    ...(result.coordinates
+      ? { coordinates: result.coordinates }
+      : { coordinateIssue: result.issue }),
+    coordinateRevision: entity.lastrevid,
+  };
+}
+
+/**
+ * Adds P625 coordinates for every capital the snapshot references, leaving
+ * every other pinned fact untouched.
+ */
+async function addCapitalCoordinates(snapshot, client) {
+  const ids = capitalIds(snapshot, itemValues, PROPERTY.capital);
+  log(`Fetching coordinates for ${ids.length} capitals...`);
+  const fetched = await client.entities(ids);
+  let missing = 0;
+  ids.forEach((id) => {
+    const entity = fetched.get(id);
+    if (!snapshot.referenced[id]) return;
+    if (!entity) {
+      missing += 1;
+      return;
+    }
+    const {
+      coordinates: _point,
+      coordinateIssue: _issue,
+      coordinateRevision: _revision,
+      ...rest
+    } = snapshot.referenced[id];
+    snapshot.referenced[id] = { ...rest, ...coordinateFields(entity) };
+  });
+  if (missing) log(`${missing} capital item(s) are missing on Wikidata`);
+  log(`${client.requests} network requests`);
+  return snapshot;
+}
 
 function writeAtomically(destination, content) {
   fs.mkdirSync(path.dirname(destination), { recursive: true });
@@ -171,6 +224,9 @@ async function fetchSnapshot(mapping, refresh) {
   );
   log(`Fetching ${referencedIds.size} referenced items...`);
   const referencedEntities = await client.entities([...referencedIds]);
+  const capitals = new Set(
+    capitalIds({ entities }, itemValues, PROPERTY.capital),
+  );
   const referenced = {};
   [...referencedIds].sort().forEach((id) => {
     const entity = referencedEntities.get(id);
@@ -199,6 +255,7 @@ async function fetchSnapshot(mapping, refresh) {
         ? { died: { time: value.time, precision: value.precision } }
         : {}),
       ...(Object.keys(claims).length ? { claims } : {}),
+      ...(capitals.has(id) ? coordinateFields(entity) : {}),
     };
   });
 
@@ -224,6 +281,7 @@ async function fetchSnapshot(mapping, refresh) {
 async function main() {
   const offline = process.argv.includes('--offline');
   const refresh = process.argv.includes('--refresh');
+  const coordinatesOnly = process.argv.includes('--coordinates');
   const summaries = loadYearSummaries(ROOT);
   const names = new Set();
   summaries.forEach((summary) => summary.forEach((_, name) => names.add(name)));
@@ -232,9 +290,14 @@ async function main() {
     [...names],
   );
 
-  const snapshot = offline
-    ? JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8'))
-    : await fetchSnapshot(mapping, refresh);
+  let snapshot;
+  if (offline) snapshot = JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8'));
+  else if (coordinatesOnly)
+    snapshot = await addCapitalCoordinates(
+      JSON.parse(fs.readFileSync(SNAPSHOT, 'utf8')),
+      createClient({ cacheDirectory: CACHE, refresh, log }),
+    );
+  else snapshot = await fetchSnapshot(mapping, refresh);
   validateSnapshot(snapshot, mapping);
   if (!offline) writeAtomically(SNAPSHOT, `${JSON.stringify(snapshot)}\n`);
 
@@ -251,9 +314,16 @@ async function main() {
   ]);
   writeAtomically(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
 
-  const published = new Set(
-    Object.values(years).map((url) => path.basename(url)),
+  const capitals = buildCapitalFiles(files, loadSplitYears(ROOT), snapshot);
+  capitals.files.forEach(({ name, json }) =>
+    writeAtomically(path.join(OUTPUT_DIRECTORY, name), json),
   );
+  writeAtomically(CAPITALS_MANIFEST, capitals.manifestJson);
+
+  const published = new Set([
+    ...Object.values(years).map((url) => path.basename(url)),
+    ...capitals.files.map(({ name }) => name),
+  ]);
   fs.readdirSync(OUTPUT_DIRECTORY)
     .filter((file) => file.endsWith('.json') && !published.has(file))
     .forEach((file) => fs.unlinkSync(path.join(OUTPUT_DIRECTORY, file)));
@@ -261,6 +331,13 @@ async function main() {
   const sizes = files.map(({ json }) => Buffer.byteLength(json));
   log(
     `Published ${files.length} context files (${(sizes.reduce((a, b) => a + b, 0) / 1024).toFixed(1)} KiB total, ${(Math.max(...sizes) / 1024).toFixed(1)} KiB largest)`,
+  );
+  const capitalCount = Object.values(capitals.manifest.years).reduce(
+    (total, entry) => total + entry.capitals,
+    0,
+  );
+  log(
+    `Published ${capitals.files.length} capital files (${capitalCount} capital-years; ${capitals.manifest.rejected.length} rejected, listed in data/historical-capitals.json)`,
   );
 }
 
