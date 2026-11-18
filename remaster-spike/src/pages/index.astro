@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro';
+import manifest from '../data/years.json';
+import { formatYearLong } from '../atlas/years';
+const years = manifest.years;
+---
+<Base title="Historic Borders — an interactive atlas of world history" description="Explore how the world’s political borders changed on an interactive historical map." path="/">
+  <script is:inline define:vars={{ years }}>location.replace('/year/' + years[Math.floor(Math.random() * years.length)] + location.search);</script>
+  <main class="crawl"><h1>Historic Borders</h1><ul>{years.map((y) => <li><a href={`/year/${y}`}>{formatYearLong(y)}</a></li>)}</ul></main>
+</Base>
