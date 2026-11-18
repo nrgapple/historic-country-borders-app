@@ -32,7 +32,7 @@ Both network steps send `User-Agent: HistoricBordersContextRefresh/1.0 (https://
 
 ## Reconciliation method
 
-Observed: the 53 published years contain 3,025 distinct territory NAMEs. Many are peoples or ways of life ("Khoiasan", "Plain bison hunters"), not states.
+Observed: the 53 published years contain 3,013 distinct territory NAMEs (3,025 before the 2026-11-18 name corrections in `docs/HISTORICAL_DATA.md` "Reviewed name overrides"). Many are peoples or ways of life ("Khoiasan", "Plain bison hunters"), not states.
 
 For each NAME, ordered by total area so review effort lands on the largest territories first:
 
@@ -52,15 +52,15 @@ Cliopatria v0.2.1 (CC BY 4.0, with Wikidata QIDs) was considered as a matching a
 
 ### Coverage at the committed mapping
 
-Observed at the 2026-11-17 refresh:
+Observed at the 2026-11-17 refresh, updated for the 2026-11-18 name corrections (reconciled from the cache; only the Kingdom of Italy, Q172579, was added to the pinned snapshot):
 
 | Measure                                                        | Value                                                                                  |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Names matched / ambiguous / none                               | 504 / 31 / 2,490 of 3,025 (16.7% matched)                                              |
-| Matched, weighted by occurrences (name × year)                 | 27.9% of 9,916                                                                         |
+| Names matched / ambiguous / none                               | 505 / 31 / 2,477 of 3,013 (16.8% matched)                                              |
+| Matched, weighted by occurrences (name × year)                 | 28.0% of 9,916                                                                         |
 | Matched, weighted by border area                               | 37.4%                                                                                  |
-| Name-years with at least one published fact                    | 1,921 (19.4%; 31.8% by area)                                                           |
-| Published name-years with capital / head of state / government | 1,599 / 931 / 237                                                                      |
+| Name-years with at least one published fact                    | 1,924 (19.4%)                                                                          |
+| Published name-years with capital / head of state / government | 1,600 / 932 / 237                                                                      |
 | Context files                                                  | 53 files, 494 KiB total, 46 KiB largest, 5 KiB median                                  |
 | Reviewed overrides                                             | 7 (Venice, England corrected; Eora, Arabia, Pergamon, Persia, Bulgar Khanate rejected) |
 
@@ -154,9 +154,8 @@ A point is published only when:
 
 Everything else goes to `rejected` in `data/historical-capitals.json` with a reason: `outside territory` (with `distanceKm`), `coordinates missing`, `coordinates ambiguous`, `coordinates not fetched`, `territory not in the split index`, or `capital has no label`.
 
-Observed at the committed snapshot: 1,583 capital points across the 53 years (1492: 14, 1815: 47, 1914: 62) and 42 rejections. 37 were outside their territory and 5 had no coordinates. The rejections are mostly a capital that moved or a map that differs from Wikidata. Examples:
+Observed at the committed snapshot: 1,587 capital points across the 53 years (1492: 14, 1815: 47, 1914: 63) and 39 rejections. 34 were outside their territory and 5 had no coordinates. The rejections are mostly a capital that moved or a map that differs from Wikidata. Bern, previously rejected 116 km from the 1994–2010 "Switzerland" sliver, is published since the name override moved the name to the real polygon (`docs/HISTORICAL_DATA.md` "Reviewed name overrides"). Examples:
 
-- Bern lies 116 km from the 1994–2010 "Switzerland" feature, an upstream sliver (see `docs/HISTORICAL_DATA.md` "Blank names").
 - Constantinople lies 404 km from the Byzantine Empire of 1400.
 - Hanseongbu's Wikidata point is 13,679 km from Coree.
 

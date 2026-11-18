@@ -201,10 +201,10 @@
       "rejected": 2
     },
     "1914": {
-      "url": "/data/context/1914.capitals.23067e7f730a9a2a.json",
-      "sha256": "23067e7f730a9a2abbcc4e6eb334a6fa4faae0b1e8c668d3ec74b081e4f6ce17",
-      "bytes": 8447,
-      "capitals": 62,
+      "url": "/data/context/1914.capitals.e9dfcb36f2d17260.json",
+      "sha256": "e9dfcb36f2d17260bcce1fa89af7a2820016fc682dff2c7082e149bcd8de1d76",
+      "bytes": 8577,
+      "capitals": 63,
       "rejected": 2
     },
     "1920": {
@@ -243,25 +243,25 @@
       "rejected": 0
     },
     "1994": {
-      "url": "/data/context/1994.capitals.1f39ff5bc4b10b6f.json",
-      "sha256": "1f39ff5bc4b10b6fbe9a772089ec275d2e56b9bd5dad076982792730c82b3fef",
-      "bytes": 23475,
-      "capitals": 174,
-      "rejected": 1
+      "url": "/data/context/1994.capitals.d74bd086d3ec4f53.json",
+      "sha256": "d74bd086d3ec4f5371309616020ad58dec1d5026c809bea353d17486b9fa2ef0",
+      "bytes": 23604,
+      "capitals": 175,
+      "rejected": 0
     },
     "2000": {
-      "url": "/data/context/2000.capitals.20406ca87a1852fb.json",
-      "sha256": "20406ca87a1852fb0c958b2c949719443e2669973a7315f8fc9bcb89de0467ec",
-      "bytes": 23471,
-      "capitals": 174,
-      "rejected": 1
+      "url": "/data/context/2000.capitals.35bdf7cbcd9c25a6.json",
+      "sha256": "35bdf7cbcd9c25a676a539784d5da25db57d9c2df14ce7e8635d6fe43cb80c54",
+      "bytes": 23600,
+      "capitals": 175,
+      "rejected": 0
     },
     "2010": {
-      "url": "/data/context/2010.capitals.5ec4385688ca9a09.json",
-      "sha256": "5ec4385688ca9a09ac9446823131e29ce5a683d99caf11a9708c93c4e8dcd691",
-      "bytes": 24155,
-      "capitals": 179,
-      "rejected": 1
+      "url": "/data/context/2010.capitals.b3f09a4727eae220.json",
+      "sha256": "b3f09a4727eae2200503119c07159efee9a7524253a2b0e77bafa72dbbf75a3e",
+      "bytes": 24284,
+      "capitals": 180,
+      "rejected": 0
     },
     "-123000": {
       "url": "/data/context/bc123000.capitals.6d18edfe75b31491.json",
@@ -690,30 +690,6 @@
       "label": "Brazzaville",
       "reason": "outside territory",
       "distanceKm": 228
-    },
-    {
-      "year": 1994,
-      "name": "Switzerland",
-      "qid": "Q70",
-      "label": "Bern",
-      "reason": "outside territory",
-      "distanceKm": 116
-    },
-    {
-      "year": 2000,
-      "name": "Switzerland",
-      "qid": "Q70",
-      "label": "Bern",
-      "reason": "outside territory",
-      "distanceKm": 116
-    },
-    {
-      "year": 2010,
-      "name": "Switzerland",
-      "qid": "Q70",
-      "label": "Bern",
-      "reason": "outside territory",
-      "distanceKm": 116
     }
   ]
 }
