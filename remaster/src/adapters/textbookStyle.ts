@@ -103,6 +103,9 @@ export const TEXTBOOK_LOW_POWER_HIDDEN: readonly string[] = [
   TEXTBOOK_LAYER.shelf,
 ];
 
+/** Every B image id starts with this (see `addTextbookImages`). */
+export const TEXTBOOK_IMAGE_PREFIX = 'tb-';
+
 /** B's marker and pattern images (registered by `addTextbookImages`). */
 export const TEXTBOOK_MARKER = {
   city: 'tb-city',

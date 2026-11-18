@@ -14,7 +14,10 @@ import {
   LOW_POWER_DROPS_GRAIN,
   resolveLowPower,
 } from '../adapters/mapStyle';
-import { addTextbookImages } from '../adapters/textbookStyle';
+import {
+  addTextbookImages,
+  TEXTBOOK_IMAGE_PREFIX,
+} from '../adapters/textbookStyle';
 import { trackEvent } from '../lib/analytics';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding } from '../lib/places';
@@ -154,16 +157,24 @@ export function mountPaMap(container: HTMLElement): MapHandle {
   });
   map.touchZoomRotate.disableRotation();
   // Generated images, not a sprite: Modern textbook's selection hatch and
-  // the "no PIAA football" hatch (one per theme).
-  map.on('styleimagemissing', (event: { id: string }) => {
-    addTextbookImages(map);
+  // the "no PIAA football" hatch (one per theme). All are registered before
+  // any tile asks for them; a late request adds only the image it names, so
+  // the pattern atlas never shifts under tiles being laid out.
+  const addHatches = (only?: string) => {
     for (const theme of THEME_IDS) {
       const id = hatchImageId(theme);
-      if (event.id === id && !map.hasImage(id))
+      if ((only === undefined || only === id) && !map.hasImage(id))
         map.addImage(id, hatchImage(16, theme), { pixelRatio: 2 });
     }
+  };
+  map.once('style.load', () => {
+    addTextbookImages(map);
+    addHatches();
   });
-  map.once('style.load', () => addTextbookImages(map));
+  map.on('styleimagemissing', (event: { id: string }) => {
+    if (event.id.startsWith(TEXTBOOK_IMAGE_PREFIX)) addTextbookImages(map);
+    else addHatches(event.id);
+  });
   map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
   // ODbL: the OpenStreetMap credit stays expanded (compact only on phones,
   // where MapLibre opens it on load and the visitor may close it).

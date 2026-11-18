@@ -2,13 +2,8 @@ import { useId, type ReactNode } from 'react';
 import Dialog from './Dialog';
 import { useChrome, useSettings } from '../atlas/hooks';
 import type { TextSize } from '../atlas/settings';
-import { THEME_LABELS, type ThemeId } from '../atlas/theme';
+import { THEME_LABELS } from '../atlas/theme';
 import { THEME_IDS } from '../styles/tokens';
-
-const THEME_HINTS: Record<ThemeId, string> = {
-  classic: 'Cream paper, engraved serif, hand-tinted borders',
-  textbook: 'Crisp white, bright colours, clear sans-serif labels',
-};
 
 const TEXT_SIZES: Array<{ value: TextSize; label: string }> = [
   { value: 'small', label: 'Small' },
@@ -116,7 +111,7 @@ export default function SettingsPanel({ children }: { children?: ReactNode }) {
           Map style
         </legend>
         <div
-          className="segmented segmented--stacked"
+          className="segmented"
           role="radiogroup"
           aria-labelledby={themeGroupId}
         >
@@ -129,10 +124,7 @@ export default function SettingsPanel({ children }: { children?: ReactNode }) {
                 checked={theme === id}
                 onChange={() => setTheme(id)}
               />
-              <span>
-                {THEME_LABELS[id]}
-                <small className="segmented__hint">{THEME_HINTS[id]}</small>
-              </span>
+              <span>{THEME_LABELS[id]}</span>
             </label>
           ))}
         </div>
