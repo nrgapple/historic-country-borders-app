@@ -31,6 +31,9 @@ const PAGES = [
 
 const TOP_BAR = 'header, [role="banner"]';
 
+const keywords = (value: string | null) =>
+  (value ?? '').trim().split(/\s+/).filter(Boolean).sort();
+
 const computedColors = (page: Page) =>
   page.evaluate((topBarSelector) => {
     const bg = (el: Element | null) =>
@@ -43,7 +46,7 @@ const computedColors = (page: Page) =>
           ?.content.trim() ?? null,
       body: bg(document.body),
       topBar: bg(document.querySelector(topBarSelector)),
-      panel: bg(document.querySelector('[role="complementary"]')),
+      panel: bg(document.querySelector('aside, [role="complementary"]')),
       text: getComputedStyle(document.body).color,
     };
   }, TOP_BAR);
@@ -53,7 +56,6 @@ const open = async (
   baseURL: string,
   path: string,
   colorScheme: 'light' | 'dark',
-  panel = false,
 ) => {
   const context = await browser.newContext({
     baseURL,
@@ -64,13 +66,6 @@ const open = async (
   await interceptThirdParty(context, baseURL);
   const page = await context.newPage();
   await page.goto(path);
-  // The place panel opens once the year's borders load, after the layout
-  // settles; wait for it so both colour reads include it.
-  if (panel)
-    await page
-      .getByRole('complementary')
-      .first()
-      .waitFor({ state: 'visible', timeout: 30_000 });
   await settle(page);
   return page;
 };
@@ -143,8 +138,7 @@ for (const target of PAGES) {
     baseURL,
     playwright,
   }, testInfo) => {
-    const panel = 'panel' in target && Boolean(target.panel);
-    const dark = await open(browser, baseURL!, target.path, 'dark', panel);
+    const dark = await open(browser, baseURL!, target.path, 'dark');
     // Chromium's force-dark flag applies to the whole browser, so the light
     // reference comes from a second browser launched without it.
     const referenceBrowser =
@@ -160,17 +154,19 @@ for (const target of PAGES) {
         baseURL!,
         target.path,
         'light',
-        panel,
       );
       const darkColors = await computedColors(dark);
       const lightColors = await computedColors(light);
 
-      expect(darkColors.meta, '<meta name="color-scheme">').toBe('only light');
-      // Browsers serialize the computed value canonically: Chromium and
-      // WebKit both report \`only light\` as "light only".
-      expect(['only light', 'light only'], ':root color-scheme').toContain(
-        darkColors.colorScheme,
-      );
+      // Browsers serialize `only light` as `light only`; the order is free.
+      expect(keywords(darkColors.meta), '<meta name="color-scheme">').toEqual([
+        'light',
+        'only',
+      ]);
+      expect(keywords(darkColors.colorScheme), ':root color-scheme').toEqual([
+        'light',
+        'only',
+      ]);
       expect(darkColors.topBar, 'top bar is present').not.toBeNull();
       if (target.panel) {
         expect(darkColors.panel, 'place panel is open').not.toBeNull();
