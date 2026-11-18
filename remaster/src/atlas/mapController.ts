@@ -195,7 +195,10 @@ export function mountMap(container: HTMLElement): MapHandle {
   const runRelabel = () => {
     if (destroyed || !map.getSource(SOURCE.viewportLabels)) return;
     if (map.isMoving()) return; // the next idle runs it
-    if (!getState().settings.showLabels || !labelInfo.size) {
+    // Low-power devices (school Chromebooks) skip the viewport relabel: it
+    // costs ~25-75 ms per settled move on a fast but loaded machine, and the
+    // built-in label points still name every territory near its centre.
+    if (lowPower || !getState().settings.showLabels || !labelInfo.size) {
       labelsDirty = false;
       showAnchors(EMPTY_ANCHORS);
       return;
