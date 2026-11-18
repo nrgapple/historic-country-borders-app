@@ -19,3 +19,20 @@ Notes:
   - The cartouche shows only the plate title until T7's map key.
   - The panel has no "Compare 1400" button (not in scope) and no event list under Key dates (plan §2.1: needs a curated list).
 - **Not shown:** the Key dates bar sits below the overview in the panel and needs scrolling at these sizes.
+
+## Pennsylvania school districts (P5, T8)
+
+Taken 2026-11-18 the same way (`ONLY=pa node remaster/scripts/shoot.mjs <base>`). The district is selected by `?place=` with no camera in the link, so the app frames it clear of the panel or bottom sheet. Wikipedia is intercepted with fixture text marked as such.
+
+| File                                  | View                                                                                                                                                                                                        |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pa-state-college-1440x900.png`       | State College Area selected, desktop: plate title with the PASDA vintage and source, gazetteer panel with county, IU, CTC and AUN, then Wikipedia, then the boundary source, caveat and correction guidance |
+| `pa-state-college-1024x768.png`       | Same, tablet landscape (finder collapsed to its button)                                                                                                                                                     |
+| `pa-state-college-insets-390x844.png` | Same, phone with simulated 47/34 px insets (CDP), island and home bar drawn: compact "PA school districts · Boundaries Oct 2025" header, district framed above the bottom sheet, ODbL credit at the top     |
+| `pa-camp-hill-streets-1440x900.png`   | Camp Hill selected at z14.6: T8's named residential streets (z14 streets in z12 tiles), the selection band inside the district edge                                                                         |
+| `pa-state-1440x900.png`               | The whole state, nothing selected: district names in small caps lead; cities in spaced roman capitals; overzoomed context outside the state                                                                 |
+
+Notes:
+
+- The map key slot shows a PA plate title only; T7's map key (and its PA form) had not landed on any sibling branch.
+- The OpenStreetMap credit is in the attribution control and the credit strip on every size; About repeats it.

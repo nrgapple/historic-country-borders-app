@@ -38,9 +38,28 @@ const budgets = {
   projectorLatinFonts: 64 * 1024,
 };
 
-if (!fs.existsSync(chunksDirectory)) {
-  console.error('Missing .next build output. Run `yarn build` first.');
-  process.exit(1);
+/**
+ * The Astro remaster's deployable tree (REMASTER_PLAN §5, §9.2 P5): every
+ * file in remaster/dist counts against the same 16,000-file gate and 25 MiB
+ * per-file limit, including T2's basemap, T8's PA street basemap and the
+ * district tiles. Returns summary lines and pushes errors.
+ */
+function checkRemaster(errorList) {
+  const dist = path.join(ROOT, 'remaster/dist');
+  if (!fs.existsSync(dist)) {
+    errorList.push('Missing remaster/dist. Run `yarn remaster:build` first.');
+    return [];
+  }
+  const result = checkDeployableFiles(dist);
+  errorList.push(...result.errors.map((e) => `remaster/dist: ${e}`));
+  const count = (rel) => {
+    const dir = path.join(dist, rel);
+    return fs.existsSync(dir) ? walk(dir).length : 0;
+  };
+  return [
+    `- Remaster deployable files in remaster/dist/: ${result.count} / ${result.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(result.largest.bytes)} ${result.largest.file}`,
+    `  - T2 basemap ${count('tiles/basemap') + count('basemap')}, T8 PA street basemap ${count('tiles/pa')}, PA district tiles ${count('tiles/pa-districts')}, glyphs ${count('glyphs')}, fonts ${count('fonts')}, year data ${count('data/historical') + count('data/context')}`,
+  ];
 }
 
 const walk = (directory) =>
@@ -55,6 +74,26 @@ const enforce = (label, actual, limit) => {
   if (actual > limit)
     errors.push(`${label}: ${formatKiB(actual)} exceeds ${formatKiB(limit)}`);
 };
+
+if (process.argv.includes('--remaster')) {
+  const remasterErrors = [];
+  const lines = checkRemaster(remasterErrors);
+  console.log(lines.join('\n'));
+  if (process.env.GITHUB_STEP_SUMMARY)
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
+  if (remasterErrors.length) {
+    console.error(
+      `\nRemaster budget failures:\n${remasterErrors.map((e) => `- ${e}`).join('\n')}`,
+    );
+    process.exitCode = 1;
+  }
+  return;
+}
+
+if (!fs.existsSync(chunksDirectory)) {
+  console.error('Missing .next build output. Run `yarn build` first.');
+  process.exit(1);
+}
 
 const javascriptFiles = walk(chunksDirectory)
   .filter((file) => file.endsWith('.js'))
@@ -224,6 +263,13 @@ enforce(
   budgets.projectorLatinFonts,
 );
 
+// The remaster is gated whenever it has been built (P5 adds the PA trees).
+const remasterLines = fs.existsSync(path.join(ROOT, 'remaster/dist'))
+  ? checkRemaster(errors)
+  : [
+      '- Remaster: not built (run `yarn remaster:build`, then `yarn size:check --remaster`)',
+    ];
+
 const summary = [
   '## Performance and build-size budgets',
   '',
@@ -240,6 +286,7 @@ const summary = [
   `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
   `- Deployable files in ${path.relative(ROOT, deployDirectory)}/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
   `- Glyph PBFs: ${glyphSizes.length} files / ${budgets.glyphFiles}; ${formatKiB(glyphTotal)} total / ${formatKiB(budgets.glyphTotal)}; ${formatKiB(glyphLargest)} largest / ${formatKiB(budgets.glyphLargest)}`,
+  ...remasterLines,
   `- WOFF2 fonts: ${fontSizes.length} files / ${budgets.fontFiles}; ${formatKiB(fontTotal)} total / ${formatKiB(budgets.fontTotal)}; Latin UI ${formatKiB(defaultLatinFonts)} default / ${formatKiB(budgets.defaultLatinFonts)}, ${formatKiB(projectorLatinFonts)} projector / ${formatKiB(budgets.projectorLatinFonts)}`,
 ];
 

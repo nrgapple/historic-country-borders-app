@@ -9,7 +9,7 @@
     "node": ">=22.23.4 <23"
   },
   "scripts": {
-    "data": "node scripts/build-data.mjs && node scripts/sync-public.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/sync-public.mjs && node scripts/build-pa.mjs",
     "tokens": "node scripts/build-tokens.mjs",
     "dev": "yarn data && astro dev",
     "build": "yarn data && yarn tokens --check && astro build",

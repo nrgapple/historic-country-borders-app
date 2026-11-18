@@ -16,6 +16,15 @@ const only = process.env.ONLY ? new RegExp(process.env.ONLY) : null;
 fs.mkdirSync(out, { recursive: true });
 
 const OTTOMAN = 'place=Ottoman%20Empire';
+const STATE_COLLEGE = 'place=State%20College%20Area';
+const WIKI = {
+  'Ottoman Empire':
+    'The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century. It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire.',
+  'State College Area School District':
+    'The State College Area School District is a public school district in Centre County, Pennsylvania. It serves the borough of State College and the surrounding townships of College, Ferguson, Halfmoon, Harris and Patton. (Design-review fixture text, not fetched from Wikipedia.)',
+  'Camp Hill School District':
+    'The Camp Hill School District is a small public school district in Cumberland County, Pennsylvania, serving the borough of Camp Hill. (Design-review fixture text, not fetched from Wikipedia.)',
+};
 const SHOTS = [
   // The mock's desktop camera: Europe to the Caspian, the panel on the right.
   {
@@ -68,6 +77,47 @@ const SHOTS = [
     touch: true,
     insets: { top: 59, bottom: 34 },
   },
+  // Pennsylvania (P5): a district selected, framed by the app (no camera in
+  // the link), at the three review sizes; the phone with iPhone insets.
+  {
+    name: 'pa-state-college-1440x900',
+    url: `/pa/school-districts?${STATE_COLLEGE}`,
+    width: 1440,
+    height: 900,
+    wiki: 'State College Area School District',
+  },
+  {
+    name: 'pa-state-college-1024x768',
+    url: `/pa/school-districts?${STATE_COLLEGE}`,
+    width: 1024,
+    height: 768,
+    touch: true,
+    wiki: 'State College Area School District',
+  },
+  {
+    name: 'pa-state-college-insets-390x844',
+    url: `/pa/school-districts?${STATE_COLLEGE}`,
+    width: 390,
+    height: 844,
+    touch: true,
+    insets: { top: 47, bottom: 34 },
+    wiki: 'State College Area School District',
+  },
+  // Street level (T8's z14 streets on z12 tiles), a district selected.
+  {
+    name: 'pa-camp-hill-streets-1440x900',
+    url: '/pa/school-districts?lng=-76.9050&lat=40.2420&zoom=14.60&place=Camp%20Hill',
+    width: 1440,
+    height: 900,
+    wiki: 'Camp Hill School District',
+  },
+  // The whole state, nothing selected.
+  {
+    name: 'pa-state-1440x900',
+    url: '/pa/school-districts',
+    width: 1440,
+    height: 900,
+  },
 ];
 
 const browser = await chromium.launch({ channel: 'chromium' });
@@ -82,16 +132,16 @@ for (const shot of SHOTS) {
   const page = await context.newPage();
   // Wikipedia is the only third-party request (on selection); keep shots
   // deterministic and offline with a fixed summary.
+  const title = shot.wiki ?? 'Ottoman Empire';
   await page.route('https://en.wikipedia.org/**', (route) =>
     route.fulfill({
       json: {
         query: {
           pages: {
             1: {
-              title: 'Ottoman Empire',
-              extract:
-                'The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century. It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire.',
-              fullurl: 'https://en.wikipedia.org/wiki/Ottoman_Empire',
+              title,
+              extract: WIKI[title],
+              fullurl: `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`,
             },
           },
         },
@@ -110,10 +160,12 @@ for (const shot of SHOTS) {
     });
   }
   await page.goto(`${base}${shot.url}`);
-  await page.waitForSelector(
-    '[data-testid="map-container"][data-data-state="ready"]',
-    { timeout: 60_000 },
-  );
+  await page.waitForSelector('main[data-data-state="ready"]', {
+    timeout: 60_000,
+  });
+  await page
+    .waitForSelector('.map-canvas[data-loaded]', { timeout: 60_000 })
+    .catch(() => undefined);
   // Let labels place, relief load and the camera settle.
   await page.evaluate(
     () =>
@@ -121,8 +173,7 @@ for (const shot of SHOTS) {
         const map = window.__atlasMap;
         if (!map) return resolve(undefined);
         const done = () => setTimeout(resolve, 600);
-        if (map.loaded() && !map.isMoving()) map.once('idle', done);
-        else map.once('idle', done);
+        map.once('idle', done);
         map.triggerRepaint();
       }),
   );
