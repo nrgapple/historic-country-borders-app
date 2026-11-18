@@ -11,6 +11,7 @@ import PlaceFinder from '../components/PlaceFinder';
 import ProjectorCaption from '../components/ProjectorCaption';
 import LifespanBar from '../components/LifespanBar';
 import MapKeySlot from '../components/MapKeySlot';
+import Welcome from '../components/Welcome';
 import {
   framingBounds,
   useYearIndex,
@@ -23,6 +24,7 @@ import { formatYearLong } from '../lib/years';
 import sources from '../data/sources.json';
 import { panelFacts, territorySubtitle } from './facts';
 import { actions, InitialYear, useAtlas, YEARS } from './store';
+import { useWelcome } from './useWelcome';
 import type { MapHandle } from './mapController';
 
 // Start fetching MapLibre (its own chunk) as soon as the island's module
@@ -47,6 +49,16 @@ const SHORTCUTS = [
 ];
 
 const sourceDate = new Date(sources.historical.commitDate);
+
+/** Closing the welcome returns focus to About, where it can be reopened. */
+const closeWelcome = () => {
+  const hadFocus = document.activeElement?.closest('.welcome');
+  actions.closeOverlay();
+  if (hadFocus)
+    document
+      .querySelector<HTMLElement>('.toolbar [aria-label="About this map"]')
+      ?.focus();
+};
 
 const territoryOption = (t: Territory): PlaceOption => {
   const partOf = t.PARTOF?.trim();
@@ -76,6 +88,9 @@ function AtlasApp() {
   const webgl = useAtlas((s) => s.webgl);
   const projectorText = useAtlas((s) => s.settings.projectorText);
   const overlay = useAtlas((s) => s.overlay);
+  const welcomeOpen = useWelcome();
+  const welcomeView = useAtlas((s) => s.welcomeView);
+  const welcomeAuto = useAtlas((s) => s.welcomeAuto);
   const index = useYearIndex(year);
   // The controller's handle, for the map key (camera, drawn classes, labels).
   const [mapHandle, setMapHandle] = useState<MapHandle | null>(null);
@@ -155,6 +170,15 @@ function AtlasApp() {
           (!focusMode && Boolean(place && territory)) || undefined
         }
       >
+        {!focusMode && welcomeOpen && (
+          <Welcome
+            view={welcomeView}
+            onViewChange={actions.setWelcomeView}
+            onClose={closeWelcome}
+            autoFocus={!welcomeAuto}
+          />
+        )}
+
         <div className="frame">
           <MapView yearLabel={yearLabel} onMount={setMapHandle} />
         </div>
@@ -236,6 +260,7 @@ function AtlasApp() {
       <FeedbackDialog />
       <AboutDialog
         shortcuts={SHORTCUTS}
+        onWelcome={actions.openWelcome}
         sources={
           <>
             <p>

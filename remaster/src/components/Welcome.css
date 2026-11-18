@@ -1,0 +1,331 @@
+/* The "Historic Borders is back" card (Direction A): a framed page of the
+   atlas laid in the map's top-right corner, a bottom sheet on phones. It
+   never covers the top bar, and on phones it ends above the home indicator. */
+
+.welcome {
+  position: absolute;
+  z-index: 6;
+  top: calc(var(--frame-inset) + 14px);
+  right: calc(var(--frame-inset) + 14px);
+  width: min(26rem, calc(100% - 2 * var(--frame-inset) - 28px));
+  /* Leaves the map's zoom buttons in the bottom-right corner uncovered. */
+  max-height: calc(100% - 2 * var(--frame-inset) - 28px - 72px);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sheet);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 14px 30px -18px rgba(42, 32, 23, 0.6);
+}
+
+/* Leaves the "What changed" summary in the top-left corner uncovered. */
+@media (max-width: 1023px) {
+  .welcome {
+    width: min(
+      26rem,
+      calc(100% - 2 * var(--frame-inset) - 28px),
+      calc(100% - 340px)
+    );
+  }
+}
+
+.welcome__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px 12px 18px;
+  border-bottom: 3px double var(--ink);
+}
+
+.welcome__header .brand-mark {
+  color: var(--ink);
+}
+
+.welcome__eyebrow {
+  margin: 0;
+  font: 700 13px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.welcome__title {
+  margin: 2px 0 0;
+  font: 700 25px/1.12 var(--font-serif);
+  letter-spacing: -0.005em;
+}
+
+.welcome__title:focus {
+  outline: none;
+}
+
+.welcome__title:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.welcome__close {
+  align-self: start;
+}
+
+.welcome__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 14px 20px 6px;
+}
+
+.welcome__lede {
+  margin: 0 0 12px;
+  font: italic 400 16px/1.45 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.welcome__notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.welcome__notes li {
+  position: relative;
+  margin: 0 0 9px;
+  padding-left: 20px;
+  font-size: 16px;
+  line-height: 1.42;
+}
+
+/* A madder lozenge: the timeline thumb's mark, as a bullet. */
+.welcome__notes li::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+.welcome__notes strong {
+  font-weight: 700;
+}
+
+.welcome__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--hair);
+}
+
+/* ------------------------------------------------------------------ Tour */
+
+.tour {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tour__viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px 20px 8px;
+  /* Vertical scroll stays native; horizontal travel is a swipe. */
+  touch-action: pan-y;
+}
+
+.tour__art {
+  margin: 0;
+}
+
+.tour__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tour__count {
+  margin: 12px 0 2px;
+  font: 700 13px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums;
+}
+
+.tour__title {
+  margin: 0;
+  font: 700 21px/1.2 var(--font-serif);
+}
+
+.tour__text {
+  margin: 6px 0 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.tour__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--hair);
+}
+
+.tour__step {
+  padding: 0 12px;
+}
+
+.tour__dots {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tour__dots li {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--ink);
+  transform: rotate(45deg);
+}
+
+.tour__dots li[data-current] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Motion only for visitors who have not asked to reduce it. */
+@media (prefers-reduced-motion: no-preference) {
+  .welcome {
+    animation: welcome-in 200ms ease-out;
+  }
+
+  .tour__slide[data-direction='next'] {
+    animation: tour-in-next 200ms ease-out;
+  }
+
+  .tour__slide[data-direction='previous'] {
+    animation: tour-in-previous 200ms ease-out;
+  }
+}
+
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes tour-in-next {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+@keyframes tour-in-previous {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+/* --------------------------------------------------------------- Phones */
+
+@media (max-width: 699px) {
+  .welcome {
+    top: auto;
+    left: 0;
+    right: 0;
+    /* Plan §2.2 rule 3: a bottom sheet keeps clear of the home indicator. */
+    bottom: max(var(--frame-inset), var(--safe-bottom));
+    width: auto;
+    max-height: 74%;
+    max-height: min(74%, calc(100% - 64px));
+    border: 0;
+    border-top: 3px double var(--ink);
+    outline: 0;
+    box-shadow: 0 -12px 26px -16px rgba(42, 32, 23, 0.55);
+  }
+
+  .welcome__header {
+    padding: 12px 8px 10px 16px;
+  }
+
+  .welcome__title {
+    font-size: 23px;
+  }
+
+  .welcome__body,
+  .tour__viewport {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .welcome__actions,
+  .tour__controls {
+    padding: 10px 16px 12px;
+  }
+
+  .welcome__actions .button {
+    flex: 1 1 auto;
+  }
+
+  /* The vignette shrinks before the words do. */
+  .tour__art {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .tour__step {
+    padding: 0 10px;
+  }
+}
+
+/* Short screens (phones in landscape, Safari's toolbars): the card scrolls
+   as one page, so its buttons never squeeze out of the frame. */
+@media (max-height: 560px) {
+  .welcome {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .welcome__body,
+  .tour,
+  .tour__viewport {
+    flex: none;
+    overflow: visible;
+  }
+
+  .tour__art {
+    max-width: 240px;
+  }
+}
+
+@media (max-height: 560px) and (max-width: 699px) {
+  .welcome {
+    max-height: calc(100% - 24px);
+  }
+}
+
+@media print {
+  .welcome {
+    display: none;
+  }
+}
+
+/* About → "Take the tour" */
+.about__welcome {
+  margin: 0 0 4px;
+  font-size: 16px;
+}

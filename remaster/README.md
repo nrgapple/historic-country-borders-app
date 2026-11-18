@@ -78,6 +78,14 @@ Notes:
 - **State names beat city names.** Every state-name layer sits above the city and capital layers (MapLibre places top-down), larger territories sort first, and a colliding name may move one line up or down (`text-variable-anchor: center, bottom, top`) before it is dropped. City dots stay non-optional: a dot never appears without its name.
 - The controller's handle (`MapHandle`) gives the key the map, the low-power flag and `refreshLabels()`; `window.__atlasMap` remains only as a test and screenshot hook.
 
+## First-visit welcome
+
+`src/components/Welcome.tsx` is the one-time "Historic Borders is back" card: six release notes, then a five-card tour with inline SVG vignettes (`WelcomeArt.tsx`). It is non-modal: a corner card on the map from 700 px, a bottom sheet above the home indicator on phones, so T4's suites run with it open.
+
+- **When it shows** (`src/lib/welcome.ts`, `src/atlas/useWelcome.ts`): on a first visit, once dismissal is remembered in `localStorage` under `historic-borders-welcome:<WELCOME_VERSION>`. Bump `WELCOME_VERSION` and the notes to show a later release. If the browser cannot store the dismissal, it never opens by itself.
+- **When it waits or closes:** never in focus mode; a shared `?place=` link keeps its first view until the visitor interacts and the panel closes. Selecting a place, opening another overlay or entering focus mode closes it, and every close counts as dismissal.
+- **Reopening:** About → "Take the tour" or "read what’s new" (`actions.openWelcome`).
+
 ## Left for later milestones
 
 - **PA school districts (P5).** `/pa/school-districts` is still the current app; the sitemap lists it, and T4's PA layout cases fail against this build until the port.

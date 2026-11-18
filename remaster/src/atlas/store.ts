@@ -39,7 +39,9 @@ import {
 
 export const YEARS: readonly number[] = historicalManifest.years;
 
-export type Overlay = 'settings' | 'about' | 'feedback' | null;
+export type Overlay = 'settings' | 'about' | 'feedback' | 'welcome' | null;
+/** Which page of the welcome card is showing: the release notes or the tour. */
+export type WelcomeView = 'notes' | 'tour';
 export type DataStatus = 'loading' | 'ready' | 'error';
 export type YearChangeMethod =
   'step' | 'track' | 'keyboard' | 'select' | 'history';
@@ -60,6 +62,10 @@ export interface AtlasState {
   status: DataStatus;
   settings: Settings;
   overlay: Overlay;
+  /** The welcome card's page while `overlay` is 'welcome'. */
+  welcomeView: WelcomeView;
+  /** True when the welcome opened by itself (first visit); it then never takes focus. */
+  welcomeAuto: boolean;
   /** Projector/focus mode: only the map, a caption and a restore button. */
   focusMode: boolean;
   /** The latest request to frame a place on the map (a camera command). */
@@ -76,6 +82,8 @@ const initialState = (year: number): AtlasState => ({
   status: 'loading',
   settings: DEFAULT_SETTINGS,
   overlay: null,
+  welcomeView: 'notes',
+  welcomeAuto: false,
   focusMode: false,
   frame: null,
   webgl: true,
@@ -206,6 +214,16 @@ export const actions = {
   openOverlay(overlay: Exclude<Overlay, null>) {
     set({ overlay: state.overlay === overlay ? null : overlay });
     trackEvent('overlay_open', { overlay });
+  },
+
+  /** Opens the welcome card (src/components/Welcome.tsx) on a given page. */
+  openWelcome(view: WelcomeView = 'notes', { auto = false } = {}) {
+    set({ overlay: 'welcome', welcomeView: view, welcomeAuto: auto });
+    trackEvent('overlay_open', { overlay: 'welcome', view, auto });
+  },
+
+  setWelcomeView(view: WelcomeView) {
+    set({ welcomeView: view });
   },
 
   closeOverlay() {

@@ -11,6 +11,14 @@ Taken 2026-11-18 from the Astro build (`yarn remaster:build`, `yarn remaster:pre
 | `1914-{1440x900,1024x768,390x844}-key-{open,closed}.png`                               | T7: 1914, no selection, the map key open and closed at each width             | `style-review/1914-desktop.png`, `1914-phone.png`; the 1914 shots before T7 (git history)             |
 | `1914-europe-z2.6-1440x900.png`, `1815-europe-1440x900.png`, `1492-world-1440x900.png` | T7 label priority: state names over cities, viewport anchors                  | –                                                                                                     |
 
+The first-visit welcome (`remaster/src/components/Welcome.tsx`) is shot separately with `node remaster/scripts/shoot-welcome.mjs` on 1914, with reduced motion; `shoot.mjs` marks it as seen so the map shots above stay comparable.
+
+| File                                                                    | View                                                                                   |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `welcome-notes-1440x900.png`, `welcome-notes-390x844.png`               | "Historic Borders is back": release notes; a corner card on desktop, a sheet on phones |
+| `welcome-tour-share-1440x900.png`, `welcome-tour-share-390x844.png`     | Tour card 1 of 5, "Share a place link"                                                 |
+| `welcome-tour-symbols-1440x900.png`, `welcome-tour-symbols-390x844.png` | Tour card 5 of 5, "Reading the map" (capital, city, ruins, hatched colony)             |
+
 Notes:
 
 - **Matches the mock:** plate-title year with era small caps, era washes and the ladder track with the madder diamond, the gazetteer panel (fact box, drop cap, credit, primary "Copy link"), and T6's cartography with neatline, grain, star capital and dependency hatch.
