@@ -6,7 +6,7 @@ const bodies: Record<string, string> = {
   '/': 'Historic Borders',
   '/year/1994': 'Historic Borders',
   '/year/-100': 'Historic Borders',
-  '/pa/school-districts': 'Pennsylvania School Districts',
+  '/pa/school-districts': 'Pennsylvania school districts',
   '/robots.txt': 'User-agent: GPTBot',
   '/sitemap.xml': '<loc>https://historicborders.app/pa/school-districts</loc>',
   '/year/9999': 'That map is not available',
