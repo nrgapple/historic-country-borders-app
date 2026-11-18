@@ -83,6 +83,54 @@ Rejected alternatives:
 - Taking ABBREVN in the combined files would add names the committed Wikidata mapping has not reconciled.
 - `.geojson` file names: their content type on Workers Static Assets is unverified until P0, and `.json` is compressed.
 
+### First-party Natural Earth basemap for the remaster (2026-11, track T2)
+
+**Observed.**
+
+- The historical polygons overrun coastlines; parts of the Black Sea and Adriatic lie inside territories.
+- The remaster drops Mapbox (plan §5) and must not add third-party map hosts.
+- Workers Static Assets allows 20,000 files per deployment, and the plan reserves room for a ~10k-file PA street tree under a 16,000-file gate.
+- Natural Earth is public domain and frozen at v5.1.2.
+
+**Decision.** An explicit, network-using refresh, `yarn data:refresh:basemap`, builds one static z/x/y vector-tile tree and two assets from pinned, hash-checked Natural Earth files:
+
+- the tree is `/tiles/basemap/<build>/{z}/{x}/{y}.pbf`;
+- the assets are a tinted relief WebP and 1:110m land for the locator globe.
+
+The tiles carry five layers:
+
+- an `ocean` mask (world minus land, cut on the z3 tile grid), which the style paints over the territory fills;
+- `coast`, wound with water on the right and tagged `landmass_km2` for the waterline rule;
+- `lakes`;
+- `rivers`;
+- `marine_labels`.
+
+**Max zoom: z5, by measurement.**
+
+- Every candidate keeps the full 1:50m detail at its top zoom.
+- z5 is 1,365 files and 1.6 MB, with a 2 px worst snap at the app's z10.
+- z6 would be 5,461 files for 1 px. z7 exceeds 20,000.
+
+**Placeholders.** Inland tiles are written as tiny valid placeholders, so the pyramid is complete and nothing 404s.
+
+**Delivery.** `_headers` serves `.pbf`/`.mvt` tiles as `application/x-protobuf`, which is compressible, and caches both trees as immutable per build.
+
+**Validation.** `yarn data:validate:basemap`, part of `yarn data:validate`, checks offline:
+
+- pins and hashes;
+- the complete pyramid;
+- a tree digest against the manifest;
+- byte and file budgets (≤ 1,500 files);
+- the layer contract in every tile.
+
+**Rejected.**
+
+- **30° mask cells,** because tile-aligned cells hide seams.
+- **Packing the globe land into tiles.** The canvas globe needs whole rings.
+- **PMTiles.** It needs Range requests, which Workers Static Assets does not honor.
+
+**Unverified until P0:** whether Workers Static Assets compresses `application/x-protobuf`. See `docs/BASEMAP.md`.
+
 ## Deferred
 
 ### Domain cutover
