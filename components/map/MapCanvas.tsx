@@ -53,7 +53,7 @@ export default function MapCanvas({
   customAttribution,
   children,
 }: MapCanvasProps) {
-  const mapRef = useRef<MapRef>(null);
+  const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [cursor, setCursor] = useState<string>('');
 
@@ -68,6 +68,20 @@ export default function MapCanvas({
   }, []);
 
   const handleLoad = useCallback(() => setLoaded(true), []);
+
+  // Data layers need only a parsed style, not a fully rendered basemap.
+  // 'style.load' fires before tiles arrive, so slow or blocked basemap tiles
+  // (school networks, tests) never keep borders off the map. A reused map may
+  // already have its style, so check before waiting.
+  const attachMap = useCallback((ref: MapRef | null) => {
+    mapRef.current = ref;
+    const map = ref?.getMap() as
+      | (ReturnType<MapRef['getMap']> & { style?: { _loaded?: boolean } })
+      | undefined;
+    if (!map) return;
+    if (map.style?._loaded) setLoaded(true);
+    else map.once('style.load', () => setLoaded(true));
+  }, []);
 
   const handleMoveEnd = useCallback((event: ViewStateChangeEvent) => {
     const { longitude, latitude, zoom } = event.viewState;
@@ -95,9 +109,10 @@ export default function MapCanvas({
   }
 
   return (
-    <div className="map-canvas">
+    // `data-loaded` marks when the style is ready and data layers can mount.
+    <div className="map-canvas" data-loaded={loaded || undefined}>
       <Map
-        ref={mapRef}
+        ref={attachMap}
         reuseMaps
         mapboxAccessToken={token}
         mapStyle={mapStyle}

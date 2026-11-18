@@ -114,8 +114,22 @@ test.beforeEach(async ({ page }) => {
     route.fulfill({ json: schoolDistrictResponse }),
   );
   await page.route('https://api.mapbox.com/**', (route) => {
-    if (route.request().url().includes('/styles/v1/')) {
+    const url = route.request().url();
+    if (url.includes('/styles/v1/')) {
       return route.fulfill({ json: emptyMapboxStyle });
+    }
+    // The inline historical basemap references Mapbox tilesets. Serve empty
+    // TileJSON so the style loads deterministically; tile requests then fail
+    // harmlessly below.
+    if (/\/v4\/[^/]+\.json/.test(url)) {
+      return route.fulfill({
+        json: {
+          tilejson: '2.2.0',
+          tiles: ['https://api.mapbox.com/v4/empty/{z}/{x}/{y}.pbf'],
+          minzoom: 0,
+          maxzoom: 14,
+        },
+      });
     }
     return route.abort();
   });
@@ -129,6 +143,10 @@ const expectReadyMap = async (map: Locator) => {
   await expect(map).toHaveAttribute('data-data-state', 'ready');
   await expect(map).toHaveAttribute('data-feature-count', '1');
   await expect(map.locator('.mapboxgl-canvas')).toBeVisible();
+  // Data layers (and therefore clicks) are available once the style loads.
+  await expect(map.locator('.map-canvas[data-loaded]')).toBeAttached({
+    timeout: 15_000,
+  });
 };
 
 test('root resolves to an available historical year', async ({ page }) => {
