@@ -131,6 +131,12 @@ Rejected alternatives:
 - Taking ABBREVN in the combined files would add names the committed Wikidata mapping has not reconciled.
 - `.geojson` file names: their content type on Workers Static Assets is unverified until P0, and `.json` is compressed.
 
+### Self-hosted OFL fonts and prebuilt map glyphs (remaster, 2026-11)
+
+Observed: the remaster's Classic-atlas design (plan §2.1) uses Alegreya, Alegreya SC and Alegreya Sans, and offers Atkinson Hyperlegible Next as projector text. Published names also use Canadian syllabics, Cherokee, Osage, IPA letters and combining marks. MapLibre 6.19 draws a glyph locally with TinySDF at 3.29 ms per glyph under 4× CPU, against 0.09 ms to decode it from a prebuilt PBF (`remaster-spike/results/glyph-raster.json`). Wrangler sends `.pbf` without a Content-Type.
+
+Decision: the fonts are self-hosted OFL WOFF2s from pinned `@fontsource` packages, plus a HarfBuzz subset of the full Noto Sans pinned by `google/fonts` commit and SHA-256. They ship with their license copies and content-hashed names. An explicit build step, `yarn data:refresh:fonts`, renders SDF glyph PBFs for seven fixed fontstacks into a content-addressed `/glyphs/<buildId>/` tree. It emits only the 256-codepoint ranges that published names use, and merges Noto fallbacks into each stack. Alias `@font-face` rules named after the fontstacks keep MapLibre's locally drawn grapheme clusters in the same fonts. `_headers` serves glyphs as immutable `application/x-protobuf`. `yarn data:validate:fonts` fails when any published codepoint lacks a glyph in any stack, when files drift from `data/map-fonts.json`, or when a license copy is missing. The style uses PBF glyphs, not `font-faces`, because main-thread time on Chromebooks matters more than about 250 KB of cacheable glyph bytes. See `docs/FONTS.md`.
+
 ## Deferred
 
 ### Domain cutover

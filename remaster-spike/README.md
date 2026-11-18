@@ -27,6 +27,7 @@ yarn data:formats  # GeoJSON vs geobuf vs FlatGeobuf vs TopoJSON vs MVT -> resul
 yarn measure       # throttled browser comparison -> results/browser.json + shots/
 yarn test          # Classic-atlas style unit tests (Vitest)
 node scripts/check-safe-areas.mjs http://127.0.0.1:4400   # iPhone safe-area check prototype
+node scripts/measure-glyphs.mjs     # map label glyphs: PBF vs font-faces vs local -> results/glyphs.json (uses ../public/glyphs, ../public/fonts)
 ```
 
 Downloads are cached under `~/LargeFiles/historic-borders-remaster/`, which is on the SSD. They come from:
