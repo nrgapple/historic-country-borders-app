@@ -22,18 +22,9 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        // Linux CI runners have no GPU; allow Firefox's software WebGL so the
-        // real map renders instead of the "no WebGL" fallback.
-        launchOptions: {
-          firefoxUserPrefs: {
-            'webgl.force-enabled': true,
-            'webgl.disabled': false,
-            'webgl.enable-webgl2': true,
-          },
-        },
-      },
+      // Linux CI Firefox has no WebGL; its map journeys verify the fallback
+      // message instead (see expectReadyMap in e2e/critical-journeys.spec.ts).
+      use: { ...devices['Desktop Firefox'] },
     },
     {
       name: 'webkit',

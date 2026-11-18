@@ -142,6 +142,23 @@ const expectReadyMap = async (map: Locator) => {
   await expect(map).toBeVisible();
   await expect(map).toHaveAttribute('data-data-state', 'ready');
   await expect(map).toHaveAttribute('data-feature-count', '1');
+
+  // Some environments (Linux CI Firefox, locked-down school devices) have no
+  // WebGL. There the app must explain itself instead of showing a blank map;
+  // verify that fallback, then skip the steps that need a rendered map.
+  const hasWebGL = await map.page().evaluate(() => {
+    const canvas = document.createElement('canvas');
+    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  });
+  if (!hasWebGL) {
+    await expect(
+      map.getByRole('alert').filter({
+        hasText: 'can’t draw the interactive map',
+      }),
+    ).toBeVisible();
+    test.skip(true, 'No WebGL here; the fallback message was verified.');
+  }
+
   await expect(map.locator('.mapboxgl-canvas')).toBeVisible();
   // Data layers (and therefore clicks) are available once the style loads.
   await expect(map.locator('.map-canvas[data-loaded]')).toBeAttached({
