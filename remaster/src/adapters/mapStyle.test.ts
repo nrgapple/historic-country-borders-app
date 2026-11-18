@@ -3,7 +3,13 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import manifest from '@repo/data/map-fonts.json';
 import { DEFAULT_SETTINGS } from '../atlas/settings';
-import { createStyle, LAYER, resolveLowPower, styleOptions } from './mapStyle';
+import {
+  createStyle,
+  LAYER,
+  resolveLowPower,
+  SOURCE,
+  styleOptions,
+} from './mapStyle';
 
 // T6's own suite (remaster-spike/src/atlas/classic/style.test.ts) covers the
 // cartography; these check how the app drives it.
@@ -85,5 +91,28 @@ describe('Classic-atlas style adapter (T6)', () => {
   it('lets the URL force low power on or off', () => {
     expect(resolveLowPower('?lowPower=1')).toBe(true);
     expect(resolveLowPower('?lowPower=0')).toBe(false);
+  });
+
+  it('draws viewport anchors below the state names and above every city (T7)', () => {
+    const style = styleFor(false);
+    const ids = style.layers.map((l) => l.id);
+    expect(style.sources[SOURCE.viewportLabels]).toBeDefined();
+    expect(ids.indexOf(LAYER.viewportStateLabels)).toBeLessThan(
+      ids.indexOf(LAYER.stateLabels),
+    );
+    for (const city of [LAYER.places, LAYER.capitals])
+      expect(ids.indexOf(LAYER.viewportStateLabels)).toBeGreaterThan(
+        ids.indexOf(city),
+      );
+  });
+
+  it('passes relocated territories through to the state-name filter', () => {
+    const sel = { id: null, name: null, dependencyIds: [] };
+    expect(
+      styleOptions(DEFAULT_SETTINGS, false, sel, [131, 86]).relocatedLabels,
+    ).toEqual([131, 86]);
+    expect(styleOptions(DEFAULT_SETTINGS, false, sel).relocatedLabels).toEqual(
+      [],
+    );
   });
 });

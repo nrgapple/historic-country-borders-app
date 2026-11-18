@@ -1,0 +1,237 @@
+/* The corner map key (plan §2.1): A's double-ruled cartouche holding the
+   title, B's locator globe and legend, and the alternating scale bar. Kept
+   compact so it covers as little of the map as possible; state names whose
+   label point it would hide are moved clear by the map controller. */
+
+.map-key {
+  position: absolute;
+  left: calc(var(--frame-inset) + 20px);
+  /* Above the credit strip. */
+  bottom: calc(var(--frame-inset) + 60px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: 236px;
+  max-width: calc(100% - 2 * var(--frame-inset) - 40px);
+  background-color: var(--sheet);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.map-key:not([data-open]) {
+  width: auto;
+}
+
+.map-key__body {
+  padding: 10px 12px 8px;
+}
+
+.map-key__body[hidden] {
+  display: none;
+}
+
+.map-key__head {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.map-key__globe {
+  display: block;
+  width: 64px;
+  height: 64px;
+}
+
+.map-key__plate {
+  text-align: center;
+}
+
+.map-key__kicker {
+  margin: 0;
+  font: 700 13px/1 var(--font-sc);
+  letter-spacing: 0.18em;
+  color: var(--ink-2);
+}
+
+.map-key__title {
+  margin: 4px 0 2px;
+  font: 700 25px/1.05 var(--font-sc);
+  letter-spacing: 0.04em;
+  font-variant-numeric: lining-nums;
+}
+
+.map-key__sub {
+  margin: 0;
+  font: italic 400 14px/1.2 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.map-key__legend {
+  display: grid;
+  gap: 3px;
+  margin: 8px 0 0;
+  padding: 7px 0 0;
+  list-style: none;
+  border-top: 3px double var(--hair);
+}
+
+.map-key__item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  font: 400 14px/1.2 var(--font-serif);
+}
+
+.map-key__swatch {
+  display: block;
+  width: 20px;
+  height: 14px;
+  border: 2px solid;
+}
+
+.map-key__icon {
+  display: block;
+}
+
+.map-key__bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 7px 10px 8px 12px;
+}
+
+.map-key[data-open] .map-key__bar {
+  border-top: 1px solid var(--hair);
+}
+
+.scalebar {
+  flex: none;
+  margin: 0;
+  /* Room for the last number, centred on the bar's end. */
+  padding-right: 18px;
+}
+
+.scalebar__bar {
+  display: flex;
+  height: 7px;
+  border: 1px solid var(--ink);
+  box-sizing: border-box;
+}
+
+.scalebar__bar span {
+  flex: 1;
+  background: var(--sheet);
+}
+
+.scalebar__bar span:nth-child(odd) {
+  background: var(--ink);
+}
+
+.scalebar__nums {
+  position: relative;
+  height: 17px;
+  font: 500 13px/17px var(--font-serif);
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+}
+
+.scalebar__nums span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.scalebar__nums span:first-child {
+  transform: none;
+}
+
+.scalebar__caption {
+  margin: 0;
+  font: italic 400 13px/1.1 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.map-key__north {
+  flex: none;
+  width: 18px;
+  height: 26px;
+  margin-left: auto;
+}
+
+.map-key__north text {
+  font: 700 12px var(--font-sc);
+  fill: var(--ink);
+}
+
+.map-key__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 2px 8px;
+  border: 1px solid var(--hair);
+  background: transparent;
+  color: var(--ink);
+  font: 700 14px/1 var(--font-sc);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.map-key__toggle:hover {
+  background: var(--paper-2);
+}
+
+.map-key__toggle svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* With the side panel open on narrow tablets, stay clear of it. */
+@media (max-width: 1100px) {
+  .stage[data-panel-open] .map-key {
+    max-width: calc(100% - var(--panel-width) - 3 * var(--frame-inset) - 40px);
+  }
+}
+
+@media (max-width: 699px) {
+  /* Bottom left over the map, clear of the home indicator. */
+  .map-key {
+    left: calc(var(--frame-inset) + 8px);
+    bottom: max(calc(var(--frame-inset) + 8px), calc(var(--safe-bottom) + 8px));
+    outline-offset: 2px;
+  }
+
+  .map-key__bar {
+    padding: 5px 6px 6px 10px;
+  }
+
+  /* The place sheet covers the bottom: the key moves to the top, where
+     "What changed" (shown only without a place) would otherwise sit. */
+  .stage[data-panel-open] .map-key {
+    top: calc(var(--frame-inset) + 8px);
+    bottom: auto;
+    max-width: calc(100% - 2 * var(--frame-inset) - 16px);
+    flex-direction: column-reverse;
+  }
+
+  /* The Settings sheet rises from the bottom over the map: step aside. */
+  .map-key[data-under-sheet] {
+    visibility: hidden;
+  }
+
+  .stage[data-panel-open] .map-key[data-open] .map-key__bar {
+    border-top: 0;
+    border-bottom: 1px solid var(--hair);
+  }
+}
+
+@media print {
+  .map-key__toggle {
+    display: none;
+  }
+}

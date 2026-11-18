@@ -40,6 +40,12 @@ export interface ClassicStyleOptions {
   lowPower: boolean;
   /** "Projector text": Atkinson Hyperlegible Next, uppercase states, larger labels. */
   projectorText: boolean;
+  /**
+   * Territory ids whose state name is drawn at a viewport anchor instead of
+   * their own label points (see `viewportLabels.ts`). Their points are
+   * filtered out of `stateLabels` so a name is never drawn twice.
+   */
+  relocatedLabels: readonly number[];
 }
 
 export const DEFAULT_OPTIONS: ClassicStyleOptions = {
@@ -47,6 +53,7 @@ export const DEFAULT_OPTIONS: ClassicStyleOptions = {
   selected: null,
   lowPower: false,
   projectorText: false,
+  relocatedLabels: [],
 };
 
 export const withDefaults = (

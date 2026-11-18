@@ -80,6 +80,7 @@ export default function PlacePanel({
     // Explicit role (implicit for <aside>) so layout tests can select it with CSS.
     <aside
       className="place-panel paper-grain"
+      data-map-obstacle
       role="complementary"
       aria-labelledby="place-panel-title"
     >

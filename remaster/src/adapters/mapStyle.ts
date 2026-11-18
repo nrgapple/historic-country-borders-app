@@ -18,7 +18,10 @@ import {
   detectLowPower,
   LAYER,
   setSelection,
+  relocatedIds,
+  setViewportLabels as classicSetViewportLabels,
   withDefaults,
+  type AnchorCollection,
   type ClassicStyleOptions,
 } from '@repo/remaster-spike/src/atlas/classic';
 import type { Settings } from '../atlas/settings';
@@ -34,7 +37,13 @@ export {
   LOW_POWER_SIMPLE_NEATLINE,
   MARKER,
   SOURCE,
+  labelTerritories,
+  landPolygons,
+  viewportAnchors,
+  type AnchorCollection,
+  type LabelTerritory,
   type LegendEntry,
+  type Rect,
 } from '@repo/remaster-spike/src/atlas/classic';
 
 /** Layers a click can select. */
@@ -63,8 +72,10 @@ export const styleOptions = (
   settings: Settings,
   lowPower: boolean,
   sel: SelectionStyle | null = null,
+  relocatedLabels: readonly number[] = [],
 ): ClassicStyleOptions =>
   withDefaults({
+    relocatedLabels,
     settings: {
       textSize: settings.textSize,
       textCase: settings.textCase,
@@ -100,11 +111,25 @@ export function applyDynamic(
   settings: Settings,
   sel: SelectionStyle,
   lowPower: boolean,
+  anchors: AnchorCollection | null = null,
 ) {
   if (!map.getLayer(LAYER.stateLabels)) return;
-  const options = styleOptions(settings, lowPower, sel);
+  const options = styleOptions(settings, lowPower, sel, relocatedIds(anchors));
   setSelection(map, options.selected, options, sel.dependencyIds);
 }
+
+/**
+ * Draws viewport anchors for territories whose own label points are off
+ * screen or under the key, and hides those points (T6's viewportLabels.ts).
+ */
+export const setViewportLabels = (
+  map: MapLibreMap,
+  anchors: AnchorCollection,
+  settings: Settings,
+  sel: SelectionStyle,
+  lowPower: boolean,
+) =>
+  classicSetViewportLabels(map, anchors, styleOptions(settings, lowPower, sel));
 
 /** Relief loads after the first paint so it never delays the borders. */
 export const addRelief = (

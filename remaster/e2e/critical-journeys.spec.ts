@@ -373,6 +373,118 @@ test('focus mode keeps the year and place on screen for a projector', async ({
   await expect(page.getByRole('slider', { name: 'Map year' })).toBeVisible();
 });
 
+test('the map key scale bar is true at the centre latitude from z2 to z8', async ({
+  page,
+}) => {
+  await page.goto('/year/1994?lng=10.0000&lat=47.0000&zoom=3.00');
+  await expectReadyMap(mapOf(page));
+  const key = page.getByRole('region', { name: 'Map key' });
+  for (const zoom of [2, 3.2, 4.5, 6, 8]) {
+    await page.evaluate(
+      (z) =>
+        new Promise<void>((resolve) => {
+          const map = (
+            window as never as { __atlasMap: import('maplibre-gl').Map }
+          ).__atlasMap;
+          map.once('moveend', () => resolve());
+          map.jumpTo({ zoom: z });
+        }),
+      zoom,
+    );
+    const bar = key.locator('.scalebar__bar');
+    await expect(key.getByRole('img', { name: /Scale bar/ })).toHaveAttribute(
+      'aria-label',
+      /at 47° N/,
+    );
+    // Measure the drawn bar on the live map: unproject its length around the
+    // centre and take the great-circle distance (haversine, mean radius).
+    const { km, measured } = await page.evaluate(() => {
+      const map = (window as never as { __atlasMap: import('maplibre-gl').Map })
+        .__atlasMap;
+      const scale = document.querySelector<HTMLElement>('.scalebar')!;
+      const width = document
+        .querySelector<HTMLElement>('.scalebar__bar')!
+        .getBoundingClientRect().width;
+      const c = map.project(map.getCenter());
+      const a = map.unproject([c.x - width / 2, c.y]);
+      const b = map.unproject([c.x + width / 2, c.y]);
+      const rad = (d: number) => (d * Math.PI) / 180;
+      const h =
+        Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
+        Math.cos(rad(a.lat)) *
+          Math.cos(rad(b.lat)) *
+          Math.sin(rad(b.lng - a.lng) / 2) ** 2;
+      return {
+        km: Number(scale.dataset.km),
+        measured: 2 * 6371.0088 * Math.asin(Math.sqrt(h)),
+      };
+    });
+    expect(Math.abs(measured - km) / km, `z${zoom}`).toBeLessThan(0.02);
+    expect((await bar.boundingBox())!.width).toBeGreaterThan(20);
+  }
+});
+
+test('the map key lists only what is drawn and collapses to its scale bar', async ({
+  page,
+}) => {
+  await page.goto('/year/1994?lng=0.5000&lat=0.5000&zoom=7.00');
+  const map = mapOf(page);
+  await expectReadyMap(map);
+  const key = page.getByRole('region', { name: 'Map key' });
+  await expect(key).toContainText('The World in');
+  await expect(key).toContainText('1994');
+  const legend = key.getByRole('list', { name: 'Legend' });
+  // The fixture year draws one territory and no places: nothing to explain.
+  await expect(key.getByRole('img', { name: /Scale bar/ })).toBeVisible();
+  await expect(legend).toHaveCount(0);
+
+  const box = await map.boundingBox();
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await expect(legend).toContainText('Selected territory');
+  await expect(legend).not.toContainText('City');
+  await expect(legend).not.toContainText('ruins');
+
+  const toggle = key.getByRole('button', { name: 'Key' });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(legend).toBeHidden();
+  await expect(key.getByRole('img', { name: /Scale bar/ })).toBeVisible();
+  await expect(key.getByRole('img', { name: 'North is up' })).toBeVisible();
+});
+
+test('on phones the key is a scale bar and a Key toggle that never meets the sheet', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/year/1994?lng=0.5000&lat=0.5000&zoom=7.00');
+  const map = mapOf(page);
+  await expectReadyMap(map);
+  const key = page.getByRole('region', { name: 'Map key' });
+  const toggle = key.getByRole('button', { name: 'Key' });
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(key.getByRole('img', { name: /Scale bar/ })).toBeVisible();
+  await expect(key.getByText('The World in')).toBeHidden();
+
+  const box = await map.boundingBox();
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  const sheet = page.getByRole('complementary');
+  await expect(sheet).toBeVisible();
+  const apart = async () => {
+    const a = (await key.boundingBox())!;
+    const b = (await sheet.boundingBox())!;
+    return (
+      a.y + a.height <= b.y + 1 ||
+      b.y + b.height <= a.y + 1 ||
+      a.x + a.width <= b.x + 1 ||
+      b.x + b.width <= a.x + 1
+    );
+  };
+  await expect.poll(apart).toBe(true);
+  await toggle.click();
+  await expect(key.getByText('The World in')).toBeVisible();
+  await expect.poll(apart).toBe(true);
+});
+
 test('unknown years use the useful static 404', async ({ page }) => {
   const response = await page.goto('/year/9999');
   expect(response?.status()).toBe(404);

@@ -7,6 +7,7 @@
  *   applyStyleOptions(map, options);                            // Settings, Projector text, lowPower
  *   setSelection(map, selection, options);                      // paint-only for borders
  *   loadMapFontCss(document, options.projectorText);            // T3 alias faces
+ *   setViewportLabels(map, anchors, options);                   // after each move (viewportLabels.ts)
  */
 import type {
   FilterSpecification,
@@ -29,7 +30,9 @@ import {
   SOURCE,
 } from './contract';
 import { graticule } from './graticule';
+import { stateLabelFilter } from './expressions';
 import { buildLayers, reliefLayer } from './layers';
+import { relocatedIds, type AnchorCollection } from './viewportLabels';
 import {
   withDefaults,
   type ClassicStyleOptions,
@@ -79,6 +82,7 @@ export function classicAtlasStyle(
       }),
       [SOURCE.labels]: geojson(urls.labels),
       [SOURCE.capitals]: geojson(urls.capitals),
+      [SOURCE.viewportLabels]: geojson(undefined),
     },
     layers: buildLayers(o),
   };
@@ -188,4 +192,26 @@ export function loadMapFontCss(
   };
   ensure(MAP_ALIASES_CSS);
   if (projectorText) ensure(PROJECTOR_CSS);
+}
+
+/**
+ * Draws the given territories' names at viewport anchors and hides their own
+ * label points. `options` must carry the current selection and settings; its
+ * `relocatedLabels` is replaced by the anchors' ids.
+ */
+export function setViewportLabels(
+  map: MLMap,
+  anchors: AnchorCollection,
+  partial: Partial<ClassicStyleOptions> = {},
+) {
+  const source = map.getSource(SOURCE.viewportLabels) as
+    { setData(data: unknown): unknown } | undefined;
+  if (!source || !map.getLayer(LAYER.stateLabels)) return;
+  const o = withDefaults(partial);
+  const ids = relocatedIds(anchors);
+  map.setFilter(
+    LAYER.stateLabels,
+    stateLabelFilter(o.selected, ids) as FilterSpecification,
+  );
+  void source.setData(anchors);
 }

@@ -279,25 +279,67 @@ export const stateFont = (
 
 /** Territories under 18,000 km² aren't labelled at overview zooms; the selection always is. */
 export const LABEL_MIN_KM2 = 18000;
-export const stateLabelFilter = (sel: Selection | null): Expr => {
+/** Area floors by zoom: [from zoom, minimum km²]. Shared by the filter and `labelMinKm2`. */
+export const LABEL_MIN_KM2_STEPS = [
+  [0, LABEL_MIN_KM2],
+  [4, 4000],
+  [5.5, 0],
+] as const;
+
+/** The smallest territory (km², exclusive) that gets a state name at `zoom`. */
+export const labelMinKm2 = (zoom: number): number =>
+  [...LABEL_MIN_KM2_STEPS].reverse().find(([z]) => zoom >= z)?.[1] ?? 0;
+
+/**
+ * Which label points draw a state name. `exclude` lists territory ids whose
+ * name is drawn at a viewport anchor instead (`ClassicStyleOptions.relocatedLabels`).
+ * MapLibre allows `['zoom']` only in a top-level step, so the exclusion is
+ * repeated inside each stop.
+ */
+export const stateLabelFilter = (
+  sel: Selection | null,
+  exclude: readonly number[] = [],
+): Expr => {
   const or = (cond: unknown) => (sel ? ['any', selectedName(sel), cond] : cond);
+  const keep = (cond: unknown) =>
+    exclude.length
+      ? [
+          'all',
+          cond,
+          ['!', ['in', ['coalesce', ['id'], -1], ['literal', [...exclude]]]],
+        ]
+      : cond;
+  const [[, z0km2], [z1, z1km2], [z2]] = LABEL_MIN_KM2_STEPS;
   return e([
     'step',
     ['zoom'],
-    or(['>', areaKm2, LABEL_MIN_KM2]),
-    4,
-    or(['>', areaKm2, 4000]),
-    5.5,
-    ['has', LABEL_ATTR.name],
+    keep(or(['>', areaKm2, z0km2])),
+    z1,
+    keep(or(['>', areaKm2, z1km2])),
+    z2,
+    keep(['has', LABEL_ATTR.name]),
   ]);
 };
 
+/**
+ * Larger territories place their names first; the selection always first.
+ * Symbol layers are placed top-down, so this orders names *within* the state
+ * layers, and every state layer sits above the city and capital layers.
+ */
 export const stateSortKey = (sel: Selection | null): Expr =>
   e(
     sel
       ? ['case', selectedName(sel), -1e12, ['-', 0, areaKm2]]
       : ['-', 0, areaKm2],
   );
+
+/**
+ * When a name collides at its label point, MapLibre tries it just above, then
+ * just below the point before dropping it. In 1914 the German Empire's name
+ * touched the Austro-Hungarian Empire's and was dropped; one line up it fits.
+ * Left and right shifts are left out: a long name would leave its territory.
+ */
+export const STATE_VARIABLE_ANCHORS = ['center', 'bottom', 'top'] as const;
 
 export const stateTextColor = (sel: Selection | null): Expr | string =>
   sel

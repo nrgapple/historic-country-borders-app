@@ -33,6 +33,12 @@ export const SOURCE = {
   graticule: 'graticule',
   /** T2: tinted local-relief image, added after first paint by `addRelief()`. */
   relief: 'relief',
+  /**
+   * Generated client-side by `viewportLabels.ts`: one extra label point per
+   * territory whose own label points are off screen or under the map key.
+   * Features carry the labels source's `n` and `a` and the territory's id.
+   */
+  viewportLabels: 'viewport-labels',
 } as const;
 
 /** T2 basemap tiles, read from data/basemap-manifest.json (about 1 kB of it is bundled). */
@@ -214,6 +220,8 @@ export const LAYER = {
   capitals: 'capitals',
   selectedCapital: 'selected-capital',
   stateLabels: 'state-labels',
+  /** State names at viewport-aware anchors (`SOURCE.viewportLabels`), placed after `stateLabels`. */
+  viewportStateLabels: 'state-labels-viewport',
   /** Icon-only mark for the selected capital, drawn above everything and never blocking labels. */
   selectedCapitalMark: 'selected-capital-mark',
   relief: 'relief',

@@ -52,6 +52,7 @@ export default function ChangesSummary({ context, year }: ChangesSummaryProps) {
   return (
     <details
       className="changes-summary"
+      data-map-obstacle
       aria-busy={stale || undefined}
       data-stale={stale || undefined}
     >

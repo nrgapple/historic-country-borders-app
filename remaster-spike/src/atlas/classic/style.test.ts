@@ -45,6 +45,8 @@ import {
   waterlineCount,
   waterlineMaxzoom,
   withDefaults,
+  labelMinKm2,
+  STATE_VARIABLE_ANCHORS,
   type ClassicStyleOptions,
   type MapSettings,
 } from './index';
@@ -118,7 +120,7 @@ function passes(l: ReturnType<typeof layer>, ctx: Ctx = {}) {
     throw new Error(`${l.id} filter: ${JSON.stringify(f.value)}`);
   return f.value.evaluate(
     { zoom: ctx.zoom ?? 3 } as never,
-    { type: 'Point', properties: ctx.props ?? {} } as never,
+    { type: 'Point', properties: ctx.props ?? {}, id: ctx.id } as never,
   );
 }
 
@@ -447,6 +449,7 @@ describe('settings mapping', () => {
     const l = layersFor({ settings: { showLabels: false } });
     for (const id of [
       LAYER.stateLabels,
+      LAYER.viewportStateLabels,
       LAYER.places,
       LAYER.capitals,
       LAYER.selectedCapital,
@@ -722,5 +725,133 @@ describe('contract', () => {
       const style = classicAtlasStyle('', {}, opts(o));
       expect(mapFonts.checkStyleFontstacks(style, fontManifest)).toEqual([]);
     }
+  });
+});
+
+/* ---- Label priority (T7: state names beat city names) ---------------------------- */
+
+describe('label priority', () => {
+  const ids = () => layersFor().map((l) => l.id);
+  const at = (id: string) => ids().indexOf(id);
+
+  it('places every state-name layer before (above) every city and capital layer', () => {
+    // MapLibre places symbol layers top-down: a higher layer claims space first.
+    for (const state of [LAYER.stateLabels, LAYER.viewportStateLabels])
+      for (const place of [
+        LAYER.places,
+        LAYER.capitals,
+        LAYER.selectedCapital,
+        LAYER.seaLabels,
+        LAYER.riverLabels,
+      ])
+        expect(at(state)).toBeGreaterThan(at(place));
+    // Names at their own points (and the selection) go before viewport anchors.
+    expect(at(LAYER.stateLabels)).toBeGreaterThan(
+      at(LAYER.viewportStateLabels),
+    );
+  });
+
+  it('sorts larger territories first and the selection before all of them', () => {
+    const key = (o: Parameters<typeof opts>[0], name: string, area: number) =>
+      evaluate(
+        layer(layersFor(o), LAYER.stateLabels),
+        'layout',
+        'symbol-sort-key',
+        {
+          props: { [LABEL_ATTR.name]: name, [LABEL_ATTR.area]: km2(area) },
+        },
+      ) as number;
+    const russia = key({}, 'Russian Empire', 21356357);
+    const austria = key({}, 'Austro-Hungarian Empire', 652005);
+    const germany = key({}, 'German Empire', 520943);
+    expect(russia).toBeLessThan(austria);
+    expect(austria).toBeLessThan(germany);
+    const sel = { selected: { id: 7, name: 'Luxembourg' } };
+    expect(key(sel, 'Luxembourg', 2703)).toBeLessThan(
+      key(sel, 'Russian Empire', 21356357),
+    );
+    // The viewport layer orders its anchors the same way.
+    const v = layer(layersFor(), LAYER.viewportStateLabels);
+    expect(v.layout?.['symbol-sort-key']).toEqual(
+      layer(layersFor(), LAYER.stateLabels).layout?.['symbol-sort-key'],
+    );
+  });
+
+  it('lets a colliding state name move one line up or down instead of dropping', () => {
+    for (const id of [LAYER.stateLabels, LAYER.viewportStateLabels]) {
+      const l = layer(layersFor(), id);
+      expect(l.layout?.['text-variable-anchor']).toEqual([
+        ...STATE_VARIABLE_ANCHORS,
+      ]);
+      expect(STATE_VARIABLE_ANCHORS[0]).toBe('center');
+      expect(STATE_VARIABLE_ANCHORS).not.toContain('left');
+    }
+  });
+
+  it('never draws a city dot without its name, or a name without its dot', () => {
+    const p = layer(layersFor(), LAYER.places);
+    expect(p.layout?.['text-optional']).toBe(false);
+    expect(p.layout?.['icon-optional']).toBe(false);
+    expect(p.layout?.['icon-allow-overlap']).toBeUndefined();
+    expect(p.layout?.['text-allow-overlap']).toBeUndefined();
+  });
+
+  it('hides relocated territories at their own points only', () => {
+    const russia = {
+      id: 131,
+      props: {
+        [LABEL_ATTR.name]: 'Russian Empire',
+        [LABEL_ATTR.area]: km2(2e7),
+      },
+    };
+    const germany = {
+      id: 133,
+      props: {
+        [LABEL_ATTR.name]: 'German Empire',
+        [LABEL_ATTR.area]: km2(5e5),
+      },
+    };
+    const l = layersFor({ relocatedLabels: [131] });
+    for (const zoom of [2, 4.5, 6]) {
+      expect(passes(layer(l, LAYER.stateLabels), { zoom, ...russia })).toBe(
+        false,
+      );
+      expect(passes(layer(l, LAYER.stateLabels), { zoom, ...germany })).toBe(
+        true,
+      );
+      expect(
+        passes(layer(l, LAYER.viewportStateLabels), { zoom, ...russia }),
+      ).toBe(true);
+    }
+    // A city point (no id, no name) is never a state name.
+    expect(
+      passes(layer(l, LAYER.stateLabels), {
+        zoom: 6,
+        props: { [LABEL_ATTR.place]: 'Prague' },
+      }),
+    ).toBe(false);
+  });
+
+  it('uses one area floor per zoom for the filter and for viewport anchors', () => {
+    expect(labelMinKm2(2)).toBe(18000);
+    expect(labelMinKm2(4.2)).toBe(4000);
+    expect(labelMinKm2(6)).toBe(0);
+    const l = layer(layersFor(), LAYER.stateLabels);
+    for (const zoom of [2, 3.9, 4, 5, 5.5, 7]) {
+      const floor = labelMinKm2(zoom);
+      const props = (a: number) => ({
+        props: { [LABEL_ATTR.name]: 'X', [LABEL_ATTR.area]: km2(a) },
+      });
+      expect(passes(l, { zoom, ...props(floor + 1) })).toBe(true);
+      if (floor > 0) expect(passes(l, { zoom, ...props(floor) })).toBe(false);
+    }
+  });
+
+  it('starts the viewport-anchor source empty, with no network request', () => {
+    const style = classicAtlasStyle('https://example.test', {}, opts());
+    expect(style.sources[SOURCE.viewportLabels]).toMatchObject({
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
   });
 });

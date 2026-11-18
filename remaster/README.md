@@ -66,12 +66,19 @@ Each dependency is read through one module, and every track is integrated:
 
 Notes:
 
-- **T6 in place.** Vite and TypeScript read T6's module with this app's `tsconfig.json` (Vite's `tsconfig` option and `paths` for `maplibre-gl`). When the module moves into `remaster/` (P6), only the import path in `mapStyle.ts` changes. T6's own 38-test suite runs in its workspace (`cd remaster-spike && yarn test`); `src/adapters/mapStyle.test.ts` checks how this app drives it, including T3's `checkStyleFontstacks`.
+- **T6 in place.** Vite and TypeScript read T6's module with this app's `tsconfig.json` (Vite's `tsconfig` option and `paths` for `maplibre-gl`). When the module moves into `remaster/` (P6), only the import path in `mapStyle.ts` changes. T6's own suite (59 tests) runs in its workspace (`cd remaster-spike && yarn test`); `src/adapters/mapStyle.test.ts` checks how this app drives it, including T3's `checkStyleFontstacks`.
 - **Low power.** T6's heuristic decides at map mount; `?lowPower=1` or `?lowPower=0` overrides it.
 - **Fonts.** `atlas.css` loads on every page, `map-aliases.css` on year pages, and `projector.css` only while Projector text is on (a head script restores it before first paint).
 
-## Left for T7 and later milestones
+## Map key and label priority (T7, P3)
 
-- **Map key (P3, T7).** `src/components/MapKeySlot.tsx` holds the bottom-left slot, its safe-area clearance and phone rules, and prints only the plate title. Build the key from `legendEntries(drawnClasses(map))` (re-exported by `mapStyle.ts`, called on `moveend`/`idle`), the scale bar from the live camera, and the locator globe from `GLOBE_LAND_URL` in `basemap.ts`. The map instance is `window.__atlasMap` today; T7 should get it from the controller's handle instead.
+- **Map key** (`src/components/MapKeySlot.tsx`, `MapKey.css`): A's cartouche merged with B's key. Title ("The World in 1914"), a 64 px locator globe (`src/lib/globe.ts`, Natural Earth 110m land from `GLOBE_LAND_URL`, fetched the first time the key is open), a legend from `legendEntries(drawnClasses(map))` (only classes on screen, read on `idle`), the alternating scale bar (`src/lib/scaleBar.ts`) and a north arrow. The scale bar and the globe follow the camera on `moveend` only (`src/atlas/mapKey.ts`). The bar is solved from the haversine distance at the centre latitude, so it is exact by construction; unit and e2e tests check it against the live map at z2–8.
+- **Collapse.** A "Key" toggle shrinks it to the scale bar and north arrow. Phones and screens under 600 px tall start collapsed; on wider screens the visitor's choice is kept in `localStorage` (`hb:map-key-open`). On phones it sits bottom left and moves to the top while the place sheet is open, so the two never overlap.
+- **Labels never hide under the key.** Panels over the map carry `data-map-obstacle` (the key, the place panel, "What changed"). After each settled move the controller runs T6's `viewportAnchors`: a state name whose label points are all off screen, clipped at an edge, or under a panel gets one anchor at the deepest point of its visible area, and its own points are hidden. A name under a panel with too little visible area for an anchor is hidden rather than drawn half under the panel. See `remaster-spike/src/atlas/classic/viewportLabels.ts` for why this beats extra build-time label points.
+- **State names beat city names.** Every state-name layer sits above the city and capital layers (MapLibre places top-down), larger territories sort first, and a colliding name may move one line up or down (`text-variable-anchor: center, bottom, top`) before it is dropped. City dots stay non-optional: a dot never appears without its name.
+- The controller's handle (`MapHandle`) gives the key the map, the low-power flag and `refreshLabels()`; `window.__atlasMap` remains only as a test and screenshot hook.
+
+## Left for later milestones
+
 - **PA school districts (P5).** `/pa/school-districts` is still the current app; the sitemap lists it, and T4's PA layout cases fail against this build until the port.
 - **React Compiler.** Not enabled yet; the ported components keep their hand-written memo hooks.

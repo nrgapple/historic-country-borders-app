@@ -4,8 +4,8 @@
  * ocean mask → graticule → waterlines and coast → lakes → rivers → labels.
  *
  * Symbol layers are placed top-down, so the stack ends
- * places → capitals → selected capital → state names → selected-capital mark:
- * the state names claim space first, the selected territory's name is never
+ * places → capitals → selected capital → viewport state names → state names
+ * → selected-capital mark: the state names claim space first, the selected territory's name is never
  * dropped, and the selected capital's star (an icon that ignores placement)
  * is drawn on top of everything without displacing any label.
  */
@@ -45,6 +45,7 @@ import {
   stateLabelFilter,
   stateLabelSize,
   stateLetterSpacing,
+  STATE_VARIABLE_ANCHORS,
   stateSortKey,
   stateTextColor,
   textScale,
@@ -307,6 +308,10 @@ export function buildLayers(o: ClassicStyleOptions): LayerSpecification[] {
         'text-variable-anchor': ['left', 'right', 'top', 'bottom'],
         'text-radial-offset': 0.75,
         'text-justify': 'auto',
+        // A city is its dot and its name together: when either collides
+        // (with a state name, placed earlier), both are dropped.
+        'text-optional': false,
+        'icon-optional': false,
       },
       paint: {
         'text-color': COLOR.ink,
@@ -362,30 +367,21 @@ export function buildLayers(o: ClassicStyleOptions): LayerSpecification[] {
         'text-halo-width': 1.8,
       },
     },
-    {
-      id: LAYER.stateLabels,
-      type: 'symbol',
-      source: SOURCE.labels,
-      filter: stateLabelFilter(sel),
-      layout: {
-        visibility: vis(labels),
-        'text-field': ['get', LABEL_ATTR.name] as Expr,
-        'text-font': stateFont(o),
-        'text-size': stateLabelSize(o),
-        'text-transform': textTransform(o),
-        'text-letter-spacing': stateLetterSpacing(o),
-        'text-max-width': 8,
-        'text-line-height': 1.1,
-        'text-padding': 4,
-        'symbol-sort-key': stateSortKey(sel),
-      },
-      paint: {
-        'text-color': stateTextColor(sel),
-        'text-halo-color': COLOR.stateHalo,
-        'text-halo-width': 1.8 * Math.min(1.2, textScale(o)),
-        'text-halo-blur': 0.4,
-      },
-    },
+    // Viewport anchors sit below the main state layer, so names at their own
+    // label points (and the selection) are placed first; both sit above every
+    // city and capital layer, so a state name always beats a city name.
+    stateLabelLayer(
+      LAYER.viewportStateLabels,
+      SOURCE.viewportLabels,
+      stateLabelFilter(sel),
+      o,
+    ),
+    stateLabelLayer(
+      LAYER.stateLabels,
+      SOURCE.labels,
+      stateLabelFilter(sel, o.relocatedLabels),
+      o,
+    ),
     {
       // The selected territory's capital is always visible, even under its own name.
       id: LAYER.selectedCapitalMark,
@@ -410,6 +406,41 @@ export function buildLayers(o: ClassicStyleOptions): LayerSpecification[] {
     } as never;
   }
   return layers;
+}
+
+/** A state-name layer: the same look for label points and viewport anchors. */
+function stateLabelLayer(
+  id: string,
+  source: string,
+  filter: Expr,
+  o: ClassicStyleOptions,
+): LayerSpecification {
+  const sel = o.selected;
+  return {
+    id,
+    type: 'symbol',
+    source,
+    filter,
+    layout: {
+      visibility: vis(o.settings.showLabels),
+      'text-field': ['get', LABEL_ATTR.name] as Expr,
+      'text-font': stateFont(o),
+      'text-size': stateLabelSize(o),
+      'text-transform': textTransform(o),
+      'text-letter-spacing': stateLetterSpacing(o),
+      'text-max-width': 8,
+      'text-line-height': 1.1,
+      'text-padding': 4,
+      'text-variable-anchor': [...STATE_VARIABLE_ANCHORS],
+      'symbol-sort-key': stateSortKey(sel),
+    },
+    paint: {
+      'text-color': stateTextColor(sel),
+      'text-halo-color': COLOR.stateHalo,
+      'text-halo-width': 1.8 * Math.min(1.2, textScale(o)),
+      'text-halo-blur': 0.4,
+    },
+  };
 }
 
 /** The relief raster, inserted before the edge band after first paint. */

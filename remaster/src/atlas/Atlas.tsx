@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Timeline, { type TimelineChangeMethod } from '../components/Timeline';
 import Toolbar, { Brand, RestoreControlsButton } from '../components/Toolbar';
 import PlacePanel from '../components/PlacePanel';
@@ -75,7 +75,10 @@ function AtlasApp() {
   const focusMode = useAtlas((s) => s.focusMode);
   const webgl = useAtlas((s) => s.webgl);
   const projectorText = useAtlas((s) => s.settings.projectorText);
+  const overlay = useAtlas((s) => s.overlay);
   const index = useYearIndex(year);
+  // The controller's handle, for the map key (camera, drawn classes, labels).
+  const [mapHandle, setMapHandle] = useState<MapHandle | null>(null);
   const yearContext = useYearContext(year);
   const yearLabel = formatYearLong(year);
 
@@ -153,7 +156,7 @@ function AtlasApp() {
         }
       >
         <div className="frame">
-          <MapView yearLabel={yearLabel} />
+          <MapView yearLabel={yearLabel} onMount={setMapHandle} />
         </div>
 
         <MapStatus
@@ -167,7 +170,15 @@ function AtlasApp() {
           readyLabel={`Showing borders for ${yearLabel}`}
         />
 
-        {!focusMode && <MapKeySlot year={year} />}
+        {!focusMode && (
+          <MapKeySlot
+            year={year}
+            map={mapHandle?.map}
+            lowPower={mapHandle?.lowPower}
+            onLayout={mapHandle?.refreshLabels}
+            underSheet={overlay === 'settings'}
+          />
+        )}
 
         {!focusMode && (
           <p className="credit">
@@ -294,7 +305,13 @@ function AtlasApp() {
   );
 }
 
-function MapView({ yearLabel }: { yearLabel: string }) {
+function MapView({
+  yearLabel,
+  onMount,
+}: {
+  yearLabel: string;
+  onMount: (handle: MapHandle | null) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const webgl = useAtlas((s) => s.webgl);
 
@@ -309,15 +326,18 @@ function MapView({ yearLabel }: { yearLabel: string }) {
           return;
         }
         handle = mountMap(ref.current);
+        // Test and screenshot hook (e2e, scripts/shoot.mjs); the app uses the handle.
         (window as unknown as { __atlasMap?: MapHandle['map'] }).__atlasMap =
           handle.map;
+        onMount(handle);
       })
       .catch(() => actions.setWebgl(false));
     return () => {
       cancelled = true;
+      onMount(null);
       handle?.destroy();
     };
-  }, []);
+  }, [onMount]);
 
   useEffect(() => {
     if (webgl) delete document.documentElement.dataset.webgl;

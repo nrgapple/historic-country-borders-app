@@ -1,5 +1,5 @@
-/* Map status, "What changed", the projector caption and the map-key slot:
-   the small pieces that sit inside the map stage. */
+/* Map status, "What changed" and the projector caption: the small pieces
+   that sit inside the map stage (the map key has MapKey.css). */
 
 .progress {
   position: absolute;
@@ -87,7 +87,8 @@
   left: calc(var(--frame-inset) + 12px);
   z-index: 4;
   width: min(340px, calc(100% - 2 * var(--frame-inset) - 24px));
-  max-height: calc(100% - 2 * var(--frame-inset) - 220px);
+  /* Room for the open map key below it (bottom left). */
+  max-height: calc(100% - 2 * var(--frame-inset) - 300px);
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -188,53 +189,7 @@
   gap: 8px;
 }
 
-/* The map-key slot (T7 fills it): bottom left, over the open sea. */
-.map-key {
-  position: absolute;
-  left: calc(var(--frame-inset) + 20px);
-  bottom: calc(var(--frame-inset) + 60px);
-  z-index: 3;
-  width: 238px;
-  padding: 12px 16px;
-  background-color: var(--sheet);
-  border: 1px solid var(--ink);
-  outline: 1px solid var(--ink);
-  outline-offset: 3px;
-  text-align: center;
-}
-
-.map-key__kicker {
-  margin: 0;
-  font: 700 13px/1 var(--font-sc);
-  letter-spacing: 0.22em;
-  color: var(--ink-2);
-}
-
-.map-key__title {
-  margin: 6px 0 2px;
-  font: 700 27px/1.05 var(--font-sc);
-  letter-spacing: 0.04em;
-  font-variant-numeric: lining-nums;
-}
-
-.map-key__sub {
-  margin: 0;
-  font: italic 400 15px/1.3 var(--font-serif);
-  color: var(--ink-2);
-}
-
-/* With the panel open on narrower tablets the key would crowd the map. */
-@media (max-width: 1100px) {
-  .stage[data-panel-open] .map-key {
-    display: none;
-  }
-}
-
 @media (max-width: 699px) {
-  .map-key {
-    display: none;
-  }
-
   .changes-summary {
     max-height: 52%;
   }
@@ -247,11 +202,5 @@
   .projector-caption {
     top: calc(var(--frame-inset) + var(--safe-top) + 64px);
     max-width: calc(100% - 2 * var(--frame-inset) - 24px);
-  }
-}
-
-@media (max-height: 520px) {
-  .map-key {
-    display: none;
   }
 }

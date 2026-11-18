@@ -39,25 +39,40 @@ const SHOTS = [
     height: 844,
     touch: true,
   },
+  // T7 map key, open and closed, at the three review widths (1914, no selection).
+  ...[
+    [1440, 900, '/year/1914?lng=15&lat=47&zoom=3.2'],
+    [1024, 768, '/year/1914?lng=15&lat=47&zoom=2.9'],
+    [390, 844, '/year/1914?lng=18&lat=46&zoom=2.6'],
+  ].flatMap(([width, height, url]) =>
+    ['open', 'closed'].map((key) => ({
+      name: `1914-${width}x${height}-key-${key}`,
+      url,
+      width,
+      height,
+      touch: width < 1100,
+      key,
+    })),
+  ),
+  // Label priority (T7): state names over cities, viewport anchors for
+  // territories whose label point is off screen or under the key.
   {
-    name: '1914-1440x900',
-    url: '/year/1914?lng=15&lat=47&zoom=3.2',
+    name: '1914-europe-z2.6-1440x900',
+    url: '/year/1914?lng=15&lat=47&zoom=2.6',
     width: 1440,
     height: 900,
   },
   {
-    name: '1914-1024x768',
-    url: '/year/1914?lng=15&lat=47&zoom=2.9',
-    width: 1024,
-    height: 768,
-    touch: true,
+    name: '1815-europe-1440x900',
+    url: '/year/1815?lng=12&lat=49&zoom=3.4',
+    width: 1440,
+    height: 900,
   },
   {
-    name: '1914-390x844',
-    url: '/year/1914?lng=18&lat=46&zoom=2.6',
-    width: 390,
-    height: 844,
-    touch: true,
+    name: '1492-world-1440x900',
+    url: '/year/1492',
+    width: 1440,
+    height: 900,
   },
   // iPhone 15 Pro with simulated insets (Chromium CDP), like the design's phone-safe shot.
   {
@@ -127,6 +142,16 @@ for (const shot of SHOTS) {
       }),
   );
   await page.waitForTimeout(800);
+  if (shot.key) {
+    // The key starts open on wide screens and closed on phones.
+    const toggle = page.getByRole('button', { name: 'Key', exact: true });
+    const open = (await toggle.getAttribute('aria-expanded')) === 'true';
+    if (open !== (shot.key === 'open')) {
+      await toggle.click();
+      // Labels re-check the area the key now covers once the map is idle.
+      await page.waitForTimeout(1200);
+    }
+  }
   if (shot.insets) {
     // Draw the Dynamic Island and home indicator, as the design shots do.
     await page.addStyleTag({

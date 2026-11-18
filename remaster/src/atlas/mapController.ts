@@ -19,8 +19,15 @@ import {
   INTERACTIVE_LAYERS,
   LOW_POWER_DROPS_GRAIN,
   LOW_POWER_SIMPLE_NEATLINE,
+  labelTerritories,
+  landPolygons,
   resolveLowPower,
+  setViewportLabels,
   SOURCE,
+  viewportAnchors,
+  type AnchorCollection,
+  type LabelTerritory,
+  type Rect,
   type SelectionStyle,
 } from '../adapters/mapStyle';
 import {
@@ -32,6 +39,7 @@ import {
   prefetchYears,
   type YearIndex,
 } from '../adapters/yearData';
+import { loadLand } from '../lib/land';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding, paddingOffset } from '../lib/places';
 import {
@@ -50,7 +58,41 @@ const prefersReducedMotion = () =>
 
 export interface MapHandle {
   map: MapLibreMap;
+  /** T6's low-power decision for this device (the legend drops the hatch). */
+  lowPower: boolean;
+  /**
+   * Re-checks state names against the panels over the map. Call after an
+   * element marked `data-map-obstacle` opens, closes or resizes.
+   */
+  refreshLabels: () => void;
   destroy: () => void;
+}
+
+/** The collapsed map key's height plus its offset from the map's top edge on phones. */
+const MAP_KEY_BAR_PX = 64;
+
+const EMPTY_ANCHORS: AnchorCollection = {
+  type: 'FeatureCollection',
+  features: [],
+};
+
+/** Panels over the map (`data-map-obstacle`), in px relative to the map. */
+function obstaclesOver(container: HTMLElement): Rect[] {
+  const stage = container.closest('.stage') ?? container.parentElement;
+  if (!stage) return [];
+  const base = container.getBoundingClientRect();
+  const out: Rect[] = [];
+  stage.querySelectorAll<HTMLElement>('[data-map-obstacle]').forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return;
+    out.push({
+      left: r.left - base.left,
+      top: r.top - base.top,
+      right: r.right - base.left,
+      bottom: r.bottom - base.top,
+    });
+  });
+  return out;
 }
 
 /**
@@ -130,6 +172,81 @@ export function mountMap(container: HTMLElement): MapHandle {
   let names = new Map<string, number>();
   let dataRequested = false;
   let destroyed = false;
+  // Viewport-aware state names (T6 viewportLabels.ts): the year's label
+  // points by territory, and the anchors drawn for the current view.
+  let labelInfo = new Map<number, LabelTerritory>();
+  let anchors: AnchorCollection = EMPTY_ANCHORS;
+  let anchorsKey = '';
+  let labelsDirty = false;
+
+  const showAnchors = (next: AnchorCollection) => {
+    const key = JSON.stringify([
+      next.features.map((f) => [f.id, f.geometry.coordinates]),
+      next.hidden ?? [],
+    ]);
+    if (key === anchorsKey) return;
+    anchorsKey = key;
+    anchors = next;
+    setViewportLabels(map, next, getState().settings, selection(), lowPower);
+  };
+  // The water mask: the 110m land the key's globe also uses (one download).
+  let land: ReturnType<typeof landPolygons> | null = null;
+  let landState: 'idle' | 'loading' | 'ready' | 'failed' = 'idle';
+  const runRelabel = () => {
+    if (destroyed || !map.getSource(SOURCE.viewportLabels)) return;
+    if (map.isMoving()) return; // the next idle runs it
+    if (!getState().settings.showLabels || !labelInfo.size) {
+      labelsDirty = false;
+      showAnchors(EMPTY_ANCHORS);
+      return;
+    }
+    if (landState === 'idle') {
+      landState = 'loading';
+      void loadLand().then((fc) => {
+        land = fc ? landPolygons(fc) : null;
+        landState = fc ? 'ready' : 'failed';
+        if (!destroyed) relabel();
+      });
+    }
+    if (landState === 'loading') return;
+    labelsDirty = false;
+    const start = performance.now();
+    const next = viewportAnchors(map, {
+      territories: labelInfo,
+      bboxOf: (id) => index?.territories[id]?.bbox,
+      land,
+      obstacles: obstaclesOver(container),
+      selectedId: selection().id,
+      previous: anchors,
+    });
+    // Visible in the Performance panel; runs once per settled move.
+    performance.measure?.('viewport-labels', { start });
+    showAnchors(next);
+  };
+  let relabelQueued = false;
+  /** Recomputes once the map is settled, in idle time: never while it moves. */
+  const relabel = () => {
+    labelsDirty = true;
+    if (relabelQueued || !map.loaded() || map.isMoving()) return;
+    relabelQueued = true;
+    const run = () => {
+      relabelQueued = false;
+      if (labelsDirty) runRelabel();
+    };
+    if (window.requestIdleCallback)
+      window.requestIdleCallback(run, { timeout: 400 });
+    else window.setTimeout(run, 0);
+  };
+  const loadLabels = (year: number) => {
+    fetch(labelsUrl(year), { credentials: 'same-origin' })
+      .then((response) => response.json())
+      .then((labels) => {
+        if (destroyed || year !== loadedYear) return;
+        labelInfo = labelTerritories(labels);
+        relabel();
+      })
+      .catch(() => undefined);
+  };
 
   const setYearData = (year: number) => {
     const borders = map.getSource(SOURCE.borders) as GeoJSONSource | undefined;
@@ -139,6 +256,9 @@ export function mountMap(container: HTMLElement): MapHandle {
     if (!borders || !labels) return;
     container.removeAttribute('data-loaded');
     map.removeFeatureState({ source: SOURCE.borders });
+    labelInfo = new Map();
+    showAnchors(EMPTY_ANCHORS);
+    loadLabels(year);
     void borders.setData(mapUrl(year));
     void labels.setData(labelsUrl(year));
     void capitalPoints?.setData(
@@ -189,13 +309,16 @@ export function mountMap(container: HTMLElement): MapHandle {
    */
   const applySelection = () => {
     if (!map.getSource(SOURCE.borders)) return;
-    applyDynamic(map, getState().settings, selection(), lowPower);
+    applyDynamic(map, getState().settings, selection(), lowPower, anchors);
   };
 
   const fit = (bounds: Bbox) => {
     const padding = focusPadding({
       width: container.clientWidth,
       height: container.clientHeight,
+      // A framed place opens the sheet; on phones the collapsed map key then
+      // sits at the top of the map (MapKey.css), so keep the place below it.
+      topbarBottom: phone() ? MAP_KEY_BAR_PX : 0,
     });
     const camera = map.cameraForBounds(
       [
@@ -251,6 +374,11 @@ export function mountMap(container: HTMLElement): MapHandle {
     );
     map.on('mouseleave', layer, () => (map.getCanvas().style.cursor = ''));
   }
+  map.on('moveend', relabel);
+  map.on('resize', relabel);
+  map.on('idle', () => {
+    if (labelsDirty) relabel();
+  });
   map.on('moveend', () => {
     const center = map.getCenter().wrap();
     const key = `${center.lng.toFixed(4)},${center.lat.toFixed(4)},${map.getZoom().toFixed(2)}`;
@@ -307,8 +435,11 @@ export function mountMap(container: HTMLElement): MapHandle {
       loadIndex(state.year);
     } else if (state.place !== last.place) {
       applySelection();
+      // The panel opens or closes over the map: re-check names under it.
+      relabel();
     } else if (state.settings !== last.settings) {
       applySelection();
+      relabel();
     }
     if (state.frame && state.frame !== last.frame) fit(state.frame.bounds);
     last = state;
@@ -316,6 +447,8 @@ export function mountMap(container: HTMLElement): MapHandle {
 
   return {
     map,
+    lowPower,
+    refreshLabels: relabel,
     destroy() {
       destroyed = true;
       unsubscribe();
