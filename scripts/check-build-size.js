@@ -14,6 +14,15 @@ const budgets = {
   contextDataLargest: 96 * 1024,
   schoolDataRaw: 12000 * 1024,
   schoolDataBrotli: 1850 * 1024,
+  // Self-hosted fonts and map glyphs (docs/FONTS.md). Glyph PBFs are fetched
+  // per visible range, so the per-file limit matters more than the total.
+  glyphFiles: 160,
+  glyphTotal: 3 * 1024 * 1024,
+  glyphLargest: 128 * 1024,
+  fontFiles: 80,
+  fontTotal: 1100 * 1024,
+  defaultLatinFonts: 240 * 1024,
+  projectorLatinFonts: 64 * 1024,
 };
 
 if (!fs.existsSync(chunksDirectory)) {
@@ -101,6 +110,41 @@ const schoolBrotli = zlib.brotliCompressSync(
 enforce('School payload raw', schoolRaw, budgets.schoolDataRaw);
 enforce('School payload Brotli', schoolBrotli, budgets.schoolDataBrotli);
 
+const glyphSizes = walk(path.join(ROOT, 'out/glyphs'))
+  .filter((file) => file.endsWith('.pbf'))
+  .map(bytes);
+const glyphTotal = glyphSizes.reduce((total, size) => total + size, 0);
+const glyphLargest = Math.max(0, ...glyphSizes);
+if (!glyphSizes.length) errors.push('Glyphs: no PBFs in out/glyphs');
+if (glyphSizes.length > budgets.glyphFiles)
+  errors.push(
+    `Glyph files: ${glyphSizes.length} exceeds ${budgets.glyphFiles}`,
+  );
+enforce('Glyph PBF total', glyphTotal, budgets.glyphTotal);
+enforce('Largest glyph PBF', glyphLargest, budgets.glyphLargest);
+
+const fontSizes = walk(path.join(ROOT, 'out/fonts/files'))
+  .filter((file) => file.endsWith('.woff2'))
+  .map(bytes);
+const fontTotal = fontSizes.reduce((total, size) => total + size, 0);
+if (fontSizes.length > budgets.fontFiles)
+  errors.push(`Font files: ${fontSizes.length} exceeds ${budgets.fontFiles}`);
+enforce('WOFF2 total', fontTotal, budgets.fontTotal);
+// The Latin subsets of each UI group: what a page in English downloads at most.
+const fontManifest = require('../data/map-fonts.json');
+const latinFontBytes = (group) =>
+  fontManifest.fonts.ui[group]
+    .filter((file) => /-latin-\d/.test(file))
+    .reduce((total, file) => total + bytes(path.join(ROOT, 'out', file)), 0);
+const defaultLatinFonts = latinFontBytes('default');
+const projectorLatinFonts = latinFontBytes('projector');
+enforce('Default UI Latin fonts', defaultLatinFonts, budgets.defaultLatinFonts);
+enforce(
+  'Projector UI Latin fonts',
+  projectorLatinFonts,
+  budgets.projectorLatinFonts,
+);
+
 const summary = [
   '## Performance and build-size budgets',
   '',
@@ -113,6 +157,8 @@ const summary = [
   `- Historical data: ${formatKiB(historicalTotal)} total / ${formatKiB(budgets.historicalDataTotal)}; ${formatKiB(historicalLargest)} largest / ${formatKiB(budgets.historicalDataLargest)}`,
   `- Context data: ${formatKiB(contextTotal)} total / ${formatKiB(budgets.contextDataTotal)}; ${formatKiB(contextLargest)} largest / ${formatKiB(budgets.contextDataLargest)}`,
   `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
+  `- Glyph PBFs: ${glyphSizes.length} files / ${budgets.glyphFiles}; ${formatKiB(glyphTotal)} total / ${formatKiB(budgets.glyphTotal)}; ${formatKiB(glyphLargest)} largest / ${formatKiB(budgets.glyphLargest)}`,
+  `- WOFF2 fonts: ${fontSizes.length} files / ${budgets.fontFiles}; ${formatKiB(fontTotal)} total / ${formatKiB(budgets.fontTotal)}; Latin UI ${formatKiB(defaultLatinFonts)} default / ${formatKiB(budgets.defaultLatinFonts)}, ${formatKiB(projectorLatinFonts)} projector / ${formatKiB(budgets.projectorLatinFonts)}`,
 ];
 
 console.log(summary.slice(2).join('\n'));

@@ -12,6 +12,18 @@
 /data/context/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Map glyph PBFs live under a content-addressed build directory. Wrangler
+# sends .pbf with no Content-Type; this type is also on Cloudflare's
+# compression list.
+/glyphs/*
+  Content-Type: application/x-protobuf
+  Cache-Control: public, max-age=31536000, immutable
+
+# Content-hashed WOFF2 files. The CSS and license copies in /fonts/ keep the
+# default revalidating cache because their names are stable.
+/fonts/files/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /data/pa-school-districts.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 

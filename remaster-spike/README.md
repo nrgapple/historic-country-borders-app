@@ -26,6 +26,7 @@ yarn preview       # Cloudflare-like local server on http://127.0.0.1:4400 (Brot
 yarn data:formats  # GeoJSON vs geobuf vs FlatGeobuf vs TopoJSON vs MVT -> results/formats.json
 yarn measure       # throttled browser comparison -> results/browser.json + shots/
 node scripts/check-safe-areas.mjs http://127.0.0.1:4400   # iPhone safe-area check prototype
+node scripts/measure-glyphs.mjs     # map label glyphs: PBF vs font-faces vs local -> results/glyphs.json (uses ../public/glyphs, ../public/fonts)
 ```
 
 Downloads are cached under `~/LargeFiles/historic-borders-remaster/`, which is on the SSD. They come from:
