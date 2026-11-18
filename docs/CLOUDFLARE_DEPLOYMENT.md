@@ -110,11 +110,11 @@ During M4, prefer a Cloudflare Worker-version rollback while leaving the custom 
 Builds and deploys run in GitHub Actions; local `wrangler deploy` is only a fallback.
 
 - `CI` (`.github/workflows/ci.yml`) runs `yarn quality` and the three-browser journeys on every pull request and on `main`.
-- `Preview` (`.github/workflows/preview.yml`) builds each same-repository pull request with the real public Mapbox token and uploads it with `wrangler versions upload --preview-alias pr-<number>`. Production traffic does not move. The workflow comments the preview URL on the pull request.
+- `Preview` (`.github/workflows/preview.yml`) builds each same-repository pull request with the real public Mapbox token. It deploys the result to a separate, static-only Worker, `historic-borders-preview` (`wrangler.preview.toml`): no feedback endpoint, no Durable Object, no production routes. The newest pull request build replaces the previous preview. The workflow comments the preview URL on the pull request. Cloudflare does not generate per-version preview URLs for Workers that use Durable Objects, which is why previews use a separate Worker.
 - `Deploy` (`.github/workflows/deploy.yml`) runs after `CI` succeeds for a push to `main`, or by manual dispatch. It builds, validates the static export, runs `wrangler deploy`, and smoke-tests `vars.PRODUCTION_URL`, which defaults to the Worker hostname until the custom domain is live.
 
 Repository secrets: `CLOUDFLARE_API_TOKEN` (the "Edit Cloudflare Workers" template, scoped to this account), `CLOUDFLARE_ACCOUNT_ID`, and `NEXT_PUBLIC_MAPBOX_TOKEN` (public and URL-restricted). Optional repository variables: `PRODUCTION_URL` and `NEXT_PUBLIC_GA_FOUR`.
 
-Mapbox URL restrictions must allow the production hosts and the preview hosts, `https://*-historic-borders.champtoday.workers.dev`. Otherwise previews render no basemap.
+Mapbox URL restrictions must allow the production hosts and the preview host, `https://historic-borders-preview.champtoday.workers.dev`. Otherwise previews render no basemap.
 
 Rollback: use Workers & Pages → `historic-borders` → Deployments to route traffic back to the previous version. Then revert the commit on `main` so the next deploy does not reintroduce the problem.

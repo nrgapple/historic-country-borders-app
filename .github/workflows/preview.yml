@@ -1,7 +1,8 @@
 name: Preview
 
-# Uploads each same-repository pull request as a non-production Worker
-# version with a stable preview alias. Production traffic is unaffected.
+# Deploys the latest same-repository pull request to the separate, static-only
+# `historic-borders-preview` Worker (wrangler.preview.toml). Production is
+# never touched.
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -11,7 +12,8 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  # One shared preview Worker: the newest PR build wins.
+  group: preview
   cancel-in-progress: true
 
 jobs:
@@ -44,18 +46,16 @@ jobs:
         run: yarn build
       - if: steps.configured.outputs.ok == 'true'
         run: yarn static:validate
-      - name: Upload preview version
+      - name: Deploy preview Worker
         if: steps.configured.outputs.ok == 'true'
         id: upload
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          ALIAS: pr-${{ github.event.pull_request.number }}
         run: |
-          yarn -s wrangler versions upload --preview-alias "$ALIAS" \
+          yarn -s wrangler deploy --config wrangler.preview.toml \
             --message "PR #${{ github.event.pull_request.number }} ${GITHUB_SHA::7}" | tee upload.log
-          url=$(grep -Eo 'https://[^ ]*workers\.dev' upload.log | grep "$ALIAS" | head -1)
-          [ -n "$url" ] || url=$(grep -Eo 'https://[^ ]*workers\.dev' upload.log | head -1)
+          url=$(grep -Eo 'https://historic-borders-preview\.[^ ]*workers\.dev' upload.log | head -1)
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Comment preview URL
         if: steps.upload.outputs.url != ''
