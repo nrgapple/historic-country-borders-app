@@ -1,378 +1,117 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { useWikiData } from '../useWiki'
+import { renderHook, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  __resetWikiCache,
+  trimExtract,
+  useWikiSummary,
+  wikiQueryUrl,
+} from '../useWiki';
 
-// Mock wikijs
-const mockWiki = {
-  find: vi.fn(),
-}
+const page = (overrides: Record<string, unknown> = {}) => ({
+  ok: true,
+  json: async () => ({
+    query: {
+      pages: {
+        '1': {
+          title: 'France',
+          extract: 'France is a country in Western Europe.',
+          fullurl: 'https://en.wikipedia.org/wiki/France',
+          thumbnail: {
+            source: 'https://upload.wikimedia.org/flag.png',
+            width: 320,
+            height: 200,
+          },
+          ...overrides,
+        },
+      },
+    },
+  }),
+});
 
-const mockWikiInstance = {
-  summary: vi.fn(),
-}
-
-vi.mock('wikijs', () => ({
-  default: vi.fn(() => mockWiki),
-}))
-
-// Mock SWR
-vi.mock('swr', () => ({
-  default: vi.fn(),
-}))
-
-import useSWR from 'swr'
-const mockUseSWR = useSWR as any
-
-// Mock fetch for REST API fallback
-global.fetch = vi.fn()
-
-describe('useWikiData', () => {
+describe('useWikiSummary', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockWiki.find.mockResolvedValue(mockWikiInstance)
-    mockWikiInstance.summary.mockResolvedValue('Test Wikipedia summary')
-  })
+    __resetWikiCache();
+    vi.stubGlobal('fetch', vi.fn());
+  });
+  afterEach(() => vi.unstubAllGlobals());
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
+  it('loads a source-linked summary directly from the Wikipedia CORS API', async () => {
+    vi.mocked(fetch).mockResolvedValue(page() as Response);
+    const { result } = renderHook(() => useWikiSummary(' France '));
+    expect(result.current.isLoading).toBe(true);
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-  it('should return loading state initially', () => {
-    mockUseSWR.mockReturnValue({
-      data: undefined,
-      error: undefined,
-    })
+    const [url, options] = vi.mocked(fetch).mock.calls[0];
+    expect(String(url)).toMatch(/^https:\/\/en\.wikipedia\.org\/w\/api\.php\?/);
+    expect(String(url)).toContain('origin=*');
+    expect(String(url)).toContain('gsrsearch=France');
+    expect(options).toEqual(
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(result.current.summary).toEqual({
+      title: 'France',
+      extract: 'France is a country in Western Europe.',
+      url: 'https://en.wikipedia.org/wiki/France',
+      thumbnail: {
+        source: 'https://upload.wikimedia.org/flag.png',
+        width: 320,
+        height: 200,
+      },
+    });
+  });
 
-    const { result } = renderHook(() => useWikiData('Test Place'))
+  it('distinguishes a missing article from an unavailable service', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ query: { pages: {} } }),
+    } as Response);
+    const missing = renderHook(() => useWikiSummary('Nowhere'));
+    await waitFor(() => expect(missing.result.current.isMissing).toBe(true));
+    expect(missing.result.current.error).toBeUndefined();
 
-    expect(result.current).toEqual({
-      title: 'Test Place',
-      info: 'Not Found',
-      isLoading: true,
-      isError: undefined,
-    })
-  })
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 503,
+    } as Response);
+    const down = renderHook(() => useWikiSummary('Elsewhere'));
+    await waitFor(() => expect(down.result.current.error).toBeTruthy());
+    expect(down.result.current.isMissing).toBe(false);
+  });
 
-  it('should return data when successfully loaded', () => {
-    mockUseSWR.mockReturnValue({
-      data: 'Test Wikipedia summary',
-      error: undefined,
-    })
+  it('rejects untrusted thumbnail hosts and caches repeated lookups', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      page({ thumbnail: { source: 'https://evil.example/x.png' } }) as Response,
+    );
+    const first = renderHook(() => useWikiSummary('France'));
+    await waitFor(() => expect(first.result.current.summary).toBeTruthy());
+    expect(first.result.current.summary?.thumbnail).toBeUndefined();
 
-    const { result } = renderHook(() => useWikiData('Test Place'))
+    const second = renderHook(() => useWikiSummary('France'));
+    expect(second.result.current.summary?.title).toBe('France');
+    expect(fetch).toHaveBeenCalledOnce();
+  });
 
-    expect(result.current).toEqual({
-      title: 'Test Place',
-      info: 'Test Wikipedia summary',
-      isLoading: false,
-      isError: undefined,
-    })
-  })
+  it('skips empty and oversized names without a request', () => {
+    const empty = renderHook(() => useWikiSummary(''));
+    expect(empty.result.current.isLoading).toBe(false);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+});
 
-  it('should return error state when there is an error', () => {
-    const mockError = new Error('Network error')
-    mockUseSWR.mockReturnValue({
-      data: undefined,
-      error: mockError,
-    })
+describe('wiki helpers', () => {
+  it('trims extracts at sentence boundaries', () => {
+    const text = `${'First sentence is here. '.repeat(30)}`;
+    const trimmed = trimExtract(text, 100);
+    expect(trimmed.length).toBeLessThanOrEqual(100);
+    expect(trimmed.endsWith('.')).toBe(true);
+    expect(trimExtract('Short.')).toBe('Short.');
+    expect(trimExtract('word '.repeat(50), 40).endsWith('…')).toBe(true);
+  });
 
-    const { result } = renderHook(() => useWikiData('Test Place'))
-
-    expect(result.current).toEqual({
-      title: 'Test Place',
-      info: 'Not Found',
-      isLoading: false,
-      isError: mockError,
-    })
-  })
-
-  it('should handle empty place name', () => {
-    mockUseSWR.mockReturnValue({
-      data: undefined,
-      error: undefined,
-    })
-
-    const { result } = renderHook(() => useWikiData(''))
-
-    expect(result.current).toEqual({
-      title: '',
-      info: 'Not Found',
-      isLoading: true,
-      isError: undefined,
-    })
-  })
-
-  it('should handle place name with special characters', () => {
-    mockUseSWR.mockReturnValue({
-      data: 'Summary for São Paulo',
-      error: undefined,
-    })
-
-    const { result } = renderHook(() => useWikiData('São Paulo'))
-
-    expect(result.current).toEqual({
-      title: 'São Paulo',
-      info: 'Summary for São Paulo',
-      isLoading: false,
-      isError: undefined,
-    })
-  })
-
-  it('should update when place name changes', () => {
-    mockUseSWR.mockReturnValue({
-      data: 'First summary',
-      error: undefined,
-    })
-
-    const { result, rerender } = renderHook(
-      ({ place }) => useWikiData(place),
-      { initialProps: { place: 'First Place' } }
-    )
-
-    expect(result.current.title).toBe('First Place')
-    expect(result.current.info).toBe('First summary')
-
-    // Update the place name
-    mockUseSWR.mockReturnValue({
-      data: 'Second summary',
-      error: undefined,
-    })
-
-    rerender({ place: 'Second Place' })
-
-    expect(result.current.title).toBe('Second Place')
-    expect(result.current.info).toBe('Second summary')
-  })
-
-  describe('fetcher function', () => {
-    let fetcher: (title: string) => Promise<string>
-
-    beforeEach(() => {
-      // Extract the fetcher function from the useSWR call
-      const mockCall = mockUseSWR.mock.calls[0]
-      if (mockCall) {
-        fetcher = mockCall[1]
-      }
-    })
-
-    it('should successfully fetch from wikijs API', async () => {
-      mockWiki.find.mockResolvedValue(mockWikiInstance)
-      mockWikiInstance.summary.mockResolvedValue('Wikipedia summary from wikijs')
-
-             // Simulate the fetcher being called
-       mockUseSWR.mockImplementation((key: string, fetcherFn: any) => {
-         return {
-           data: undefined,
-           error: undefined,
-         }
-       })
-
-      renderHook(() => useWikiData('Test Place'))
-
-      // Verify wikijs was called with correct parameters
-      expect(mockUseSWR).toHaveBeenCalledWith('wiki:Test Place', expect.any(Function), {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
-        dedupingInterval: 300000, // 5 minutes
-      })
-    })
-
-    it('should fallback to REST API when wikijs fails', async () => {
-      // Mock wikijs to throw an error
-      mockWiki.find.mockRejectedValue(new Error('Wikijs error'))
-
-      // Mock successful fetch response
-      const mockResponse = {
-        ok: true,
-        json: vi.fn().mockResolvedValue({
-          extract: 'Summary from REST API'
-        })
-      }
-      global.fetch = vi.fn().mockResolvedValue(mockResponse)
-
-      // Test the actual fetcher function
-      const testFetcher = async (title: string) => {
-        try {
-          const wikiResp = await mockWiki.find(title)
-          return wikiResp.summary()
-        } catch (err) {
-          console.error(err)
-          const resp = await fetch(
-            `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-          )
-          if (resp.ok) {
-            const info = await resp.json()
-            return info.extract
-          }
-          return 'Not Found'
-        }
-      }
-
-      const result = await testFetcher('Test Place')
-      expect(result).toBe('Summary from REST API')
-      expect(fetch).toHaveBeenCalledWith(
-        'https://en.wikipedia.org/api/rest_v1/page/summary/Test Place'
-      )
-    })
-
-    it('should return "Not Found" when both APIs fail', async () => {
-      // Mock wikijs to throw an error
-      mockWiki.find.mockRejectedValue(new Error('Wikijs error'))
-
-      // Mock fetch to return error response
-      const mockResponse = {
-        ok: false,
-        status: 404
-      }
-      global.fetch = vi.fn().mockResolvedValue(mockResponse)
-
-      // Test the actual fetcher function
-      const testFetcher = async (title: string) => {
-        try {
-          const wikiResp = await mockWiki.find(title)
-          return wikiResp.summary()
-        } catch (err) {
-          console.error(err)
-          const resp = await fetch(
-            `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-          )
-          if (resp.ok) {
-            const info = await resp.json()
-            return info.extract
-          }
-          return 'Not Found'
-        }
-      }
-
-      const result = await testFetcher('Nonexistent Place')
-      expect(result).toBe('Not Found')
-    })
-
-    it('should handle fetch network errors', async () => {
-      // Mock wikijs to throw an error
-      mockWiki.find.mockRejectedValue(new Error('Wikijs error'))
-
-      // Mock fetch to throw a network error
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network error'))
-
-      // Test the actual fetcher function
-      const testFetcher = async (title: string) => {
-        try {
-          const wikiResp = await mockWiki.find(title)
-          return wikiResp.summary()
-        } catch (err) {
-          console.error(err)
-          try {
-            const resp = await fetch(
-              `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-            )
-            if (resp.ok) {
-              const info = await resp.json()
-              return info.extract
-            }
-            return 'Not Found'
-          } catch (fetchErr) {
-            return 'Not Found'
-          }
-        }
-      }
-
-      const result = await testFetcher('Test Place')
-      expect(result).toBe('Not Found')
-    })
-
-    it('should handle malformed JSON from REST API', async () => {
-      // Mock wikijs to throw an error
-      mockWiki.find.mockRejectedValue(new Error('Wikijs error'))
-
-      // Mock fetch with malformed JSON
-      const mockResponse = {
-        ok: true,
-        json: vi.fn().mockRejectedValue(new Error('Invalid JSON'))
-      }
-      global.fetch = vi.fn().mockResolvedValue(mockResponse)
-
-      // Test the actual fetcher function
-      const testFetcher = async (title: string) => {
-        try {
-          const wikiResp = await mockWiki.find(title)
-          return wikiResp.summary()
-        } catch (err) {
-          console.error(err)
-          try {
-            const resp = await fetch(
-              `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-            )
-            if (resp.ok) {
-              const info = await resp.json()
-              return info.extract
-            }
-            return 'Not Found'
-          } catch (fetchErr) {
-            return 'Not Found'
-          }
-        }
-      }
-
-      const result = await testFetcher('Test Place')
-      expect(result).toBe('Not Found')
-    })
-
-    it('should handle URL encoding for place names with special characters', async () => {
-      // Mock wikijs to throw an error
-      mockWiki.find.mockRejectedValue(new Error('Wikijs error'))
-
-      // Mock successful fetch response
-      const mockResponse = {
-        ok: true,
-        json: vi.fn().mockResolvedValue({
-          extract: 'Summary for special place'
-        })
-      }
-      global.fetch = vi.fn().mockResolvedValue(mockResponse)
-
-      // Test the actual fetcher function
-      const testFetcher = async (title: string) => {
-        try {
-          const wikiResp = await mockWiki.find(title)
-          return wikiResp.summary()
-        } catch (err) {
-          console.error(err)
-          const resp = await fetch(
-            `https://en.wikipedia.org/api/rest_v1/page/summary/${title}`,
-          )
-          if (resp.ok) {
-            const info = await resp.json()
-            return info.extract
-          }
-          return 'Not Found'
-        }
-      }
-
-      const result = await testFetcher('São Paulo & México')
-      expect(result).toBe('Summary for special place')
-      expect(fetch).toHaveBeenCalledWith(
-        'https://en.wikipedia.org/api/rest_v1/page/summary/São Paulo & México'
-      )
-    })
-  })
-
-  it('should maintain consistent data structure', () => {
-    mockUseSWR.mockReturnValue({
-      data: 'Test summary',
-      error: undefined,
-    })
-
-    const { result, rerender } = renderHook(() => useWikiData('Test Place'))
-    const firstResult = result.current
-
-    rerender()
-    const secondResult = result.current
-
-    // The hook should return consistent data structure
-    expect(firstResult).toStrictEqual(secondResult)
-    expect(firstResult.title).toBe('Test Place')
-    expect(firstResult.info).toBe('Test summary')
-    expect(firstResult.isLoading).toBe(false)
-  })
-}) 
+  it('builds a bounded search query', () => {
+    const url = new URL(wikiQueryUrl('Ottoman Empire'));
+    expect(url.searchParams.get('gsrlimit')).toBe('1');
+    expect(url.searchParams.get('exintro')).toBe('1');
+    expect(url.searchParams.get('inprop')).toBe('url');
+  });
+});

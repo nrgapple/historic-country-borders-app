@@ -1,314 +1,374 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { convertYearString, timelineBCFormat } from '../util/constants';
-import ReactGA4 from 'react-ga4';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import Icon from './Icon';
+import {
+  eraOf,
+  eraSpans,
+  formatYear,
+  formatYearLong,
+  yearParts,
+} from '../lib/years';
+
+export type TimelineChangeMethod = 'step' | 'track' | 'keyboard';
 
 interface TimelineProps {
-  index: number;
-  onChange: (value: number) => void;
-  years: number[];
+  years: readonly number[];
+  value: number;
+  onChange: (year: number, method: TimelineChangeMethod) => void;
+  /** Rendered at the start of the header row (e.g. the brand). */
+  leading?: ReactNode;
+  /** Rendered at the end of the header row (e.g. the toolbar). */
+  trailing?: ReactNode;
 }
 
+/** Compact ruler label: "123k BC", "500 BC", "1492". */
+export const formatRulerLabel = (year: number) => {
+  if (year <= -10000) return `${Math.round(-year / 1000)}k BC`;
+  return formatYear(year);
+};
+
+const LABEL_CHAR_PX = 6.6;
+const LABEL_PADDING_PX = 14;
+
+/**
+ * Chooses which ticks get a text label so labels never collide. Era starts are
+ * preferred because they anchor the reader; other years fill the gaps.
+ */
+export const chooseLabelledTicks = (
+  years: readonly number[],
+  width: number,
+): Set<number> => {
+  const chosen = new Set<number>();
+  if (!years.length || width <= 0) return chosen;
+  const step = width / years.length;
+  const last = years.length - 1;
+  // Horizontal extent of a label; the first and last labels are edge-aligned.
+  const extent = (index: number): [number, number] => {
+    const labelWidth =
+      formatRulerLabel(years[index]).length * LABEL_CHAR_PX + LABEL_PADDING_PX;
+    const center = (index + 0.5) * step;
+    if (index === 0) return [center - 4, center - 4 + labelWidth];
+    if (index === last) return [center + 4 - labelWidth, center + 4];
+    return [center - labelWidth / 2, center + labelWidth / 2];
+  };
+  const fits = (index: number) => {
+    const [left, right] = extent(index);
+    return Array.from(chosen).every((other) => {
+      const [otherLeft, otherRight] = extent(other);
+      return right <= otherLeft || left >= otherRight;
+    });
+  };
+
+  const spans = eraSpans(years);
+  const candidates = [
+    0,
+    last,
+    ...spans.map((span) => span.start),
+    ...years.map((_, index) => index),
+  ];
+  candidates.forEach((index) => {
+    if (!chosen.has(index) && fits(index)) chosen.add(index);
+  });
+  return chosen;
+};
+
+const isEditableTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+  if (target.isContentEditable) return true;
+  if (target.closest('input, textarea, select, dialog, [role="slider"]'))
+    return true;
+  // Mapbox uses arrow keys to pan while its canvas has focus.
+  return Boolean(target.closest('.mapboxgl-map'));
+};
+
 export default function Timeline({
-  index,
-  onChange,
   years,
+  value,
+  onChange,
+  leading,
+  trailing,
 }: TimelineProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const activeItemRef = useRef<HTMLButtonElement>(null);
-  const [visibleYearsCount, setVisibleYearsCount] = useState(5); // Default fallback
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-  const currentYear = years[index];
-  const formattedYear = currentYear ? convertYearString(timelineBCFormat, currentYear) : '';
+  const lastIndex = years.length - 1;
+  const selectedIndex = Math.max(0, years.indexOf(value));
+  const displayIndex = dragIndex ?? selectedIndex;
+  const displayYear = years[displayIndex];
+  const spans = useMemo(() => eraSpans(years), [years]);
+  const labelled = useMemo(
+    () => chooseLabelledTicks(years, trackWidth),
+    [years, trackWidth],
+  );
 
-  // Calculate how many years are visible in the container
-  const calculateVisibleYears = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const containerWidth = container.clientWidth;
-      
-      // Get the first year button to estimate width
-      const firstYearButton = container.querySelector('.timeline-year-btn') as HTMLElement;
-      if (firstYearButton) {
-        const buttonWidth = firstYearButton.offsetWidth;
-        const buttonMargin = parseInt(getComputedStyle(firstYearButton).marginRight) || 0;
-        const totalButtonWidth = buttonWidth + buttonMargin;
-        
-        // Calculate how many buttons fit in the container width
-        const visibleCount = Math.floor(containerWidth / totalButtonWidth);
-        setVisibleYearsCount(Math.max(1, visibleCount - 1)); // Subtract 1 for partial visibility
-      }
-    }
+  useLayoutEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const measure = () => setTrackWidth(track.clientWidth);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+    return () => observer.disconnect();
   }, []);
 
-  // Check if there are more years to scroll to in each direction
-  const updateScrollButtonStates = useCallback(() => {
-    if (!scrollContainerRef.current) {
-      setCanScrollLeft(false);
-      setCanScrollRight(false);
-      return;
-    }
-    
-    const container = scrollContainerRef.current;
-    const containerRect = container.getBoundingClientRect();
-    const yearButtons = container.querySelectorAll('.timeline-year-btn');
-    
-    let hasHiddenLeft = false;
-    let hasHiddenRight = false;
-    
-    // Check if there are any years hidden to the left or right
-    yearButtons.forEach((button) => {
-      const buttonRect = button.getBoundingClientRect();
-      if (buttonRect.left < containerRect.left) {
-        hasHiddenLeft = true;
-      }
-      if (buttonRect.right > containerRect.right) {
-        hasHiddenRight = true;
-      }
-    });
-    
-    setCanScrollLeft(hasHiddenLeft);
-    setCanScrollRight(hasHiddenRight);
-  }, []);
+  const commit = useCallback(
+    (index: number, method: TimelineChangeMethod) => {
+      const clamped = Math.min(lastIndex, Math.max(0, index));
+      if (years[clamped] !== value) onChange(years[clamped], method);
+    },
+    [lastIndex, onChange, value, years],
+  );
 
-  // Calculate visible years on mount and window resize
-  useEffect(() => {
-    calculateVisibleYears();
-    updateScrollButtonStates();
-    
-    const handleResize = () => {
-      calculateVisibleYears();
-      updateScrollButtonStates();
+  const indexFromPointer = (clientX: number) => {
+    const track = trackRef.current;
+    if (!track || years.length === 0) return selectedIndex;
+    const rect = track.getBoundingClientRect();
+    const ratio = (clientX - rect.left) / Math.max(1, rect.width);
+    return Math.min(lastIndex, Math.max(0, Math.floor(ratio * years.length)));
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    event.currentTarget.focus({ preventScroll: true });
+    setDragIndex(indexFromPointer(event.clientX));
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const index = indexFromPointer(event.clientX);
+    if (dragIndex !== null) setDragIndex(index);
+    else if (event.pointerType === 'mouse') setHoverIndex(index);
+  };
+
+  const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (dragIndex === null) return;
+    const index = indexFromPointer(event.clientX);
+    setDragIndex(null);
+    commit(index, 'track');
+  };
+
+  const cancelDrag = () => setDragIndex(null);
+
+  const step = useCallback(
+    (delta: number, method: TimelineChangeMethod) =>
+      commit(selectedIndex + delta, method),
+    [commit, selectedIndex],
+  );
+
+  const handleTrackKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const moves: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowDown: -1,
+      ArrowRight: 1,
+      ArrowUp: 1,
+      PageDown: -5,
+      PageUp: 5,
     };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [calculateVisibleYears, updateScrollButtonStates]);
+    if (event.key in moves) {
+      event.preventDefault();
+      step(moves[event.key], 'keyboard');
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      commit(0, 'keyboard');
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      commit(lastIndex, 'keyboard');
+    }
+  };
 
-  // Add scroll event listener to update button states when manually scrolling
+  // Arrow keys (and the legacy A/D shortcuts) move through time from anywhere
+  // on the page unless the visitor is typing or panning the map.
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      updateScrollButtonStates();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        isEditableTarget(event.target) ||
+        document.querySelector('dialog[open]')
+      ) {
+        return;
+      }
+      const key = event.key.toLowerCase();
+      if (key === 'arrowleft' || key === 'a') {
+        event.preventDefault();
+        step(-1, 'keyboard');
+      } else if (key === 'arrowright' || key === 'd') {
+        event.preventDefault();
+        step(1, 'keyboard');
+      }
     };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [step]);
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [updateScrollButtonStates]);
+  const position = (index: number) =>
+    `${((index + 0.5) / Math.max(1, years.length)) * 100}%`;
 
-  // Recalculate when years change
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      calculateVisibleYears();
-      updateScrollButtonStates();
-    }, 100); // Small delay to ensure DOM is updated
-    
-    return () => clearTimeout(timeoutId);
-  }, [years, calculateVisibleYears, updateScrollButtonStates]);
-
-  // Scroll active item into view when index changes
-  useEffect(() => {
-    if (activeItemRef.current && scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const activeItem = activeItemRef.current;
-      
-      const containerRect = container.getBoundingClientRect();
-      const itemRect = activeItem.getBoundingClientRect();
-      
-      // Check if item is outside visible area
-      if (itemRect.left < containerRect.left || itemRect.right > containerRect.right) {
-        activeItem.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
-        });
-      }
-    }
-  }, [index]);
-
-  const handleYearClick = useCallback((yearIndex: number) => {
-    onChange(yearIndex);
-    ReactGA4.event('year_navigate', {
-      target_year: years[yearIndex],
-      current_year: currentYear,
-      navigation_method: 'timeline_click',
-      year_index: yearIndex,
-      year_change: Math.abs(years[yearIndex] - currentYear)
-    });
-  }, [onChange, years, currentYear]);
-
-  const goToPrevious = useCallback(() => {
-    // Find the leftmost visible year and scroll to show previous page
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const containerRect = container.getBoundingClientRect();
-      
-      // Find the first fully visible year button
-      const yearButtons = container.querySelectorAll('.timeline-year-btn');
-      let leftmostVisibleIndex = -1;
-      
-      yearButtons.forEach((button, i) => {
-        const buttonRect = button.getBoundingClientRect();
-        if (buttonRect.left >= containerRect.left && leftmostVisibleIndex === -1) {
-          leftmostVisibleIndex = i;
-        }
-      });
-      
-      if (leftmostVisibleIndex > 0) {
-        // Scroll to show the previous page, but keep at least one year visible for continuity
-        const scrollAmount = Math.max(1, visibleYearsCount - 1);
-        const targetIndex = Math.max(0, leftmostVisibleIndex - scrollAmount);
-        
-        // Scroll the target year into view without changing the selected year
-        const targetButton = yearButtons[targetIndex] as HTMLElement;
-        if (targetButton) {
-          targetButton.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'start'
-          });
-        }
-        
-        ReactGA4.event('timeline_scroll', {
-          direction: 'previous',
-          from_index: leftmostVisibleIndex,
-          to_index: targetIndex,
-          years_scrolled: leftmostVisibleIndex - targetIndex,
-          current_selected_year: currentYear
-        });
-      }
-    }
-  }, [years, currentYear, visibleYearsCount]);
-
-  const goToNext = useCallback(() => {
-    // Find the rightmost visible year and scroll to show next page
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const containerRect = container.getBoundingClientRect();
-      
-      // Find the last fully visible year button
-      const yearButtons = container.querySelectorAll('.timeline-year-btn');
-      let rightmostVisibleIndex = -1;
-      
-      yearButtons.forEach((button, i) => {
-        const buttonRect = button.getBoundingClientRect();
-        if (buttonRect.right <= containerRect.right) {
-          rightmostVisibleIndex = i;
-        }
-      });
-      
-      if (rightmostVisibleIndex < years.length - 1) {
-        // Scroll to show the next page, but keep at least one year visible for continuity
-        const scrollAmount = Math.max(1, visibleYearsCount - 1);
-        const targetIndex = Math.min(years.length - 1, rightmostVisibleIndex + scrollAmount);
-        
-        // Scroll the target year into view without changing the selected year
-        const targetButton = yearButtons[targetIndex] as HTMLElement;
-        if (targetButton) {
-          targetButton.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-            inline: 'end'
-          });
-        }
-        
-        ReactGA4.event('timeline_scroll', {
-          direction: 'next',
-          from_index: rightmostVisibleIndex,
-          to_index: targetIndex,
-          years_scrolled: targetIndex - rightmostVisibleIndex,
-          current_selected_year: currentYear
-        });
-      }
-    }
-  }, [years, currentYear, visibleYearsCount]);
-
-  const primaryColor = '#6930c3';
-  const secondaryColor = '#64dfdf';
+  const previousYear = selectedIndex > 0 ? years[selectedIndex - 1] : null;
+  const nextYear = selectedIndex < lastIndex ? years[selectedIndex + 1] : null;
+  const parts = displayYear !== undefined ? yearParts(displayYear) : null;
 
   return (
-    <div className="timeline-discrete">
-      {/* Navigation Controls */}
-      <div className="timeline-nav-container">
-        {/* Previous Button */}
-        <button
-          className="timeline-nav-btn timeline-nav-prev"
-          onClick={goToPrevious}
-          disabled={!canScrollLeft}
-          style={{ 
-            color: primaryColor,
-            borderColor: primaryColor,
-          }}
-          aria-label="Previous page of years"
-        >
-          <span className="timeline-nav-arrow">‹</span>
-        </button>
+    <div className="timeline" data-dragging={dragIndex !== null || undefined}>
+      <div className="timeline__head">
+        <div className="timeline__leading">{leading}</div>
 
-        {/* Scrollable Years Container */}
-        <div 
-          className="timeline-years-container"
-          ref={scrollContainerRef}
-        >
-          <div className="timeline-years-scroll">
-            {years.map((year, i) => {
-              const isActive = i === index;
-              const isPast = i < index;
-              const yearLabel = convertYearString(timelineBCFormat, year);
-              
-              let buttonClass = 'timeline-year-btn';
-              if (isActive) buttonClass += ' active';
-              if (isPast) buttonClass += ' past';
-              
-              return (
-                <button
-                  key={i}
-                  ref={isActive ? activeItemRef : null}
-                  className={buttonClass}
-                  onClick={() => handleYearClick(i)}
-                  style={{
-                    color: isActive ? '#654321' : isPast ? '#5A4A3A' : '#8B4513',
-                    borderColor: isActive ? '#654321' : isPast ? '#5A4A3A' : '#8B4513',
-                    backgroundColor: isActive ? '#DEB887' : isPast ? '#D2B48C' : '#F5F5DC',
-                    borderWidth: isActive ? '3px' : '2px',
-                  }}
-                  aria-label={`Go to year ${yearLabel}`}
-                >
-                  {yearLabel}
-                </button>
-              );
-            })}
+        <div className="timeline__stepper">
+          <button
+            type="button"
+            className="timeline__step"
+            onClick={() => step(-1, 'step')}
+            disabled={previousYear === null}
+            aria-label={
+              previousYear === null
+                ? 'Earliest year'
+                : `Previous year: ${formatYearLong(previousYear)}`
+            }
+          >
+            <Icon name="chevronLeft" />
+            <span className="timeline__step-label">
+              {previousYear !== null && formatYear(previousYear)}
+            </span>
+          </button>
+
+          <div className="timeline__current" aria-hidden="true">
+            {parts && (
+              <>
+                <span className="timeline__current-value">{parts.value}</span>
+                <span className="timeline__current-suffix">{parts.suffix}</span>
+              </>
+            )}
+            <span className="timeline__current-era">
+              {displayYear !== undefined && eraOf(displayYear).label}
+            </span>
           </div>
+
+          <button
+            type="button"
+            className="timeline__step timeline__step--next"
+            onClick={() => step(1, 'step')}
+            disabled={nextYear === null}
+            aria-label={
+              nextYear === null
+                ? 'Latest year'
+                : `Next year: ${formatYearLong(nextYear)}`
+            }
+          >
+            <span className="timeline__step-label">
+              {nextYear !== null && formatYear(nextYear)}
+            </span>
+            <Icon name="chevronRight" />
+          </button>
         </div>
 
-        {/* Next Button */}
-        <button
-          className="timeline-nav-btn timeline-nav-next"
-          onClick={goToNext}
-          disabled={!canScrollRight}
-          style={{ 
-            color: primaryColor,
-            borderColor: primaryColor,
-          }}
-          aria-label="Next page of years"
-        >
-          <span className="timeline-nav-arrow">›</span>
-        </button>
-
-
+        <div className="timeline__trailing">{trailing}</div>
       </div>
 
-      {/* Current Year Display */}
-      <div 
-        className="timeline-current-year"
-        style={{ 
-          color: primaryColor,
-          textShadow: `0px 0px 4px ${secondaryColor}`,
-        }}
-      >
-        {formattedYear}
+      <div className="timeline__ruler">
+        <div className="timeline__eras" aria-hidden="true">
+          {spans.map((span) => (
+            <span
+              key={span.era.id}
+              className="timeline__era"
+              data-active={
+                displayIndex >= span.start &&
+                displayIndex < span.start + span.count
+                  ? true
+                  : undefined
+              }
+              style={{ flexGrow: span.count }}
+              title={span.era.label}
+            >
+              <span className="timeline__era-label">{span.era.label}</span>
+            </span>
+          ))}
+        </div>
+
+        <div
+          ref={trackRef}
+          className="timeline__track"
+          role="slider"
+          tabIndex={0}
+          aria-label="Map year"
+          aria-valuemin={0}
+          aria-valuemax={lastIndex}
+          aria-valuenow={selectedIndex}
+          aria-valuetext={
+            years[selectedIndex] !== undefined
+              ? formatYearLong(years[selectedIndex])
+              : undefined
+          }
+          onKeyDown={handleTrackKeyDown}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={finishDrag}
+          onPointerCancel={cancelDrag}
+          onLostPointerCapture={cancelDrag}
+          onPointerLeave={() => setHoverIndex(null)}
+        >
+          <div className="timeline__baseline" />
+          {years.map((year, index) => (
+            <span
+              key={year}
+              className="timeline__tick"
+              data-major={labelled.has(index) || undefined}
+              data-era-start={
+                spans.some((span) => span.start === index && index > 0) ||
+                undefined
+              }
+              data-past={index < displayIndex || undefined}
+              style={{ left: position(index) }}
+            />
+          ))}
+          {hoverIndex !== null && dragIndex === null && (
+            <span
+              className="timeline__hover"
+              style={{ left: position(hoverIndex) }}
+              aria-hidden="true"
+            >
+              {formatYear(years[hoverIndex])}
+            </span>
+          )}
+          <span
+            className="timeline__thumb"
+            style={{ left: position(displayIndex) }}
+            aria-hidden="true"
+          />
+        </div>
+
+        <div className="timeline__labels" aria-hidden="true">
+          {years.map((year, index) =>
+            labelled.has(index) ? (
+              <span
+                key={year}
+                className="timeline__label"
+                data-active={index === displayIndex || undefined}
+                data-edge={
+                  index === 0
+                    ? 'start'
+                    : index === lastIndex
+                      ? 'end'
+                      : undefined
+                }
+                style={{ left: position(index) }}
+              >
+                {formatRulerLabel(year)}
+              </span>
+            ) : null,
+          )}
+        </div>
       </div>
     </div>
   );

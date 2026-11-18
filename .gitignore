@@ -7,6 +7,9 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
+/blob-report/
 
 # next.js
 /.next/
@@ -31,7 +34,8 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# vercel
+# deployment state
 .vercel
+.wrangler/
 tsconfig.tsbuildinfo
 .env*.local

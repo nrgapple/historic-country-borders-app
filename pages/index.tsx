@@ -1,128 +1,62 @@
-import { Octokit } from '@octokit/core';
-import { throttling } from '@octokit/plugin-throttling';
-import { GetStaticProps } from 'next';
-import { getYearFromFile, githubToken } from '../util/constants';
-import { ConfigType, GithubFileInfoType } from '../util/types';
-import { Endpoints } from '@octokit/types';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import historicalManifest from '../data/historical-manifest.json';
+import Layout from '../components/Layout';
+import { BrandMark } from '../components/Icon';
+import { formatYear, formatYearLong, yearPath } from '../lib/years';
 
-const OctokitThrottled = Octokit.plugin(throttling);
+const years = historicalManifest.years;
 
-export interface DataProps {
-  years: number[];
-  user: string;
-  id: string;
-  config: ConfigType;
-}
+/**
+ * The home page sends visitors to a random year, as it always has, but does it
+ * with a tiny inline script before React loads instead of after hydration. The
+ * static markup doubles as a crawlable index of every available year.
+ */
+const redirectScript = `(function(){try{var y=${JSON.stringify(
+  years,
+)};var s=location.search;location.replace('/year/'+y[Math.floor(Math.random()*y.length)]+s);}catch(e){}})();`;
 
-// Helper function to get a random year from the available years
-const getRandomYear = (years: number[]): string => {
-  if (!years || years.length === 0) return '';
-  const randomIndex = Math.floor(Math.random() * years.length);
-  return years[randomIndex].toString();
-};
-
-const IndexPage = ({ years }: DataProps) => {
+export default function HomePage() {
   const router = useRouter();
 
+  // Client-side navigations to "/" do not run the inline script.
   useEffect(() => {
-    // Redirect to a random year when accessing the root
-    if (years && years.length > 0 && router.isReady) {
-      const randomYear = getRandomYear(years);
-      router.replace(`/year/${randomYear}`);
-    }
-  }, [years, router]);
+    const year = years[Math.floor(Math.random() * years.length)];
+    void router.replace(`${yearPath(year)}${window.location.search}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Show loading state while redirecting
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      fontFamily: "'Times New Roman', serif",
-      fontSize: '18px',
-      color: '#654321'
-    }}>
-      Loading historic borders...
-    </div>
+    <Layout path="/">
+      <script dangerouslySetInnerHTML={{ __html: redirectScript }} />
+      <main className="landing">
+        <div className="landing__inner">
+          <p className="landing__brand">
+            <BrandMark size={28} />
+            Historic Borders
+          </p>
+          <h1 className="landing__title">
+            An interactive atlas of world borders, {formatYearLong(years[0])} to{' '}
+            {formatYearLong(years[years.length - 1])}
+          </h1>
+          <p className="landing__lede">Opening a random year…</p>
+          <nav aria-label="All years">
+            <ul className="year-index">
+              {years.map((year) => (
+                <li key={year}>
+                  <Link href={yearPath(year)}>{formatYear(year)}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <p className="landing__more">
+            <Link href="/pa/school-districts">
+              Pennsylvania school districts map
+            </Link>
+          </p>
+        </div>
+      </main>
+    </Layout>
   );
-};
-
-type GetGithubFilesResp =
-  Endpoints['GET /repos/{owner}/{repo}/contents/{path}']['response'];
-
-type GetBranchResp =
-  Endpoints['GET /repos/{owner}/{repo}/branches/{branch}']['response'];
-
-const octokit = new OctokitThrottled({
-  auth: githubToken,
-  throttle: {
-    onRateLimit: (retryAfter: any, options: any, octokit: any) => {
-      console.warn(
-        `Request quota exhausted for request ${options.method} ${options.url}`,
-      );
-
-      if (options.request.retryCount === 0) {
-        // only retries once
-        console.info(`Retrying after ${retryAfter} seconds!`);
-        return true;
-      }
-    },
-    onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
-      // does not retry, only logs a warning
-      console.warn(
-        `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
-      );
-    },
-  },
-});
-
-export const getStaticProps: GetStaticProps<DataProps> = async () => {
-  const user = 'aourednik';
-  const repo = 'historical-basemaps';
-  try {
-    const fileResp = (await octokit.request(
-      `/repos/${user}/${repo}/contents/geojson`,
-    )) as GetGithubFilesResp;
-    const { data: branch } = (await octokit.request(
-      `/repos/${user}/${repo}/branches/master`,
-    )) as GetBranchResp;
-    const config: ConfigType = {
-      name: 'Historic Borders',
-      description: 'example.',
-      commitDate: branch.commit.commit.committer?.date,
-    };
-    const files = fileResp.data as GithubFileInfoType[];
-    const years = files
-      .filter((x) => x.name.endsWith('.geojson'))
-      .map((x) => getYearFromFile(x.name))
-      .sort((a, b) => a - b)
-      .filter((x) => !isNaN(x));
-    return {
-      props: {
-        years,
-        user: user,
-        id: repo,
-        config,
-      } as DataProps,
-      revalidate: 86400, // Revalidate once per day (24 hours)
-    };
-  } catch (e) {
-    console.error(e);
-  }
-  return {
-    props: {
-      years: [-500],
-      user,
-      id: repo,
-      config: {
-        name: 'Error',
-      },
-    } as DataProps,
-    revalidate: 86400, // Revalidate once per day (24 hours)
-  };
-};
-
-export default IndexPage;
+}

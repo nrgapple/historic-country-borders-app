@@ -24,7 +24,7 @@ yarn test:coverage
 - **Overall Coverage**: 20.26% statements, 75.16% branches, 54.05% functions
 - **Well-tested modules**:
   - `Footer.tsx`: 100% coverage
-  - `Help.tsx`: 100% coverage  
+  - `Help.tsx`: 100% coverage
   - `PopupInfo.tsx`: 100% coverage
   - `useKeyPress.tsx`: 100% coverage
   - `useMounted.tsx`: 100% coverage
@@ -42,16 +42,19 @@ yarn test:coverage
 ## Test Files
 
 ### Component Tests
+
 - `components/__tests__/MapContainer.test.tsx` - Map container component
 - `components/__tests__/Footer.test.tsx` - Footer component with props
 - `components/__tests__/PopupInfo.test.tsx` - Popup info component with hooks
 - `components/__tests__/Help.test.tsx` - Simple help component
 
 ### Hook Tests
+
 - `hooks/__tests__/useKeyPress.test.tsx` - Keyboard event handling
 - `hooks/__tests__/useMounted.test.tsx` - Component mount state
 
 ### Utility Tests
+
 - `util/__tests__/stringToColor.test.ts` - Color generation functions
 - `util/__tests__/constants.test.ts` - Utility functions and constants
 - `utils/__tests__/queryParams.test.ts` - URL parameter handling
@@ -81,16 +84,16 @@ describe('MyComponent', () => {
 Custom hook tests use `renderHook` from React Testing Library:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { renderHook } from '@testing-library/react'
-import { useMyHook } from '../useMyHook'
+import { describe, it, expect } from 'vitest';
+import { renderHook } from '@testing-library/react';
+import { useMyHook } from '../useMyHook';
 
 describe('useMyHook', () => {
   it('should return expected value', () => {
-    const { result } = renderHook(() => useMyHook())
-    expect(result.current).toBe('expected value')
-  })
-})
+    const { result } = renderHook(() => useMyHook());
+    expect(result.current).toBe('expected value');
+  });
+});
 ```
 
 ### Utility Tests
@@ -98,14 +101,14 @@ describe('useMyHook', () => {
 Utility function tests are located in `util/__tests__/` and `utils/__tests__/`. Example:
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { myUtilFunction } from '../myUtil'
+import { describe, it, expect } from 'vitest';
+import { myUtilFunction } from '../myUtil';
 
 describe('myUtilFunction', () => {
   it('should return expected result', () => {
-    expect(myUtilFunction('input')).toBe('expected output')
-  })
-})
+    expect(myUtilFunction('input')).toBe('expected output');
+  });
+});
 ```
 
 ## Mocking
@@ -113,6 +116,7 @@ describe('myUtilFunction', () => {
 ### External Libraries
 
 Common mocks are set up in `test/setup.ts`:
+
 - Mapbox GL JS
 - React Map GL
 - ResizeObserver
@@ -126,7 +130,7 @@ Mock custom hooks in individual test files:
 ```typescript
 vi.mock('../../hooks/useMyHook', () => ({
   useMyHook: vi.fn(() => ({ data: 'mocked data' })),
-}))
+}));
 ```
 
 ### Event Testing
@@ -134,12 +138,12 @@ vi.mock('../../hooks/useMyHook', () => ({
 Test keyboard and mouse events:
 
 ```typescript
-import { act } from '@testing-library/react'
+import { act } from '@testing-library/react';
 
 act(() => {
-  const keydownEvent = new KeyboardEvent('keydown', { key: 'Enter' })
-  window.dispatchEvent(keydownEvent)
-})
+  const keydownEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+  window.dispatchEvent(keydownEvent);
+});
 ```
 
 ## Configuration
@@ -162,6 +166,7 @@ act(() => {
 ## Coverage Goals
 
 Current targets (can be adjusted in `vitest.config.ts`):
+
 - **Statements**: 70%+
 - **Branches**: 60%+
 - **Functions**: 70%+
@@ -178,6 +183,7 @@ Current targets (can be adjusted in `vitest.config.ts`):
 ## Common Patterns
 
 ### Testing Conditional Rendering
+
 ```typescript
 it('should render when condition is true', () => {
   render(<Component showContent={true} />)
@@ -191,10 +197,11 @@ it('should not render when condition is false', () => {
 ```
 
 ### Testing Async Operations
+
 ```typescript
 it('should handle async operations', async () => {
   render(<AsyncComponent />)
-  
+
   await waitFor(() => {
     expect(screen.getByText('Loaded')).toBeInTheDocument()
   })
@@ -202,13 +209,15 @@ it('should handle async operations', async () => {
 ```
 
 ### Testing Error States
+
 ```typescript
 it('should handle errors gracefully', () => {
   const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-  
+
   expect(() => {
     render(<ComponentThatThrows />)
   }).toThrow('Expected error message')
-  
+
   consoleSpy.mockRestore()
-}) 
+})
+```

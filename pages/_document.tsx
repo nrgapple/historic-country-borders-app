@@ -1,27 +1,34 @@
-import { Html, Head, Main, NextScript } from 'next/document';
+import { Head, Html, Main, NextScript } from 'next/document';
+import { SEO_CONFIG } from '../config/seo';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: SEO_CONFIG.siteName,
+  url: SEO_CONFIG.siteUrl,
+  description: SEO_CONFIG.defaultDescription,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript and WebGL',
+  isAccessibleForFree: true,
+  inLanguage: SEO_CONFIG.language,
+};
 
 export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Favicon and app icons */}
-        <link rel="icon" href="/favicon.ico?v=2" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png?v=2" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
-        <link rel="manifest" href="/manifest.json" />
-        
-        {/* Essential meta tags */}
         <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Fonts - moved here for better performance */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
-          rel="stylesheet"
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content={SEO_CONFIG.themeColor} />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="preconnect" href="https://api.mapbox.com" crossOrigin="" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </Head>
       <body>

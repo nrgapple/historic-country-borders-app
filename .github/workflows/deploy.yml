@@ -1,0 +1,64 @@
+name: Deploy
+
+# Production deploys happen only from main, after CI has passed for that exact
+# commit. A manual dispatch can redeploy the current main.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL || 'https://historicborders.app' }}
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      # Public, URL-restricted token baked into the static bundle.
+      NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
+      NEXT_PUBLIC_GA_FOUR: ${{ vars.NEXT_PUBLIC_GA_FOUR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - name: Check deploy configuration
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          missing=0
+          for name in NEXT_PUBLIC_MAPBOX_TOKEN CLOUDFLARE_API_TOKEN; do
+            if [ -z "${!name}" ]; then echo "::error::Missing secret $name"; missing=1; fi
+          done
+          exit $missing
+      - run: yarn build
+      - run: yarn static:validate
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: yarn wrangler deploy --message "main ${GITHUB_SHA::7}"
+      - name: Static production smoke test
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL || 'https://historic-borders.champtoday.workers.dev' }}
+        run: yarn smoke:production

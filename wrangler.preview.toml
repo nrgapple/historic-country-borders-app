@@ -1,0 +1,12 @@
+# Pull-request previews. An assets-only Worker: no feedback endpoint, no
+# Durable Object, and no production routes. Cloudflare does not generate
+# per-version preview URLs for Workers with Durable Objects, so previews use
+# this separate Worker, overwritten by the most recent PR build.
+name = "historic-borders-preview"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[assets]
+directory = "./out"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"

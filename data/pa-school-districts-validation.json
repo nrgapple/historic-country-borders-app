@@ -1,0 +1,18 @@
+{
+  "validatedAt": "2026-09-03T02:11:01.211Z",
+  "sourceSha256": "d17163e4f6edd6d27266bad2d850ab063461e90610733056db8efa430ac3c993",
+  "sourceBytes": 21161924,
+  "artifactSha256": "6e39e3939fb59e70c772eed630ab90405e8fc64107ccc13dfb8cd323b2536e9f",
+  "artifactBytes": 12023844,
+  "districtCount": 500,
+  "geometryCounts": { "Polygon": 460, "MultiPolygon": 40 },
+  "requiredProperties": [
+    "SCHOOL_NAM",
+    "SCHOOL_DIS",
+    "CTY_NAME",
+    "IU_NAME",
+    "IU_NUM",
+    "AUN_NUM",
+    "AVTS"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reviewed end dates for upstream places whose inhabitedUntil is missing. Without them, long-abandoned archaeological sites appear as living cities in later maps (for example Göbekli Tepe in 1492). Only well-established abandonment dates are listed; uncertain cases are left to upstream.",
+  "reviewedAt": "2026-11-18",
+  "overrides": [
+    {
+      "name": "Göbekli Tepe",
+      "inhabitedUntil": -8000,
+      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
+      "note": "Site abandoned around 8000 BC."
+    },
+    {
+      "name": "Çatal Höyük",
+      "inhabitedUntil": -5600,
+      "source": "https://en.wikipedia.org/wiki/%C3%87atalh%C3%B6y%C3%BCk",
+      "note": "Settlement occupied c. 7100–5600 BC."
+    },
+    {
+      "name": "Taljanky",
+      "inhabitedUntil": -3700,
+      "source": "https://en.wikipedia.org/wiki/Talianki",
+      "note": "Cucuteni–Trypillia mega-site, c. 3950–3700 BC."
+    },
+    {
+      "name": "Sannai-Maruyama Site",
+      "inhabitedUntil": -2200,
+      "source": "https://en.wikipedia.org/wiki/Sannai-Maruyama_site",
+      "note": "Jōmon settlement, c. 3900–2200 BC."
+    },
+    {
+      "name": "Ōyu site",
+      "inhabitedUntil": -1500,
+      "source": "https://en.wikipedia.org/wiki/%C5%8Cyu_Stone_Circles",
+      "note": "Late Jōmon stone circles, c. 2000–1500 BC."
+    },
+    {
+      "name": "Harappa site",
+      "inhabitedUntil": -1300,
+      "source": "https://en.wikipedia.org/wiki/Harappa",
+      "note": "Urban occupation ended by about 1300 BC."
+    },
+    {
+      "name": "Ur",
+      "inhabitedUntil": -500,
+      "source": "https://en.wikipedia.org/wiki/Ur",
+      "note": "City abandoned around 500 BC."
+    },
+    {
+      "name": "Taxila",
+      "inhabitedUntil": 500,
+      "source": "https://en.wikipedia.org/wiki/Taxila",
+      "note": "Ancient city destroyed by the Hephthalites in the 5th century AD."
+    },
+    {
+      "name": "Uruk",
+      "inhabitedUntil": 700,
+      "source": "https://en.wikipedia.org/wiki/Uruk",
+      "note": "Abandoned around the time of the 7th-century Islamic conquest."
+    },
+    {
+      "name": "Xanadu",
+      "inhabitedUntil": 1430,
+      "source": "https://en.wikipedia.org/wiki/Xanadu_(Shangdu)",
+      "note": "Destroyed in 1369 and abandoned by 1430."
+    },
+    {
+      "name": "Great Zimbabwe",
+      "inhabitedUntil": 1450,
+      "source": "https://en.wikipedia.org/wiki/Great_Zimbabwe",
+      "note": "Largely abandoned in the mid-15th century."
+    },
+    {
+      "name": "Vijayanagara",
+      "inhabitedUntil": 1565,
+      "source": "https://en.wikipedia.org/wiki/Vijayanagara",
+      "note": "Capital sacked and abandoned after 1565."
+    }
+  ]
+}
