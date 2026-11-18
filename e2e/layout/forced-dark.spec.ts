@@ -53,6 +53,7 @@ const open = async (
   baseURL: string,
   path: string,
   colorScheme: 'light' | 'dark',
+  panel = false,
 ) => {
   const context = await browser.newContext({
     baseURL,
@@ -63,6 +64,13 @@ const open = async (
   await interceptThirdParty(context, baseURL);
   const page = await context.newPage();
   await page.goto(path);
+  // The place panel opens once the year's borders load, after the layout
+  // settles; wait for it so both colour reads include it.
+  if (panel)
+    await page
+      .getByRole('complementary')
+      .first()
+      .waitFor({ state: 'visible', timeout: 30_000 });
   await settle(page);
   return page;
 };
@@ -135,7 +143,8 @@ for (const target of PAGES) {
     baseURL,
     playwright,
   }, testInfo) => {
-    const dark = await open(browser, baseURL!, target.path, 'dark');
+    const panel = 'panel' in target && Boolean(target.panel);
+    const dark = await open(browser, baseURL!, target.path, 'dark', panel);
     // Chromium's force-dark flag applies to the whole browser, so the light
     // reference comes from a second browser launched without it.
     const referenceBrowser =
@@ -151,6 +160,7 @@ for (const target of PAGES) {
         baseURL!,
         target.path,
         'light',
+        panel,
       );
       const darkColors = await computedColors(dark);
       const lightColors = await computedColors(light);
