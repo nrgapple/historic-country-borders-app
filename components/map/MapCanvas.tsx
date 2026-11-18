@@ -41,6 +41,24 @@ interface MapCanvasProps {
 
 const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
+/**
+ * Mapbox GL needs WebGL. Some managed school devices and hardened browsers
+ * disable it; without this check the map area would simply stay blank.
+ */
+export const supportsWebGL = (): boolean => {
+  if (typeof document === 'undefined') return true;
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl'),
+    );
+  } catch {
+    return false;
+  }
+};
+
 export default function MapCanvas({
   mapStyle,
   fallbackView,
@@ -56,6 +74,7 @@ export default function MapCanvas({
   const mapRef = useRef<MapRef | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [cursor, setCursor] = useState<string>('');
+  const [webgl] = useState(supportsWebGL);
 
   // Read the shared position once; afterwards the map owns its camera.
   const initialViewState = useMemo(() => {
@@ -104,6 +123,22 @@ export default function MapCanvas({
     return (
       <div className="map-canvas map-canvas--unavailable" role="alert">
         The map is unavailable because no Mapbox access token is configured.
+      </div>
+    );
+  }
+
+  if (!webgl) {
+    return (
+      <div className="map-canvas map-canvas--unavailable" role="alert">
+        <p>
+          <strong>This browser can’t draw the interactive map.</strong> It needs
+          WebGL, which is turned off or unsupported on this device.
+        </p>
+        <p>
+          Try another browser, turn on hardware acceleration, or ask your
+          school’s IT team to allow WebGL. The timeline and place details still
+          work.
+        </p>
       </div>
     );
   }

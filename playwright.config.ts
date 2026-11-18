@@ -22,7 +22,18 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Linux CI runners have no GPU; allow Firefox's software WebGL so the
+        // real map renders instead of the "no WebGL" fallback.
+        launchOptions: {
+          firefoxUserPrefs: {
+            'webgl.force-enabled': true,
+            'webgl.disabled': false,
+            'webgl.enable-webgl2': true,
+          },
+        },
+      },
     },
     {
       name: 'webkit',

@@ -129,10 +129,17 @@ button {
 
 .map-canvas--unavailable {
   display: grid;
-  place-items: center;
-  padding: 2rem;
+  place-content: center;
+  gap: 0.25rem;
+  padding: 12rem 2rem 2rem;
+  max-width: 40rem;
+  margin: 0 auto;
   text-align: center;
   color: var(--ink-2);
+}
+
+.map-canvas--unavailable strong {
+  color: var(--ink);
 }
 
 /* -------------------------------------------------------------------------
