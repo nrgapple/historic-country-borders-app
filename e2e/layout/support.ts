@@ -55,12 +55,24 @@ const LONG_EXTRACT = Array.from(
     'This fixture paragraph stands in for a Wikipedia summary so the place panel has realistic height in layout tests.',
 ).join(' ');
 
+/** remaster/src/lib/welcome.ts welcomeKey() for the current release notes. */
+const WELCOME_SEEN_KEY = 'historic-borders-welcome:2026-remaster';
+
 /** Intercepts third-party traffic so layouts are deterministic and free. */
 export async function interceptThirdParty(
   context: BrowserContext,
   baseURL: string,
 ) {
   const origin = new URL(baseURL).origin;
+  // The remaster's one-time welcome sheet is covered by its own e2e spec;
+  // mark it seen so layouts are measured as returning visitors see them.
+  await context.addInitScript((key) => {
+    try {
+      localStorage.setItem(key, new Date(0).toISOString());
+    } catch {
+      // Storage blocked: the welcome then never opens by itself.
+    }
+  }, WELCOME_SEEN_KEY);
   await context.route(
     (url) => url.origin !== origin,
     (route) => {

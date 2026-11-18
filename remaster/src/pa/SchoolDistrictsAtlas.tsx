@@ -65,6 +65,7 @@ function PaApp() {
   // The controller's handle, for the map key (globe and scale bar).
   const [mapHandle, setMapHandle] = useState<MapHandle | null>(null);
   const place = useAtlas((s) => s.place);
+  const overlay = useAtlas((s) => s.overlay);
   const focusMode = useAtlas((s) => s.focusMode);
   const webgl = useAtlas((s) => s.webgl);
   const projectorText = useAtlas((s) => s.settings.projectorText);
@@ -199,6 +200,7 @@ function PaApp() {
           <MapKeySlot
             map={mapHandle?.map}
             lowPower={mapHandle?.lowPower}
+            underSheet={overlay === 'settings'}
             plate={{
               kicker: 'Commonwealth of',
               title: 'Pennsylvania',

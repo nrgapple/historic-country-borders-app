@@ -198,10 +198,20 @@
   stroke-linejoin: round;
 }
 
-/* With the side panel open on narrow tablets, stay clear of it. */
-@media (max-width: 1100px) {
+/* With the side panel open on narrow tablets, stay clear of it, and move to
+   the top: the zoom buttons share the bottom of the narrowed map, and "What
+   changed" (top left) is shown only without a place. */
+@media (min-width: 700px) and (max-width: 1100px) {
   .stage[data-panel-open] .map-key {
+    top: calc(var(--frame-inset) + 20px);
+    bottom: auto;
     max-width: calc(100% - var(--panel-width) - 3 * var(--frame-inset) - 40px);
+    flex-direction: column-reverse;
+  }
+
+  .stage[data-panel-open] .map-key[data-open] .map-key__bar {
+    border-top: 0;
+    border-bottom: 1px solid var(--hair);
   }
 }
 
