@@ -71,10 +71,15 @@ export default function Icon({ name, size = 18, className }: IconProps) {
   );
 }
 
-/** The Historic Borders mark: a globe whose meridian is a dashed border. */
+/**
+ * The Historic Borders mark: a symmetric globe (meridian ellipse, equator, two
+ * parallels) with an accent dashed line for a border. Drawn on a 24-unit grid
+ * so it centers cleanly beside the wordmark at any size.
+ */
 export function BrandMark({ size = 22 }: { size?: number }) {
   return (
     <svg
+      className="brand-mark"
       width={size}
       height={size}
       viewBox="0 0 24 24"
@@ -82,29 +87,27 @@ export function BrandMark({ size = 22 }: { size?: number }) {
       aria-hidden="true"
       focusable="false"
     >
-      <circle
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <ellipse
         cx="12"
         cy="12"
-        r="9.25"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 2.75c-3 3.2-3 15.3 0 18.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 2.75c3.2 3.6 3.6 9.6 1.2 13.4"
-        stroke="var(--accent)"
-        strokeWidth="1.75"
-        strokeDasharray="2.2 2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M3.6 9h16.8M3.6 15h16.8"
+        rx="3.9"
+        ry="9"
         stroke="currentColor"
         strokeWidth="1.2"
+      />
+      <path
+        d="M4.2 7.6h15.6M4.2 16.4h15.6"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeOpacity="0.55"
+      />
+      <path
+        d="M3 12h18"
+        stroke="var(--accent)"
+        strokeWidth="1.7"
+        strokeDasharray="2.4 1.8"
+        strokeLinecap="round"
       />
     </svg>
   );

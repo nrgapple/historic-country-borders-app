@@ -37,7 +37,8 @@
   --topbar-max: 1200px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  color-scheme: light;
+  /* The palette is designed for paper-white; stop browsers auto-darkening it. */
+  color-scheme: only light;
 }
 
 /* -------------------------------------------------------------------------
@@ -173,6 +174,11 @@ button {
   color: var(--ink-2);
   font-size: 0.875rem;
   text-align: center;
+}
+
+.brand svg {
+  display: block;
+  flex: none;
 }
 
 .brand {
@@ -809,7 +815,21 @@ button {
   left: auto;
   margin: 0;
   width: min(340px, calc(100vw - 2 * var(--gutter)));
+  /* The panel hangs below the top bar; keep it inside the viewport and let
+     its body scroll on short screens (tablets, phones in landscape). */
+  max-height: calc(100dvh - 220px);
+  min-height: 0;
   z-index: 20;
+}
+
+.dialog--panel .dialog__inner {
+  max-height: inherit;
+  min-height: 0;
+}
+
+.dialog--panel .dialog__body {
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 .dialog__inner {
@@ -1365,6 +1385,7 @@ kbd {
     left: var(--gutter);
     right: var(--gutter);
     width: auto;
+    max-height: 70dvh;
   }
 }
 
