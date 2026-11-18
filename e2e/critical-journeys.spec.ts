@@ -221,6 +221,27 @@ test('the timeline moves through time and keeps the shared map position', async 
   await expect(page).toHaveURL(/\/year\/1500\?/);
 });
 
+test('a student can pick a year by name or by its printed label', async ({
+  page,
+}) => {
+  await page.goto('/year/1492?lng=10.0000&lat=45.0000&zoom=4.00');
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  await page
+    .getByRole('combobox', { name: 'Choose a year' })
+    .selectOption({ label: '1815 AD' });
+  await expect(page).toHaveURL(/\/year\/1815\?lng=10\.0000/);
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  // The printed ruler labels are click targets, not just the ticks.
+  await page.locator('.timeline__labels').getByText('2010').click();
+  await expect(page).toHaveURL(/\/year\/2010\?/);
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '2010 AD',
+  );
+});
+
 test('selecting a territory shows its details with a safe Wikipedia fallback', async ({
   page,
 }) => {
@@ -250,8 +271,11 @@ test('unknown years use the useful static 404', async ({ page }) => {
     page.getByRole('heading', { name: 'That map is not available' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('link', { name: 'Explore an available historical year' }),
+    page.getByRole('link', { name: 'Open a random year' }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'See the world in 1914' }),
+  ).toHaveAttribute('href', '/year/1914');
 });
 
 test('static preview fails feedback safely without an application server', async ({
@@ -269,11 +293,15 @@ test('static preview fails feedback safely without an application server', async
   await page.goto('/year/1994');
   await page.getByRole('button', { name: 'Feedback' }).click();
   const dialog = page.getByRole('dialog', { name: 'Send feedback' });
-  await dialog.getByRole('radio', { name: 'Good' }).check();
   const submit = dialog.getByRole('button', {
     name: 'Send feedback',
     exact: true,
   });
+  await expect(submit).toBeDisabled();
+  // A message alone is enough; the rating is optional.
+  await dialog
+    .getByLabel('What did you notice on this map?')
+    .fill('A border looks wrong');
   await expect(submit).toBeEnabled();
   await submit.click();
   await expect(dialog.getByRole('alert')).toContainText(
@@ -293,4 +321,29 @@ test('Pennsylvania school districts load usable district data for cold and retur
   await expect(page.getByText(/District boundaries: 2025-10/)).toBeVisible();
   await page.reload();
   await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
+});
+
+test('Pennsylvania shows a visible loading message and keeps its title on phones', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let release: () => void = () => undefined;
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/data/pa-school-districts.json', async (route) => {
+    await released;
+    await route.fulfill({ json: schoolDistrictResponse });
+  });
+
+  await page.goto('/pa/school-districts');
+  await expect(page.getByTestId('map-loading')).toHaveText(
+    'Loading 500 district boundaries…',
+  );
+  await expect(page.getByText('PA school districts')).toBeVisible();
+
+  release();
+  await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
+  await expect(page.getByTestId('map-loading')).toBeHidden();
+  await expect(page.getByText('Boundaries Oct 2025')).toBeVisible();
 });

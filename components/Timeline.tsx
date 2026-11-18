@@ -2,6 +2,7 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -9,6 +10,7 @@ import React, {
 } from 'react';
 import Icon from './Icon';
 import {
+  EraSpan,
   eraOf,
   eraSpans,
   formatYear,
@@ -16,7 +18,7 @@ import {
   yearParts,
 } from '../lib/years';
 
-export type TimelineChangeMethod = 'step' | 'track' | 'keyboard';
+export type TimelineChangeMethod = 'step' | 'track' | 'keyboard' | 'select';
 
 interface TimelineProps {
   years: readonly number[];
@@ -79,6 +81,32 @@ export const chooseLabelledTicks = (
   return chosen;
 };
 
+/**
+ * Estimated width of an uppercase era name. Below a 600 px track the phone
+ * styles apply (10 px text, about 7 px per character); above it 11 px text
+ * takes about 8.2 px per character.
+ */
+const eraLabelWidth = (label: string, width: number, isFirst: boolean) =>
+  label.length * (width < 600 ? 7 : 8.2) + (isFirst ? 0 : 6) + 2;
+
+/**
+ * Picks the full era name when it fits its band on the ruler, otherwise the
+ * short name. Before the track is measured the full name is used.
+ */
+export const eraBandLabel = (
+  span: EraSpan,
+  totalYears: number,
+  width: number,
+) => {
+  if (width <= 0 || totalYears <= 0) return span.era.label;
+  const band = (span.count / totalYears) * width;
+  const fits = eraLabelWidth(span.era.label, width, span.start === 0) <= band;
+  return fits ? span.era.label : span.era.shortLabel;
+};
+
+/** Pointer travel, in px, before a press on a printed year becomes a drag. */
+const DRAG_THRESHOLD_PX = 4;
+
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
   if (target.isContentEditable) return true;
@@ -99,6 +127,12 @@ export default function Timeline({
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  // A press that starts on a printed year selects that year unless the
+  // pointer then moves far enough to count as a drag.
+  const pressRef = useRef<{ x: number; labelIndex: number | null } | null>(
+    null,
+  );
+  const selectId = useId();
 
   const lastIndex = years.length - 1;
   const selectedIndex = Math.max(0, years.indexOf(value));
@@ -137,27 +171,51 @@ export default function Timeline({
     return Math.min(lastIndex, Math.max(0, Math.floor(ratio * years.length)));
   };
 
+  const labelIndexOf = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return null;
+    const label = target.closest<HTMLElement>('[data-index]');
+    const index = label ? Number(label.dataset.index) : NaN;
+    return Number.isInteger(index) ? index : null;
+  };
+
+  // The era row, the track, and the printed years all share one hit area.
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
     event.currentTarget.setPointerCapture?.(event.pointerId);
-    event.currentTarget.focus({ preventScroll: true });
-    setDragIndex(indexFromPointer(event.clientX));
+    trackRef.current?.focus({ preventScroll: true });
+    const labelIndex = labelIndexOf(event.target);
+    pressRef.current = { x: event.clientX, labelIndex };
+    setDragIndex(labelIndex ?? indexFromPointer(event.clientX));
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const index = indexFromPointer(event.clientX);
-    if (dragIndex !== null) setDragIndex(index);
-    else if (event.pointerType === 'mouse') setHoverIndex(index);
+    const press = pressRef.current;
+    if (dragIndex !== null) {
+      if (
+        press?.labelIndex != null &&
+        Math.abs(event.clientX - press.x) < DRAG_THRESHOLD_PX
+      ) {
+        return;
+      }
+      if (press) press.labelIndex = null;
+      setDragIndex(index);
+    } else if (event.pointerType === 'mouse') setHoverIndex(index);
   };
 
   const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     if (dragIndex === null) return;
-    const index = indexFromPointer(event.clientX);
+    const index =
+      pressRef.current?.labelIndex ?? indexFromPointer(event.clientX);
+    pressRef.current = null;
     setDragIndex(null);
     commit(index, 'track');
   };
 
-  const cancelDrag = () => setDragIndex(null);
+  const cancelDrag = () => {
+    pressRef.current = null;
+    setDragIndex(null);
+  };
 
   const step = useCallback(
     (delta: number, method: TimelineChangeMethod) =>
@@ -243,15 +301,45 @@ export default function Timeline({
             </span>
           </button>
 
-          <div className="timeline__current" aria-hidden="true">
-            {parts && (
-              <>
-                <span className="timeline__current-value">{parts.value}</span>
-                <span className="timeline__current-suffix">{parts.suffix}</span>
-              </>
-            )}
-            <span className="timeline__current-era">
-              {displayYear !== undefined && eraOf(displayYear).label}
+          {/* A native select over the large year: it opens the platform's
+              own picker on phones and Chromebooks and lists every year. */}
+          <div className="timeline__current">
+            <label className="visually-hidden" htmlFor={selectId}>
+              Choose a year
+            </label>
+            <select
+              id={selectId}
+              className="timeline__select"
+              value={years[selectedIndex] ?? ''}
+              onChange={(event) =>
+                commit(years.indexOf(Number(event.target.value)), 'select')
+              }
+            >
+              {spans.map((span) => (
+                <optgroup key={span.era.id} label={span.era.label}>
+                  {years
+                    .slice(span.start, span.start + span.count)
+                    .map((year) => (
+                      <option key={year} value={year}>
+                        {formatYearLong(year)}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+            </select>
+            <span className="timeline__current-display" aria-hidden="true">
+              {parts && (
+                <>
+                  <span className="timeline__current-value">{parts.value}</span>
+                  <span className="timeline__current-suffix">
+                    {parts.suffix}
+                    <Icon name="chevronDown" size={14} />
+                  </span>
+                </>
+              )}
+              <span className="timeline__current-era">
+                {displayYear !== undefined && eraOf(displayYear).label}
+              </span>
             </span>
           </div>
 
@@ -276,7 +364,15 @@ export default function Timeline({
         <div className="timeline__trailing">{trailing}</div>
       </div>
 
-      <div className="timeline__ruler">
+      <div
+        className="timeline__ruler"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={finishDrag}
+        onPointerCancel={cancelDrag}
+        onLostPointerCapture={cancelDrag}
+        onPointerLeave={() => setHoverIndex(null)}
+      >
         <div className="timeline__eras" aria-hidden="true">
           {spans.map((span) => (
             <span
@@ -291,7 +387,9 @@ export default function Timeline({
               style={{ flexGrow: span.count }}
               title={span.era.label}
             >
-              <span className="timeline__era-label">{span.era.label}</span>
+              <span className="timeline__era-label">
+                {eraBandLabel(span, years.length, trackWidth)}
+              </span>
             </span>
           ))}
         </div>
@@ -311,12 +409,6 @@ export default function Timeline({
               : undefined
           }
           onKeyDown={handleTrackKeyDown}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={finishDrag}
-          onPointerCancel={cancelDrag}
-          onLostPointerCapture={cancelDrag}
-          onPointerLeave={() => setHoverIndex(null)}
         >
           <div className="timeline__baseline" />
           {years.map((year, index) => (
@@ -354,6 +446,7 @@ export default function Timeline({
               <span
                 key={year}
                 className="timeline__label"
+                data-index={index}
                 data-active={index === displayIndex || undefined}
                 data-edge={
                   index === 0

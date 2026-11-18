@@ -4,6 +4,7 @@ import React from 'react';
 const PATHS = {
   chevronLeft: <path d="M15 18l-6-6 6-6" />,
   chevronRight: <path d="M9 18l6-6-6-6" />,
+  chevronDown: <path d="M6 9l6 6 6-6" />,
   close: <path d="M18 6L6 18M6 6l12 12" />,
   sliders: (
     <>
