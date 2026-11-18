@@ -5,6 +5,7 @@ import { parsePlace, writeMapView, writePlace, type MapView } from '../lib/mapVi
 import { eraOf, yearPath } from '../lib/years';
 import {
   DEFAULT_SETTINGS,
+  loadProjectorFonts,
   readStoredSettings,
   sanitizeSettings,
   storeSettings,
@@ -108,8 +109,10 @@ const syncDocument = () => {
   const root = document.documentElement;
   const era = eraOf(state.year).id;
   if (root.dataset.era !== era) root.dataset.era = era;
-  if (state.settings.projectorText) root.dataset.text = 'projector';
-  else delete root.dataset.text;
+  if (state.settings.projectorText) {
+    loadProjectorFonts();
+    root.dataset.text = 'projector';
+  } else delete root.dataset.text;
 };
 
 const onPopState = () => {

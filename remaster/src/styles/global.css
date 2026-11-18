@@ -1,5 +1,5 @@
 @import './tokens.css';
-@import './fonts.css';
+/* UI fonts: T3's /fonts/atlas.css, linked in the layout (docs/FONTS.md). */
 
 /* Direction A, "Classic atlas": cream paper, engraved ink, square corners.
    Rules from plan §2.2-2.3: viewport-fit=cover + env() safe areas, dvh
@@ -82,6 +82,9 @@ body.atlas-page {
   /* dvh follows Safari's collapsing toolbars, so nothing sits under them. */
   height: 100dvh;
   display: grid;
+  /* An explicit column: an implicit `auto` one grows to the header's
+     min-content width and pushes the page past phone widths. */
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   padding-left: var(--safe-left);
   padding-right: var(--safe-right);
@@ -349,6 +352,12 @@ body.atlas-page {
   columns: 3 14ch;
   padding-left: 1.1em;
   font-size: 15px;
+}
+
+/* Long slash-joined names ("Winikon bä lojon/Xk’ukwits/…") must wrap, or
+   they widen the mobile layout viewport even while the list is off screen. */
+.territories li {
+  overflow-wrap: anywhere;
 }
 
 /* While the atlas runs, the list sits just below the viewport: still in the

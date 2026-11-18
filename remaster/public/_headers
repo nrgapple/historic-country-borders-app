@@ -32,9 +32,10 @@
 /basemap/*.webp
   Content-Type: image/webp
 
-# Map label glyphs (T3 stand-in path until T3 lands).
-/glyphs-standin/*
+# T3 map glyphs and fonts: content-hashed per build (docs/FONTS.md).
+/glyphs/*
+  Cache-Control: public, max-age=31536000, immutable
   Content-Type: application/x-protobuf
 
-/fonts/*
-  Cache-Control: public, max-age=604800
+/fonts/files/*
+  Cache-Control: public, max-age=31536000, immutable

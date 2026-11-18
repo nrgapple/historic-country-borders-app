@@ -1,9 +1,7 @@
 // Copies shared static files into remaster/public so one source stays
 // authoritative: favicons and the web manifest from the repository's public/,
-// and the self-hosted UI font files plus their OFL licenses from @fontsource.
-//
-// T3 ADAPTER (UI fonts): when T3 publishes its WOFF2 directory, point FONTS
-// below at it (or delete this block and update src/styles/fonts.css paths).
+// T2's basemap build, and T3's fonts and glyphs, all committed and validated
+// by `yarn data:validate`. Offline.
 import fs from 'node:fs';
 import path from 'node:path';
 import { APP, REPO } from './lib.mjs';
@@ -29,23 +27,25 @@ for (const rel of [basemap.tiles.path, path.dirname(basemap.relief.path)])
 fs.rmSync(path.join(APP, 'public/basemap-standin'), { recursive: true, force: true });
 fs.rmSync(path.join(APP, 'public/relief-standin'), { recursive: true, force: true });
 
-const FONTS = {
-  alegreya: ['400-normal', '500-normal', '700-normal', '400-italic', '500-italic'],
-  'alegreya-sc': ['500-normal', '700-normal'],
-  'atkinson-hyperlegible-next': ['400-normal', '500-normal', '700-normal'],
-};
-const out = path.join(APP, 'public/fonts');
-fs.rmSync(out, { recursive: true, force: true });
-fs.mkdirSync(out, { recursive: true });
-let count = 0;
-for (const [family, cuts] of Object.entries(FONTS)) {
-  const pkg = path.join(APP, 'node_modules/@fontsource', family);
-  for (const cut of cuts)
-    for (const subset of ['latin', 'latin-ext']) {
-      const file = `${family}-${subset}-${cut}.woff2`;
-      fs.copyFileSync(path.join(pkg, 'files', file), path.join(out, file));
-      count += 1;
-    }
-  fs.copyFileSync(path.join(pkg, 'LICENSE'), path.join(out, `LICENSE-${family}.txt`));
-}
-console.log(`public: ${SHARED.length} shared files, ${count} font files`);
+// T3: self-hosted WOFF2s, their three @font-face CSS files and licenses, and
+// the map glyph PBFs (docs/FONTS.md). Only the few fields the app needs are
+// bundled, as src/data/fonts.json; data/map-fonts.json itself is ~large.
+const fonts = JSON.parse(fs.readFileSync(path.join(REPO, 'data/map-fonts.json'), 'utf8'));
+for (const dir of ['public/fonts', 'public/glyphs'])
+  fs.rmSync(path.join(APP, dir), { recursive: true, force: true });
+fs.cpSync(path.join(REPO, 'public/fonts'), path.join(APP, 'public/fonts'), { recursive: true });
+const glyphBuild = fonts.glyphs.url.split('/')[2];
+fs.cpSync(path.join(REPO, 'public/glyphs', glyphBuild), path.join(APP, 'public/glyphs', glyphBuild), {
+  recursive: true,
+});
+fs.rmSync(path.join(APP, 'public/glyphs-standin'), { recursive: true, force: true });
+fs.writeFileSync(
+  path.join(APP, 'src/data/fonts.json'),
+  JSON.stringify({
+    glyphsUrl: fonts.glyphs.url,
+    fontstacks: Object.keys(fonts.glyphs.fontstacks),
+    css: Object.fromEntries(Object.entries(fonts.fonts.css).map(([k, v]) => [k, v.path])),
+    licenses: fonts.licenses.map(({ font, path: href }) => ({ font, href })),
+  }),
+);
+console.log(`public: ${SHARED.length} shared files, T3 fonts and glyphs (${glyphBuild})`);

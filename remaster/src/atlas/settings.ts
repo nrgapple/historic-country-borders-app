@@ -1,3 +1,5 @@
+import { FONT_CSS } from '../adapters/glyphs';
+
 /**
  * Map display settings: the values, their validation, and persistence.
  * Ported from contexts/SettingsContext.tsx (same storage key and ranges, so a
@@ -84,9 +86,25 @@ export const storeSettings = (settings: Settings) => {
 };
 
 /**
+ * Adds T3's projector.css once. Atkinson's CSS and WOFF2s load only while
+ * "Projector text" is on (plan P2 acceptance).
+ */
+export const PROJECTOR_CSS_ID = 'projector-fonts';
+export const loadProjectorFonts = () => {
+  if (document.getElementById(PROJECTOR_CSS_ID)) return;
+  const link = document.createElement('link');
+  link.id = PROJECTOR_CSS_ID;
+  link.rel = 'stylesheet';
+  link.href = FONT_CSS.projector;
+  document.head.append(link);
+};
+
+/**
  * Runs inline in <head> before first paint so the projector font is applied
  * without a flash of the default font. Must stay self-contained.
  */
 export const PROJECTOR_TEXT_BOOT = `try{var s=JSON.parse(localStorage.getItem(${JSON.stringify(
   STORAGE_KEY,
-)})||'{}');if(s&&s.projectorText===true)document.documentElement.dataset.text='projector'}catch(e){}`;
+)})||'{}');if(s&&s.projectorText===true){document.documentElement.dataset.text='projector';var l=document.createElement('link');l.id=${JSON.stringify(
+  PROJECTOR_CSS_ID,
+)};l.rel='stylesheet';l.href=${JSON.stringify(FONT_CSS.projector)};document.head.appendChild(l)}}catch(e){}`;

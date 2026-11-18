@@ -7,7 +7,7 @@ playwright-report/
 # and from the design spike's stand-in assets (see README.md, "Adapters").
 public/data/
 public/tiles/
-public/glyphs-standin/
+public/glyphs/
 public/basemap/
 public/shared/
 src/data/

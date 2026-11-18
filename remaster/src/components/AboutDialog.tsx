@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Dialog from './Dialog';
 import { useChrome } from '../atlas/hooks';
+import { FONT_LICENSES } from '../adapters/glyphs';
 
 export const REPOSITORY_URL =
   'https://github.com/nrgapple/historic-country-borders-app';
@@ -13,25 +14,6 @@ export const HISTORICAL_INTRO = (
     summary.
   </p>
 );
-
-/** Self-hosted fonts and their licenses (plan §5): shipped with the site. */
-export const FONT_CREDITS = [
-  {
-    family: 'Alegreya and Alegreya SC',
-    author: 'Huerta Tipográfica',
-    license: '/fonts/LICENSE-alegreya.txt',
-  },
-  {
-    family: 'Atkinson Hyperlegible Next (Projector text)',
-    author: 'Braille Institute',
-    license: '/fonts/LICENSE-atkinson-hyperlegible-next.txt',
-  },
-  {
-    family: 'Noto Sans (map labels in other scripts)',
-    author: 'Google',
-    license: null,
-  },
-] as const;
 
 interface AboutDialogProps {
   /** Page-specific opening paragraph(s). */
@@ -65,30 +47,25 @@ export default function AboutDialog({
 
       <section className="about__section">
         <h3>Type</h3>
+        {/* Text from docs/FONTS.md, "Licenses and attribution" (T3). */}
         <p>
-          Every font is served from this site under the{' '}
-          <a
-            href="https://openfontlicense.org/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            SIL Open Font License 1.1
-          </a>
-          ; map labels use glyphs built from the same fonts.
+          Map labels and text use Alegreya, Alegreya SC and Alegreya Sans by
+          Huerta Tipográfica, and Atkinson Hyperlegible Next by the Braille
+          Institute (for projector text). Names in Cherokee, Canadian
+          Aboriginal syllabics, Osage and some phonetic letters use Noto Sans
+          fonts by the Noto Project Authors. All fonts are used under the SIL
+          Open Font License 1.1.
         </p>
-        <ul className="link-list">
-          {FONT_CREDITS.map((font) => (
-            <li key={font.family}>
-              {font.family}, {font.author}
-              {font.license && (
-                <>
-                  {' · '}
-                  <a href={font.license}>license</a>
-                </>
-              )}
-            </li>
+        <p className="about__licenses">
+          Licenses:{' '}
+          {FONT_LICENSES.map((license, i) => (
+            <span key={license.href}>
+              {i > 0 && ', '}
+              <a href={license.href}>{license.font}</a>
+            </span>
           ))}
-        </ul>
+          .
+        </p>
       </section>
 
       {shortcuts.length > 0 && (

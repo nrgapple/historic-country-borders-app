@@ -26,6 +26,7 @@ const label = formatYearLong(year);
   path={`/year/${year}`}
   era={eraOf(year).id}
   bodyClass="atlas-page"
+  mapPage
   preload={[
     { href: files.map, as: 'fetch', type: 'application/geo+json' },
     { href: files.labels, as: 'fetch', type: 'application/geo+json' },

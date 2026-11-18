@@ -8,6 +8,7 @@ import {
   STRUCTURED_DATA,
 } from '../lib/seo';
 import { PROJECTOR_TEXT_BOOT } from '../atlas/settings';
+import { FONT_CSS } from '../adapters/glyphs';
 
 interface Props {
   /** Page title without the site name; omit for the default site title. */
@@ -20,6 +21,8 @@ interface Props {
   era?: string;
   preload?: { href: string; as: string; type?: string }[];
   bodyClass?: string;
+  /** Map pages also load T3's fontstack aliases (combining-mark clusters). */
+  mapPage?: boolean;
 }
 const {
   title,
@@ -29,6 +32,7 @@ const {
   era = 'medieval',
   preload = [],
   bodyClass,
+  mapPage = false,
 } = Astro.props;
 const pageTitle = generatePageTitle(title);
 const canonical = generateCanonicalUrl(path);
@@ -61,6 +65,8 @@ const canonical = generateCanonicalUrl(path);
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href={FONT_CSS.default} />
+    {mapPage && <link rel="stylesheet" href={FONT_CSS.map} />}
     <script is:inline set:html={PROJECTOR_TEXT_BOOT} />
     {preload.map((p) => <link rel="preload" href={p.href} as={p.as} type={p.type} crossorigin="anonymous" />)}
     <script type="application/ld+json" set:html={JSON.stringify(STRUCTURED_DATA)} />

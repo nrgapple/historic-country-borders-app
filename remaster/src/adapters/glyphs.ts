@@ -1,26 +1,36 @@
 /**
- * T3 ADAPTER: map label fonts as self-hosted SDF glyph PBFs (plan §5).
+ * T3 ADAPTER: map label fonts (plan §5), integrated with
+ * `t3/self-host-fonts-glyphs` (docs/FONTS.md). The glyph URL and CSS paths
+ * come from data/map-fonts.json through the small src/data/fonts.json that
+ * scripts/sync-public.mjs writes, so a new glyph build needs no code change.
  *
- * Contract: `/…/{fontstack}/{range}.pbf` for every stack below, each merged
- * with Noto fallback ranges for the scripts in published names.
- *
- * STAND-IN: `scripts/build-standins.mjs` extracts the design spike's glyph
- * bundles (Latin, Latin Extended, punctuation) into /glyphs-standin/ and adds
- * Noto Sans ranges from the spike's SSD cache when present.
- * SWITCH when T3 lands: set GLYPHS_URL to T3's path (for example
- * '/glyphs/{fontstack}/{range}.pbf'). The UI WOFF2 files are the second T3
- * switch: `scripts/sync-public.mjs` and `src/styles/fonts.css`.
+ * Each fontstack is used as a single-element `text-font` array: fallback
+ * scripts are already merged into every stack, and a multi-name array would
+ * request a combined directory that does not exist.
  */
-export const GLYPHS_URL = '/glyphs-standin/{fontstack}/{range}.pbf';
+import fonts from '../data/fonts.json';
 
-/** Every map fontstack, named as in plan §5. */
+export const GLYPHS_URL = fonts.glyphsUrl;
+
+/** The published fontstacks, named as T6's style uses them. */
 export const FONTSTACK = {
   stateMedium: 'Alegreya SC Medium',
   stateBold: 'Alegreya SC Bold',
   seaItalic: 'Alegreya Medium Italic',
   riverItalic: 'Alegreya Italic',
   city: 'Alegreya Regular',
-  /** "Projector text": loaded only when the setting is on. */
+  /** "Projector text": requested only while the setting is on. */
   projectorMedium: 'Atkinson Hyperlegible Next Medium',
   projectorBold: 'Atkinson Hyperlegible Next Bold',
 } as const;
+
+/** UI and map-alias CSS (docs/FONTS.md): default on every page, map on map pages, projector on demand. */
+export const FONT_CSS = fonts.css as { default: string; map: string; projector: string };
+
+/** Each family's OFL license file, for the About dialog. */
+export const FONT_LICENSES = fonts.licenses as Array<{ font: string; href: string }>;
+
+if (import.meta.env.DEV) {
+  const missing = Object.values(FONTSTACK).filter((s) => !fonts.fontstacks.includes(s));
+  if (missing.length) console.warn(`Fontstacks not published by T3: ${missing.join(', ')}`);
+}

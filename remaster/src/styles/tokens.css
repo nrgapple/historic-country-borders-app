@@ -46,8 +46,8 @@
   --accent: var(--era-medieval);
   --accent-wash: var(--era-medieval-wash);
   --accent-on-wash: var(--era-medieval-on-wash);
-  --font-serif: "Alegreya", "Iowan Old Style", Georgia, serif;
-  --font-sc: "Alegreya SC", "Alegreya", Georgia, serif;
+  --font-serif: "Alegreya", "Historic Borders Scripts", Georgia, serif;
+  --font-sc: "Alegreya SC", "Alegreya", "Historic Borders Scripts", Georgia, serif;
   --panel-width: 420px;
   --frame-inset: 14px;
   /* Safe areas (§2.2). WebKit tests set --test-inset-* because env() cannot be injected. */
@@ -85,8 +85,8 @@
 
 /* "Projector text" setting: Atkinson Hyperlegible Next for every UI string. */
 :root[data-text='projector'] {
-  --font-serif: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
-  --font-sc: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-serif: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
+  --font-sc: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
 }
 
 /* Breakpoints (not usable in @media; documented for CSS authors):

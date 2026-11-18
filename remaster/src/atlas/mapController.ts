@@ -87,12 +87,15 @@ export function mountMap(container: HTMLElement): MapHandle {
   map.on('styleimagemissing', (event) => addMarkerImage(map, event.id));
   map.once('style.load', () => {
     for (const id of Object.values(MARKER)) addMarkerImage(map, id);
-    // The credit strip carries the same sources; start the compact
-    // attribution closed so it does not cover the map.
+  });
+  // The credit strip and About carry the same sources: start the compact
+  // attribution closed (MapLibre opens it on load) so it does not cover the
+  // map; its (i) button still opens it.
+  map.once('idle', () =>
     container
       .querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
-      ?.classList.remove('maplibregl-compact-show');
-  });
+      ?.classList.remove('maplibregl-compact-show'),
+  );
 
   let loadedYear = initial.year;
   let index: YearIndex | null = null;

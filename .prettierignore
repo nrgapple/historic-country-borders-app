@@ -27,7 +27,8 @@ remaster/dist/
 remaster/.astro/
 remaster/public/data/
 remaster/public/tiles/
-remaster/public/glyphs-standin/
+remaster/public/glyphs/
+remaster/public/fonts/
 remaster/public/basemap/
 remaster/public/shared/
 remaster/src/data/

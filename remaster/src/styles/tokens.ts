@@ -85,12 +85,15 @@ export const WASHES = [
 ] as const;
 export const FALLBACK_WASH = { name: 'unknown', fill: '#E2D8C0', edge: '#9C8B66' };
 
+/**
+ * UI font stacks (T3, docs/FONTS.md "Web fonts"). "Historic Borders Scripts"
+ * is T3's Noto subset for the scripts in published names.
+ */
 export const FONT = {
-  serif: '"Alegreya", "Iowan Old Style", Georgia, serif',
-  smallCaps: '"Alegreya SC", "Alegreya", Georgia, serif',
+  serif: '"Alegreya", "Historic Borders Scripts", Georgia, serif',
+  smallCaps: '"Alegreya SC", "Alegreya", "Historic Borders Scripts", Georgia, serif',
   /** "Projector text" setting: replaces both stacks above. */
-  projector:
-    '"Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif',
+  projector: '"Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif',
 } as const;
 
 /** Layout constants shared by CSS and camera padding. */
