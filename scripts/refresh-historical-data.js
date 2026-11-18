@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const manifest = require('../data/historical-manifest.json');
 const {
+  applyPlaceOverrides,
   buildPayload,
   countFallbackRings,
   sha256,
@@ -14,6 +15,11 @@ const {
 const ROOT = path.join(__dirname, '..');
 const ASSET_DIRECTORY = path.join(ROOT, 'public', 'data', 'historical');
 const ASSET_MANIFEST = path.join(ROOT, 'data', 'historical-assets.json');
+const PLACE_OVERRIDES_PATH = path.join(
+  ROOT,
+  'data',
+  'historical-place-overrides.json',
+);
 const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
 const CONCURRENCY = 4;
 
@@ -94,6 +100,11 @@ async function main() {
     licenseSource.text,
   );
   validatePlacesSource(placesSource.value);
+  const overrideText = fs.readFileSync(PLACE_OVERRIDES_PATH, 'utf8');
+  const places = applyPlaceOverrides(
+    placesSource.value,
+    JSON.parse(overrideText),
+  );
 
   // Recorded once at manifest level: the browser bundles this manifest, so
   // per-year review-only counts would add to every route's JavaScript.
@@ -104,7 +115,7 @@ async function main() {
     const borderSource = await fetchPinnedJson(fileName);
     validateBorderSource(borderSource.value, fileName);
     const payload = validatePayload(
-      buildPayload(year, borderSource.value, placesSource.value),
+      buildPayload(year, borderSource.value, places),
       fileName,
     );
     const fallbackRings = countFallbackRings(payload);
@@ -142,6 +153,10 @@ async function main() {
     schemaVersion: 1,
     source: {
       ...manifest.source,
+      placeOverrides: {
+        file: 'data/historical-place-overrides.json',
+        sha256: sha256(overrideText),
+      },
       places: {
         file: 'places.geojson',
         sha256: placesSource.sha256,
@@ -153,6 +168,15 @@ async function main() {
     assets: Object.fromEntries(assets),
   };
   writeAtomically(ASSET_MANIFEST, `${JSON.stringify(nextManifest, null, 2)}\n`);
+
+  // Remove superseded payloads so only the published hashes ship. Previous
+  // Worker versions keep their own asset copies for rollback.
+  const published = new Set(
+    Object.values(nextManifest.assets).map((asset) => path.basename(asset.url)),
+  );
+  fs.readdirSync(ASSET_DIRECTORY)
+    .filter((file) => file.endsWith('.json') && !published.has(file))
+    .forEach((file) => fs.unlinkSync(path.join(ASSET_DIRECTORY, file)));
   console.log(
     `Kept ${roundingFallbackRings} unrounded ring(s) that would collapse when rounded`,
   );

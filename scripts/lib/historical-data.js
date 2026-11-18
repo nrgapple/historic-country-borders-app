@@ -296,6 +296,61 @@ function processBorders(collection) {
   };
 }
 
+/**
+ * Applies reviewed end dates to dated upstream places. Every override must
+ * match exactly one dated place, so a renamed or removed upstream record fails
+ * the refresh instead of silently dropping the correction.
+ */
+function applyPlaceOverrides(places, overrideFile) {
+  if (!overrideFile || overrideFile.schemaVersion !== 1) {
+    throw new Error('Place overrides have an unsupported schema');
+  }
+  const byName = new Map();
+  overrideFile.overrides.forEach((override, index) => {
+    if (
+      typeof override.name !== 'string' ||
+      !Number.isInteger(override.inhabitedUntil) ||
+      typeof override.source !== 'string' ||
+      !override.source.startsWith('https://')
+    ) {
+      throw new Error(`Place override ${index} is invalid`);
+    }
+    if (byName.has(override.name)) {
+      throw new Error(`Place override for ${override.name} is duplicated`);
+    }
+    byName.set(override.name, override);
+  });
+
+  const matched = new Set();
+  const features = places.features.map((feature) => {
+    const properties = feature.properties || {};
+    const override = byName.get(properties.name);
+    if (!override || !Number.isFinite(properties.inhabitedSince))
+      return feature;
+    if (matched.has(override.name)) {
+      throw new Error(`Place override for ${override.name} is ambiguous`);
+    }
+    if (override.inhabitedUntil < properties.inhabitedSince) {
+      throw new Error(
+        `Place override for ${override.name} ends before it starts`,
+      );
+    }
+    matched.add(override.name);
+    return {
+      ...feature,
+      properties: { ...properties, inhabitedUntil: override.inhabitedUntil },
+    };
+  });
+
+  const missing = [...byName.keys()].filter((name) => !matched.has(name));
+  if (missing.length) {
+    throw new Error(
+      `Place overrides match no dated place: ${missing.join(', ')}`,
+    );
+  }
+  return { ...places, features };
+}
+
 function placesForYear(year, places) {
   validatePlacesSource(places);
   return {
@@ -373,6 +428,7 @@ function validatePayload(payload, context = 'Historical payload') {
 
 module.exports = {
   COORDINATE_PRECISION,
+  applyPlaceOverrides,
   buildPayload,
   countFallbackRings,
   processBorders,

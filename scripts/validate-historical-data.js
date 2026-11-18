@@ -23,6 +23,20 @@ function main() {
     fail('source is not pinned to a full commit');
   if (!/^[a-f0-9]{64}$/.test(assetManifest.source.places?.sha256 || ''))
     fail('places source hash is missing');
+  const overridesPath = path.join(
+    ROOT,
+    'data',
+    'historical-place-overrides.json',
+  );
+  if (
+    !fs.existsSync(overridesPath) ||
+    sha256(fs.readFileSync(overridesPath, 'utf8')) !==
+      assetManifest.source.placeOverrides?.sha256
+  ) {
+    fail(
+      'place overrides changed since the last refresh; run yarn data:refresh:historical',
+    );
+  }
   if (
     assetManifest.source.license !== routeManifest.source.license ||
     assetManifest.source.licenseSha256 !== routeManifest.source.licenseSha256 ||

@@ -49,3 +49,7 @@ A maintainer intentionally changing the source must:
 6. commit the manifest and newly referenced immutable assets together.
 
 Do not make historical refresh part of deployment builds. Old unreferenced hashed assets may be removed only after confirming that no active/rollback deployment references them.
+
+## Reviewed place end dates
+
+Upstream `places.geojson` leaves `inhabitedUntil` empty for many long-abandoned archaeological sites, so they appeared as living cities in later maps (for example Göbekli Tepe and Ur in 1492). `data/historical-place-overrides.json` lists a small, conservative set of well-established abandonment dates, each with a source URL. `yarn data:refresh:historical` applies them. Every override must match exactly one dated upstream place, so a renamed upstream record fails the refresh. `yarn data:validate` fails if the overrides file changed without a refresh. Uncertain cases stay as upstream publishes them; please report corrections upstream as well.

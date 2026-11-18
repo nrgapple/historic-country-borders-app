@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 const {
+  applyPlaceOverrides,
   COORDINATE_PRECISION,
   buildPayload,
   countFallbackRings,
+  placesForYear,
   publishRing,
   validateBorderSource,
   validatePayload,
@@ -299,5 +301,48 @@ describe('historical data pipeline', () => {
     const malformed = structuredClone(borders);
     malformed.features[0].geometry.coordinates[0][0] = [181, 0];
     expect(() => validateBorderSource(malformed)).toThrow(/invalid coordinate/);
+  });
+
+  it('applies reviewed place end dates and rejects stale overrides', () => {
+    const source = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: {
+            name: 'Ur',
+            inhabitedSince: -5000,
+            inhabitedUntil: null,
+          },
+          geometry: { type: 'Point', coordinates: [46.1, 30.96] },
+        },
+        {
+          type: 'Feature',
+          properties: { name: 'Ur', inhabitedSince: null },
+          geometry: { type: 'Point', coordinates: [46.1, 30.96] },
+        },
+      ],
+    };
+    const file = (overrides: unknown[]) => ({ schemaVersion: 1, overrides });
+    const ur = {
+      name: 'Ur',
+      inhabitedUntil: -500,
+      source: 'https://en.wikipedia.org/wiki/Ur',
+    };
+    const applied = applyPlaceOverrides(source, file([ur]));
+    expect(applied.features[0].properties.inhabitedUntil).toBe(-500);
+    expect(applied.features[1].properties.inhabitedUntil).toBeUndefined();
+    expect(placesForYear(1492, applied).features).toHaveLength(0);
+    expect(placesForYear(-1000, applied).features).toHaveLength(1);
+
+    expect(() =>
+      applyPlaceOverrides(source, file([{ ...ur, name: 'Atlantis' }])),
+    ).toThrow('match no dated place');
+    expect(() =>
+      applyPlaceOverrides(source, file([{ ...ur, inhabitedUntil: -9000 }])),
+    ).toThrow('ends before it starts');
+    expect(() =>
+      applyPlaceOverrides(source, file([{ ...ur, source: 'http://x' }])),
+    ).toThrow('is invalid');
   });
 });
