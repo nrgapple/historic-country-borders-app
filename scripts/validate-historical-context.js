@@ -15,6 +15,10 @@ const {
   validateSnapshot,
   validateYearContext,
 } = require('./lib/historical-context');
+const {
+  buildCapitalFiles,
+  loadSplitYears,
+} = require('./lib/historical-capitals');
 
 const ROOT = path.join(__dirname, '..');
 const readJson = (relative) =>
@@ -73,9 +77,31 @@ function main() {
     places += Object.keys(context.places).length;
   });
 
-  const published = new Set(
-    Object.values(manifest.years).map((url) => path.basename(url)),
+  // Capital points: rebuilt from the same context build, the snapshot's
+  // pinned coordinates, and the committed split year files.
+  const capitals = buildCapitalFiles(expected, loadSplitYears(ROOT), snapshot);
+  const capitalsManifest = path.join(ROOT, 'data', 'historical-capitals.json');
+  if (
+    !fs.existsSync(capitalsManifest) ||
+    fs.readFileSync(capitalsManifest, 'utf8') !== capitals.manifestJson
+  )
+    fail(
+      'capitals manifest differs from a rebuild; run yarn data:refresh:context --offline',
+    );
+  capitals.files.forEach(({ name, json }) => {
+    const file = path.join(ROOT, 'public', 'data', 'context', name);
+    if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== json)
+      fail(`capitals file ${name} is missing or differs from a rebuild`);
+  });
+  const capitalCount = Object.values(capitals.manifest.years).reduce(
+    (total, entry) => total + entry.capitals,
+    0,
   );
+
+  const published = new Set([
+    ...Object.values(manifest.years).map((url) => path.basename(url)),
+    ...capitals.files.map(({ name }) => name),
+  ]);
   const stray = fs
     .readdirSync(path.join(ROOT, 'public', 'data', 'context'))
     .filter((file) => !published.has(file));
@@ -83,7 +109,7 @@ function main() {
 
   const { summary } = mapping;
   console.log(
-    `Historical context is valid (${expected.length} files, ${totalBytes} bytes, ${places} place entries; ${summary.matched}/${summary.names} names matched)`,
+    `Historical context is valid (${expected.length} files, ${totalBytes} bytes, ${places} place entries; ${summary.matched}/${summary.names} names matched; ${capitalCount} capital points, ${capitals.manifest.rejected.length} rejected)`,
   );
 }
 

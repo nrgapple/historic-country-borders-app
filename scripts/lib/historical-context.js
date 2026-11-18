@@ -420,6 +420,43 @@ function validateMapping(mapping, territoryNames) {
 }
 
 /** Validates the committed facts snapshot against the mapping. */
+/**
+ * A capital's pinned coordinate location: `coordinates` ([lon, lat], five
+ * decimals) or `coordinateIssue` ("missing" | "ambiguous"), with the item
+ * revision it was read from.
+ */
+function validateCoordinateFields(qid, entry) {
+  const where = `facts snapshot reference ${qid}`;
+  const hasPoint = 'coordinates' in entry;
+  const hasIssue = 'coordinateIssue' in entry;
+  if (!hasPoint && !hasIssue) {
+    if ('coordinateRevision' in entry) fail(where, 'has a stray revision');
+    return;
+  }
+  if (hasPoint === hasIssue)
+    fail(where, 'needs exactly one of coordinates and coordinateIssue');
+  if (
+    !Number.isInteger(entry.coordinateRevision) ||
+    entry.coordinateRevision <= 0
+  )
+    fail(where, 'has no pinned coordinate revision');
+  if (hasIssue && !['missing', 'ambiguous'].includes(entry.coordinateIssue))
+    fail(where, 'has an unknown coordinate issue');
+  if (hasPoint) {
+    const [lon, lat, ...rest] = Array.isArray(entry.coordinates)
+      ? entry.coordinates
+      : [];
+    if (
+      rest.length ||
+      !(Math.abs(lon) <= 180) ||
+      !(Math.abs(lat) <= 90) ||
+      Number(lon.toFixed(5)) !== lon ||
+      Number(lat.toFixed(5)) !== lat
+    )
+      fail(where, 'has invalid coordinates');
+  }
+}
+
 function validateSnapshot(snapshot, mapping) {
   if (snapshot?.schemaVersion !== 1)
     fail('facts snapshot', 'has an unsupported schema');
@@ -455,6 +492,7 @@ function validateSnapshot(snapshot, mapping) {
     if (!isQid(qid)) fail('facts snapshot', `has invalid reference ${qid}`);
     if (entry.label !== null && !text(entry.label))
       fail('facts snapshot', `reference ${qid} has an invalid label`);
+    validateCoordinateFields(qid, entry);
   });
   return snapshot;
 }

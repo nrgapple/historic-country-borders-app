@@ -8,6 +8,9 @@ public/data/pa-school-districts.json
 public/data/historical/
 public/data/context/
 data/historical-context-facts.json
+# Generated and rebuilt byte for byte by yarn data:validate.
+data/historical-split-assets.json
+data/historical-capitals.json
 test-results/
 yarn.lock
 remaster-spike/

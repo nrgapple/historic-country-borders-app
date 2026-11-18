@@ -345,4 +345,132 @@ describe('historical data pipeline', () => {
       applyPlaceOverrides(source, file([{ ...ur, source: 'http://x' }])),
     ).toThrow('is invalid');
   });
+
+  describe('blank and padded names', () => {
+    const square = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+      [0, 0],
+    ];
+    const source = (properties: Record<string, unknown>) => ({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties,
+          geometry: { type: 'Polygon', coordinates: [square] },
+        },
+      ],
+    });
+    const noPlaces = { type: 'FeatureCollection', features: [] };
+
+    it('keeps a whitespace-only NAME as an unnamed border with an unnamed label', () => {
+      const payload = buildPayload(
+        -5000,
+        source({
+          NAME: '      ',
+          ABBREVN: 'Cardial Ware culture',
+          PARTOF: '   ',
+          SUBJECTO: 'Cardial Ware culture',
+        }),
+        noPlaces,
+      );
+      const [border] = payload.data.borders.features;
+      const [label] = payload.data.labels.features;
+      expect(border.properties).not.toHaveProperty('NAME');
+      expect(border.properties).not.toHaveProperty('PARTOF');
+      expect(border.properties.ABBREVN).toBe('Cardial Ware culture');
+      expect(label.properties).not.toHaveProperty('NAME');
+      expect(label.properties.AREA).toBeGreaterThan(0);
+      expect(() => validatePayload(payload)).not.toThrow();
+    });
+
+    it('treats an empty NAME like a whitespace-only one and keeps its color', () => {
+      const blank = buildPayload(1994, source({ NAME: '' }), noPlaces);
+      expect(blank.data.borders.features[0].properties).toEqual({
+        COLOR: '#FF6B6B',
+      });
+    });
+
+    it('trims padded names without changing their color', () => {
+      const padded = buildPayload(
+        100,
+        source({ NAME: 'Pomeranian culture ' }),
+        noPlaces,
+      );
+      const trimmed = buildPayload(
+        100,
+        source({ NAME: 'Pomeranian culture' }),
+        noPlaces,
+      );
+      expect(padded.data.borders.features[0].properties.NAME).toBe(
+        'Pomeranian culture',
+      );
+      expect(padded.data.labels.features[0].properties.NAME).toBe(
+        'Pomeranian culture',
+      );
+      // The color hashes the source spelling, so published palettes are stable.
+      expect(padded.data.borders.features[0].properties.COLOR).not.toBe(
+        trimmed.data.borders.features[0].properties.COLOR,
+      );
+    });
+
+    it('rejects blank, padded, and mismatched names in published payloads', () => {
+      const payload = buildPayload(
+        1000,
+        source({ NAME: 'Testland' }),
+        noPlaces,
+      );
+      const withName = (border: unknown, label: unknown) => ({
+        ...payload,
+        data: {
+          borders: {
+            ...payload.data.borders,
+            features: [
+              {
+                ...payload.data.borders.features[0],
+                properties: { NAME: border },
+              },
+            ],
+          },
+          labels: {
+            ...payload.data.labels,
+            features: [
+              {
+                ...payload.data.labels.features[0],
+                properties: { NAME: label, AREA: 1 },
+              },
+            ],
+          },
+        },
+      });
+      expect(() => validatePayload(withName('   ', '   '))).toThrow(/blank/);
+      expect(() => validatePayload(withName('', ''))).toThrow(/blank/);
+      expect(() => validatePayload(withName('Testland ', 'Testland '))).toThrow(
+        /untrimmed/,
+      );
+      expect(() => validatePayload(withName('Testland', 'Other'))).toThrow(
+        /different names/,
+      );
+      expect(() =>
+        validatePayload(withName(undefined, undefined)),
+      ).not.toThrow();
+    });
+
+    it('rejects blank place names', () => {
+      const payload = buildPayload(1000, source({ NAME: 'Testland' }), {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { name: '  ', inhabitedSince: 0 },
+            geometry: { type: 'Point', coordinates: [0.5, 0.5] },
+          },
+        ],
+      });
+      expect(() => validatePayload(payload)).toThrow(/blank name/);
+    });
+  });
 });

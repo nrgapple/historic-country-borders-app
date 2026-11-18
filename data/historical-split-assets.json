@@ -1,0 +1,1656 @@
+{
+  "schemaVersion": 1,
+  "washCount": 12,
+  "inputs": {
+    "assets": "data/historical-assets.json",
+    "placeClasses": {
+      "file": "data/historical-place-classes.json",
+      "sha256": "a48be7a13bbc978d775b5fc774f6f2c2145203a4358bcaff5532cf7150869372"
+    }
+  },
+  "years": {
+    "100": {
+      "source": {
+        "url": "/data/historical/100.191f5022c9574793.json",
+        "sha256": "191f5022c957479384b16969908f9a6685a9aa26c5271d1a707b497d73dbb3f3"
+      },
+      "polygons": {
+        "url": "/data/historical/100.polygons.09151ef9bbbc63f2.json",
+        "sha256": "09151ef9bbbc63f22af05191141569219cfe4ed338e8188d4eeea7731576f9a5",
+        "bytes": 301283
+      },
+      "labels": {
+        "url": "/data/historical/100.labels.9c0530e62a244626.json",
+        "sha256": "9c0530e62a24462621454ebc88b72eb896f2000f42405cd423123fd93e3e0357",
+        "bytes": 16897
+      },
+      "index": {
+        "url": "/data/historical/100.index.d543aefef8811cb3.json",
+        "sha256": "d543aefef8811cb35587698458d3fa54de853e6477a323cb69457e87ddd6e929",
+        "bytes": 14689
+      },
+      "counts": {
+        "territories": 83,
+        "polygons": 85,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 85,
+        "places": 43,
+        "sites": 1
+      }
+    },
+    "200": {
+      "source": {
+        "url": "/data/historical/200.82113988b31aec1c.json",
+        "sha256": "82113988b31aec1c39b1bcaf7aeda2853245c8a0131c1ccdeea7f1339cf40992"
+      },
+      "polygons": {
+        "url": "/data/historical/200.polygons.f7d543256789df1e.json",
+        "sha256": "f7d543256789df1ea8b5f8ae67eebad23cd101b22f4f50bdb55903d7aa335504",
+        "bytes": 264862
+      },
+      "labels": {
+        "url": "/data/historical/200.labels.cc9dcffa998aaa78.json",
+        "sha256": "cc9dcffa998aaa7861026638ec78be09d861a94774525adfa049c0887238e8b9",
+        "bytes": 14818
+      },
+      "index": {
+        "url": "/data/historical/200.index.608a702ef18a1f2c.json",
+        "sha256": "608a702ef18a1f2cd662bb793c0d08825fef3a6ea1f5f73d1f893b1719b197f3",
+        "bytes": 12095
+      },
+      "counts": {
+        "territories": 69,
+        "polygons": 70,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 70,
+        "places": 43,
+        "sites": 1
+      }
+    },
+    "300": {
+      "source": {
+        "url": "/data/historical/300.f72168dd319d9811.json",
+        "sha256": "f72168dd319d9811f2404e047e5a8f6130431f7e881898ddc81c099ceaba8944"
+      },
+      "polygons": {
+        "url": "/data/historical/300.polygons.b1f54a8796d6e280.json",
+        "sha256": "b1f54a8796d6e280e0aaae0dd406568b362660de611e08a48272cac23d11c1df",
+        "bytes": 278056
+      },
+      "labels": {
+        "url": "/data/historical/300.labels.4ad34ba2da480e14.json",
+        "sha256": "4ad34ba2da480e148b8980bc77635483f1e736550fd056dc4b6d4422cc67b19c",
+        "bytes": 15106
+      },
+      "index": {
+        "url": "/data/historical/300.index.c018e7b279017e1f.json",
+        "sha256": "c018e7b279017e1f3e935aadc574a97e01cfd9b87b24a3936bcd323c152d4b6b",
+        "bytes": 12485
+      },
+      "counts": {
+        "territories": 71,
+        "polygons": 71,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 71,
+        "places": 44,
+        "sites": 1
+      }
+    },
+    "400": {
+      "source": {
+        "url": "/data/historical/400.b0fcec0e76f4f1eb.json",
+        "sha256": "b0fcec0e76f4f1eb866fc3282662da2c0277ee9da8741555a32ed79ab9595c0f"
+      },
+      "polygons": {
+        "url": "/data/historical/400.polygons.35977aab81aacc61.json",
+        "sha256": "35977aab81aacc6194abe5b869e63be2fd77905ff3232e3e2634048fbde9850c",
+        "bytes": 270836
+      },
+      "labels": {
+        "url": "/data/historical/400.labels.23dc94309ddb889c.json",
+        "sha256": "23dc94309ddb889cf7ad9bdda3b175f5caf844bb3119c7a713206c7978539c62",
+        "bytes": 16505
+      },
+      "index": {
+        "url": "/data/historical/400.index.dc817b6e9250d735.json",
+        "sha256": "dc817b6e9250d7350b0fd53fc0729f948c9ef12628a491653fd8b28b65a7bcd7",
+        "bytes": 13812
+      },
+      "counts": {
+        "territories": 79,
+        "polygons": 80,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 5,
+        "territoryLabels": 80,
+        "places": 46,
+        "sites": 1
+      }
+    },
+    "500": {
+      "source": {
+        "url": "/data/historical/500.3df0458b02fe7fcb.json",
+        "sha256": "3df0458b02fe7fcbf882742ce33ae89c1384d4820639993de202ed7368cd4656"
+      },
+      "polygons": {
+        "url": "/data/historical/500.polygons.d049a69acd5d1e6b.json",
+        "sha256": "d049a69acd5d1e6b9012fd36e8825584cc06e4d53c0432b05c1985183322edbc",
+        "bytes": 340994
+      },
+      "labels": {
+        "url": "/data/historical/500.labels.ae771937219c5c6c.json",
+        "sha256": "ae771937219c5c6c1d378a9d07dc021ae32bcf3cd34f7225800cb98b50293683",
+        "bytes": 18264
+      },
+      "index": {
+        "url": "/data/historical/500.index.148894461ea86f16.json",
+        "sha256": "148894461ea86f161809a2df0b10f0fbcba0e18c653e6a6e7aba7f0e35404d45",
+        "bytes": 15073
+      },
+      "counts": {
+        "territories": 87,
+        "polygons": 92,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 92,
+        "places": 47,
+        "sites": 2
+      }
+    },
+    "600": {
+      "source": {
+        "url": "/data/historical/600.c793070e16da0d4e.json",
+        "sha256": "c793070e16da0d4ee1128141a77ef55eddd06f751600e608bcda909586b6e755"
+      },
+      "polygons": {
+        "url": "/data/historical/600.polygons.43cd7950c080f72e.json",
+        "sha256": "43cd7950c080f72e639354b5c114292c5a45078ebb0ae0bba6296e9a5b1e7fbb",
+        "bytes": 347540
+      },
+      "labels": {
+        "url": "/data/historical/600.labels.afa5e91bf9feeffa.json",
+        "sha256": "afa5e91bf9feeffa0fd9545c04d7767e5804a766cd5cbb8e3a74539262891a54",
+        "bytes": 17579
+      },
+      "index": {
+        "url": "/data/historical/600.index.45b2fbabbc4b6cb2.json",
+        "sha256": "45b2fbabbc4b6cb2fccfab17b3cf87efd98fe68d9c93c69f75cf13c179979a4b",
+        "bytes": 14301
+      },
+      "counts": {
+        "territories": 83,
+        "polygons": 88,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 3,
+        "territoryLabels": 88,
+        "places": 46,
+        "sites": 2
+      }
+    },
+    "700": {
+      "source": {
+        "url": "/data/historical/700.3a01576336187e7a.json",
+        "sha256": "3a01576336187e7afd88450e491f9b926af1ed665f91e86f5ebe16906b412b77"
+      },
+      "polygons": {
+        "url": "/data/historical/700.polygons.911a46ff923d0af5.json",
+        "sha256": "911a46ff923d0af5e8f5c448e179e2f12069bc8ec87063dcc46d3beb48fde1d6",
+        "bytes": 363195
+      },
+      "labels": {
+        "url": "/data/historical/700.labels.d1092031adb4cd01.json",
+        "sha256": "d1092031adb4cd012d18867d1ffa6dd68acfaab33af928be3c632785c6e92766",
+        "bytes": 23435
+      },
+      "index": {
+        "url": "/data/historical/700.index.b8a26dd559ccab82.json",
+        "sha256": "b8a26dd559ccab82f7096f2123a41225dafb82a1a39a063971cbfc97bb6d9b39",
+        "bytes": 21453
+      },
+      "counts": {
+        "territories": 126,
+        "polygons": 133,
+        "unnamedPolygons": 1,
+        "namedFromAbbreviation": 0,
+        "dependencies": 12,
+        "territoryLabels": 132,
+        "places": 46,
+        "sites": 4
+      }
+    },
+    "800": {
+      "source": {
+        "url": "/data/historical/800.84ed0fdd4c70f161.json",
+        "sha256": "84ed0fdd4c70f1613577df0981a50d56e071921861ed36799c13c86665170e18"
+      },
+      "polygons": {
+        "url": "/data/historical/800.polygons.8eb40fc4956e4f55.json",
+        "sha256": "8eb40fc4956e4f552a16db8e35614a71419ab507d181b1784e03f46ba9bc7cee",
+        "bytes": 395316
+      },
+      "labels": {
+        "url": "/data/historical/800.labels.a084fa31e6d7316a.json",
+        "sha256": "a084fa31e6d7316a65ff1429313f1eee0eb557b8bf62e47dc68ae189c5e34209",
+        "bytes": 22051
+      },
+      "index": {
+        "url": "/data/historical/800.index.e4620258d74946ac.json",
+        "sha256": "e4620258d74946ac91275fd4b62b152b5e5c6fd6af354e75c66b28ef8f7f37c3",
+        "bytes": 19870
+      },
+      "counts": {
+        "territories": 117,
+        "polygons": 122,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 6,
+        "territoryLabels": 122,
+        "places": 46,
+        "sites": 4
+      }
+    },
+    "900": {
+      "source": {
+        "url": "/data/historical/900.99da1e16ea60c027.json",
+        "sha256": "99da1e16ea60c027d853484fbaa3ad309a60def353402fd87faa43c3b9eabe81"
+      },
+      "polygons": {
+        "url": "/data/historical/900.polygons.5bfdb2932b4b2819.json",
+        "sha256": "5bfdb2932b4b2819ad4b0dbd81070b82bf0a64e2400438bf94bde36084715a31",
+        "bytes": 459140
+      },
+      "labels": {
+        "url": "/data/historical/900.labels.c626ead524727dc3.json",
+        "sha256": "c626ead524727dc30d28d04687c12a5e477cf80bbbd945f2be72f1c2d9cc7eb7",
+        "bytes": 24576
+      },
+      "index": {
+        "url": "/data/historical/900.index.2ff4f13f6b24ef28.json",
+        "sha256": "2ff4f13f6b24ef28f57378e3138ebbef246a3c2768061f3b92d8d03a16043c91",
+        "bytes": 22312
+      },
+      "counts": {
+        "territories": 135,
+        "polygons": 138,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 3,
+        "territoryLabels": 138,
+        "places": 50,
+        "sites": 4
+      }
+    },
+    "1000": {
+      "source": {
+        "url": "/data/historical/1000.9904f08fd31214d2.json",
+        "sha256": "9904f08fd31214d27c8c2c24fb327d81433816bfd8b1d5be959c3af3bbfedfa5"
+      },
+      "polygons": {
+        "url": "/data/historical/1000.polygons.97005580021a7f9b.json",
+        "sha256": "97005580021a7f9b45d4bcc8070deaba7ad668d60899c31ce17c20dcc662327c",
+        "bytes": 445837
+      },
+      "labels": {
+        "url": "/data/historical/1000.labels.ebb5405f153146fb.json",
+        "sha256": "ebb5405f153146fb695df40a8f9f9b0b3bc4f8eff74aadbc7978c2dd0714d1ed",
+        "bytes": 24193
+      },
+      "index": {
+        "url": "/data/historical/1000.index.e0642ff541d68f31.json",
+        "sha256": "e0642ff541d68f3100d7470b1efcbfa6cd82280005a672da44afec062f8aad2a",
+        "bytes": 21679
+      },
+      "counts": {
+        "territories": 129,
+        "polygons": 132,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 3,
+        "territoryLabels": 132,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1100": {
+      "source": {
+        "url": "/data/historical/1100.013989a8dd67085b.json",
+        "sha256": "013989a8dd67085b04f070e04da077fa3eef2cbbfb388de2cae7d088279f4c83"
+      },
+      "polygons": {
+        "url": "/data/historical/1100.polygons.5a3e766dcbf31da4.json",
+        "sha256": "5a3e766dcbf31da4c7536266cbd1202cde90f37f3d664fc53b164fade03bc46e",
+        "bytes": 429094
+      },
+      "labels": {
+        "url": "/data/historical/1100.labels.ac681eef208dcafd.json",
+        "sha256": "ac681eef208dcafd2e4dac643799a89a70cd0ce79c6414fecb807850f26a6017",
+        "bytes": 26690
+      },
+      "index": {
+        "url": "/data/historical/1100.index.9cd7d219a485fd33.json",
+        "sha256": "9cd7d219a485fd33f20c74883286f22e997e86474eaef16d3149dca6be266c19",
+        "bytes": 23201
+      },
+      "counts": {
+        "territories": 139,
+        "polygons": 150,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 150,
+        "places": 53,
+        "sites": 4
+      }
+    },
+    "1200": {
+      "source": {
+        "url": "/data/historical/1200.78306418f81b1594.json",
+        "sha256": "78306418f81b1594f5b6e18ec59d956a08c3bcab6c7072d17307485514c9d242"
+      },
+      "polygons": {
+        "url": "/data/historical/1200.polygons.50e1b44aa0d2224a.json",
+        "sha256": "50e1b44aa0d2224af584deb249b923f584d47a2f57e6859aa59a9ef2eea9de51",
+        "bytes": 448427
+      },
+      "labels": {
+        "url": "/data/historical/1200.labels.884dfe40417589bf.json",
+        "sha256": "884dfe40417589bf9f2e134293bc6d6f4562c12b0691a2e50781361ea0824abe",
+        "bytes": 25153
+      },
+      "index": {
+        "url": "/data/historical/1200.index.c54c3377081af372.json",
+        "sha256": "c54c3377081af372d73e157bb7fc16d1d3d94e173749e14c6169dd0e01d887b5",
+        "bytes": 22033
+      },
+      "counts": {
+        "territories": 129,
+        "polygons": 136,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 136,
+        "places": 54,
+        "sites": 4
+      }
+    },
+    "1279": {
+      "source": {
+        "url": "/data/historical/1279.410a44eb5320d4a8.json",
+        "sha256": "410a44eb5320d4a85f2aec0a889dce61c1fa3196fbe7cb11494922424a465c28"
+      },
+      "polygons": {
+        "url": "/data/historical/1279.polygons.d6f236ff24d80100.json",
+        "sha256": "d6f236ff24d80100ec3701425c82ef3f0b317abf3e4bca03e202762040ae7348",
+        "bytes": 422663
+      },
+      "labels": {
+        "url": "/data/historical/1279.labels.4aec2e5c6a49d6a9.json",
+        "sha256": "4aec2e5c6a49d6a9ccacdc739314ad52fe756fa06d62a04e91730977794bc4b7",
+        "bytes": 22208
+      },
+      "index": {
+        "url": "/data/historical/1279.index.12eecec45873a00c.json",
+        "sha256": "12eecec45873a00c4b58611aeafc97338593a1de9a2b578d0262189c0e8a7429",
+        "bytes": 18852
+      },
+      "counts": {
+        "territories": 113,
+        "polygons": 116,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 116,
+        "places": 54,
+        "sites": 4
+      }
+    },
+    "1300": {
+      "source": {
+        "url": "/data/historical/1300.a920887a7446b22e.json",
+        "sha256": "a920887a7446b22e8dc74f486e91b89902744c87fb831be40805687bf0f5fcb4"
+      },
+      "polygons": {
+        "url": "/data/historical/1300.polygons.9212fca781161d90.json",
+        "sha256": "9212fca781161d9018c6a519e7e2a099281802f1787d22ae45cf9e52327d3e84",
+        "bytes": 418501
+      },
+      "labels": {
+        "url": "/data/historical/1300.labels.b7052a6d8cbd187c.json",
+        "sha256": "b7052a6d8cbd187cb549410f6752fb6475628e4b7bb32d08aedb292ec4b51f05",
+        "bytes": 22229
+      },
+      "index": {
+        "url": "/data/historical/1300.index.0b6ebbe351a55117.json",
+        "sha256": "0b6ebbe351a55117da07e453b4e5a22f1e64dd1c9d28023be0a533d247175a50",
+        "bytes": 18973
+      },
+      "counts": {
+        "territories": 113,
+        "polygons": 115,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 115,
+        "places": 55,
+        "sites": 4
+      }
+    },
+    "1400": {
+      "source": {
+        "url": "/data/historical/1400.cadc87ecde75f7f4.json",
+        "sha256": "cadc87ecde75f7f404d6ce13b575a6e1bb62e2214a3d0f778750a1ce2f798e84"
+      },
+      "polygons": {
+        "url": "/data/historical/1400.polygons.65c5379a53bec8bd.json",
+        "sha256": "65c5379a53bec8bd6e77b0c64873a14c271e53357771d2cd64a0a175c2f2ddf4",
+        "bytes": 468712
+      },
+      "labels": {
+        "url": "/data/historical/1400.labels.5a95d9705883769f.json",
+        "sha256": "5a95d9705883769f3f226fe161f83cf8664e202006ad994f3e2f21311fcd6dd6",
+        "bytes": 23068
+      },
+      "index": {
+        "url": "/data/historical/1400.index.c34d37b9ca4b5b50.json",
+        "sha256": "c34d37b9ca4b5b50042c576632d737b9b1f2cc6da6865e4c8a9cffc331376f8a",
+        "bytes": 19335
+      },
+      "counts": {
+        "territories": 115,
+        "polygons": 122,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 122,
+        "places": 54,
+        "sites": 4
+      }
+    },
+    "1492": {
+      "source": {
+        "url": "/data/historical/1492.95420203300670d8.json",
+        "sha256": "95420203300670d816086fe5e4c438fbf9a31de887f9b59a614442d97bbf16de"
+      },
+      "polygons": {
+        "url": "/data/historical/1492.polygons.c2f39cd15a678ba5.json",
+        "sha256": "c2f39cd15a678ba54de4e8be881a610cfdd5450f1b2f7f3aebfaed217bed1d35",
+        "bytes": 2142125
+      },
+      "labels": {
+        "url": "/data/historical/1492.labels.2828ddb9732a3f44.json",
+        "sha256": "2828ddb9732a3f4497abc6b5927b49b3c28f3fb281e0937c83e4e4e5b2ac1ada",
+        "bytes": 185051
+      },
+      "index": {
+        "url": "/data/historical/1492.index.f6ade408cbbe2bfd.json",
+        "sha256": "f6ade408cbbe2bfd2bc93bd22bb5e919d46e267abf438c91c3aef70fd3d0df43",
+        "bytes": 222575
+      },
+      "counts": {
+        "territories": 1307,
+        "polygons": 1317,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 1317,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1500": {
+      "source": {
+        "url": "/data/historical/1500.22472606fc53f775.json",
+        "sha256": "22472606fc53f77518fe248fe5b88cef03cd4e9255f35210f003869b5c41fd51"
+      },
+      "polygons": {
+        "url": "/data/historical/1500.polygons.6c5cf9f3649f10be.json",
+        "sha256": "6c5cf9f3649f10be2980b199ebccb7b143fbf2ce5707d4e4ad2ec4059e2a6862",
+        "bytes": 475224
+      },
+      "labels": {
+        "url": "/data/historical/1500.labels.7bdadf75d492b4dc.json",
+        "sha256": "7bdadf75d492b4dcf76e79e51117e44d521c045b8c8b6ddfa041f88f3da648f1",
+        "bytes": 25488
+      },
+      "index": {
+        "url": "/data/historical/1500.index.0ead2a289342f302.json",
+        "sha256": "0ead2a289342f302251eb5509f84913a79212de26ab238d9b2843dfc33f68779",
+        "bytes": 22854
+      },
+      "counts": {
+        "territories": 139,
+        "polygons": 143,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 143,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1530": {
+      "source": {
+        "url": "/data/historical/1530.9c905366176a3e9d.json",
+        "sha256": "9c905366176a3e9da87573a2327774ced27bf231aeb41796a4798cfccabbe23b"
+      },
+      "polygons": {
+        "url": "/data/historical/1530.polygons.474a514be91ef396.json",
+        "sha256": "474a514be91ef39604629eeeff537bfc6b5dd6e70e255ae31ffb211d6b0fc28f",
+        "bytes": 506254
+      },
+      "labels": {
+        "url": "/data/historical/1530.labels.c1a246ce3894e556.json",
+        "sha256": "c1a246ce3894e5567a1ad7430d9761cc1b55f18e703a6fe80912b3caa96bc1af",
+        "bytes": 43017
+      },
+      "index": {
+        "url": "/data/historical/1530.index.ce3d8757a4e05650.json",
+        "sha256": "ce3d8757a4e0565092b9a648319cbb9583604844fdaea217942f31ca462f7c21",
+        "bytes": 42537
+      },
+      "counts": {
+        "territories": 269,
+        "polygons": 278,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 278,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1600": {
+      "source": {
+        "url": "/data/historical/1600.0f78bbf245129fd8.json",
+        "sha256": "0f78bbf245129fd8e05326fac4600cc4e40505799f108ec7d0299342781149aa"
+      },
+      "polygons": {
+        "url": "/data/historical/1600.polygons.4271bec2af0971bb.json",
+        "sha256": "4271bec2af0971bb31103c583eed39e5d48cc9b8805d554450caf108c2046bbe",
+        "bytes": 781008
+      },
+      "labels": {
+        "url": "/data/historical/1600.labels.3748c60d3848b973.json",
+        "sha256": "3748c60d3848b973a526e18b0e92ca9cd655b9c200ddcaeac8e523dd939da875",
+        "bytes": 93328
+      },
+      "index": {
+        "url": "/data/historical/1600.index.8114ab8a1170a977.json",
+        "sha256": "8114ab8a1170a977d103f445801a2dadb3f388fadb80eb269f5d7c61ee0a79e8",
+        "bytes": 100986
+      },
+      "counts": {
+        "territories": 638,
+        "polygons": 661,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 661,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1650": {
+      "source": {
+        "url": "/data/historical/1650.e681453eea95c4e9.json",
+        "sha256": "e681453eea95c4e969599553ae7f2ad4a6b1ec17d3a355fb344e49fd99a0f79b"
+      },
+      "polygons": {
+        "url": "/data/historical/1650.polygons.1265cc3887cbdd25.json",
+        "sha256": "1265cc3887cbdd25f3239e223cc6e53c101eb7142fe8fde07641d3a1f8b29255",
+        "bytes": 809939
+      },
+      "labels": {
+        "url": "/data/historical/1650.labels.589a14a7d91ab8c0.json",
+        "sha256": "589a14a7d91ab8c0731a2a8228540a1282ad1c4123d135b2500b30ef2648c165",
+        "bytes": 85139
+      },
+      "index": {
+        "url": "/data/historical/1650.index.9b060d2ebd97589c.json",
+        "sha256": "9b060d2ebd97589c0164b6db9fc9929f7b3cf6b54f5ccbcf6133d84ceb109978",
+        "bytes": 94178
+      },
+      "counts": {
+        "territories": 593,
+        "polygons": 598,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 4,
+        "territoryLabels": 598,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1700": {
+      "source": {
+        "url": "/data/historical/1700.b0ae45e6719bc16d.json",
+        "sha256": "b0ae45e6719bc16d76efdf0663cdf6a8a1915808d4d98f54281d3d6b368323da"
+      },
+      "polygons": {
+        "url": "/data/historical/1700.polygons.8a92442dd1db372d.json",
+        "sha256": "8a92442dd1db372df8c622f679021f1b88200e8dad455fc88eb056ab042dbf99",
+        "bytes": 792283
+      },
+      "labels": {
+        "url": "/data/historical/1700.labels.373f5b57f7b4ea7e.json",
+        "sha256": "373f5b57f7b4ea7ebdb66ff2772fdf217691c57e4ad96804b62480e8be6d0bc5",
+        "bytes": 84241
+      },
+      "index": {
+        "url": "/data/historical/1700.index.45d39afed36122b8.json",
+        "sha256": "45d39afed36122b88688d123db19907205c23c9edd94c5dd4730846c588b1ee2",
+        "bytes": 92768
+      },
+      "counts": {
+        "territories": 584,
+        "polygons": 591,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 6,
+        "territoryLabels": 591,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1715": {
+      "source": {
+        "url": "/data/historical/1715.d28c8ae88e9d7522.json",
+        "sha256": "d28c8ae88e9d7522512c125d4a035d6551a4523b103df9978f3751c054a54deb"
+      },
+      "polygons": {
+        "url": "/data/historical/1715.polygons.181f712d3f7aa0cc.json",
+        "sha256": "181f712d3f7aa0cc9c011ec0c5105e685506a5d70cc6966bec73a689464017bc",
+        "bytes": 819072
+      },
+      "labels": {
+        "url": "/data/historical/1715.labels.78fcdfd0af099265.json",
+        "sha256": "78fcdfd0af09926525102c687d48fd626aa2ddf4f170158a7a8cf53773f40364",
+        "bytes": 86160
+      },
+      "index": {
+        "url": "/data/historical/1715.index.7b88d9933725103a.json",
+        "sha256": "7b88d9933725103a4d271bf3ac50e016aea96eed2cd42c1c2e8a40da5f099307",
+        "bytes": 95968
+      },
+      "counts": {
+        "territories": 600,
+        "polygons": 606,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 23,
+        "territoryLabels": 606,
+        "places": 51,
+        "sites": 4
+      }
+    },
+    "1783": {
+      "source": {
+        "url": "/data/historical/1783.5b3f1cfa22c5bd0c.json",
+        "sha256": "5b3f1cfa22c5bd0cb888bcb8ab2d1956e9b02f627a84802a168af9312f5777fa"
+      },
+      "polygons": {
+        "url": "/data/historical/1783.polygons.de62125ce4fbd6dc.json",
+        "sha256": "de62125ce4fbd6dc551d3b8a05289760cb6ea8563b17e015dd169d02eb4a782e",
+        "bytes": 916338
+      },
+      "labels": {
+        "url": "/data/historical/1783.labels.506d5e0798b908c6.json",
+        "sha256": "506d5e0798b908c6b23b9b6fdc583f128e1fab253699cc779bc11a21846c943c",
+        "bytes": 80560
+      },
+      "index": {
+        "url": "/data/historical/1783.index.c431663fe0e10797.json",
+        "sha256": "c431663fe0e10797a24e80ce99dfd23bd2fda205d05fbb0c8a61290b34d474d8",
+        "bytes": 87561
+      },
+      "counts": {
+        "territories": 549,
+        "polygons": 564,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 13,
+        "territoryLabels": 564,
+        "places": 51,
+        "sites": 4
+      }
+    },
+    "1800": {
+      "source": {
+        "url": "/data/historical/1800.5f873e13036335ff.json",
+        "sha256": "5f873e13036335ff8f559a8900f5fbaaee5aba3f0fbd52be05f317d88437cda0"
+      },
+      "polygons": {
+        "url": "/data/historical/1800.polygons.78441c56f5551385.json",
+        "sha256": "78441c56f55513853681937d6a3e150a9390c2bf9a02d95cfdf3db6759f0df75",
+        "bytes": 902291
+      },
+      "labels": {
+        "url": "/data/historical/1800.labels.864ac54f816598a4.json",
+        "sha256": "864ac54f816598a4458f7bf9de6aee0b3beac3b55b7896745f747cd62850a438",
+        "bytes": 79829
+      },
+      "index": {
+        "url": "/data/historical/1800.index.5f44643f3e3fdd78.json",
+        "sha256": "5f44643f3e3fdd782fd3308906245e336deddecd8b83a5402b37019ddbfac249",
+        "bytes": 86677
+      },
+      "counts": {
+        "territories": 546,
+        "polygons": 558,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 13,
+        "territoryLabels": 558,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1815": {
+      "source": {
+        "url": "/data/historical/1815.a93f33df5ba5467b.json",
+        "sha256": "a93f33df5ba5467b7573dc75e18d468cf1b5bb1889e575dcf190af23e3a75f72"
+      },
+      "polygons": {
+        "url": "/data/historical/1815.polygons.e390e7dfa0291549.json",
+        "sha256": "e390e7dfa02915493a5a40bdb5042d66db27493041042d7103e5328ccd8b70c7",
+        "bytes": 1248735
+      },
+      "labels": {
+        "url": "/data/historical/1815.labels.4ff52577a52fd3e4.json",
+        "sha256": "4ff52577a52fd3e42005be6ee2cc01c968d8995ad47b258d2c17a840e245d5a0",
+        "bytes": 49578
+      },
+      "index": {
+        "url": "/data/historical/1815.index.2bb77291dbb30d0b.json",
+        "sha256": "2bb77291dbb30d0bbd54bec3d239afe219212c5285306fdaf63da60915a9ecd3",
+        "bytes": 50232
+      },
+      "counts": {
+        "territories": 313,
+        "polygons": 328,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 1,
+        "dependencies": 12,
+        "territoryLabels": 328,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1880": {
+      "source": {
+        "url": "/data/historical/1880.e7050fcf4b061d4a.json",
+        "sha256": "e7050fcf4b061d4a327abbc92b2efca6472c62cb86d1e1ed6579deab9282578b"
+      },
+      "polygons": {
+        "url": "/data/historical/1880.polygons.d4271b11fa0109eb.json",
+        "sha256": "d4271b11fa0109ebbe4bff194ae2a0ba998346acd16370385d78764523c96ece",
+        "bytes": 663210
+      },
+      "labels": {
+        "url": "/data/historical/1880.labels.02fa96352a397339.json",
+        "sha256": "02fa96352a39733995555a841bceb72e0d03c9c5fc7f7988e1cd8e1bed202616",
+        "bytes": 29205
+      },
+      "index": {
+        "url": "/data/historical/1880.index.fdacae5d9426cbb8.json",
+        "sha256": "fdacae5d9426cbb8a01e685751f33e6eacf1b318564cf085c2ba0f31c20501d8",
+        "bytes": 27252
+      },
+      "counts": {
+        "territories": 169,
+        "polygons": 173,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 11,
+        "territoryLabels": 173,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1900": {
+      "source": {
+        "url": "/data/historical/1900.e244ade80a0ceb50.json",
+        "sha256": "e244ade80a0ceb5030df4e0d5d08624b1a9926062345ebe38c7abd4c3cc8c41b"
+      },
+      "polygons": {
+        "url": "/data/historical/1900.polygons.d0e6cad8cb6c0369.json",
+        "sha256": "d0e6cad8cb6c03690d26f3a8839f605e9a2503e4adb0540aa0061d965868d4ef",
+        "bytes": 673692
+      },
+      "labels": {
+        "url": "/data/historical/1900.labels.eba8c49a1ca1664d.json",
+        "sha256": "eba8c49a1ca1664d84acd7525239c5605712d7c9d8f44af5852e4cf6484970f8",
+        "bytes": 35340
+      },
+      "index": {
+        "url": "/data/historical/1900.index.324bcf2e5e6fde19.json",
+        "sha256": "324bcf2e5e6fde196a8bfcf6b478aab14c7e8dc5361a5490bee66ca5aa3ab335",
+        "bytes": 26741
+      },
+      "counts": {
+        "territories": 165,
+        "polygons": 222,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 10,
+        "territoryLabels": 222,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1914": {
+      "source": {
+        "url": "/data/historical/1914.d276ea2d74d6c363.json",
+        "sha256": "d276ea2d74d6c363b6efb1bf9b5eff52e1dd1a1ab760ff195a3c53183ef6a9a1"
+      },
+      "polygons": {
+        "url": "/data/historical/1914.polygons.cd2a431e8cb0c197.json",
+        "sha256": "cd2a431e8cb0c1970b3e07ff5fd13b23a47033fc47c3f3af93cdb0e75941c54f",
+        "bytes": 686393
+      },
+      "labels": {
+        "url": "/data/historical/1914.labels.1a8389f6ee9cfbc1.json",
+        "sha256": "1a8389f6ee9cfbc1adfb4ca6ca69baae6c0889dd0a5afd29ee3a8dadb2fc3f62",
+        "bytes": 25405
+      },
+      "index": {
+        "url": "/data/historical/1914.index.f5ae095aafecf8b7.json",
+        "sha256": "f5ae095aafecf8b76ee98019eb8ba7b1db6eae416ed78f9058e7ca505e1f1900",
+        "bytes": 23483
+      },
+      "counts": {
+        "territories": 142,
+        "polygons": 144,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 23,
+        "territoryLabels": 144,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1920": {
+      "source": {
+        "url": "/data/historical/1920.5f7d1f0cd55f6941.json",
+        "sha256": "5f7d1f0cd55f694170914fb9d87d66c7423bf9ca16015b222e60a2a5f009a389"
+      },
+      "polygons": {
+        "url": "/data/historical/1920.polygons.447c1571ac6f5e2c.json",
+        "sha256": "447c1571ac6f5e2c43632f7ef102a6bd22c7287ed3300b1e7865491880ac965c",
+        "bytes": 792648
+      },
+      "labels": {
+        "url": "/data/historical/1920.labels.366d1cfb8171d078.json",
+        "sha256": "366d1cfb8171d078935d94b4037c432e88152085e7223648b1dd174e606e7270",
+        "bytes": 28141
+      },
+      "index": {
+        "url": "/data/historical/1920.index.e5ac8cfa771a3583.json",
+        "sha256": "e5ac8cfa771a35836b0368cb21a6ef069366777b22b659fbfe527160423f08af",
+        "bytes": 26605
+      },
+      "counts": {
+        "territories": 163,
+        "polygons": 165,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 21,
+        "territoryLabels": 165,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1930": {
+      "source": {
+        "url": "/data/historical/1930.caf8da4250c60e2b.json",
+        "sha256": "caf8da4250c60e2bea09786cc77eeaac492f2d90a18156d17fcf43251739bbf2"
+      },
+      "polygons": {
+        "url": "/data/historical/1930.polygons.6ff73fab3c68fab8.json",
+        "sha256": "6ff73fab3c68fab8193f4c2ad50760786b3d2e90cff4b93153c72d1d5bae52a2",
+        "bytes": 682946
+      },
+      "labels": {
+        "url": "/data/historical/1930.labels.5535beca5fa3e5c8.json",
+        "sha256": "5535beca5fa3e5c8762a74a9ba46bc6cc0865db8a9c4d688f0dbd3ef1ca59fe2",
+        "bytes": 27879
+      },
+      "index": {
+        "url": "/data/historical/1930.index.8e12d051ad573871.json",
+        "sha256": "8e12d051ad5738711b4ce8060d19c5020f30c525783bd855bcf1fa6e69981774",
+        "bytes": 26170
+      },
+      "counts": {
+        "territories": 161,
+        "polygons": 163,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 18,
+        "territoryLabels": 163,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1938": {
+      "source": {
+        "url": "/data/historical/1938.5bdbb6ab51d7b36d.json",
+        "sha256": "5bdbb6ab51d7b36d5fc6d41b449ebf27ac389af12f697240fc0a4181a038b458"
+      },
+      "polygons": {
+        "url": "/data/historical/1938.polygons.ab995e7c66a0cc7b.json",
+        "sha256": "ab995e7c66a0cc7b47d28419443b9c4b3495fb389301b14613addde723631842",
+        "bytes": 756054
+      },
+      "labels": {
+        "url": "/data/historical/1938.labels.2553a170b8d37d8b.json",
+        "sha256": "2553a170b8d37d8be97a8d9acceaa83c50b265a4f078a1ca1e635d7fb4942ae6",
+        "bytes": 29446
+      },
+      "index": {
+        "url": "/data/historical/1938.index.7232d8e8d3fe6586.json",
+        "sha256": "7232d8e8d3fe6586d1a932b46b070dc1bb23e6dc43fe4434653f3acfdddda708",
+        "bytes": 28328
+      },
+      "counts": {
+        "territories": 171,
+        "polygons": 175,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 48,
+        "territoryLabels": 175,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1945": {
+      "source": {
+        "url": "/data/historical/1945.6857083597dbe1d8.json",
+        "sha256": "6857083597dbe1d85aa24a9a04d49b414aaa8a3b08265ea1804d5f193da3265b"
+      },
+      "polygons": {
+        "url": "/data/historical/1945.polygons.a6b52c64d074ce0c.json",
+        "sha256": "a6b52c64d074ce0c2926482774c1f24139e5640f6de7b8754e7560b8b648d38f",
+        "bytes": 716518
+      },
+      "labels": {
+        "url": "/data/historical/1945.labels.8aa9cf43283779c0.json",
+        "sha256": "8aa9cf43283779c0d5de014c67a6613bf501d6b638364cfcf5eb244f1014373f",
+        "bytes": 30521
+      },
+      "index": {
+        "url": "/data/historical/1945.index.241def59fb095e77.json",
+        "sha256": "241def59fb095e773937c137afd38d7a48c4565b17623336130cf3a2034e8f42",
+        "bytes": 29675
+      },
+      "counts": {
+        "territories": 182,
+        "polygons": 184,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 53,
+        "territoryLabels": 184,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1960": {
+      "source": {
+        "url": "/data/historical/1960.d79f75406aef496b.json",
+        "sha256": "d79f75406aef496bfe3d2b772d14a57256a14063ff7a896fb21c1143df0bbc14"
+      },
+      "polygons": {
+        "url": "/data/historical/1960.polygons.5e1087f0f6bc7329.json",
+        "sha256": "5e1087f0f6bc73293aa2716f0a027081e5d1ab03f75f1715e6147155d87dce36",
+        "bytes": 681847
+      },
+      "labels": {
+        "url": "/data/historical/1960.labels.c293b987fdb51ecb.json",
+        "sha256": "c293b987fdb51ecbd9dc1dc4bfd95fc70239d5c9a40981cc21921f0c932927d3",
+        "bytes": 27047
+      },
+      "index": {
+        "url": "/data/historical/1960.index.8c86abbe90275096.json",
+        "sha256": "8c86abbe902750968563d9a8a73d22f3c10128e57777470fad89415a69f3cb15",
+        "bytes": 23912
+      },
+      "counts": {
+        "territories": 156,
+        "polygons": 159,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 159,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "1994": {
+      "source": {
+        "url": "/data/historical/1994.1bfb9fde9fad5233.json",
+        "sha256": "1bfb9fde9fad5233a2916c6f5d9f67d798945500231d461be75d0323bc162f54"
+      },
+      "polygons": {
+        "url": "/data/historical/1994.polygons.23418c1346b2ddc4.json",
+        "sha256": "23418c1346b2ddc47f1955c5f36a0971027719c81b2f13b07b058cc41238496e",
+        "bytes": 902546
+      },
+      "labels": {
+        "url": "/data/historical/1994.labels.d2ef6870a86f04e5.json",
+        "sha256": "d2ef6870a86f04e56a49c273d5cd21fd04c2f554bbcb819f2583e6f496a185d2",
+        "bytes": 32085
+      },
+      "index": {
+        "url": "/data/historical/1994.index.e60f0fe5711f270d.json",
+        "sha256": "e60f0fe5711f270dcb69bd077498e0dede66dc590ce63db1b37655bcb9d021f5",
+        "bytes": 30002
+      },
+      "counts": {
+        "territories": 193,
+        "polygons": 198,
+        "unnamedPolygons": 1,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 197,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "2000": {
+      "source": {
+        "url": "/data/historical/2000.d4898a1b0eccdcdd.json",
+        "sha256": "d4898a1b0eccdcddf9d014fa7eb0dbbeebffa41b447cada4a5903d853fc36889"
+      },
+      "polygons": {
+        "url": "/data/historical/2000.polygons.521e70b5a8200b46.json",
+        "sha256": "521e70b5a8200b46291936830182231dc094acbdfd3243f7cecb12075822b37c",
+        "bytes": 907271
+      },
+      "labels": {
+        "url": "/data/historical/2000.labels.1de19eb3b324b887.json",
+        "sha256": "1de19eb3b324b88790c96cff35c0729aa1f292352c35557b2acd80e370a3f730",
+        "bytes": 32213
+      },
+      "index": {
+        "url": "/data/historical/2000.index.4a3c589e47dd3647.json",
+        "sha256": "4a3c589e47dd364727dc161cf5d9b1838dbd9cf093b61b9a334fee1aa7f14782",
+        "bytes": 29984
+      },
+      "counts": {
+        "territories": 193,
+        "polygons": 199,
+        "unnamedPolygons": 1,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 198,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "2010": {
+      "source": {
+        "url": "/data/historical/2010.71ad29d6d7fda6bb.json",
+        "sha256": "71ad29d6d7fda6bb2dc1e17d447e9da46f9506a377b3e1ce911f73c640556372"
+      },
+      "polygons": {
+        "url": "/data/historical/2010.polygons.607581f940713de1.json",
+        "sha256": "607581f940713de15c41fcb943d164d7e86169d4f0efbc757e93c9969049c490",
+        "bytes": 907271
+      },
+      "labels": {
+        "url": "/data/historical/2010.labels.45f89a186f4419fd.json",
+        "sha256": "45f89a186f4419fd5f7b57a5b3b32b3d02d7826ad28b87bcca74f329f3a9f2fc",
+        "bytes": 32213
+      },
+      "index": {
+        "url": "/data/historical/2010.index.da916a9d1a4f0915.json",
+        "sha256": "da916a9d1a4f09158f6c481357dfeb1f48b108613b26273c087e49c5028fd1ea",
+        "bytes": 29975
+      },
+      "counts": {
+        "territories": 193,
+        "polygons": 199,
+        "unnamedPolygons": 1,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 198,
+        "places": 52,
+        "sites": 4
+      }
+    },
+    "-123000": {
+      "source": {
+        "url": "/data/historical/bc123000.7b1d4564cf1b3a1d.json",
+        "sha256": "7b1d4564cf1b3a1dabb6a56bd8d50b0da583b9fbc46d0005a23103322ed6aa38"
+      },
+      "polygons": {
+        "url": "/data/historical/bc123000.polygons.04759c596f724881.json",
+        "sha256": "04759c596f724881a2cf5fef152b128d79460840b6db65c57a822f9d93199401",
+        "bytes": 44909
+      },
+      "labels": {
+        "url": "/data/historical/bc123000.labels.748d149bb51ac836.json",
+        "sha256": "748d149bb51ac836f0ce93812b977f91c1c8e9647ac7434fa4eaad3176e5c25d",
+        "bytes": 585
+      },
+      "index": {
+        "url": "/data/historical/bc123000.index.de2a77956bbd8ada.json",
+        "sha256": "de2a77956bbd8ada5f6ec7b1ff7ebae2218439cc675b7ed4f8d1b20f6c5ae913",
+        "bytes": 557
+      },
+      "counts": {
+        "territories": 3,
+        "polygons": 4,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 4,
+        "places": 0,
+        "sites": 0
+      }
+    },
+    "-10000": {
+      "source": {
+        "url": "/data/historical/bc10000.c04be7b0f9961eb7.json",
+        "sha256": "c04be7b0f9961eb74023b7b85633ab09766a4b6225a53cf948314801c54b37ae"
+      },
+      "polygons": {
+        "url": "/data/historical/bc10000.polygons.e81204ba9338f559.json",
+        "sha256": "e81204ba9338f5597b090ee4ad1a08c53aaea80902b8085119ee6a407054616d",
+        "bytes": 49517
+      },
+      "labels": {
+        "url": "/data/historical/bc10000.labels.90039665d7c06ae7.json",
+        "sha256": "90039665d7c06ae7046c4415dda08c98b2d4d079642beac7a450bd176805d2e2",
+        "bytes": 2515
+      },
+      "index": {
+        "url": "/data/historical/bc10000.index.84f6cc9c64f96f00.json",
+        "sha256": "84f6cc9c64f96f0046c689b5c138db5794b503e1e1812e6185aee8ef88d6665f",
+        "bytes": 2492
+      },
+      "counts": {
+        "territories": 14,
+        "polygons": 16,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 16,
+        "places": 1,
+        "sites": 0
+      }
+    },
+    "-8000": {
+      "source": {
+        "url": "/data/historical/bc8000.bd2dd4f7ba22c95b.json",
+        "sha256": "bd2dd4f7ba22c95b080761233ee21554cbd3550746c3d5f049288014b520d42e"
+      },
+      "polygons": {
+        "url": "/data/historical/bc8000.polygons.8bd249ad596456ff.json",
+        "sha256": "8bd249ad596456ff1a3a3c266d1a7fb683138ace9e8920d326292dadf9300f6e",
+        "bytes": 55268
+      },
+      "labels": {
+        "url": "/data/historical/bc8000.labels.4b784c17c9b07902.json",
+        "sha256": "4b784c17c9b07902008161652c84b54940e3c7ef32883b26ecd86fda07918f5a",
+        "bytes": 2896
+      },
+      "index": {
+        "url": "/data/historical/bc8000.index.e2278dabf0384303.json",
+        "sha256": "e2278dabf03843034fe09f5a89cea42b7dce99099f1d3b7084b8aa91e8d0f639",
+        "bytes": 2632
+      },
+      "counts": {
+        "territories": 15,
+        "polygons": 17,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 17,
+        "places": 3,
+        "sites": 2
+      }
+    },
+    "-5000": {
+      "source": {
+        "url": "/data/historical/bc5000.2a9b79eee721de6b.json",
+        "sha256": "2a9b79eee721de6b76d7a58298a2c8dfb90185c21a45f501b72ef36b7e1d27b9"
+      },
+      "polygons": {
+        "url": "/data/historical/bc5000.polygons.ce9dde5acd1db6e3.json",
+        "sha256": "ce9dde5acd1db6e319a80322ba2f41e42f22fac97e44c3a503c51c6a98b32088",
+        "bytes": 484181
+      },
+      "labels": {
+        "url": "/data/historical/bc5000.labels.8256781821e051d0.json",
+        "sha256": "8256781821e051d0560bdc32aebd936af79ef9d2909348b535513437476311f3",
+        "bytes": 5312
+      },
+      "index": {
+        "url": "/data/historical/bc5000.index.d1fc9fb66d46f567.json",
+        "sha256": "d1fc9fb66d46f56714fdf63d010e98a687876787f2c9912c92129e5bb57043ad",
+        "bytes": 4697
+      },
+      "counts": {
+        "territories": 29,
+        "polygons": 29,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 1,
+        "dependencies": 0,
+        "territoryLabels": 29,
+        "places": 12,
+        "sites": 0
+      }
+    },
+    "-4000": {
+      "source": {
+        "url": "/data/historical/bc4000.16251b789b5c3a6f.json",
+        "sha256": "16251b789b5c3a6f2779321c3c2d9423380f1d7c67690fbf2db5ada307dd3579"
+      },
+      "polygons": {
+        "url": "/data/historical/bc4000.polygons.241fefaef161f385.json",
+        "sha256": "241fefaef161f385a8b76d2ce98e9701b75d54a6781ebda2644b853ba4ba296a",
+        "bytes": 69343
+      },
+      "labels": {
+        "url": "/data/historical/bc4000.labels.0acb819fe6ecabd9.json",
+        "sha256": "0acb819fe6ecabd9fac34562e701d248ff0205d6eeeff35894354e1980fc108d",
+        "bytes": 4858
+      },
+      "index": {
+        "url": "/data/historical/bc4000.index.85f9e5a89e307cc9.json",
+        "sha256": "85f9e5a89e307cc91b85a3c76ec873b35af3061e179e79ee2287927205076929",
+        "bytes": 3663
+      },
+      "counts": {
+        "territories": 23,
+        "polygons": 23,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 23,
+        "places": 15,
+        "sites": 1
+      }
+    },
+    "-3000": {
+      "source": {
+        "url": "/data/historical/bc3000.e982b2ba8b75a4b6.json",
+        "sha256": "e982b2ba8b75a4b65056c276a9c483083ad7bcf0bc315295373ffa81b3fb159f"
+      },
+      "polygons": {
+        "url": "/data/historical/bc3000.polygons.d145badfb77e17d4.json",
+        "sha256": "d145badfb77e17d49180cdf2b224b3d4b1fa03d438340d7b2cea1a91b896f75a",
+        "bytes": 73648
+      },
+      "labels": {
+        "url": "/data/historical/bc3000.labels.007940203feadb37.json",
+        "sha256": "007940203feadb370e83024fc08734f8118cbf4c80ff1795f324231c3953028c",
+        "bytes": 5745
+      },
+      "index": {
+        "url": "/data/historical/bc3000.index.c52567ce14938e00.json",
+        "sha256": "c52567ce14938e007d239fe2061ef626ffd9a7bb767fd52eccde3340c9b4e58b",
+        "bytes": 3988
+      },
+      "counts": {
+        "territories": 25,
+        "polygons": 25,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 25,
+        "places": 20,
+        "sites": 2
+      }
+    },
+    "-2000": {
+      "source": {
+        "url": "/data/historical/bc2000.c72db8bff4e97f54.json",
+        "sha256": "c72db8bff4e97f549ef46ca5f266ae451afa359422e9eb0e88ee6599496e5a54"
+      },
+      "polygons": {
+        "url": "/data/historical/bc2000.polygons.96f94e4f54fc63dd.json",
+        "sha256": "96f94e4f54fc63dd53bf3f8daed37c591548012adbb12840dd03579bfe9277cc",
+        "bytes": 300121
+      },
+      "labels": {
+        "url": "/data/historical/bc2000.labels.842e94cf04041fc3.json",
+        "sha256": "842e94cf04041fc348ef4620ee36edb6b4498976a70f8715955c45735a5d75f7",
+        "bytes": 9272
+      },
+      "index": {
+        "url": "/data/historical/bc2000.index.b4db1d4ea3686bea.json",
+        "sha256": "b4db1d4ea3686bea413e36cca78bb5621c8d5cf72e8844d179c1602150b142dd",
+        "bytes": 7643
+      },
+      "counts": {
+        "territories": 45,
+        "polygons": 45,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 45,
+        "places": 26,
+        "sites": 2
+      }
+    },
+    "-1500": {
+      "source": {
+        "url": "/data/historical/bc1500.b5ab997afc6e29e3.json",
+        "sha256": "b5ab997afc6e29e37dbf30ebbc3a9df5bc57a0af28cbfa7d88578fd5c1ad34dd"
+      },
+      "polygons": {
+        "url": "/data/historical/bc1500.polygons.3428a21eef82e528.json",
+        "sha256": "3428a21eef82e528e6ddf74ac976db9591034fbb453f15e65f9111ebb7acf8aa",
+        "bytes": 353447
+      },
+      "labels": {
+        "url": "/data/historical/bc1500.labels.4f2214fb6606fc78.json",
+        "sha256": "4f2214fb6606fc786e077daaeb26b75425a0cc8c4c949e73bc49915a6cfcd1e4",
+        "bytes": 13332
+      },
+      "index": {
+        "url": "/data/historical/bc1500.index.7ecb4b1c899ef420.json",
+        "sha256": "7ecb4b1c899ef42084a4a99ad6cfb85ff28e3171b60ae8930917daf72528cdfd",
+        "bytes": 12315
+      },
+      "counts": {
+        "territories": 68,
+        "polygons": 69,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 69,
+        "places": 30,
+        "sites": 3
+      }
+    },
+    "-1000": {
+      "source": {
+        "url": "/data/historical/bc1000.6376b7d3ee35ec76.json",
+        "sha256": "6376b7d3ee35ec7649be5c38dffdb37335516276724473d65155d021353fa87a"
+      },
+      "polygons": {
+        "url": "/data/historical/bc1000.polygons.73703d84ba205862.json",
+        "sha256": "73703d84ba205862b62b07d844ad97169e8b216c8518e075e6790923b0aab6d5",
+        "bytes": 353950
+      },
+      "labels": {
+        "url": "/data/historical/bc1000.labels.a9da3a6a55f11b93.json",
+        "sha256": "a9da3a6a55f11b93e8e3dedb06bf7505eae81bc7055da534ad574318842749de",
+        "bytes": 13340
+      },
+      "index": {
+        "url": "/data/historical/bc1000.index.c06665a3b4fe3abe.json",
+        "sha256": "c06665a3b4fe3abe7847669054af02c843594061b8c95cdef377c1b27606eb71",
+        "bytes": 12462
+      },
+      "counts": {
+        "territories": 69,
+        "polygons": 70,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 70,
+        "places": 29,
+        "sites": 1
+      }
+    },
+    "-700": {
+      "source": {
+        "url": "/data/historical/bc700.128d7889346c3ffa.json",
+        "sha256": "128d7889346c3ffa6e815e1d74c5b14c1f870b1107e13ffc1e4c21d274090f35"
+      },
+      "polygons": {
+        "url": "/data/historical/bc700.polygons.3f4b3d1d19a9bf0c.json",
+        "sha256": "3f4b3d1d19a9bf0c6fc65a29f902c0b8a6cde0a9126c0bebde0ffc3e14626a35",
+        "bytes": 356314
+      },
+      "labels": {
+        "url": "/data/historical/bc700.labels.685ad792751ad609.json",
+        "sha256": "685ad792751ad609c77ea563c6d9cfb072e8666395c1f2e1352aa95c6fd523be",
+        "bytes": 15090
+      },
+      "index": {
+        "url": "/data/historical/bc700.index.efbaa2cb73a272ce.json",
+        "sha256": "efbaa2cb73a272ce690d17ac8f8bbcf640c00d72cd62b6e5dc681c4825f7cfe1",
+        "bytes": 13170
+      },
+      "counts": {
+        "territories": 73,
+        "polygons": 80,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 80,
+        "places": 32,
+        "sites": 1
+      }
+    },
+    "-500": {
+      "source": {
+        "url": "/data/historical/bc500.85a34b0bc2a66dc8.json",
+        "sha256": "85a34b0bc2a66dc84265daf241be616efb4dee9eb7139f7f261570daf4fc529a"
+      },
+      "polygons": {
+        "url": "/data/historical/bc500.polygons.972ff3cf39b0f87b.json",
+        "sha256": "972ff3cf39b0f87b86056ee2c54cad6d4ce022af4edba74085b6a825135168b8",
+        "bytes": 320354
+      },
+      "labels": {
+        "url": "/data/historical/bc500.labels.0a27de537d5f45f8.json",
+        "sha256": "0a27de537d5f45f89a7b08d96170b54c8efe7839cab6eb578ae9c8e7bcabbbd9",
+        "bytes": 15084
+      },
+      "index": {
+        "url": "/data/historical/bc500.index.f57832d568f5e4ed.json",
+        "sha256": "f57832d568f5e4ed14b60a9742f64d531a496fb0fe44b916296ebd0ffe1167bd",
+        "bytes": 13575
+      },
+      "counts": {
+        "territories": 74,
+        "polygons": 77,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 8,
+        "territoryLabels": 77,
+        "places": 36,
+        "sites": 2
+      }
+    },
+    "-400": {
+      "source": {
+        "url": "/data/historical/bc400.821b2bf6589676a8.json",
+        "sha256": "821b2bf6589676a8dc2d7240341b688af8ed2f067c8b1370a6aeb36f89f23388"
+      },
+      "polygons": {
+        "url": "/data/historical/bc400.polygons.cce922ae13fcd00b.json",
+        "sha256": "cce922ae13fcd00bff4fbb3001881920aaa01a62d7cba75d961a8bc04fd52a58",
+        "bytes": 355912
+      },
+      "labels": {
+        "url": "/data/historical/bc400.labels.6c533eedae76ca22.json",
+        "sha256": "6c533eedae76ca22a21ad5fc750f594fd6fefaeed9424bdf4624dc40083dc4da",
+        "bytes": 15551
+      },
+      "index": {
+        "url": "/data/historical/bc400.index.5798821859993bf7.json",
+        "sha256": "5798821859993bf759617fd75a7df79259d37fb3cfb2d366c53970d54c868c4c",
+        "bytes": 13931
+      },
+      "counts": {
+        "territories": 76,
+        "polygons": 81,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 1,
+        "territoryLabels": 81,
+        "places": 35,
+        "sites": 2
+      }
+    },
+    "-323": {
+      "source": {
+        "url": "/data/historical/bc323.6a0cf37e47f92f69.json",
+        "sha256": "6a0cf37e47f92f695bf3c6d1e73f146150ab3b957bd08768bb63e02e4971b91c"
+      },
+      "polygons": {
+        "url": "/data/historical/bc323.polygons.df476adacd237fde.json",
+        "sha256": "df476adacd237fdec0c2dcbf91ce4541259c8787649e8194015a0b55837a840e",
+        "bytes": 283104
+      },
+      "labels": {
+        "url": "/data/historical/bc323.labels.eb0303ef44f23748.json",
+        "sha256": "eb0303ef44f23748e86806eae90945e63fd3a73561b58436aa517342b62d32f7",
+        "bytes": 14752
+      },
+      "index": {
+        "url": "/data/historical/bc323.index.763b29e107a39f3e.json",
+        "sha256": "763b29e107a39f3ea2abf77d4640e0c59412f43dc6b48c9912709e67a18b11c9",
+        "bytes": 12414
+      },
+      "counts": {
+        "territories": 68,
+        "polygons": 75,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 75,
+        "places": 35,
+        "sites": 2
+      }
+    },
+    "-300": {
+      "source": {
+        "url": "/data/historical/bc300.7439bb82919f9d8f.json",
+        "sha256": "7439bb82919f9d8f6c0218f6969c4cde2cd5f59ca4c638fb7580d94bcfc2feec"
+      },
+      "polygons": {
+        "url": "/data/historical/bc300.polygons.efa918ef04159627.json",
+        "sha256": "efa918ef041596273127a0ce85e57384993873cc928d2b63a357f4e205a8e914",
+        "bytes": 286682
+      },
+      "labels": {
+        "url": "/data/historical/bc300.labels.2b930689ab833e2f.json",
+        "sha256": "2b930689ab833e2f6137156c1d073c081765d8dc619b934fb64d410e80f7e69b",
+        "bytes": 15507
+      },
+      "index": {
+        "url": "/data/historical/bc300.index.6b2de67537bd5252.json",
+        "sha256": "6b2de67537bd52524d0fac04006cb05e11fc7c77eb0e4c95471b4e2d497beb48",
+        "bytes": 13236
+      },
+      "counts": {
+        "territories": 73,
+        "polygons": 79,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 0,
+        "territoryLabels": 79,
+        "places": 37,
+        "sites": 2
+      }
+    },
+    "-200": {
+      "source": {
+        "url": "/data/historical/bc200.f17ae956fb36a9b0.json",
+        "sha256": "f17ae956fb36a9b0954c777fdea97ce45695abccc83e052178ed14e4ccfb2754"
+      },
+      "polygons": {
+        "url": "/data/historical/bc200.polygons.2261d3c34d6c242c.json",
+        "sha256": "2261d3c34d6c242c5952b4a7248edf83097cfa89983df2845ca2992aa1cb623d",
+        "bytes": 400584
+      },
+      "labels": {
+        "url": "/data/historical/bc200.labels.94d26595cb0631cc.json",
+        "sha256": "94d26595cb0631cc8182e4bf3f359eaaf96f5620465780a05a041eabf081178f",
+        "bytes": 16705
+      },
+      "index": {
+        "url": "/data/historical/bc200.index.f9b71cb4323d60a3.json",
+        "sha256": "f9b71cb4323d60a35e3947cc94ec9c8343e3fe59cd8031d07967766b60ec01cc",
+        "bytes": 15144
+      },
+      "counts": {
+        "territories": 86,
+        "polygons": 86,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 86,
+        "places": 40,
+        "sites": 2
+      }
+    },
+    "-100": {
+      "source": {
+        "url": "/data/historical/bc100.cc503269b9201075.json",
+        "sha256": "cc503269b92010750d2a53bd022f448935af28a9cfc31ec9d78559daf27324a1"
+      },
+      "polygons": {
+        "url": "/data/historical/bc100.polygons.ffa450d0c35ebb0c.json",
+        "sha256": "ffa450d0c35ebb0c39e5c9ca04d45806de09ef9d78abacb977742c928d91d5bd",
+        "bytes": 287789
+      },
+      "labels": {
+        "url": "/data/historical/bc100.labels.a495b6c83b527567.json",
+        "sha256": "a495b6c83b5275677b457e807218f6b98ac37c8f5bf499c3d9c6ea891de15d91",
+        "bytes": 16694
+      },
+      "index": {
+        "url": "/data/historical/bc100.index.6f6e3ed0825285b9.json",
+        "sha256": "6f6e3ed0825285b9cad349313a5c5632b200afd7b413f7c7cfc8ee72af8fab0f",
+        "bytes": 14932
+      },
+      "counts": {
+        "territories": 84,
+        "polygons": 85,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 2,
+        "territoryLabels": 85,
+        "places": 41,
+        "sites": 1
+      }
+    },
+    "-1": {
+      "source": {
+        "url": "/data/historical/bc1.7dcddeda99adee99.json",
+        "sha256": "7dcddeda99adee99eaaaa5a0f1ebe56067d4a0cc429038414fb3b6383790dc7d"
+      },
+      "polygons": {
+        "url": "/data/historical/bc1.polygons.4a78bf2877ce86da.json",
+        "sha256": "4a78bf2877ce86da4d3f81d53d9de28f6388f56de99a308b07a465975ef7d0a8",
+        "bytes": 294980
+      },
+      "labels": {
+        "url": "/data/historical/bc1.labels.e90afc85733ef4d8.json",
+        "sha256": "e90afc85733ef4d83e752b552deb02c4e7c7abf33492fae1469f6278465afa1f",
+        "bytes": 16014
+      },
+      "index": {
+        "url": "/data/historical/bc1.index.16bc50c163260c20.json",
+        "sha256": "16bc50c163260c20bf01eb09fd94e2693d0312490ef58b84fa7b2643d143ef7a",
+        "bytes": 14101
+      },
+      "counts": {
+        "territories": 79,
+        "polygons": 80,
+        "unnamedPolygons": 0,
+        "namedFromAbbreviation": 0,
+        "dependencies": 3,
+        "territoryLabels": 80,
+        "places": 41,
+        "sites": 1
+      }
+    }
+  }
+}

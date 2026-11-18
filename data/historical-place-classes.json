@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reviewed classification of upstream places that the map should draw with the archaeological-site mark (∴) instead of the city dot. Upstream places.geojson has no place type, so prehistoric ritual sites and long-ruined towns looked like living cities. Only places whose English Wikipedia article describes them as an archaeological site are listed. Towns published only while they were inhabited (Ur, Harappa, Knossos) are not listed, and ambiguous cases (Bagan, Bolghar, Calusa, Levisa) stay cities until reviewed.",
+  "reviewedAt": "2026-11-17",
+  "classes": {
+    "archaeological-site": "A place known to us chiefly as an archaeological site. Drawn with ∴ in every map year from `from` (default: every year it is published)."
+  },
+  "places": [
+    {
+      "name": "Göbekli Tepe",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/G%C3%B6bekli_Tepe",
+      "note": "Neolithic ritual site; no town."
+    },
+    {
+      "name": "Çatal Höyük",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/%C3%87atalh%C3%B6y%C3%BCk",
+      "note": "Neolithic settlement known only from excavation."
+    },
+    {
+      "name": "Taljanky",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/Talianki",
+      "note": "Cucuteni–Trypillia mega-site known only from excavation."
+    },
+    {
+      "name": "Sannai-Maruyama Site",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/Sannai-Maruyama_site",
+      "note": "Jōmon settlement known only from excavation."
+    },
+    {
+      "name": "Ōyu site",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/%C5%8Cyu_Stone_Circles",
+      "note": "Late Jōmon stone circles; the article finds no indication of permanent settlement."
+    },
+    {
+      "name": "Jätinkirkko",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/Kastelli_Giant%27s_Church",
+      "note": "Prehistoric stone enclosure (Kastelli giant's church, near Pattijoki), not a settlement."
+    },
+    {
+      "name": "Cumbe Mayo",
+      "class": "archaeological-site",
+      "source": "https://en.wikipedia.org/wiki/Cumbemayo",
+      "note": "Archaeological site (aqueduct and petroglyphs, c. 1500 BC), not a settlement; upstream shows it until 2010."
+    },
+    {
+      "name": "Chavín de Huántar",
+      "class": "archaeological-site",
+      "from": -500,
+      "source": "https://en.wikipedia.org/wiki/Chav%C3%ADn_de_Hu%C3%A1ntar",
+      "note": "Ceremonial centre in use until around 500 BC; a site from then on."
+    },
+    {
+      "name": "Kaneš",
+      "class": "archaeological-site",
+      "from": 500,
+      "source": "https://en.wikipedia.org/wiki/K%C3%BCltepe",
+      "note": "Kültepe mound, inhabited with discontinuity through the Roman period and now in ruins; shown as a site from AD 500 (conservative end of the Roman period). Upstream shows it until 2010."
+    },
+    {
+      "name": "Lambaesa",
+      "class": "archaeological-site",
+      "from": 700,
+      "source": "https://en.wikipedia.org/wiki/Lambaesis",
+      "note": "Roman town that declined after the army left (after AD 392) and the Arab conquest (c. 683); now in ruins next to Tazoult."
+    },
+    {
+      "name": "Siga",
+      "class": "archaeological-site",
+      "from": 700,
+      "source": "https://en.wikipedia.org/wiki/Siga",
+      "note": "Numidian and Roman port; references to it disappear after the Arab conquest in the later 7th century. An archaeological site near Aïn Témouchent."
+    }
+  ]
+}

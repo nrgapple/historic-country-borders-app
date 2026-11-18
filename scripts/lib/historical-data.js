@@ -226,12 +226,23 @@ function validatePlacesSource(collection) {
   return collection;
 }
 
+/** A string with visible content: not empty and not only whitespace. */
+function isBlank(value) {
+  return typeof value === 'string' && value.trim() === '';
+}
+
+/** Trimmed text, or null for a missing, non-string, or blank value. */
+function cleanText(value) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
 // Upstream records carry many always-null keys (about 130 per place). They
 // add transfer and parse cost without information, so they are not published.
+// Blank strings ("" or only spaces) carry no information either.
 function compactProperties(properties) {
   return Object.fromEntries(
     Object.entries(properties || {}).filter(
-      ([, value]) => value !== null && value !== undefined && value !== '',
+      ([, value]) => value !== null && value !== undefined && !isBlank(value),
     ),
   );
 }
@@ -249,8 +260,16 @@ function processBorders(collection) {
         properties.NAME !== 'Antarctica',
     )
     .forEach((feature, index) => {
-      const name = feature.properties.NAME;
-      const color = textbookColor(String(feature.properties.SUBJECTO || name));
+      const sourceName = feature.properties.NAME;
+      // A NAME of only whitespace is a source defect on a real territory
+      // (for example Switzerland in 1994-2010). The border is kept so the map
+      // has no hole, but it is published without a NAME and its label point
+      // has no text; see docs/HISTORICAL_DATA.md "Blank names".
+      const name = cleanText(sourceName);
+      // Colors keep their historical inputs so published palettes are stable.
+      const color = textbookColor(
+        String(feature.properties.SUBJECTO || sourceName),
+      );
       const context = `Historical border feature ${index}`;
       // Area and label placement use the source geometry so zero-area source
       // anomalies are reported exactly as upstream publishes them.
@@ -278,7 +297,7 @@ function processBorders(collection) {
         geometry: publishGeometry(feature.geometry, context),
         properties: {
           ...compactProperties(feature.properties),
-          NAME: name,
+          ...(name ? { NAME: name } : {}),
           COLOR: color,
         },
       });
@@ -286,7 +305,7 @@ function processBorders(collection) {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: label.coordinates },
         // Labels need only text and a size priority; details live on borders.
-        properties: { NAME: name, AREA: label.area },
+        properties: { ...(name ? { NAME: name } : {}), AREA: label.area },
       });
     });
 
@@ -393,6 +412,13 @@ function validatePayload(payload, context = 'Historical payload') {
   }
   payload.data.borders.features.forEach((feature, index) => {
     const borderContext = `${context} border ${index}`;
+    assertPublishedName(feature.properties?.NAME, borderContext);
+    if (
+      payload.data.labels.features[index]?.properties?.NAME !==
+      feature.properties?.NAME
+    ) {
+      throw new Error(`${borderContext} and its label have different names`);
+    }
     polygonParts(feature.geometry, borderContext).forEach((polygon) =>
       polygon.forEach((ring) => {
         // Publishing is idempotent: a rounded ring republishes unchanged, and
@@ -420,14 +446,32 @@ function validatePayload(payload, context = 'Historical payload') {
   payload.data.labels.features.forEach((feature, index) =>
     assertRoundedPoint(feature, `${context} label ${index}`),
   );
-  payload.places.features.forEach((feature, index) =>
-    assertRoundedPoint(feature, `${context} place ${index}`),
-  );
+  payload.places.features.forEach((feature, index) => {
+    assertRoundedPoint(feature, `${context} place ${index}`);
+    if (!cleanText(feature.properties?.name))
+      throw new Error(`${context} place ${index} has a blank name`);
+  });
   return payload;
 }
 
+/**
+ * A published NAME is either absent (a blank source name) or visible,
+ * already-trimmed text. Blank and padded names are rejected.
+ */
+function assertPublishedName(name, context) {
+  if (name === undefined) return;
+  if (typeof name !== 'string' || cleanText(name) !== name) {
+    throw new Error(`${context} has a blank or untrimmed NAME`);
+  }
+}
+
 module.exports = {
+  ATLAS_COLORS,
   COORDINATE_PRECISION,
+  assertPublishedName,
+  cleanText,
+  polygonParts,
+  roundPosition,
   applyPlaceOverrides,
   buildPayload,
   countFallbackRings,

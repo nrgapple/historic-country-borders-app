@@ -11,6 +11,8 @@ const {
   validatePayload,
   validatePlacesSource,
 } = require('./lib/historical-data');
+const { validatePlaceClassesAgainstPlaces } = require('./lib/historical-split');
+const { buildAndWrite } = require('./build-historical-split');
 
 const ROOT = path.join(__dirname, '..');
 const ASSET_DIRECTORY = path.join(ROOT, 'public', 'data', 'historical');
@@ -19,6 +21,11 @@ const PLACE_OVERRIDES_PATH = path.join(
   ROOT,
   'data',
   'historical-place-overrides.json',
+);
+const PLACE_CLASSES_PATH = path.join(
+  ROOT,
+  'data',
+  'historical-place-classes.json',
 );
 const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
 const CONCURRENCY = 4;
@@ -105,6 +112,10 @@ async function main() {
     placesSource.value,
     JSON.parse(overrideText),
   );
+  // Reviewed archaeological-site classes must each match exactly one dated
+  // upstream place (after end-date overrides), like the overrides themselves.
+  const placeClassesText = fs.readFileSync(PLACE_CLASSES_PATH, 'utf8');
+  validatePlaceClassesAgainstPlaces(places, JSON.parse(placeClassesText));
 
   // Recorded once at manifest level: the browser bundles this manifest, so
   // per-year review-only counts would add to every route's JavaScript.
@@ -157,6 +168,10 @@ async function main() {
         file: 'data/historical-place-overrides.json',
         sha256: sha256(overrideText),
       },
+      placeClasses: {
+        file: 'data/historical-place-classes.json',
+        sha256: sha256(placeClassesText),
+      },
       places: {
         file: 'places.geojson',
         sha256: placesSource.sha256,
@@ -169,14 +184,13 @@ async function main() {
   };
   writeAtomically(ASSET_MANIFEST, `${JSON.stringify(nextManifest, null, 2)}\n`);
 
-  // Remove superseded payloads so only the published hashes ship. Previous
-  // Worker versions keep their own asset copies for rollback.
-  const published = new Set(
-    Object.values(nextManifest.assets).map((asset) => path.basename(asset.url)),
+  // Derive the split per-year files from the new payloads, then remove
+  // superseded files so only the published hashes ship. Previous Worker
+  // versions keep their own asset copies for rollback.
+  const split = buildAndWrite(ROOT);
+  console.log(
+    `Published ${split.files.length} split files; removed ${split.removed.length} superseded file(s)`,
   );
-  fs.readdirSync(ASSET_DIRECTORY)
-    .filter((file) => file.endsWith('.json') && !published.has(file))
-    .forEach((file) => fs.unlinkSync(path.join(ASSET_DIRECTORY, file)));
   console.log(
     `Kept ${roundingFallbackRings} unrounded ring(s) that would collapse when rounded`,
   );

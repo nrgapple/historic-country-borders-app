@@ -8,10 +8,22 @@ const budgets = {
   totalJavaScript: 2100 * 1024,
   largestJavaScriptChunk: 1550 * 1024,
   initialRouteJavaScript: 400 * 1024,
+  // Combined per-year payloads (production until the remaster cutover).
   historicalDataTotal: 32 * 1024 * 1024,
   historicalDataLargest: 2600 * 1024,
+  // Split per-year files for the remaster, measured at Brotli quality 5,
+  // close to what Cloudflare's on-the-fly compression sends. 1492 is the
+  // outlier (~698 KiB polygons); the median year is far smaller.
+  splitDataTotal: 32 * 1024 * 1024,
+  splitPolygonsLargestBrotli: 800 * 1024,
+  splitLabelsLargestBrotli: 64 * 1024,
+  splitIndexLargestBrotli: 96 * 1024,
+  // REMASTER_PLAN.md §6 trigger for reconsidering vector tiles: more than
+  // five years above 300 KB Brotli. Brotli-5 is stricter than the plan's -11.
+  splitPolygonYearsOver300KiB: 5,
   contextDataTotal: 2 * 1024 * 1024,
   contextDataLargest: 96 * 1024,
+  capitalsDataLargest: 48 * 1024,
   schoolDataRaw: 12000 * 1024,
   schoolDataBrotli: 1850 * 1024,
 };
@@ -67,8 +79,16 @@ const routeSizes = ['/year/[year]', '/pa/school-districts'].map((route) => {
   return { route, size };
 });
 
-const historicalFiles = walk(path.join(ROOT, 'out/data/historical')).filter(
-  (file) => file.endsWith('.json'),
+const brotli5 = (file) =>
+  zlib.brotliCompressSync(fs.readFileSync(file), {
+    params: {
+      [zlib.constants.BROTLI_PARAM_QUALITY]: 5,
+      [zlib.constants.BROTLI_PARAM_SIZE_HINT]: bytes(file),
+    },
+  }).length;
+const historicalDirectoryFiles = walk(path.join(ROOT, 'out/data/historical'));
+const historicalFiles = historicalDirectoryFiles.filter((file) =>
+  /^[a-z0-9]+\.[a-f0-9]{16}\.json$/.test(path.basename(file)),
 );
 const historicalSizes = historicalFiles.map(bytes);
 const historicalTotal = historicalSizes.reduce(
@@ -83,8 +103,53 @@ enforce(
   budgets.historicalDataLargest,
 );
 
-const contextSizes = walk(path.join(ROOT, 'out/data/context'))
-  .filter((file) => file.endsWith('.json'))
+const splitKinds = ['polygons', 'labels', 'index'];
+const split = Object.fromEntries(splitKinds.map((kind) => [kind, []]));
+historicalDirectoryFiles.forEach((file) => {
+  const match = path
+    .basename(file)
+    .match(/^[a-z0-9]+\.(polygons|labels|index)\.[a-f0-9]{16}\.json$/);
+  if (match) split[match[1]].push({ raw: bytes(file), brotli: brotli5(file) });
+});
+splitKinds.forEach((kind) => {
+  if (split[kind].length !== historicalFiles.length)
+    errors.push(
+      `Split ${kind}: ${split[kind].length} files for ${historicalFiles.length} years`,
+    );
+});
+const splitTotal = splitKinds
+  .flatMap((kind) => split[kind])
+  .reduce((total, file) => total + file.raw, 0);
+const largestBrotli = (kind) =>
+  Math.max(0, ...split[kind].map((file) => file.brotli));
+const polygonYearsOver300 = split.polygons.filter(
+  (file) => file.brotli > 300 * 1024,
+).length;
+enforce('Split historical data total', splitTotal, budgets.splitDataTotal);
+enforce(
+  'Largest split polygons (Brotli-5)',
+  largestBrotli('polygons'),
+  budgets.splitPolygonsLargestBrotli,
+);
+enforce(
+  'Largest split labels (Brotli-5)',
+  largestBrotli('labels'),
+  budgets.splitLabelsLargestBrotli,
+);
+enforce(
+  'Largest split index (Brotli-5)',
+  largestBrotli('index'),
+  budgets.splitIndexLargestBrotli,
+);
+if (polygonYearsOver300 > budgets.splitPolygonYearsOver300KiB)
+  errors.push(
+    `Split polygons: ${polygonYearsOver300} years exceed 300 KiB Brotli-5 (limit ${budgets.splitPolygonYearsOver300KiB}); see REMASTER_PLAN.md §6`,
+  );
+
+const contextDirectoryFiles = walk(path.join(ROOT, 'out/data/context'));
+const isCapitals = (file) => /\.capitals\.[a-f0-9]{16}\.json$/.test(file);
+const contextSizes = contextDirectoryFiles
+  .filter((file) => file.endsWith('.json') && !isCapitals(file))
   .map(bytes);
 const contextTotal = contextSizes.reduce((total, size) => total + size, 0);
 const contextLargest = Math.max(0, ...contextSizes);
@@ -92,6 +157,13 @@ if (!contextSizes.length)
   errors.push('Context data: no files in out/data/context');
 enforce('Context data total', contextTotal, budgets.contextDataTotal);
 enforce('Largest context file', contextLargest, budgets.contextDataLargest);
+const capitalsSizes = contextDirectoryFiles.filter(isCapitals).map(bytes);
+if (capitalsSizes.length !== historicalFiles.length)
+  errors.push(
+    `Capitals: ${capitalsSizes.length} files for ${historicalFiles.length} years`,
+  );
+const capitalsLargest = Math.max(0, ...capitalsSizes);
+enforce('Largest capitals file', capitalsLargest, budgets.capitalsDataLargest);
 
 const schoolDataPath = path.join(ROOT, 'out/data/pa-school-districts.json');
 const schoolRaw = bytes(schoolDataPath);
@@ -111,6 +183,8 @@ const summary = [
       `- ${route} initial JavaScript: ${formatKiB(size)} / ${formatKiB(budgets.initialRouteJavaScript)}`,
   ),
   `- Historical data: ${formatKiB(historicalTotal)} total / ${formatKiB(budgets.historicalDataTotal)}; ${formatKiB(historicalLargest)} largest / ${formatKiB(budgets.historicalDataLargest)}`,
+  `- Split historical data: ${formatKiB(splitTotal)} total / ${formatKiB(budgets.splitDataTotal)}; Brotli-5 largest polygons ${formatKiB(largestBrotli('polygons'))} / ${formatKiB(budgets.splitPolygonsLargestBrotli)}, labels ${formatKiB(largestBrotli('labels'))} / ${formatKiB(budgets.splitLabelsLargestBrotli)}, index ${formatKiB(largestBrotli('index'))} / ${formatKiB(budgets.splitIndexLargestBrotli)}; ${polygonYearsOver300} polygon years over 300 KiB / ${budgets.splitPolygonYearsOver300KiB}`,
+  `- Capitals: ${formatKiB(capitalsLargest)} largest / ${formatKiB(budgets.capitalsDataLargest)}`,
   `- Context data: ${formatKiB(contextTotal)} total / ${formatKiB(budgets.contextDataTotal)}; ${formatKiB(contextLargest)} largest / ${formatKiB(budgets.contextDataLargest)}`,
   `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
 ];
