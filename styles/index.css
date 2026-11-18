@@ -1466,3 +1466,275 @@ kbd {
   font-size: 0.9375rem;
   line-height: 1.5;
 }
+
+/* =========================================================================
+   Place finder, shareable selection, and projector mode
+   ========================================================================= */
+
+.topbar__tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.place-finder {
+  position: relative;
+  min-width: 0;
+}
+
+.place-finder__toggle,
+.place-finder__close {
+  display: none;
+}
+
+.place-finder__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.place-finder__icon {
+  position: absolute;
+  left: 11px;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.place-finder__input {
+  width: clamp(150px, 17vw, 240px);
+  height: 38px;
+  padding: 0 12px 0 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.place-finder__input::placeholder {
+  color: var(--ink-3);
+  opacity: 1;
+}
+
+.place-finder__input:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(36, 87, 197, 0.18);
+}
+
+.place-finder__list,
+.place-finder__empty {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max(100%, 300px);
+  max-width: calc(100vw - 2 * var(--gutter) - 16px);
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+.place-finder__list {
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  padding: 4px;
+  list-style: none;
+}
+
+.place-finder__list[hidden] {
+  display: none;
+}
+
+.place-finder__empty {
+  padding: 10px 12px;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+
+.place-finder__option {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 6px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.place-finder__option[aria-selected='true'] {
+  background: var(--accent-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.place-finder__name {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.place-finder__option[aria-selected='true'] .place-finder__name {
+  color: var(--accent-ink);
+}
+
+.place-finder__detail {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* Narrow top bars: a search button that opens the field over the row. */
+@media (max-width: 1000px) {
+  .place-finder[data-collapsible] .place-finder__toggle {
+    display: inline-grid;
+  }
+
+  .place-finder[data-collapsible]:not([data-expanded]) .place-finder__field {
+    display: none;
+  }
+
+  /* Position against the top bar so the field can span its first row. */
+  .place-finder[data-collapsible][data-expanded] {
+    position: static;
+  }
+
+  .place-finder[data-expanded] .place-finder__field {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    right: 8px;
+    z-index: 21;
+    gap: 4px;
+    padding: 2px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+
+  .place-finder[data-expanded] .place-finder__input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 40px;
+  }
+
+  .place-finder[data-expanded] .place-finder__close {
+    display: inline-grid;
+  }
+
+  .place-finder[data-expanded] .place-finder__list,
+  .place-finder[data-expanded] .place-finder__empty {
+    top: 54px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* Copy link, in the details panel header. */
+.copy-link {
+  margin-top: 10px;
+}
+
+.copy-link__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease);
+}
+
+.chip-button:hover {
+  background: var(--surface-2);
+}
+
+.copy-link__status {
+  color: var(--accent-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.copy-link__manual {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+}
+
+.copy-link__manual .input {
+  padding: 6px 10px;
+  font-size: 0.8125rem;
+}
+
+/* Projector (focus) mode: a large static date and the selected place. */
+.projector-caption {
+  position: absolute;
+  top: max(var(--gutter), env(safe-area-inset-top));
+  left: var(--gutter);
+  max-width: calc(100% - 2 * var(--gutter) - 56px);
+  padding: 10px 20px 12px;
+  background: rgba(255, 253, 248, 0.94);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.projector-caption p {
+  margin: 0;
+}
+
+.projector-caption__title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem);
+  font-weight: 650;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums;
+}
+
+.projector-caption__place {
+  margin-top: 4px;
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 0.9rem + 1.3vw, 2.125rem);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--accent-ink);
+}
+
+.projector-caption__place:first-child {
+  margin-top: 0;
+}
+
+@media (forced-colors: active) {
+  .place-finder__option[aria-selected='true'] {
+    outline: 2px solid Highlight;
+  }
+}
+
+@media print {
+  .place-finder,
+  .copy-link {
+    display: none;
+  }
+}

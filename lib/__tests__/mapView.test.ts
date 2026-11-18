@@ -4,8 +4,11 @@ import {
   hasMapView,
   mapViewSearch,
   parseMapView,
+  parsePlace,
+  placeSearch,
   WORLD_VIEW,
   writeMapView,
+  writePlace,
 } from '../mapView';
 
 describe('map view URL state', () => {
@@ -56,5 +59,43 @@ describe('map view URL state', () => {
       __N: true,
       as: '/year/1492?lng=10.0000&lat=20.0000&zoom=3.00',
     });
+  });
+
+  it('reads a shared place and ignores blank or oversized values', () => {
+    expect(parsePlace('?place=Ottoman+Empire&lng=1')).toBe('Ottoman Empire');
+    expect(parsePlace('?place=Kingdom%20of%20Castile')).toBe(
+      'Kingdom of Castile',
+    );
+    expect(parsePlace('?place=%20%20')).toBeUndefined();
+    expect(parsePlace('')).toBeUndefined();
+    expect(parsePlace(`?place=${'x'.repeat(201)}`)).toBeUndefined();
+  });
+
+  it('sets and removes the place while keeping other params', () => {
+    expect(placeSearch('?lng=1&lat=2&zoom=3', 'Fixture Country')).toBe(
+      '?lng=1&lat=2&zoom=3&place=Fixture+Country',
+    );
+    expect(placeSearch('?place=Old&ref=class', 'New')).toBe(
+      '?place=New&ref=class',
+    );
+    expect(placeSearch('?ref=class&place=Old', undefined)).toBe('?ref=class');
+    expect(placeSearch('?place=Old', undefined)).toBe('');
+  });
+
+  it('writes the place without dropping the map position or Next state', () => {
+    window.history.replaceState(
+      { __N: true, as: '/year/1492?lng=1.0000' },
+      '',
+      '/year/1492?lng=1.0000',
+    );
+    writePlace('Ottoman Empire');
+    expect(window.location.search).toBe('?lng=1.0000&place=Ottoman+Empire');
+    expect(window.history.state).toEqual({
+      __N: true,
+      as: '/year/1492?lng=1.0000&place=Ottoman+Empire',
+    });
+    writePlace(undefined);
+    expect(window.location.search).toBe('?lng=1.0000');
+    expect(window.location.pathname).toBe('/year/1492');
   });
 });

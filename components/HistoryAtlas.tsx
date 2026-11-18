@@ -10,10 +10,19 @@ import SettingsPanel from './SettingsPanel';
 import AboutDialog from './AboutDialog';
 import FeedbackDialog from './FeedbackDialog';
 import MapStatus from './MapStatus';
+import PlaceFinder from './PlaceFinder';
+import ProjectorCaption from './ProjectorCaption';
 import type { FeatureProperties } from './map/MapCanvas';
 import { useChrome } from '../contexts/ChromeContext';
 import { useHistoricalBorders } from '../hooks/useHistoricalBorders';
+import { useMapFocus, useSharedPlace } from '../hooks/useSharedPlace';
 import { trackEvent } from '../lib/analytics';
+import {
+  featureBounds,
+  featuresNamed,
+  PlaceOption,
+  placeOptionsFromFeatures,
+} from '../lib/places';
 import { formatYearLong, parseYearParam, yearPath } from '../lib/years';
 import { yearPageDescription, yearPageTitle } from '../config/seo';
 
@@ -49,6 +58,15 @@ interface Selection {
   name: string;
   properties: FeatureProperties;
 }
+
+/** Territories in the finder, with "Part of …" to tell similar names apart. */
+const territoryOption = {
+  detail: (properties: FeatureProperties) => {
+    const name = text(properties.NAME);
+    const partOf = text(properties.PARTOF);
+    return partOf && partOf !== name ? `Part of ${partOf}` : undefined;
+  },
+};
 
 const sourceDate = new Date(historicalManifest.source.commitDate);
 
@@ -127,6 +145,41 @@ export default function HistoryAtlas({
     [year],
   );
 
+  // Place finder and shareable `?place=` links.
+  const { onMapReady, focusBounds } = useMapFocus(6);
+  const features = borders.value?.data.borders.features;
+  const placeOptions = useMemo(
+    () => (features ? placeOptionsFromFeatures(features, territoryOption) : []),
+    [features],
+  );
+
+  const showPlace = useCallback(
+    (name: string, frame: boolean) => {
+      const matches = featuresNamed(features ?? [], name);
+      const properties = matches[0]?.properties;
+      if (!properties) return false;
+      setSelection({ name, properties });
+      if (frame) focusBounds(featureBounds(matches));
+      return true;
+    },
+    [features, focusBounds],
+  );
+
+  const handleFind = useCallback(
+    (option: PlaceOption) => {
+      if (showPlace(option.name, true))
+        trackEvent('country_select', { name: option.name, year });
+    },
+    [showPlace, year],
+  );
+
+  useSharedPlace({
+    ready: Boolean(borders.value && !borders.isPrevious),
+    selectedName: selection?.name,
+    restore: showPlace,
+    syncKey: year,
+  });
+
   const closePanel = useCallback(() => setSelection(undefined), []);
   const yearLabel = formatYearLong(year);
   const dataState = borders.error
@@ -157,6 +210,7 @@ export default function HistoryAtlas({
           data={borders.value}
           selectedName={selection?.name}
           onSelect={handleSelect}
+          onReady={onMapReady}
         />
 
         {!focusMode && (
@@ -166,7 +220,16 @@ export default function HistoryAtlas({
               value={year}
               onChange={setYear}
               leading={<Brand />}
-              trailing={<Toolbar />}
+              trailing={
+                <div className="topbar__tools">
+                  <PlaceFinder
+                    options={placeOptions}
+                    onSelect={handleFind}
+                    collapsible
+                  />
+                  <Toolbar />
+                </div>
+              }
             />
             <SettingsPanel />
             <MapStatus
@@ -179,7 +242,12 @@ export default function HistoryAtlas({
           </header>
         )}
 
-        {focusMode && <RestoreControlsButton />}
+        {focusMode && (
+          <>
+            <ProjectorCaption title={yearLabel} place={selection?.name} />
+            <RestoreControlsButton />
+          </>
+        )}
 
         {!focusMode && selection && (
           <PlacePanel

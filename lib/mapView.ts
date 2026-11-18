@@ -1,5 +1,6 @@
 /**
  * Map position lives in the URL (`?lng=&lat=&zoom=`) so any view can be shared.
+ * The selected place, when there is one, is shared as `?place=<NAME>`.
  *
  * The position is read once when the map mounts and written with
  * `history.replaceState` after the camera settles. Writing through the Next
@@ -64,14 +65,46 @@ export const mapViewSearch = (search: string, view: MapView): string => {
   return `?${params.toString()}`;
 };
 
-export const writeMapView = (view: MapView) => {
-  if (typeof window === 'undefined') return;
-  const { pathname, search, hash } = window.location;
-  const next = `${pathname}${mapViewSearch(search, view)}${hash}`;
+/** Replaces the query string without a navigation, keeping Next's history state. */
+const replaceSearch = (nextSearch: string) => {
+  const { pathname, hash } = window.location;
+  const next = `${pathname}${nextSearch}${hash}`;
   const state = window.history.state;
   window.history.replaceState(
     state && typeof state === 'object' ? { ...state, as: next } : state,
     '',
     next,
   );
+};
+
+export const writeMapView = (view: MapView) => {
+  if (typeof window === 'undefined') return;
+  replaceSearch(mapViewSearch(window.location.search, view));
+};
+
+export const PLACE_PARAM = 'place';
+/** Longer than any published territory or district name. */
+const MAX_PLACE_LENGTH = 200;
+
+/** The shared place name, or `undefined` when absent, blank, or oversized. */
+export const parsePlace = (search: string): string | undefined => {
+  const raw = new URLSearchParams(search).get(PLACE_PARAM)?.trim();
+  if (!raw || raw.length > MAX_PLACE_LENGTH) return undefined;
+  return raw;
+};
+
+/** Sets or removes `place`, preserving every other parameter. */
+export const placeSearch = (search: string, place: string | undefined) => {
+  const params = new URLSearchParams(search);
+  if (place) params.set(PLACE_PARAM, place);
+  else params.delete(PLACE_PARAM);
+  const query = params.toString();
+  return query ? `?${query}` : '';
+};
+
+export const writePlace = (place: string | undefined) => {
+  if (typeof window === 'undefined') return;
+  const { search } = window.location;
+  const next = placeSearch(search, place);
+  if (next !== search) replaceSearch(next);
 };
