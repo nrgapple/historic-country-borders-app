@@ -1354,3 +1354,106 @@ kbd {
     display: none;
   }
 }
+
+/* -------------------------------------------------------------------------
+   Historical context (Wikidata facts and "What changed") — owned by the
+   context-enrichment change; keep additions inside this section.
+   ------------------------------------------------------------------------- */
+
+.place-panel__facts-source {
+  margin: -6px 0 12px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.changes-summary {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 40px;
+  width: min(340px, calc(100% - 2 * var(--gutter)));
+  max-height: calc(100% - 230px);
+  /* <details> does not lay its content out as a flex child, so the whole
+     element scrolls and the summary stays pinned. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 4;
+  font-size: 0.875rem;
+}
+
+.changes-summary:not([open]) {
+  width: auto;
+  max-width: calc(100% - 2 * var(--gutter));
+}
+
+.changes-summary[data-stale] {
+  opacity: 0.7;
+}
+
+.changes-summary__toggle {
+  position: sticky;
+  top: 0;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+
+.changes-summary__body {
+  padding: 0 14px 12px;
+}
+
+.changes-summary__group + .changes-summary__group {
+  margin-top: 10px;
+}
+
+.changes-summary__heading {
+  margin: 0 0 4px;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.changes-summary__count {
+  color: var(--ink-3);
+}
+
+.changes-summary__list {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.changes-summary__list li {
+  padding: 1px 0;
+}
+
+.changes-summary__more {
+  list-style: none;
+  margin-left: -1.1em;
+  color: var(--ink-2);
+}
+
+.changes-summary__note {
+  margin: 10px 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .changes-summary {
+    bottom: max(var(--gutter), env(safe-area-inset-bottom));
+    max-height: 52dvh;
+  }
+}
+
+@media print {
+  .changes-summary:not([open]) {
+    display: none;
+  }
+}
