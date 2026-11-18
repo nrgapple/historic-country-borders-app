@@ -68,7 +68,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:layout": "playwright test -c playwright.layout.config.ts",
     "size:check": "node scripts/check-build-size.js",
-    "quality": "yarn format:check && yarn lint && yarn type-check && yarn test:coverage && yarn data:validate && yarn sitemap:check && yarn build && yarn static:validate && yarn cloudflare:check && yarn size:check",
+    "quality": "yarn format:check && yarn lint && yarn type-check && yarn test:coverage && yarn data:validate && yarn sitemap:check && yarn build && yarn static:validate && yarn remaster:build && node scripts/validate-remaster-dist.js && yarn cloudflare:check && yarn size:check",
     "validate": "yarn quality && yarn test:e2e:run"
   },
   "dependencies": {
