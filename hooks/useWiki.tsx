@@ -13,8 +13,34 @@ export interface WikiSummary {
 }
 
 /** Trims an extract to whole sentences within the length budget. */
+/**
+ * Wikipedia leads often open with a parenthetical of pronunciations, native
+ * spellings, and dates, e.g. "The Achaemenid Empire (, ə-KEE-mə-nid; Old
+ * Persian: …) was…". Students read better without it, so the first
+ * parenthetical in the opening sentence is removed (nested parentheses
+ * included). Later parentheses are left alone.
+ */
+export const stripLeadParenthetical = (text: string) => {
+  const open = text.indexOf('(');
+  const firstStop = text.search(/[.!?](\s|$)/);
+  if (open < 0 || (firstStop >= 0 && open > firstStop)) return text;
+  let depth = 0;
+  for (let index = open; index < text.length; index += 1) {
+    if (text[index] === '(') depth += 1;
+    else if (text[index] === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        return `${text.slice(0, open).trimEnd()} ${text
+          .slice(index + 1)
+          .trimStart()}`.replace(/\s+([,.;:])/g, '$1');
+      }
+    }
+  }
+  return text;
+};
+
 export const trimExtract = (text: string, max = MAX_EXTRACT_LENGTH) => {
-  const clean = text.replace(/\s+/g, ' ').trim();
+  const clean = stripLeadParenthetical(text.replace(/\s+/g, ' ').trim());
   if (clean.length <= max) return clean;
   const slice = clean.slice(0, max);
   const lastStop = Math.max(

@@ -119,7 +119,7 @@ export default function BorderLayers({
           <Layer
             id={`${id}-places-dot`}
             type="circle"
-            minzoom={2.5}
+            minzoom={3.5}
             paint={{
               'circle-color': INK,
               'circle-radius': [

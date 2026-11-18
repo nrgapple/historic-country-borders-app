@@ -2,6 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   __resetWikiCache,
+  stripLeadParenthetical,
   trimExtract,
   useWikiSummary,
   wikiQueryUrl,
@@ -99,6 +100,22 @@ describe('useWikiSummary', () => {
 });
 
 describe('wiki helpers', () => {
+  it('drops the pronunciation parenthetical from the opening sentence', () => {
+    expect(
+      stripLeadParenthetical(
+        "The Achaemenid Empire (, ə-KEE-mə-nid; Old Persian: 𐎧𐏁𐏂 (Xšāça), lit. 'The Empire') was an ancient Iranian empire. It had (many) satraps.",
+      ),
+    ).toBe(
+      'The Achaemenid Empire was an ancient Iranian empire. It had (many) satraps.',
+    );
+    expect(
+      stripLeadParenthetical('France is a country. Paris (capital).'),
+    ).toBe('France is a country. Paris (capital).');
+    expect(stripLeadParenthetical('Broken (lead without end')).toBe(
+      'Broken (lead without end',
+    );
+  });
+
   it('trims extracts at sentence boundaries', () => {
     const text = `${'First sentence is here. '.repeat(30)}`;
     const trimmed = trimExtract(text, 100);
