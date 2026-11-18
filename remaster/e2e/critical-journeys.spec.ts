@@ -549,7 +549,7 @@ test('pages are static, light-only and safe-area ready', async ({
   for (const path of ['/', '/year/1492', '/year/-500', '/year/9999']) {
     const html = await (await request.get(path)).text();
     expect(html).toContain('viewport-fit=cover');
-    expect(html).toContain('<meta name="color-scheme" content="only light">');
+    expect(html).toContain('<meta name="color-scheme" content="light only">');
   }
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain('<loc>https://historicborders.app/year/1492</loc>');
