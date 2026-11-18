@@ -5,6 +5,7 @@ const assetManifest = require('../data/historical-assets.json');
 const {
   countFallbackRings,
   sha256,
+  validateNameOverrides,
   validatePayload,
 } = require('./lib/historical-data');
 const {
@@ -41,6 +42,28 @@ function main() {
     fail(
       'place overrides changed since the last refresh; run yarn data:refresh:historical',
     );
+  }
+  const nameOverridesPath = path.join(
+    ROOT,
+    'data',
+    'historical-name-overrides.json',
+  );
+  if (
+    !fs.existsSync(nameOverridesPath) ||
+    sha256(fs.readFileSync(nameOverridesPath, 'utf8')) !==
+      assetManifest.source.nameOverrides?.sha256
+  ) {
+    fail(
+      'name overrides changed since the last refresh; run yarn data:refresh:historical',
+    );
+  }
+  // Structure only: matching against source records happens on refresh.
+  try {
+    validateNameOverrides(
+      JSON.parse(fs.readFileSync(nameOverridesPath, 'utf8')),
+    );
+  } catch (error) {
+    fail(error.message);
   }
   const placeClassesPath = path.join(
     ROOT,

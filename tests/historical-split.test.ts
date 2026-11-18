@@ -11,6 +11,7 @@ const {
   isRfc7946Wound,
   placeKind,
   rewindGeometry,
+  separateOverlordWashes,
   ringSignedArea,
   splitFileName,
   territoryBbox,
@@ -334,6 +335,132 @@ describe('split year files', () => {
     });
   });
 
+  describe('overlord aliases', () => {
+    const ukName = 'United Kingdom of Great Britain and Ireland';
+    const uk = border({ NAME: ukName }, polygon(box(-5, 50, 1, 58)));
+    const raj = border(
+      { NAME: 'British Raj', SUBJECTO: 'United Kingdom' },
+      polygon(box(70, 10, 80, 30)),
+    );
+    const aliases = new Map([['United Kingdom', ukName]]);
+    const build = (features: unknown[], yearAliases = aliases) =>
+      buildSplitYear(
+        1914,
+        buildPayload(1914, collection(features), collection([])),
+        noClasses,
+        yearAliases,
+      );
+
+    it('links a dependency through a reviewed alias and keeps the source SUBJECTO', () => {
+      const result = build([raj, uk]);
+      expect(result.index.territories[0]).toMatchObject({
+        NAME: 'British Raj',
+        SUBJECTO: 'United Kingdom',
+        dep: 1,
+        ov: 1,
+      });
+      expect(result.counts.dependencies).toBe(1);
+      expect(() => validateSplitYear(1914, result, aliases)).not.toThrow();
+      expect(() => validateSplitYear(1914, result)).toThrow(
+        /outside SUBJECTO, PARTOF and aliases/,
+      );
+      expect(build([raj, uk], new Map()).counts.dependencies).toBe(0);
+    });
+
+    it('rejects an alias that shadows a territory, misses its target, or is unused', () => {
+      const shortUk = border(
+        { NAME: 'United Kingdom' },
+        polygon(box(-5, 50, 1, 58)),
+      );
+      expect(() => build([raj, uk, shortUk])).toThrow(
+        /names a territory of that year/,
+      );
+      expect(() => build([raj])).toThrow(/is not a territory of that year/);
+      expect(() => build([uk])).toThrow(/resolves no dependency/);
+      // PARTOF already names the overlord, so the alias changes nothing.
+      const direct = border(
+        { NAME: 'Hong Kong', SUBJECTO: 'United Kingdom', PARTOF: ukName },
+        polygon(box(114, 22, 115, 23)),
+      );
+      expect(() => build([direct, uk])).toThrow(/resolves no dependency/);
+    });
+  });
+
+  describe('overlord washes', () => {
+    const ukName = 'United Kingdom of Great Britain and Ireland';
+    const colony = (name: string, overlord: string, x: number) =>
+      border(
+        { NAME: name, SUBJECTO: overlord },
+        polygon(box(x, -10, x + 1, -9)),
+      );
+    const year = () =>
+      split([
+        border({ NAME: ukName }, polygon(box(-5, 50, 1, 58))),
+        border({ NAME: 'France' }, polygon(box(-4, 43, 7, 50))),
+        border({ NAME: 'France' }, polygon(box(55, -21, 56, -20))),
+        colony('Gold Coast', ukName, 0),
+        colony('Nigeria', ukName, 2),
+        colony('Senegal', 'France', 4),
+      ]);
+    const wash = (result: any, name: string) =>
+      result.index.territories.find((t: any) => t.NAME === name);
+
+    it('starts from the shared legacy wash of the United Kingdom and France', () => {
+      const payload = buildPayload(
+        1914,
+        collection([border({ NAME: ukName }), border({ NAME: 'France' })]),
+        collection([]),
+      );
+      const [uk, france] = payload.data.borders.features.map((f: any) =>
+        washIndex(f.properties.COLOR),
+      );
+      expect(uk).toBe(france);
+    });
+
+    it('keeps the overlord with most dependencies and moves the other', () => {
+      const result = year();
+      const ukWash = result.polygons.features[0].properties.c;
+      const franceWash = result.polygons.features[1].properties.c;
+      expect(franceWash).toBe((ukWash + 1) % ATLAS_WASH_COUNT);
+      // Every polygon of a re-washed overlord takes the new wash.
+      expect(result.polygons.features[2].properties.c).toBe(franceWash);
+      expect(wash(result, 'Gold Coast').oc).toBe(ukWash);
+      expect(wash(result, 'Senegal').oc).toBe(franceWash);
+      expect(result.counts.rewashedOverlords).toBe(1);
+      expect(() => validateSplitYear(1914, result)).not.toThrow();
+    });
+
+    it('rejects two overlords sharing a wash', () => {
+      const result = year();
+      const ukWash = result.polygons.features[0].properties.c;
+      [1, 2].forEach((index) => {
+        result.polygons.features[index].properties.c = ukWash;
+      });
+      result.polygons.features[5].properties.oc = ukWash;
+      wash(result, 'Senegal').oc = ukWash;
+      expect(() => validateSplitYear(1914, result)).toThrow(
+        /two overlords sharing a wash/,
+      );
+    });
+
+    it('moves only displaced overlords, to washes no overlord holds', () => {
+      const overlord = (name: string, c: number, area: number) => ({
+        name,
+        c,
+        largest: area,
+      });
+      const a = overlord('A', 1, 0);
+      const b = overlord('B', 1, 1);
+      const c = overlord('C', 2, 2);
+      const labels = [30, 20, 10].map((AREA) => ({ properties: { AREA } }));
+      const dependents = [...Array(3).fill(a), ...Array(2).fill(b), c].map(
+        (target) => ({ overlord: target }),
+      );
+      expect(separateOverlordWashes([a, b, c, ...dependents], labels)).toBe(1);
+      expect([a.c, b.c, c.c]).toEqual([1, 3, 2]);
+    });
+  });
+
   describe('archaeological sites', () => {
     const classes = validatePlaceClasses(
       classesFile([site('Göbekli Tepe'), site('Kaneš', { from: 500 })]),
@@ -601,7 +728,53 @@ describe('split assets', () => {
       sha256: 'a'.repeat(64),
     });
     expect(manifest.inputs.placeClasses.sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(manifest.inputs).not.toHaveProperty('nameOverrides');
     expect(manifest.years['1914'].counts.sites).toBe(1);
+  });
+
+  it('records the name-override input and rejects aliases for unpublished years', () => {
+    const overridesFile = (years: number[]) =>
+      JSON.stringify({
+        schemaVersion: 1,
+        borders: [],
+        places: [],
+        overlordAliases: [
+          {
+            years,
+            from: 'Elsewhere',
+            to: 'Other',
+            source: 'https://en.wikipedia.org/wiki/Example',
+            note: 'Reviewed.',
+          },
+        ],
+      });
+    const withOverrides = (text: string) =>
+      buildSplitAssets({
+        assets,
+        placeClassesText,
+        nameOverridesText: text,
+        readPayload: (asset: { url: string }) => ({
+          payload: payloads[asset.url],
+          sha256: 'a'.repeat(64),
+        }),
+      });
+    expect(() => withOverrides(overridesFile([1492]))).toThrow(
+      /unpublished year 1492/,
+    );
+    // An alias in a published year must resolve a dependency.
+    expect(() => withOverrides(overridesFile([1914]))).toThrow(
+      /is not a territory|resolves no dependency/,
+    );
+    const empty = JSON.stringify({
+      schemaVersion: 1,
+      borders: [],
+      places: [],
+      overlordAliases: [],
+    });
+    expect(withOverrides(empty).manifest.inputs.nameOverrides).toEqual({
+      file: 'data/historical-name-overrides.json',
+      sha256: expect.stringMatching(/^[a-f0-9]{64}$/),
+    });
   });
 
   it('is deterministic, so validation can rebuild it byte for byte', () => {
