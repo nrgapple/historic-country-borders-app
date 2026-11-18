@@ -9,6 +9,7 @@
     "playwright-report/",
     "public/",
     "remaster-spike/",
+    "remaster/",
     "test-results/",
     "design/"
   ],

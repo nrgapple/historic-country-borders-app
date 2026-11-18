@@ -1,0 +1,50 @@
+{
+  "name": "historic-borders-remaster",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Historic Borders remaster: Astro 7 static pages, one React 19 island, MapLibre GL JS 6, Direction A (Classic atlas). Built with the root package.json and the single root yarn.lock (Yarn workspace, nohoisted).",
+  "license": "CC-BY-NC-SA-4.0",
+  "engines": {
+    "node": ">=22.23.4 <23"
+  },
+  "scripts": {
+    "data": "node scripts/build-data.mjs && node scripts/build-standins.mjs && node scripts/sync-public.mjs",
+    "tokens": "node scripts/build-tokens.mjs",
+    "dev": "yarn data && astro dev",
+    "build": "yarn data && yarn tokens --check && astro build",
+    "preview": "node scripts/serve.mjs dist 4400",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/react": "7.1.9",
+    "@fingerprintjs/fingerprintjs": "3.4.2",
+    "@fontsource/alegreya": "5.3.0",
+    "@fontsource/alegreya-sans": "5.3.0",
+    "@fontsource/alegreya-sc": "5.3.0",
+    "@fontsource/atkinson-hyperlegible-next": "5.3.0",
+    "astro": "7.4.12",
+    "maplibre-gl": "6.19.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-ga4": "2.1.0"
+  },
+  "devDependencies": {
+    "@maplibre/geojson-vt": "7.0.1",
+    "@maplibre/vt-pbf": "4.3.3",
+    "@playwright/test": "1.65.1",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.1",
+    "@types/geojson": "7946.0.16",
+    "@types/node": "22.19.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "jsdom": "26.1.0",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}

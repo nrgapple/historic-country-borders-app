@@ -12,5 +12,17 @@ test-results/
 yarn.lock
 remaster-spike/
 
+# Remaster build output and generated data (yarn remaster:data).
+remaster/dist/
+remaster/.astro/
+remaster/public/data/
+remaster/public/basemap-standin/
+remaster/public/glyphs-standin/
+remaster/public/relief-standin/
+remaster/public/shared/
+remaster/src/data/
+remaster/test-results/
+remaster/playwright-report/
+
 # Static design reference mockups (Direction A spec), not app code.
 design/

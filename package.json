@@ -1,6 +1,16 @@
 {
   "name": "historic-country-borders-app",
   "version": "1.0.0",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "remaster"
+    ],
+    "nohoist": [
+      "historic-borders-remaster/**",
+      "**/remaster/**"
+    ]
+  },
   "description": "This is map with a timeline to show what country borders were like in the past",
   "license": "CC-BY-NC-SA-4.0",
   "packageManager": "yarn@1.22.22",
@@ -34,6 +44,13 @@
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "remaster:data": "yarn --cwd remaster data",
+    "remaster:dev": "yarn --cwd remaster dev",
+    "remaster:build": "yarn --cwd remaster build",
+    "remaster:preview": "yarn --cwd remaster preview",
+    "remaster:type-check": "yarn --cwd remaster type-check",
+    "remaster:test": "yarn --cwd remaster test",
+    "remaster:test:e2e": "yarn --cwd remaster test:e2e",
     "test:e2e": "yarn build && yarn test:e2e:run",
     "test:e2e:run": "playwright test",
     "test:e2e:ui": "playwright test --ui",

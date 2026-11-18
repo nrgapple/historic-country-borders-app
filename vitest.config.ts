@@ -11,6 +11,8 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/e2e/**',
+      // The remaster has its own Vitest (React 19) config: yarn remaster:test.
+      'remaster/**',
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
