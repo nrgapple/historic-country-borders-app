@@ -129,12 +129,20 @@ describe("today's tokens (styles/index.css)", () => {
 const DIRECTION_A_MOCK = 'design/living-atlas/a-classic-atlas.html';
 
 // The design mock lives on the remaster branch; skip on branches without it.
-describe.skipIf(!fs.existsSync(path.join(process.cwd(), DIRECTION_A_MOCK)))(
+const hasDirectionAMock = fs.existsSync(
+  path.join(process.cwd(), DIRECTION_A_MOCK),
+);
+
+describe.skipIf(!hasDirectionAMock)(
   'Direction A tokens (design/living-atlas/a-classic-atlas.html)',
   () => {
     // Until the remaster's token file exists, the Direction A mock is the
     // source of truth. Point this at the token file when T5 adds it.
-    const tokens = readTokens(read(DIRECTION_A_MOCK));
+    // Vitest still runs this body while collecting skipped suites, so only
+    // read the mock when it exists.
+    const tokens = hasDirectionAMock
+      ? readTokens(read(DIRECTION_A_MOCK))
+      : ({} as ReturnType<typeof readTokens>);
     const eras = [
       'prehistory',
       'ancient',
