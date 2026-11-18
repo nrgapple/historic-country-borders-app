@@ -56,29 +56,8 @@ function main() {
   );
   requireFile('data/pa-school-districts.json');
 
-  const wrangler = fs.readFileSync(path.join(ROOT, 'wrangler.toml'), 'utf8');
-  const workerFirstMatch = wrangler.match(
-    /run_worker_first\s*=\s*\[([^\]]*)\]/,
-  );
-  const workerFirstRoutes = workerFirstMatch
-    ? [...workerFirstMatch[1].matchAll(/["']([^"']+)["']/g)].map(
-        (match) => match[1],
-      )
-    : [];
-  const durableObjectBindings = (
-    wrangler.match(/\[\[durable_objects\.bindings\]\]/g) || []
-  ).length;
-  if (
-    !wrangler.includes('main = "worker/index.ts"') ||
-    !wrangler.includes('directory = "./out"') ||
-    JSON.stringify(workerFirstRoutes) !== JSON.stringify(['/api/feedback']) ||
-    durableObjectBindings !== 1 ||
-    !wrangler.includes('class_name = "FeedbackRateLimiter"') ||
-    !wrangler.includes('not_found_handling = "404-page"') ||
-    /run_worker_first\s*=\s*true/.test(wrangler)
-  ) {
-    fail('Workers Static Assets must execute code only for /api/feedback');
-  }
+  // The Worker configuration is checked by validate-remaster-dist.js: since
+  // the P4 cutover, wrangler.toml serves remaster/dist, not this export.
 
   const headers = fs.readFileSync(requireFile('_headers'), 'utf8');
   if (
@@ -148,9 +127,7 @@ function main() {
     }
   });
 
-  console.log(
-    `Static export is valid (${files.length} files; public dynamic routes: ${workerFirstRoutes.length} [/api/feedback]; Durable Object bindings: ${durableObjectBindings})`,
-  );
+  console.log(`Legacy static export is valid (${files.length} files)`);
 }
 
 try {
