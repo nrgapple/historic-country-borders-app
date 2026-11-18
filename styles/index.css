@@ -1292,26 +1292,8 @@ kbd {
    ------------------------------------------------------------------------- */
 
 @media (max-width: 860px) {
-  .timeline__step-label {
-    display: none;
-  }
-
-  .timeline__step {
-    padding: 0;
-    justify-content: center;
-  }
-
-  .brand__text {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  :root {
-    --gutter: 8px;
-  }
-
-  /* Two rows on phones: brand and tools above, the year stepper below. */
+  /* Two rows on phones and small tablets (iPad mini portrait): brand and
+     tools above, the year stepper below, so nothing overlaps. */
   .timeline__head {
     grid-template-columns: auto 1fr;
     grid-template-areas:
@@ -1333,6 +1315,25 @@ kbd {
     grid-area: step;
     justify-self: center;
     gap: 10px;
+  }
+
+  .timeline__step-label {
+    display: none;
+  }
+
+  .timeline__step {
+    padding: 0;
+    justify-content: center;
+  }
+
+  .brand__text {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: 8px;
   }
 
   .timeline__current {
@@ -1523,7 +1524,8 @@ kbd {
 }
 
 .place-finder__input {
-  width: clamp(150px, 17vw, 240px);
+  /* Must fit beside the toolbar in half of a 1200px top bar. */
+  width: clamp(140px, 11vw, 190px);
   height: 38px;
   padding: 0 12px 0 34px;
   border: 1px solid var(--line-strong);
@@ -1607,8 +1609,9 @@ kbd {
   color: var(--ink-2);
 }
 
-/* Narrow top bars: a search button that opens the field over the row. */
-@media (max-width: 1000px) {
+/* Narrow top bars (phones and every iPad, including landscape): a search
+   button that opens the field over the row, so it never crowds the year. */
+@media (max-width: 1279px) {
   .place-finder[data-collapsible] .place-finder__toggle {
     display: inline-grid;
   }
