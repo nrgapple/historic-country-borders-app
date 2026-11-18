@@ -23,6 +23,12 @@ jobs:
       - uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
+          # Reviewed exceptions. Keep each one narrow, justified, and dated.
+          # GHSA-fc5q-39xc-vjpf (picomatch ReDoS, 2026-11): no patched release
+          # exists for any version. It is reached only through build/lint
+          # tooling (micromatch, typescript-eslint) matching globs written in
+          # this repository, never user input. Remove once a fix ships.
+          allow-ghsas: GHSA-fc5q-39xc-vjpf
 
   validate:
     runs-on: ubuntu-latest
