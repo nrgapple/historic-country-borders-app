@@ -14,6 +14,8 @@ const SHARED = [
   'apple-touch-icon.png',
   'icon.svg',
   'manifest.json',
+  // Replaced by a Direction A card when the design sign-off asks for one.
+  'og-image.png',
 ];
 for (const name of SHARED)
   fs.copyFileSync(path.join(REPO, 'public', name), path.join(APP, 'public', name));

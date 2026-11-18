@@ -1,0 +1,251 @@
+/* Map status, "What changed", the projector caption and the map-key slot:
+   the small pieces that sit inside the map stage. */
+
+.progress {
+  position: absolute;
+  top: var(--frame-inset);
+  left: var(--frame-inset);
+  right: var(--frame-inset);
+  z-index: 6;
+  height: 3px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+}
+
+.progress[data-active] {
+  opacity: 1;
+  animation: progress-slide 1.2s linear infinite;
+}
+
+@keyframes progress-slide {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress[data-active] {
+    animation: none;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+}
+
+/* Centred message for the first data load only. */
+.map-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.map-loading__message {
+  margin: 0;
+  max-width: 22rem;
+  padding: 12px 18px;
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  background: var(--sheet);
+  font: italic 400 19px/1.35 var(--font-serif);
+  text-align: center;
+}
+
+.banner {
+  position: absolute;
+  top: calc(var(--frame-inset) + 12px);
+  left: 50%;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 32px);
+  padding: 8px 14px;
+  border: 1px solid var(--alert-ink);
+  background: var(--alert-wash);
+  color: var(--alert-ink);
+  transform: translateX(-50%);
+}
+
+.banner .text-button {
+  color: var(--alert-ink);
+}
+
+/* "What changed since …": collapsed by default, top left over the map. */
+.changes-summary {
+  position: absolute;
+  top: calc(var(--frame-inset) + 12px);
+  left: calc(var(--frame-inset) + 12px);
+  z-index: 4;
+  width: min(340px, calc(100% - 2 * var(--frame-inset) - 24px));
+  max-height: calc(100% - 2 * var(--frame-inset) - 220px);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  font-size: 15px;
+}
+
+.changes-summary:not([open]) {
+  width: auto;
+  max-width: calc(100% - 2 * var(--frame-inset) - 24px);
+}
+
+.changes-summary[data-stale] {
+  opacity: 0.7;
+}
+
+.changes-summary__toggle {
+  position: sticky;
+  top: 0;
+  padding: 8px 14px;
+  background: var(--sheet);
+  font: 700 15px/1.2 var(--font-sc);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.changes-summary__body {
+  padding: 0 14px 12px;
+}
+
+.changes-summary__group + .changes-summary__group {
+  margin-top: 10px;
+}
+
+.changes-summary__heading {
+  margin: 0 0 4px;
+  font: 700 13px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.changes-summary__count {
+  color: var(--ink-2);
+}
+
+.changes-summary__list {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.changes-summary__more {
+  list-style: none;
+  margin-left: -1.1em;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.changes-summary__note {
+  margin: 10px 0 0;
+  font: italic 400 13px/1.35 var(--font-serif);
+  color: var(--ink-2);
+}
+
+/* Focus (projector) mode */
+.projector-caption {
+  position: absolute;
+  top: calc(var(--frame-inset) + var(--safe-top) + 12px);
+  left: calc(var(--frame-inset) + 12px);
+  z-index: 4;
+  max-width: calc(100% - 2 * var(--frame-inset) - 120px);
+  padding: 10px 16px;
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.projector-caption__title {
+  margin: 0;
+  font: 700 40px/1 var(--font-serif);
+  font-variant-numeric: lining-nums;
+}
+
+.projector-caption__place {
+  margin: 4px 0 0;
+  font: 700 24px/1.2 var(--font-sc);
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.focus-tools {
+  position: absolute;
+  top: calc(var(--frame-inset) + var(--safe-top) + 12px);
+  right: calc(var(--frame-inset) + 12px);
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+}
+
+/* The map-key slot (T7 fills it): bottom left, over the open sea. */
+.map-key {
+  position: absolute;
+  left: calc(var(--frame-inset) + 20px);
+  bottom: calc(var(--frame-inset) + 60px);
+  z-index: 3;
+  width: 238px;
+  padding: 12px 16px;
+  background-color: var(--sheet);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  text-align: center;
+}
+
+.map-key__kicker {
+  margin: 0;
+  font: 700 13px/1 var(--font-sc);
+  letter-spacing: 0.22em;
+  color: var(--ink-2);
+}
+
+.map-key__title {
+  margin: 6px 0 2px;
+  font: 700 27px/1.05 var(--font-sc);
+  letter-spacing: 0.04em;
+  font-variant-numeric: lining-nums;
+}
+
+.map-key__sub {
+  margin: 0;
+  font: italic 400 15px/1.3 var(--font-serif);
+  color: var(--ink-2);
+}
+
+/* With the panel open on narrower tablets the key would crowd the map. */
+@media (max-width: 1100px) {
+  .stage[data-panel-open] .map-key {
+    display: none;
+  }
+}
+
+@media (max-width: 699px) {
+  .map-key {
+    display: none;
+  }
+
+  .changes-summary {
+    max-height: 52%;
+  }
+
+  .projector-caption__title {
+    font-size: 30px;
+  }
+}
+
+@media (max-height: 520px) {
+  .map-key {
+    display: none;
+  }
+}

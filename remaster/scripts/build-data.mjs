@@ -49,6 +49,25 @@ const union = (a, b) => [
 ];
 const r2 = (v) => Math.round(v * 100) / 100;
 
+// RFC 7946 winding (outer rings counter-clockwise, holes clockwise), so a
+// negative line-offset draws the edge band inside each territory (T1 does
+// the same in its pipeline).
+const signedArea = (ring) => {
+  let sum = 0;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++)
+    sum += (ring[j][0] - ring[i][0]) * (ring[j][1] + ring[i][1]);
+  return sum / 2;
+};
+const rewindPolygon = (rings) =>
+  rings.map((ring, i) => {
+    const ccw = signedArea(ring) > 0;
+    return ccw === (i === 0) ? ring : [...ring].reverse();
+  });
+const rewind = (geometry) =>
+  geometry.type === 'Polygon'
+    ? { ...geometry, coordinates: rewindPolygon(geometry.coordinates) }
+    : { ...geometry, coordinates: geometry.coordinates.map(rewindPolygon) };
+
 const files = {};
 const years = Object.keys(assets)
   .map(Number)
@@ -82,7 +101,7 @@ for (const year of years) {
       territories[id].bbox = union(territories[id].bbox, box);
     }
     const c = colorIndex.get(String(p.COLOR).toUpperCase()) ?? 30;
-    features.push({ type: 'Feature', id, properties: { c }, geometry: f.geometry });
+    features.push({ type: 'Feature', id, properties: { c }, geometry: rewind(f.geometry) });
   }
   for (const f of payload.data.labels.features) {
     const id = ids.get(

@@ -182,9 +182,10 @@ export interface FocusPadding {
   left: number;
 }
 
-/** Matches the 640px breakpoint where the panel becomes a bottom sheet. */
-const PHONE_MAX_WIDTH = 640;
-const PANEL_WIDTH = 380;
+/** Matches the 699px breakpoint where the panel becomes a bottom sheet (Direction A). */
+const PHONE_MAX_WIDTH = 699;
+/** Direction A's gazetteer panel sits on the right, over the map frame. */
+const PANEL_WIDTH = 420;
 const MIN_VISIBLE = 80;
 
 const fit = (a: number, b: number, available: number): [number, number] => {
@@ -195,8 +196,10 @@ const fit = (a: number, b: number, available: number): [number, number] => {
 };
 
 /**
- * Camera padding that keeps a framed place clear of the top bar and the
- * details panel: a left-hand card on wider screens, a bottom sheet on phones.
+ * Camera padding that keeps a framed place clear of the details panel: a
+ * right-hand panel on wider screens, a bottom sheet (up to 47% of the map)
+ * on phones. `topbarBottom` is the height of anything overlapping the top of
+ * the map; in Direction A the timeline sits above the map, so it is usually 0.
  */
 export const focusPadding = ({
   width,
@@ -212,14 +215,14 @@ export const focusPadding = ({
     ? {
         top: topbarBottom + 16,
         right: 24,
-        bottom: Math.round(height * 0.52) + 16,
+        bottom: Math.round(height * 0.47) + 16,
         left: 24,
       }
     : {
-        top: topbarBottom + 24,
-        right: 72,
+        top: topbarBottom + 32,
+        right: Math.min(PANEL_WIDTH, width - 24) + 12 + 32,
         bottom: 56,
-        left: Math.min(PANEL_WIDTH, width - 24) + 12 + 32,
+        left: 48,
       };
   const [left, right] = fit(raw.left, raw.right, width);
   const [top, bottom] = fit(raw.top, raw.bottom, height);

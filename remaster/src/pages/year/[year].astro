@@ -1,0 +1,47 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../../layouts/Base.astro';
+import Atlas from '../../atlas/Atlas';
+import manifest from '../../data/years.json';
+import { eraOf, formatYearLong } from '../../lib/years';
+import { yearPageDescription, yearPageTitle } from '../../lib/seo';
+
+export function getStaticPaths() {
+  return manifest.years.map((year) => ({ params: { year: String(year) }, props: { year } }));
+}
+const { year } = Astro.props as { year: number };
+const files = (manifest.files as Record<string, { map: string; labels: string; index: string }>)[String(year)];
+// Build-time read of the year's territory index: crawlers, no-JS and no-WebGL
+// visitors get a real, readable list of the territories on this map.
+const index = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', files.index), 'utf8'));
+const names: string[] = [...new Set<string>(index.territories.map((t: [string]) => t[0]))].sort((a, b) =>
+  a.localeCompare(b),
+);
+const label = formatYearLong(year);
+---
+<Base
+  title={yearPageTitle(year)}
+  description={yearPageDescription(year)}
+  path={`/year/${year}`}
+  era={eraOf(year).id}
+  bodyClass="atlas-page"
+  preload={[
+    { href: files.map, as: 'fetch', type: 'application/geo+json' },
+    { href: files.labels, as: 'fetch', type: 'application/geo+json' },
+    { href: files.index, as: 'fetch', type: 'application/json' },
+  ]}
+>
+  <noscript><style>.atlas { display: none; } .territories { position: static; }</style></noscript>
+  <Atlas client:load initialYear={year} />
+  <section class="territories" id="territories" aria-labelledby="territories-title">
+    <h2 id="territories-title">Territories on the {label} map</h2>
+    <p>
+      {names.length} territories, as reconstructed by the
+      <a href="https://github.com/aourednik/historical-basemaps">historical-basemaps</a> project (GPL-3.0). Dates and
+      boundaries are approximate, and many were contested.
+    </p>
+    <ul>{names.map((n) => <li>{n}</li>)}</ul>
+    <p><a href="/">Open a random year</a> · <a href="/year/1914">See the world in 1914</a></p>
+  </section>
+</Base>

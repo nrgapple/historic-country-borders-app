@@ -1,0 +1,477 @@
+@import './tokens.css';
+@import './fonts.css';
+
+/* Direction A, "Classic atlas": cream paper, engraved ink, square corners.
+   Rules from plan §2.2-2.3: viewport-fit=cover + env() safe areas, dvh
+   (never 100vh), no fixed bottom bars, light-only colour scheme. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  /* Old-browser fallback; full-height layouts below use dvh. */
+  height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.5 var(--font-serif);
+  font-variant-numeric: oldstyle-nums;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+a {
+  color: var(--accent);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Paper grain: one static SVG noise tile, never animated. It sits in the
+   paper surfaces' own backgrounds rather than as a blended overlay, so the
+   map canvas never needs compositing with it while panning. */
+.paper-grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .paper-grain {
+    background-image: none;
+  }
+}
+
+/* ---------------------------------------------------------------- Shell */
+
+body.atlas-page {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.atlas {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 100%;
+  /* dvh follows Safari's collapsing toolbars, so nothing sits under them. */
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  background: var(--paper);
+  z-index: 1;
+}
+
+.atlas[data-focus] {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.topbar {
+  position: relative;
+  z-index: 10;
+  min-width: 0;
+  /* The paper runs under the status bar and Dynamic Island; content starts below it. */
+  padding-top: calc(var(--safe-top) + 10px);
+  background-color: var(--paper);
+  border-bottom: 3px double var(--ink);
+}
+
+.stage {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+}
+
+.frame {
+  position: absolute;
+  inset: var(--frame-inset);
+  border: 1px solid var(--ink);
+  background: var(--water);
+}
+
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--ink);
+  pointer-events: none;
+}
+
+.map-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.map-canvas--unavailable {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 24px;
+  background: var(--sheet);
+  overflow: auto;
+}
+
+.map-canvas--unavailable p {
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.credit {
+  position: absolute;
+  left: calc(var(--frame-inset) + 20px);
+  bottom: calc(var(--frame-inset) + 16px);
+  z-index: 3;
+  max-width: min(46rem, calc(100% - 520px));
+  margin: 0;
+  padding: 4px 8px;
+  background: rgba(251, 246, 234, 0.92);
+  border: 1px solid var(--hair);
+  font: italic 400 13px/1.35 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.stage[data-panel-open] .credit {
+  max-width: calc(100% - var(--panel-width) - 120px);
+}
+
+/* MapLibre controls in A's frame language, clear of the panel and insets. */
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left {
+  bottom: max(0px, calc(var(--safe-bottom) - var(--frame-inset)));
+}
+
+.stage[data-panel-open] .maplibregl-ctrl-bottom-right {
+  right: var(--panel-width);
+}
+
+.maplibregl-ctrl-group {
+  border-radius: 0;
+  border: 1px solid var(--ink);
+  background: var(--sheet);
+  box-shadow: none;
+}
+
+.maplibregl-ctrl-group button {
+  width: 40px;
+  height: 40px;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--hair);
+}
+
+.maplibregl-ctrl-attrib {
+  background: rgba(251, 246, 234, 0.92);
+  font: 12px/1.4 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--ink-2);
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  max-width: calc(100vw - 32px - var(--safe-left) - var(--safe-right));
+}
+
+/* ------------------------------------------------------- Shared controls */
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  border-color: var(--hair);
+}
+
+.icon-button[aria-expanded='true'] {
+  background: var(--paper-2);
+  border-color: var(--hair);
+}
+
+.icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: 700 15px/1 var(--font-sc);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--paper-2);
+}
+
+.button--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--sheet);
+}
+
+.button--primary:hover {
+  background: var(--accent);
+  filter: brightness(1.08);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--hair);
+  border-radius: 2px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: 400 16px/1.4 var(--font-serif);
+}
+
+.input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 8px;
+  font: 700 14px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--hair);
+}
+
+/* Projector text: Atkinson has no small caps, so small-caps labels use capitals. */
+:root[data-text='projector'] .section-label,
+:root[data-text='projector'] .button,
+:root[data-text='projector'] .place-panel__eyebrow,
+:root[data-text='projector'] .place-panel__facts dt,
+:root[data-text='projector'] .place-panel__facts-title,
+:root[data-text='projector'] .timeline__current-era,
+:root[data-text='projector'] .timeline__era-label {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+:root[data-text='projector'] body {
+  font-variant-numeric: normal;
+}
+
+/* ------------------------------------------- No WebGL, no JS: the list */
+
+.territories {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: 24px max(16px, var(--safe-right)) max(32px, var(--safe-bottom))
+    max(16px, var(--safe-left));
+}
+
+.territories h2 {
+  font: 700 26px/1.2 var(--font-serif);
+}
+
+.territories ul {
+  columns: 3 14ch;
+  padding-left: 1.1em;
+  font-size: 15px;
+}
+
+/* The atlas covers the list unless the map cannot be drawn. */
+:root[data-webgl='none'] body.atlas-page {
+  overflow: auto;
+}
+
+:root[data-webgl='none'] .atlas {
+  position: relative;
+  height: auto;
+  min-height: 100dvh;
+  grid-template-rows: auto minmax(60svh, 1fr);
+}
+
+/* -------------------------------------------- Landing and 404 pages */
+
+.landing {
+  min-height: 100%;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(24px, var(--safe-top)) max(16px, var(--safe-right))
+    max(24px, var(--safe-bottom)) max(16px, var(--safe-left));
+}
+
+.landing__inner {
+  width: min(46rem, 100%);
+  padding: 28px clamp(18px, 4vw, 40px);
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.landing__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 700 21px/1 var(--font-sc);
+  letter-spacing: 0.06em;
+}
+
+.landing__title {
+  margin: 18px 0 8px;
+  font: 700 clamp(28px, 5vw, 40px) / 1.1 var(--font-serif);
+}
+
+.landing__lede {
+  margin: 0 0 18px;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.landing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.year-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: lining-nums;
+}
+
+.landing__more {
+  margin: 18px 0 0;
+}
+
+/* ------------------------------------------------------------- Phone */
+
+@media (max-width: 699px) {
+  :root {
+    --frame-inset: 8px;
+  }
+
+  body {
+    font-size: 16px;
+  }
+
+  .topbar {
+    padding-top: calc(var(--safe-top) + 6px);
+  }
+
+  .frame::before {
+    display: none;
+  }
+
+  .credit,
+  .maplibregl-ctrl-group {
+    display: none;
+  }
+
+  /* The bottom sheet covers the bottom corners: attribution moves to the top. */
+  .maplibregl-ctrl-bottom-right {
+    top: 0;
+    bottom: auto;
+  }
+
+  .stage[data-panel-open] .maplibregl-ctrl-bottom-right {
+    right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .topbar,
+  .maplibregl-control-container,
+  .focus-tools {
+    display: none;
+  }
+}

@@ -7,7 +7,7 @@ import {
   MAX_RESULTS,
   normalizeSearchText,
   paddingOffset,
-  PlaceOption,
+  type PlaceOption,
   placeOptionsFromFeatures,
   searchPlaces,
 } from '../places';
@@ -121,10 +121,10 @@ describe('feature bounds', () => {
   it('keeps the place clear of the panel and top bar', () => {
     expect(
       focusPadding({ width: 1280, height: 720, topbarBottom: 120 }),
-    ).toEqual({ top: 144, right: 72, bottom: 56, left: 424 });
-    const phone = focusPadding({ width: 390, height: 800, topbarBottom: 110 });
+    ).toEqual({ top: 152, right: 464, bottom: 56, left: 48 });
+    const phone = focusPadding({ width: 390, height: 800, topbarBottom: 0 });
     expect(phone.left).toBe(24);
-    expect(phone.bottom).toBeGreaterThan(400);
+    expect(phone.bottom).toBeGreaterThan(380);
     // Never leaves less than a sliver of map to frame into.
     const tiny = focusPadding({ width: 300, height: 200, topbarBottom: 150 });
     expect(tiny.left + tiny.right).toBeLessThanOrEqual(220);
@@ -133,7 +133,7 @@ describe('feature bounds', () => {
 
   it('offsets the camera toward the open part of the map', () => {
     expect(
-      paddingOffset({ top: 144, right: 72, bottom: 56, left: 424 }),
-    ).toEqual([176, 44]);
+      paddingOffset({ top: 152, right: 464, bottom: 56, left: 48 }),
+    ).toEqual([-208, 48]);
   });
 });

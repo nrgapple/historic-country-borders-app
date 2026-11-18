@@ -1,0 +1,71 @@
+---
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '../styles/global.css';
+import {
+  generateCanonicalUrl,
+  generatePageTitle,
+  SEO_CONFIG,
+  STRUCTURED_DATA,
+} from '../lib/seo';
+import { PROJECTOR_TEXT_BOOT } from '../atlas/settings';
+
+interface Props {
+  /** Page title without the site name; omit for the default site title. */
+  title?: string;
+  description?: string;
+  /** Canonical path, e.g. "/year/1492". */
+  path: string;
+  noindex?: boolean;
+  /** Sets the UI accent before hydration (era of the map year). */
+  era?: string;
+  preload?: { href: string; as: string; type?: string }[];
+  bodyClass?: string;
+}
+const {
+  title,
+  description = SEO_CONFIG.defaultDescription,
+  path,
+  noindex = false,
+  era = 'medieval',
+  preload = [],
+  bodyClass,
+} = Astro.props;
+const pageTitle = generatePageTitle(title);
+const canonical = generateCanonicalUrl(path);
+---
+<!doctype html>
+<html lang="en" data-era={era}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SEO_CONFIG.siteName} />
+    <meta property="og:locale" content={SEO_CONFIG.locale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={SEO_CONFIG.defaultOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A hand-coloured historical atlas map with a timeline of eras" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content={SEO_CONFIG.themeColor} />
+    <!-- Light-only design: stop browsers from auto-darkening the page (§2.3). -->
+    <meta name="color-scheme" content="only light" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <script is:inline set:html={PROJECTOR_TEXT_BOOT} />
+    {preload.map((p) => <link rel="preload" href={p.href} as={p.as} type={p.type} crossorigin="anonymous" />)}
+    <script type="application/ld+json" set:html={JSON.stringify(STRUCTURED_DATA)} />
+  </head>
+  <body class={bodyClass}>
+    <slot />
+  </body>
+</html>

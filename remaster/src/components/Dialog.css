@@ -1,0 +1,271 @@
+/* Native <dialog>: modal dialogs as framed sheets, settings as an anchored
+   panel under the toolbar (non-modal, so the map stays visible). */
+
+.dialog {
+  padding: 0;
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  background-color: var(--sheet);
+  color: var(--ink);
+  max-width: calc(100vw - 32px - var(--safe-left) - var(--safe-right));
+}
+
+.dialog--modal {
+  width: min(36rem, 100%);
+  max-height: min(85dvh, 760px);
+}
+
+.dialog--modal::backdrop {
+  background: rgba(42, 32, 23, 0.35);
+}
+
+.dialog--panel {
+  position: absolute;
+  inset: auto;
+  top: calc(100% + 10px);
+  right: max(16px, var(--safe-right));
+  z-index: 30;
+  width: 22rem;
+  max-height: calc(100dvh - 200px);
+  margin: 0;
+  overflow: auto;
+  box-shadow: 0 10px 24px -14px rgba(42, 32, 23, 0.55);
+}
+
+.dialog__inner {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px 20px;
+  border-bottom: 3px double var(--ink);
+}
+
+.dialog__title {
+  margin: 0;
+  font: 700 22px/1.2 var(--font-sc);
+  letter-spacing: 0.04em;
+}
+
+.dialog__body {
+  overflow: auto;
+  padding: 14px 20px calc(18px + var(--safe-bottom) * 0);
+}
+
+.dialog__lede {
+  margin: 0 0 12px;
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.about__section h3 {
+  margin: 18px 0 6px;
+  font: 700 14px/1.2 var(--font-sc);
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+}
+
+.about__section p {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.link-list {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.shortcuts {
+  margin: 0;
+}
+
+.shortcuts__row {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--hair);
+}
+
+.shortcuts dd {
+  margin: 0;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  margin-right: 4px;
+  padding: 1px 5px;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  font: 500 14px/1.3 var(--font-serif);
+  text-align: center;
+}
+
+/* Settings and feedback fields */
+.field {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+}
+
+.field:disabled {
+  opacity: 0.55;
+}
+
+.field--inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 4px;
+  padding: 0;
+  font: 700 15px/1.3 var(--font-sc);
+  letter-spacing: 0.06em;
+}
+
+.field__hint {
+  margin: 2px 0 0;
+  font: italic 400 14px/1.35 var(--font-serif);
+  color: var(--ink-2);
+}
+
+.field__value {
+  font-variant-numeric: lining-nums;
+}
+
+.field__optional {
+  font: italic 400 14px/1 var(--font-serif);
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+.switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  border: 1px solid var(--ink);
+  border-radius: 13px;
+  background: var(--paper-2);
+  cursor: pointer;
+}
+
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sheet);
+  border: 1px solid var(--ink);
+  transition: transform 0.15s;
+}
+
+.switch:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.switch:checked::after {
+  transform: translateX(18px);
+}
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--ink);
+}
+
+.segmented__option {
+  flex: 1;
+  position: relative;
+}
+
+.segmented__option + .segmented__option {
+  border-left: 1px solid var(--ink);
+}
+
+.segmented__option input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.segmented__option span {
+  display: block;
+  padding: 8px 6px;
+  text-align: center;
+  font: 500 15px/1.2 var(--font-serif);
+}
+
+.segmented__option input:checked + span {
+  background: var(--accent);
+  color: var(--sheet);
+  font-weight: 700;
+}
+
+.segmented__option input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.feedback textarea {
+  resize: vertical;
+}
+
+.form-error {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  background: var(--alert-wash);
+  color: var(--alert-ink);
+  border-left: 3px solid var(--alert-ink);
+}
+
+.feedback__done p {
+  margin-top: 0;
+}
+
+@media (max-width: 699px) {
+  .dialog--panel {
+    position: fixed;
+    top: auto;
+    left: max(8px, var(--safe-left));
+    right: max(8px, var(--safe-right));
+    bottom: max(8px, var(--safe-bottom));
+    width: auto;
+    max-height: 70dvh;
+  }
+}

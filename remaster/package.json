@@ -13,7 +13,7 @@
     "tokens": "node scripts/build-tokens.mjs",
     "dev": "yarn data && astro dev",
     "build": "yarn data && yarn tokens --check && astro build",
-    "preview": "node scripts/serve.mjs dist 4400",
+    "preview": "node scripts/serve.mjs dist 4410",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test"
