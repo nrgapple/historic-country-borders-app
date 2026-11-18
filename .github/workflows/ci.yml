@@ -115,7 +115,10 @@ jobs:
       - run: yarn remaster:build
       - run: yarn remaster:type-check
       - run: yarn remaster:test
-      - run: yarn --cwd remaster playwright install --with-deps chromium firefox webkit
+      # The remaster pins its own Playwright; `yarn --cwd remaster playwright`
+      # resolves the root app's older one and installs the wrong browsers.
+      - run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
+        working-directory: remaster
       - run: yarn remaster:test:e2e
       - name: Upload remaster browser-test artifacts
         if: failure()
