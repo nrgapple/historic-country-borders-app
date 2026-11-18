@@ -13,12 +13,10 @@ import {
   addMarkers,
   addRelief,
   applyDynamic,
-  attachNeatline,
   attachPaperGrain,
   createStyle,
   INTERACTIVE_LAYERS,
   LOW_POWER_DROPS_GRAIN,
-  LOW_POWER_SIMPLE_NEATLINE,
   labelTerritories,
   landPolygons,
   resolveLowPower,
@@ -134,27 +132,12 @@ export function mountMap(container: HTMLElement): MapHandle {
   map.on('styleimagemissing', () => addMarkers(map));
   map.once('style.load', () => addMarkers(map));
 
-  // T6's degree-ladder neatline (a single rule on phones and in low power)
-  // and the paper grain over the map frame, dropped in low power.
+  // Paper grain over the map frame, dropped in low power. The degree-ladder
+  // neatline and its coordinate labels were removed with the graticule.
   const cleanups: Array<() => void> = [];
   const frame = container.parentElement ?? container;
-  const neatline = document.createElementNS(
-    'http://www.w3.org/2000/svg',
-    'svg',
-  );
-  neatline.setAttribute('class', 'neatline');
-  neatline.setAttribute('aria-hidden', 'true');
-  frame.append(neatline);
-  cleanups.push(() => neatline.remove());
   const phone = () =>
     window.matchMedia?.('(max-width: 699px)').matches ?? false;
-  cleanups.push(
-    attachNeatline(
-      map,
-      neatline,
-      () => phone() || (lowPower && LOW_POWER_SIMPLE_NEATLINE),
-    ),
-  );
   if (!(lowPower && LOW_POWER_DROPS_GRAIN))
     cleanups.push(attachPaperGrain(frame));
   container.dataset.lowPower = String(lowPower);

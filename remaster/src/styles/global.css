@@ -186,7 +186,9 @@ body.atlas-page {
   }
 }
 
-@media (max-height: 520px) {
+/* Narrow and short screens: the sources move to the map's (i) control and
+   About, as on phones, so the strip never wraps over the map key. */
+@media (max-width: 1100px), (max-height: 520px) {
   .credit {
     display: none;
   }
@@ -475,11 +477,23 @@ body.atlas-page .territories {
 
 /* ------------------------------------------------------------- Phone */
 
-@media (max-width: 699px) {
+/* Phones, tablets and short landscape screens: the map runs edge to edge
+   under the header, with no paper margin or double rule around it. */
+@media (max-width: 1100px), (max-height: 520px) {
   :root {
-    --frame-inset: 8px;
+    --frame-inset: 0px;
   }
 
+  .frame {
+    border: 0;
+  }
+
+  .frame::before {
+    display: none;
+  }
+}
+
+@media (max-width: 699px) {
   body {
     font-size: 16px;
   }

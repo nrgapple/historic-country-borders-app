@@ -10,10 +10,8 @@ import {
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import pa from '../data/pa.json';
 import {
-  attachNeatline,
   attachPaperGrain,
   LOW_POWER_DROPS_GRAIN,
-  LOW_POWER_SIMPLE_NEATLINE,
   resolveLowPower,
 } from '../adapters/mapStyle';
 import { trackEvent } from '../lib/analytics';
@@ -160,23 +158,6 @@ export function mountPaMap(container: HTMLElement): MapHandle {
 
   const cleanups: Array<() => void> = [];
   const frame = container.parentElement ?? container;
-  const neatline = document.createElementNS(
-    'http://www.w3.org/2000/svg',
-    'svg',
-  );
-  neatline.setAttribute('class', 'neatline');
-  neatline.setAttribute('aria-hidden', 'true');
-  frame.append(neatline);
-  cleanups.push(() => neatline.remove());
-  const phone = () =>
-    window.matchMedia?.('(max-width: 699px)').matches ?? false;
-  cleanups.push(
-    attachNeatline(
-      map,
-      neatline,
-      () => phone() || (lowPower && LOW_POWER_SIMPLE_NEATLINE),
-    ),
-  );
   if (!(lowPower && LOW_POWER_DROPS_GRAIN))
     cleanups.push(attachPaperGrain(frame));
   container.dataset.lowPower = String(lowPower);

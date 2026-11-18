@@ -87,8 +87,9 @@
   left: calc(var(--frame-inset) + 12px);
   z-index: 4;
   width: min(340px, calc(100% - 2 * var(--frame-inset) - 24px));
-  /* Room for the open map key below it (bottom left). */
-  max-height: calc(100% - 2 * var(--frame-inset) - 300px);
+  /* Room for the open map key below it (bottom left), but never less than
+     the toggle itself: on short landscape phones it collapsed to a line. */
+  max-height: max(52px, calc(100% - 2 * var(--frame-inset) - 300px));
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;

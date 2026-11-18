@@ -414,13 +414,43 @@
   }
 }
 
-/* Short landscape screens (phones, small projectors at low resolution). */
+/* Short landscape screens (phones, small projectors at low resolution):
+   one header row so the map keeps the height, and slim era bands. */
 @media (max-height: 520px) {
   .timeline__eras {
-    display: none;
+    height: 18px;
+  }
+
+  .timeline__era-label {
+    font-size: 11px;
+  }
+
+  .timeline__ruler {
+    margin-top: 4px;
+  }
+
+  .timeline__labels {
+    height: 18px;
+    margin-top: 4px;
+  }
+
+  .timeline__label {
+    font-size: 13px;
   }
 
   .timeline__current-value {
-    font-size: 34px;
+    font-size: 30px;
+  }
+
+  .timeline__current-range {
+    display: none;
+  }
+}
+
+@media (max-height: 520px) and (min-width: 600px) {
+  .timeline__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'lead step trail';
+    row-gap: 0;
   }
 }

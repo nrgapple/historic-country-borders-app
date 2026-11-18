@@ -99,8 +99,15 @@ export const createStyle = ({
   origin,
   settings,
   lowPower,
-}: StyleOptions): StyleSpecification =>
-  classicAtlasStyle(origin, {}, styleOptions(settings, lowPower));
+}: StyleOptions): StyleSpecification => {
+  const style = classicAtlasStyle(origin, {}, styleOptions(settings, lowPower));
+  // The owner dropped the graticule: students do not read coordinates, and
+  // the lines made the map harder to read (2026-11-18).
+  return {
+    ...style,
+    layers: style.layers.filter((layer) => layer.id !== LAYER.graticule),
+  };
+};
 
 /**
  * Applies settings and the selection to a live map: paint and layout only,
