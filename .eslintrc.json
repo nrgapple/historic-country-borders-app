@@ -8,6 +8,7 @@
     "out/",
     "playwright-report/",
     "public/",
+    "remaster-spike/",
     "test-results/"
   ],
   "rules": {

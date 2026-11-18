@@ -1,0 +1,28 @@
+---
+import 'maplibre-gl/dist/maplibre-gl.css';
+import '../styles/global.css';
+interface Props { title: string; description: string; path: string; preload?: { href: string; as: string; type?: string }[] }
+const { title, description, path, preload = [] } = Astro.props;
+const canonical = new URL(path, 'https://historicborders.app').href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content="https://historicborders.app/og-image.png" />
+    <meta name="theme-color" content="#F6F3EC" />
+    <meta name="color-scheme" content="only light" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    {preload.map((p) => <link rel="preload" href={p.href} as={p.as} type={p.type} crossorigin="anonymous" />)}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
