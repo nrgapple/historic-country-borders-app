@@ -108,6 +108,11 @@ const FONTSTACKS = {
     use: 'Projector text: state names (uppercase plus letter-spacing)',
     primary: face('atkinson-hyperlegible-next', 700),
   },
+  'Literata Italic': {
+    group: 'textbook',
+    use: 'Modern textbook map style: sea, river and ruins names',
+    primary: face('literata', 400, 'italic'),
+  },
 };
 
 /** Web fonts for the page itself, grouped by the CSS file that declares them. */
@@ -159,6 +164,13 @@ const UI_FACES = {
       ...face('atkinson-hyperlegible-next', 700),
     },
   ],
+  // "Modern textbook" map style: Literata for the year, titles and reading
+  // text. Its Atkinson faces come from projector.css, loaded with it.
+  textbook: [
+    { family: 'Literata', ...face('literata', 400) },
+    { family: 'Literata', ...face('literata', 400, 'italic') },
+    { family: 'Literata', ...face('literata', 600) },
+  ],
 };
 
 /** The published CSS files, relative to public/fonts. */
@@ -166,6 +178,7 @@ const CSS_FILES = {
   default: 'atlas.css',
   map: 'map-aliases.css',
   projector: 'projector.css',
+  textbook: 'textbook.css',
 };
 
 /**

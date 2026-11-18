@@ -36,6 +36,8 @@ const budgets = {
   fontTotal: 1100 * 1024,
   defaultLatinFonts: 240 * 1024,
   projectorLatinFonts: 64 * 1024,
+  // Literata 400, 400 italic and 600 for the Modern textbook map style.
+  textbookLatinFonts: 72 * 1024,
 };
 
 /**
@@ -256,11 +258,17 @@ const latinFontBytes = (group) =>
     .reduce((total, file) => total + bytes(path.join(ROOT, 'out', file)), 0);
 const defaultLatinFonts = latinFontBytes('default');
 const projectorLatinFonts = latinFontBytes('projector');
+const textbookLatinFonts = latinFontBytes('textbook');
 enforce('Default UI Latin fonts', defaultLatinFonts, budgets.defaultLatinFonts);
 enforce(
   'Projector UI Latin fonts',
   projectorLatinFonts,
   budgets.projectorLatinFonts,
+);
+enforce(
+  'Textbook UI Latin fonts',
+  textbookLatinFonts,
+  budgets.textbookLatinFonts,
 );
 
 // The remaster is gated whenever it has been built (P5 adds the PA trees).
@@ -287,7 +295,7 @@ const summary = [
   `- Deployable files in ${path.relative(ROOT, deployDirectory)}/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
   `- Glyph PBFs: ${glyphSizes.length} files / ${budgets.glyphFiles}; ${formatKiB(glyphTotal)} total / ${formatKiB(budgets.glyphTotal)}; ${formatKiB(glyphLargest)} largest / ${formatKiB(budgets.glyphLargest)}`,
   ...remasterLines,
-  `- WOFF2 fonts: ${fontSizes.length} files / ${budgets.fontFiles}; ${formatKiB(fontTotal)} total / ${formatKiB(budgets.fontTotal)}; Latin UI ${formatKiB(defaultLatinFonts)} default / ${formatKiB(budgets.defaultLatinFonts)}, ${formatKiB(projectorLatinFonts)} projector / ${formatKiB(budgets.projectorLatinFonts)}`,
+  `- WOFF2 fonts: ${fontSizes.length} files / ${budgets.fontFiles}; ${formatKiB(fontTotal)} total / ${formatKiB(budgets.fontTotal)}; Latin UI ${formatKiB(defaultLatinFonts)} default / ${formatKiB(budgets.defaultLatinFonts)}, ${formatKiB(projectorLatinFonts)} projector / ${formatKiB(budgets.projectorLatinFonts)}, ${formatKiB(textbookLatinFonts)} textbook / ${formatKiB(budgets.textbookLatinFonts)}`,
 ];
 
 console.log(summary.slice(2).join('\n'));

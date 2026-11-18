@@ -709,8 +709,15 @@ describe('contract', () => {
 
   it('matches T3’s glyph manifest: URL, and every text-font a published single stack', () => {
     expect(GLYPHS_URL).toBe(fontManifest.glyphs.url);
+    // Every Classic stack (default and projector groups); the remaster's
+    // Modern textbook style adds its own group ('textbook').
     expect(Object.values(FONTSTACK).sort()).toEqual(
-      Object.keys(fontManifest.glyphs.fontstacks).sort(),
+      Object.entries(
+        fontManifest.glyphs.fontstacks as Record<string, { group: string }>,
+      )
+        .filter(([, stack]) => stack.group !== 'textbook')
+        .map(([name]) => name)
+        .sort(),
     );
     const variants: Parameters<typeof opts>[0][] = [
       {},

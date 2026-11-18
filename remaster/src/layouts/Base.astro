@@ -8,6 +8,7 @@ import {
   STRUCTURED_DATA,
 } from '../lib/seo';
 import { PROJECTOR_TEXT_BOOT } from '../atlas/settings';
+import { THEME_DEFAULTS, themeBootScript, type ThemeScope } from '../atlas/theme';
 import { FONT_CSS } from '../adapters/glyphs';
 
 interface Props {
@@ -23,6 +24,11 @@ interface Props {
   bodyClass?: string;
   /** Map pages also load T3's fontstack aliases (combining-mark clusters). */
   mapPage?: boolean;
+  /**
+   * Whose map-style choice and default apply (src/atlas/theme.ts): the year
+   * pages ('atlas', Classic atlas) or the Pennsylvania map ('pa', Modern textbook).
+   */
+  themeScope?: ThemeScope;
 }
 const {
   title,
@@ -33,12 +39,13 @@ const {
   preload = [],
   bodyClass,
   mapPage = false,
+  themeScope = 'atlas',
 } = Astro.props;
 const pageTitle = generatePageTitle(title);
 const canonical = generateCanonicalUrl(path);
 ---
 <!doctype html>
-<html lang="en" data-era={era}>
+<html lang="en" data-era={era} data-theme={THEME_DEFAULTS[themeScope]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -68,6 +75,8 @@ const canonical = generateCanonicalUrl(path);
     <link rel="stylesheet" href={FONT_CSS.default} />
     {mapPage && <link rel="stylesheet" href={FONT_CSS.map} />}
     <script is:inline set:html={PROJECTOR_TEXT_BOOT} />
+    <!-- The stored map style, before first paint (no flash of the other theme). -->
+    <script is:inline set:html={themeBootScript(themeScope)} />
     {preload.map((p) => <link rel="preload" href={p.href} as={p.as} type={p.type} crossorigin="anonymous" />)}
     <script type="application/ld+json" set:html={JSON.stringify(STRUCTURED_DATA)} />
   </head>

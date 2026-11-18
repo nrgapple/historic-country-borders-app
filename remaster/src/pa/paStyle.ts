@@ -1,5 +1,8 @@
 /**
- * The Pennsylvania school-district map in Direction A's paper and ink (P5).
+ * The Pennsylvania school-district map (P5), in either map style: Direction
+ * A's paper and ink, or Direction B's textbook pastels (the page default;
+ * see src/atlas/theme.ts). Both styles have the same layers in the same
+ * order, so a switch only sets paint and layout (`applyPaOptions`).
  *
  * Sources:
  * - `pa-basemap`: T8's street basemap (docs/PA_BASEMAP.md), z0–12 with z14
@@ -26,13 +29,24 @@ import type {
   StyleSpecification,
 } from 'maplibre-gl';
 import pa from '../data/pa.json';
-import { COLOR, WASHES } from '../styles/tokens';
+import {
+  COLOR,
+  TEXTBOOK_COLOR,
+  TEXTBOOK_LINE_STRONG,
+  TEXTBOOK_MAP_ACCENT,
+  TEXTBOOK_WASHES,
+  WASHES,
+  type ThemeId,
+} from '../styles/tokens';
 import { FONTSTACK, GLYPHS_URL } from '../adapters/glyphs';
 import type { Settings } from '../atlas/settings';
+import { applyLayerProperties } from '../lib/styleDiff';
+import { TEXTBOOK_MARKER } from '../adapters/textbookStyle';
+import { districtEdge, districtFill } from './palette';
 import {
   edgeColour,
   fillColour,
-  HATCH_IMAGE,
+  hatchImageId,
   NO_FOOTBALL_FILTER,
   SECOND_LINE,
 } from './colourBy';
@@ -63,7 +77,11 @@ export const PA_LAYER = {
   roadHighway: 'road-highway',
   county: 'county-line',
   state: 'state-line',
+  /** Modern textbook: the selection hatch over the district's own tint. */
+  selectedHatch: 'district-selected-hatch',
   districtBand: 'district-band',
+  /** Modern textbook: a white casing under each district border. */
+  districtCasing: 'district-casing',
   districtBorder: 'district-border',
   selectedBand: 'district-selected-band',
   selectedLine: 'district-selected-line',
@@ -108,7 +126,7 @@ export const BASEMAP_ATTRIBUTION = pa.basemap.attribution;
 export const DISTRICT_ATTRIBUTION =
   'Districts: <a href="https://www.pasda.psu.edu/" target="_blank" rel="noreferrer">PASDA / PennDOT</a>';
 
-/* ---- Palette (Direction A tokens; nothing new in CSS) -------------------- */
+/* ---- Palette (each theme's tokens; nothing new in CSS) -------------------- */
 
 /** Per-channel sRGB mix of two #RRGGBB colours; `t` is the share of `b`. */
 export const mix = (a: string, b: string, t: number) => {
@@ -123,7 +141,30 @@ export const mix = (a: string, b: string, t: number) => {
     .join('')}`;
 };
 
-export const PA_COLOR = {
+export interface PaColors {
+  paper: string;
+  water: string;
+  waterLine: string;
+  waterInk: string;
+  minorRoad: string;
+  majorCasing: string;
+  majorFill: string;
+  highwayCasing: string;
+  highwayFill: string;
+  /** Highway route numbers ("I 76"). */
+  highwayInk: string;
+  county: string;
+  state: string;
+  border: string;
+  accent: string;
+  selectedFill: string;
+  selectedInk: string;
+  ink: string;
+  ink2: string;
+  halo: string;
+}
+
+const CLASSIC_COLORS: PaColors = {
   paper: COLOR.land,
   water: COLOR.water,
   waterLine: '#7FA3A3',
@@ -135,6 +176,7 @@ export const PA_COLOR = {
   /** Highways in gamboge, the old road-atlas yellow; madder stays the selection. */
   highwayCasing: WASHES[2].edge,
   highwayFill: WASHES[2].fill,
+  highwayInk: WASHES[2].edge,
   county: COLOR.ink2,
   state: COLOR.ink,
   border: COLOR.ink,
@@ -144,7 +186,41 @@ export const PA_COLOR = {
   ink: COLOR.ink,
   ink2: COLOR.ink2,
   halo: 'rgba(247, 240, 222, 0.92)',
-} as const;
+};
+
+/**
+ * Modern textbook: a crisp present-day street map. White streets with cool
+ * grey casings, sunflower highways, light-blue water, and the district
+ * pastels thin enough that every street name stays readable.
+ */
+const TEXTBOOK_COLORS: PaColors = {
+  paper: '#F7F6F2',
+  water: TEXTBOOK_COLOR.water,
+  waterLine: '#6FAFD0',
+  waterInk: TEXTBOOK_COLOR.waterInk,
+  minorRoad: '#B4BEC8',
+  majorCasing: TEXTBOOK_LINE_STRONG,
+  majorFill: '#FFFFFF',
+  highwayCasing: TEXTBOOK_WASHES[2].edge,
+  highwayFill: TEXTBOOK_WASHES[2].fill,
+  // The sunflower edge is 3.9:1 on white; route numbers use a darker cut.
+  highwayInk: '#7A5E0E',
+  county: TEXTBOOK_COLOR.ink2,
+  state: TEXTBOOK_COLOR.ink,
+  border: TEXTBOOK_COLOR.ink,
+  accent: TEXTBOOK_MAP_ACCENT,
+  selectedFill: TEXTBOOK_COLOR.selectedFill,
+  selectedInk: TEXTBOOK_MAP_ACCENT,
+  ink: TEXTBOOK_COLOR.ink,
+  ink2: TEXTBOOK_COLOR.ink2,
+  halo: 'rgba(255, 255, 255, 0.95)',
+};
+
+export const paColors = (theme: ThemeId): PaColors =>
+  theme === 'textbook' ? TEXTBOOK_COLORS : CLASSIC_COLORS;
+
+/** The Classic palette (kept for callers that predate the second theme). */
+export const PA_COLOR = CLASSIC_COLORS;
 
 /* ---- Options ------------------------------------------------------------- */
 
@@ -152,7 +228,12 @@ export interface PaStyleOptions {
   settings: Settings;
   /** Selected district id (feature id and label `id`), or null. */
   selectedId: number | null;
+  /** Map style; Classic when omitted. */
+  theme?: ThemeId;
 }
+
+const themeOf = (o: PaStyleOptions): ThemeId => o.theme ?? 'classic';
+const textbook = (o: PaStyleOptions) => themeOf(o) === 'textbook';
 
 const isSelected: Expr = ['boolean', ['feature-state', 'selected'], false];
 const zoom: Expr = ['zoom'];
@@ -172,15 +253,19 @@ const scaleOf = (s: Settings) =>
 const size = (s: Settings, px: number) =>
   round(Math.max(MIN_LABEL_PX, px * scaleOf(s)));
 
-const fonts = (s: Settings) =>
-  s.projectorText
+const fonts = (s: Settings, theme: ThemeId = 'classic') =>
+  s.projectorText || theme === 'textbook'
     ? {
         districts: FONTSTACK.projectorMedium,
         selected: FONTSTACK.projectorBold,
         city: FONTSTACK.projectorBold,
         town: FONTSTACK.projectorMedium,
         place: FONTSTACK.projectorMedium,
-        italic: FONTSTACK.projectorMedium,
+        // Modern textbook sets water in Literata Italic, unless Projector text.
+        italic:
+          theme === 'textbook' && !s.projectorText
+            ? FONTSTACK.textbookItalic
+            : FONTSTACK.projectorMedium,
         street: FONTSTACK.projectorMedium,
       }
     : {
@@ -194,9 +279,16 @@ const fonts = (s: Settings) =>
         street: FONTSTACK.city,
       };
 
-/** The mock's 62 % wash at the default 0.7, then halved so streets read through. */
-export const districtFillOpacity = (s: Settings) =>
-  round(clamp(s.countryOpacity, 0.1, 1) * (0.62 / 0.7) * 0.55);
+/**
+ * The mock's 62 % wash at the default 0.7, then halved so streets read
+ * through. B's pastels are brighter, so they are thinned a little more.
+ */
+export const districtFillOpacity = (s: Settings, theme: ThemeId = 'classic') =>
+  round(
+    clamp(s.countryOpacity, 0.1, 1) *
+      (0.62 / 0.7) *
+      (theme === 'textbook' ? 0.5 : 0.55),
+  );
 
 /**
  * A data colouring must read at a glance, so it is drawn stronger: 0.8 at the
@@ -205,22 +297,14 @@ export const districtFillOpacity = (s: Settings) =>
 export const thematicFillOpacity = (s: Settings) =>
   round(clamp(clamp(s.countryOpacity, 0.1, 1) * (0.8 / 0.7), 0.1, 0.92));
 
-const washFill: Expr = [
-  'match',
-  ['get', 'c'],
-  ...WASHES.flatMap((w, i) => [i, w.fill]),
-  WASHES[0].fill,
-] as unknown as Expr;
-const washEdge: Expr = [
-  'match',
-  ['get', 'c'],
-  ...WASHES.flatMap((w, i) => [i, w.edge]),
-  WASHES[0].edge,
-] as unknown as Expr;
-
 const borderWidth = (s: Settings): Expr => {
   const k = clamp(s.borderThickness, 0, 4) / 2;
   return ramp(5, round(0.5 * k), 9, round(1 * k), 13, round(1.8 * k));
+};
+/** B's white casing under each border. */
+const casingWidth = (s: Settings): Expr => {
+  const k = clamp(s.borderThickness, 0, 4) / 2;
+  return ramp(5, round(1.4 * k), 9, round(2.4 * k), 13, round(3.6 * k));
 };
 const selectedWidth = (s: Settings): Expr => {
   const k = Math.max(1, clamp(s.borderThickness, 0, 4) / 2);
@@ -243,8 +327,12 @@ const selectedLabel = (o: PaStyleOptions): Expr =>
  */
 export const dynamicProperties = (o: PaStyleOptions) => {
   const s = o.settings;
-  const f = fonts(s);
-  const upper = s.textCase === 'upper' || s.projectorText;
+  const theme = themeOf(o);
+  const b = textbook(o);
+  const c = paColors(theme);
+  const f = fonts(s, theme);
+  // Modern textbook sets district names in capitals, like its state names.
+  const upper = s.textCase === 'upper' || s.projectorText || textbook(o);
   // Zoom must be the outermost input, so the selection is decided per stop.
   const sel = selectedLabel(o);
   const byArea = (small: number, mid: number, large: number) => [
@@ -265,7 +353,9 @@ export const dynamicProperties = (o: PaStyleOptions) => {
     ['case', sel, size(s, 21), byArea(15, 17, 19)] as unknown as number,
   );
   const mode = s.paColourBy;
-  const thematic = fillColour(mode);
+  const thematic = fillColour(mode, theme);
+  const washFill = districtFill(theme);
+  const washEdge = districtEdge(theme);
   const second = mode === 'default' ? null : SECOND_LINE[mode];
   // From z8 a coloured map adds the value under each name: "6A", "District III".
   const nameField = second
@@ -288,20 +378,21 @@ export const dynamicProperties = (o: PaStyleOptions) => {
   return {
     [PA_LAYER.districtFill]: {
       paint: {
-        // A data colouring keeps its colour when selected; the outline marks it.
-        'fill-color': thematic ?? [
-          'case',
-          isSelected,
-          PA_COLOR.selectedFill,
-          washFill,
-        ],
+        // A data colouring keeps its colour when selected; the outline marks
+        // it. A marks a plain selection with its madder wash; B keeps the
+        // district's own tint under the selection hatch.
+        'fill-color':
+          thematic ??
+          (b ? washFill : ['case', isSelected, c.selectedFill, washFill]),
         'fill-opacity': thematic
           ? thematicFillOpacity(s)
           : [
               'case',
               isSelected,
-              round(Math.min(1, districtFillOpacity(s) + 0.35)),
-              districtFillOpacity(s),
+              round(
+                Math.min(1, districtFillOpacity(s, theme) + (b ? 0.1 : 0.35)),
+              ),
+              districtFillOpacity(s, theme),
             ],
       },
     },
@@ -309,7 +400,7 @@ export const dynamicProperties = (o: PaStyleOptions) => {
       layout: { visibility: mode === 'football' ? 'visible' : 'none' },
     },
     [PA_LAYER.districtBand]: {
-      paint: { 'line-color': edgeColour(mode) ?? washEdge },
+      paint: { 'line-color': edgeColour(mode, theme) ?? washEdge },
     },
     [PA_LAYER.piaaLabels]: {
       layout: {
@@ -319,7 +410,15 @@ export const dynamicProperties = (o: PaStyleOptions) => {
       },
     },
     [PA_LAYER.districtBorder]: {
-      paint: { 'line-width': borderWidth(s) },
+      paint: {
+        'line-width': borderWidth(s),
+        // A: an ink line; B: each district's own darker hue (of its data
+        // colour while "Colour districts by" is on), over a white casing.
+        'line-color': b ? (edgeColour(mode, theme) ?? washEdge) : c.border,
+      },
+    },
+    [PA_LAYER.districtCasing]: {
+      paint: { 'line-width': casingWidth(s) },
     },
     [PA_LAYER.selectedLine]: {
       paint: { 'line-width': selectedWidth(s) },
@@ -336,7 +435,7 @@ export const dynamicProperties = (o: PaStyleOptions) => {
         ],
         'text-size': districtSize,
         'text-transform': upper ? 'uppercase' : 'none',
-        'text-letter-spacing': upper ? 0.08 : 0.04,
+        'text-letter-spacing': textbook(o) ? 0.04 : upper ? 0.08 : 0.04,
         'symbol-sort-key': [
           'case',
           selectedLabel(o),
@@ -347,8 +446,10 @@ export const dynamicProperties = (o: PaStyleOptions) => {
       paint: {
         // The madder ink is too dark on a data colouring's darkest steps.
         'text-color': thematic
-          ? PA_COLOR.ink
-          : ['case', selectedLabel(o), PA_COLOR.selectedInk, PA_COLOR.ink],
+          ? c.ink
+          : ['case', selectedLabel(o), c.selectedInk, c.ink],
+        'text-halo-color': c.halo,
+        'text-halo-width': textbook(o) ? 2 : 1.8,
       },
       // Without "show labels" only the selected district keeps its name.
       filter: s.showLabels ? null : selectedLabel(o),
@@ -426,13 +527,18 @@ const placeVisible: Expr = [
   ['get', 'min_zoom'],
   ['+', zoom, 1],
 ] as unknown as Expr;
-const halo = {
-  'text-halo-color': PA_COLOR.halo,
-  'text-halo-width': 1.6,
-  'text-halo-blur': 0.4,
-};
-
 export function paLayers(o: PaStyleOptions): LayerSpecification[] {
+  const theme = themeOf(o);
+  const PA_COLOR = paColors(theme);
+  const b = textbook(o);
+  const vis = (on: boolean) => (on ? 'visible' : 'none');
+  const halo = {
+    'text-halo-color': PA_COLOR.halo,
+    'text-halo-width': b ? 1.8 : 1.6,
+    'text-halo-blur': b ? 0 : 0.4,
+  };
+  const washFill = districtFill(theme);
+  const washEdge = districtEdge(theme);
   const layers: Array<Record<string, unknown>> = [
     {
       id: PA_LAYER.paper,
@@ -450,7 +556,20 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       type: 'fill',
       ...dist,
       filter: NO_FOOTBALL_FILTER,
-      paint: { 'fill-pattern': HATCH_IMAGE },
+      paint: { 'fill-pattern': hatchImageId(theme) },
+    },
+    {
+      id: PA_LAYER.selectedHatch,
+      type: 'fill',
+      ...dist,
+      layout: { visibility: vis(b) },
+      paint: {
+        'fill-pattern': TEXTBOOK_MARKER.selectedHatch,
+        // Feature-state, not a filter: a selection never re-tiles the
+        // districts. Lighter than on the world map: a selected district
+        // fills the screen at street zoom and its streets must stay legible.
+        'fill-opacity': ['case', isSelected, 0.4, 0],
+      },
     },
     {
       id: PA_LAYER.water,
@@ -587,7 +706,7 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       type: 'line',
       ...dist,
       minzoom: 7,
-      layout: { 'line-join': 'round' },
+      layout: { 'line-join': 'round', visibility: vis(!b) },
       paint: {
         'line-width': ramp(7, 2, 12, 6),
         // Tile rings (geojson-vt via vt-pbf) put the inside on the right: positive is inward.
@@ -600,7 +719,7 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       id: PA_LAYER.selectedBand,
       type: 'line',
       ...dist,
-      layout: { 'line-join': 'round' },
+      layout: { 'line-join': 'round', visibility: vis(!b) },
       paint: {
         'line-color': PA_COLOR.accent,
         'line-width': ramp(5, 4, 12, 12),
@@ -609,11 +728,19 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       },
     },
     {
+      id: PA_LAYER.districtCasing,
+      type: 'line',
+      ...dist,
+      layout: { 'line-join': 'round', visibility: vis(b) },
+      paint: { 'line-color': '#FFFFFF' },
+    },
+    {
+      // A: an ink line; B: the district's own darker hue over the white casing.
       id: PA_LAYER.districtBorder,
       type: 'line',
       ...dist,
       layout: { 'line-join': 'round' },
-      paint: { 'line-color': PA_COLOR.border, 'line-opacity': 0.75 },
+      paint: { 'line-opacity': b ? 0.9 : 0.75 },
     },
     {
       id: PA_LAYER.selectedLine,
@@ -677,7 +804,7 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
         'symbol-spacing': 420,
         'text-padding': 6,
       },
-      paint: { 'text-color': PA_COLOR.highwayCasing, ...halo },
+      paint: { 'text-color': PA_COLOR.highwayInk, ...halo },
     },
     {
       id: PA_LAYER.waterLabels,
@@ -750,11 +877,11 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       layout: {
         'text-field': ['get', 'name'],
         'text-max-width': 8,
-        // Roman capitals, spaced: the atlas convention for cities.
-        'text-transform': 'uppercase',
-        'text-letter-spacing': 0.12,
+        // A: roman capitals, spaced (the atlas convention); B: bold sans.
+        'text-transform': b ? 'none' : 'uppercase',
+        'text-letter-spacing': b ? 0.02 : 0.12,
       },
-      paint: { 'text-color': PA_COLOR.ink2, ...halo },
+      paint: { 'text-color': b ? PA_COLOR.ink : PA_COLOR.ink2, ...halo },
     },
     {
       id: PA_LAYER.regions,
@@ -777,10 +904,6 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       layout: {
         'text-max-width': 7,
         'text-padding': 4,
-      },
-      paint: {
-        'text-halo-color': PA_COLOR.halo,
-        'text-halo-width': 1.8,
       },
     },
     {
@@ -826,7 +949,7 @@ export function createPaStyle(
 ): StyleSpecification {
   return {
     version: 8,
-    name: 'Historic Borders: Pennsylvania school districts (Classic atlas)',
+    name: `Historic Borders: Pennsylvania school districts (${textbook(o) ? 'Modern textbook' : 'Classic atlas'})`,
     glyphs: `${origin}${GLYPHS_URL}`,
     sources: {
       [PA_SOURCE.basemap]: {
@@ -863,19 +986,21 @@ export function createPaStyle(
   };
 }
 
-/** Applies settings and the selected label to a live map without re-tiling. */
+/**
+ * Applies the theme, settings and the selected label to a live map without
+ * re-tiling: every layer's paint, layout and filter for `o`, resetting what
+ * only the other theme sets (src/lib/styleDiff.ts).
+ */
 export function applyPaOptions(map: MapLibreMap, o: PaStyleOptions) {
-  for (const [id, props] of Object.entries(dynamicProperties(o))) {
-    if (!map.getLayer(id)) continue;
-    for (const [name, value] of Object.entries(props.layout ?? {}))
-      map.setLayoutProperty(id, name as never, value as never);
-    for (const [name, value] of Object.entries(props.paint ?? {}))
-      map.setPaintProperty(id, name as never, value as never);
-    if ('filter' in props) map.setFilter(id, (props.filter ?? null) as never);
-  }
+  const other: ThemeId = textbook(o) ? 'classic' : 'textbook';
+  applyLayerProperties(map, paLayers(o), [paLayers({ ...o, theme: other })]);
+  // A built layer has no filter key when none applies; clear it explicitly.
+  for (const [id, props] of Object.entries(dynamicProperties(o)))
+    if ('filter' in props && map.getLayer(id))
+      map.setFilter(id, (props.filter ?? null) as never);
 }
 
 /** Every fontstack the style can request (for T3's checkStyleFontstacks). */
-export const paFontstacks = (s: Settings) => [
-  ...new Set(Object.values(fonts(s))),
+export const paFontstacks = (s: Settings, theme: ThemeId = 'classic') => [
+  ...new Set(Object.values(fonts(s, theme))),
 ];

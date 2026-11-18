@@ -48,6 +48,11 @@
   --accent-on-wash: var(--era-medieval-on-wash);
   --font-serif: "Alegreya", "Historic Borders Scripts", Georgia, serif;
   --font-sc: "Alegreya SC", "Alegreya", "Historic Borders Scripts", Georgia, serif;
+  /* The year, titles and reading text; B sets Literata here. */
+  --font-display: var(--font-serif);
+  --line-strong: #2A2017;
+  --map-accent: #8B2A2A;
+  --on-accent: #FBF6EA;
   --panel-width: 420px;
   --frame-inset: 14px;
   /* Safe areas (§2.2). WebKit tests set --test-inset-* because env() cannot be injected. */
@@ -83,10 +88,64 @@
   --accent-on-wash: var(--era-modern-on-wash);
 }
 
-/* "Projector text" setting: Atkinson Hyperlegible Next for every UI string. */
+/* Direction B, "Modern textbook" (Settings → Map style), set on <html data-theme>. */
+:root[data-theme='textbook'] {
+  --paper: #FFFFFF;
+  --paper-2: #F3F5F7;
+  --sheet: #FFFFFF;
+  --ink: #14202B;
+  --ink-2: #47535F;
+  --hair: #D3DAE1;
+  --focus: #F2A900;
+  --water: #BCDDEB;
+  --water-ink: #1A5675;
+  --land: #F4F1EA;
+  --selected-fill: #D6E4F5;
+  --selected-ink: #1B5CA6;
+  --alert-wash: #FCE8E6;
+  --alert-ink: #8F2A1E;
+  --era-prehistory: #8C5300;
+  --era-prehistory-wash: #F7EBD9;
+  --era-prehistory-on-wash: #8C5300;
+  --era-ancient: #B0362A;
+  --era-ancient-wash: #F8E3E0;
+  --era-ancient-on-wash: #B0362A;
+  --era-medieval: #1B5CA6;
+  --era-medieval-wash: #E2ECF8;
+  --era-medieval-on-wash: #1B5CA6;
+  --era-early-modern: #23743A;
+  --era-early-modern-wash: #E0F1E4;
+  --era-early-modern-on-wash: #23743A;
+  --era-modern: #94335F;
+  --era-modern-wash: #F6E3EC;
+  --era-modern-on-wash: #94335F;
+  --wash-0: #F6B9A6;
+  --wash-1: #B4DDA4;
+  --wash-2: #F5D77E;
+  --wash-3: #C8BCEB;
+  --wash-4: #9FD7D3;
+  --wash-5: #F3B3C8;
+  --wash-6: #E9CBA1;
+  --wash-7: #D2E79A;
+  --wash-8: #F8C590;
+  --wash-9: #B3CBEF;
+  --wash-10: #E3BFE3;
+  --wash-11: #CFE3C4;
+  --font-serif: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
+  --font-sc: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
+  --font-display: "Literata", "Historic Borders Scripts", Georgia, serif;
+  --line-strong: #9AA6B2;
+  --map-accent: #1B5CA6;
+  --on-accent: #FFFFFF;
+  /* No plate frame: the map runs to the edges of the stage. */
+  --frame-inset: 0px;
+}
+
+/* "Projector text" setting: Atkinson Hyperlegible Next for every UI string (after B, so it wins). */
 :root[data-text='projector'] {
   --font-serif: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
   --font-sc: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
+  --font-display: "Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif;
 }
 
 /* Breakpoints (not usable in @media; documented for CSS authors):

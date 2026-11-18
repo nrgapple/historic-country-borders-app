@@ -16,7 +16,8 @@ import {
   type ScaleBar,
 } from '../lib/scaleBar';
 import { eraOf, formatYear } from '../lib/years';
-import { COLOR, ERA_TINTS, type EraId } from '../styles/tokens';
+import { useAtlas } from '../atlas/store';
+import { THEME_TOKENS, type EraId, type ThemeId } from '../styles/tokens';
 import type { ColourLegend } from '../pa/colourBy';
 import './MapKey.css';
 
@@ -86,9 +87,11 @@ export default function MapKeySlot({
   underSheet = false,
   legend: pageLegend = null,
 }: MapKeyProps) {
+  const theme = useAtlas((s) => s.theme);
+  const { color: COLOR, eraTints } = THEME_TOKENS[theme];
   const era = year === undefined ? null : eraOf(year);
   const accent = era
-    ? (ERA_TINTS[era.id as EraId]?.ink ?? COLOR.ink)
+    ? (eraTints[era.id as EraId]?.ink ?? COLOR.ink)
     : COLOR.ink;
   const title =
     plate ??
@@ -125,26 +128,26 @@ export default function MapKeySlot({
     if (!map) return;
     const readLegend = () => {
       if (!openRef.current) return;
-      const next = legendEntries(drawnClasses(map, lowPower));
+      const next = legendEntries(drawnClasses(map, lowPower), theme);
       setLegend((prev) => (legendKey(prev) === legendKey(next) ? prev : next));
     };
     const stop = watchMapKey(map, setView, readLegend);
     readLegend();
     return stop;
-  }, [map, lowPower]);
+  }, [map, lowPower, theme]);
 
   // Opening the key: read the legend now (the map may already be idle),
   // fetch the globe's land the first time, and let labels move clear of it.
   useEffect(() => {
     if (open && map) {
-      const next = legendEntries(drawnClasses(map, lowPower));
+      const next = legendEntries(drawnClasses(map, lowPower), theme);
       setLegend((prev) => (legendKey(prev) === legendKey(next) ? prev : next));
     }
     if (open && !land) void loadGlobeLand().then(setLand);
     if (!onLayout) return;
     const frame = requestAnimationFrame(() => onLayout());
     return () => cancelAnimationFrame(frame);
-  }, [open, map, lowPower, land, onLayout]);
+  }, [open, map, lowPower, land, onLayout, theme]);
 
   // The globe follows `view`, which changes only on moveend.
   useEffect(() => {
@@ -165,7 +168,7 @@ export default function MapKeySlot({
         accent,
       },
     );
-  }, [view, land, open, accent]);
+  }, [view, land, open, accent, COLOR]);
 
   const toggle = () => {
     const next = !open;
@@ -214,7 +217,7 @@ export default function MapKeySlot({
           <ul className="map-key__legend" aria-label="Legend">
             {legend.map((entry) => (
               <li key={entry.id} className="map-key__item">
-                <LegendSymbol entry={entry} />
+                <LegendSymbol entry={entry} theme={theme} />
                 <span>{entry.label}</span>
               </li>
             ))}
@@ -329,9 +332,16 @@ function PageLegend({ legend }: { legend: ColourLegend }) {
   );
 }
 
-/** The legend's symbol, drawn like T6's map marker of the same class. */
-function LegendSymbol({ entry }: { entry: LegendEntry }) {
+/** The legend's symbol, drawn like the theme's map marker of the same class. */
+function LegendSymbol({
+  entry,
+  theme,
+}: {
+  entry: LegendEntry;
+  theme: ThemeId;
+}) {
   const { symbol } = entry;
+  const { color: COLOR } = THEME_TOKENS[theme];
   if (symbol.kind === 'swatch') {
     return (
       <span
@@ -355,7 +365,16 @@ function LegendSymbol({ entry }: { entry: LegendEntry }) {
       height="20"
       aria-hidden="true"
     >
-      {symbol.image === MARKER.capital ? (
+      {symbol.image === MARKER.capital && theme === 'textbook' ? (
+        // B's capital: an ink star with a white keyline (the selected
+        // territory's capital is the same star in the map accent).
+        <path
+          d="M10 1.8l2.3 5.3 5.7.5-4.3 3.8 1.3 5.6L10 14l-5 3 1.3-5.6L2 7.6l5.7-.5z"
+          fill={COLOR.ink}
+          stroke={COLOR.sheet}
+          strokeWidth="1.4"
+        />
+      ) : symbol.image === MARKER.capital ? (
         <>
           <circle
             cx="10"

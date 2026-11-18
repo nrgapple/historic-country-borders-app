@@ -11,6 +11,7 @@ All type is self-hosted under the SIL Open Font License 1.1. The map makes no fo
 | `/fonts/atlas.css`                                | `@font-face` rules for the default UI: Alegreya, Alegreya SC, Alegreya Sans, Historic Borders Scripts | revalidate                          |
 | `/fonts/map-aliases.css`                          | Alias faces named after the five default map fontstacks (see "Grapheme clusters")                     | revalidate                          |
 | `/fonts/projector.css`                            | Atkinson Hyperlegible Next UI faces and the two Atkinson map aliases                                  | revalidate                          |
+| `/fonts/textbook.css`                             | Literata UI faces and the Literata Italic map alias (Modern textbook map style)                       | revalidate                          |
 | `/fonts/files/<subset>.<sha256:10>.woff2`         | Content-hashed WOFF2 files                                                                            | immutable                           |
 | `/fonts/licenses/LICENSE-<font>.txt`              | One OFL 1.1 copy per font family                                                                      | revalidate                          |
 | `/glyphs/<buildId>/<fontstack>/<start>-<end>.pbf` | SDF glyph ranges; `<buildId>` is a hash of every PBF, so a rebuild changes every URL                  | immutable, `application/x-protobuf` |
@@ -31,6 +32,9 @@ Use **exactly** these strings, each as a **single-element** `text-font` array. A
 | `Alegreya Regular`                  | City, capital and site names                                  | 400 normal    | default   |
 | `Atkinson Hyperlegible Next Medium` | Projector text: water, cities and small labels                | 500 normal    | projector |
 | `Atkinson Hyperlegible Next Bold`   | Projector text: state names, in uppercase plus letter-spacing | 700 normal    | projector |
+| `Literata Italic`                   | Modern textbook: sea, river and ruins names                   | 400 italic    | textbook  |
+
+The Modern textbook map style (`remaster/src/adapters/textbookStyle.ts`) uses the two Atkinson stacks for state, district and city names and `Literata Italic` for water; it never requests an Alegreya stack. One Literata stack keeps the glyph budget: the mock's Literata Medium Italic seas and Atkinson ExtraBold large states are drawn with Literata Italic and Atkinson Bold.
 
 Each stack is its primary font, then a Noto Sans subset (same weight and style), then Noto Sans Cherokee, Noto Sans Canadian Aboriginal and Noto Sans Osage. Atkinson has no italic stack, following plan §2.1 ("Atkinson (Medium/Bold)"). Projector water names are therefore upright. If T6 wants italic water in projector mode, add `Atkinson Hyperlegible Next Medium Italic` to `FONTSTACKS` in `scripts/lib/map-fonts.js` and rebuild; that adds 13 files.
 
@@ -77,6 +81,9 @@ Without a CSS face named after the stack, the browser draws those clusters in a 
 | `Alegreya Sans`              | 500, 700                                                                     | `atlas.css`     |
 | `Historic Borders Scripts`   | Noto Sans subset 400/700; Noto Sans Cherokee, Canadian Aboriginal, Osage 400 | `atlas.css`     |
 | `Atkinson Hyperlegible Next` | 400, 400 italic, 500, 700                                                    | `projector.css` |
+| `Literata`                   | 400, 400 italic, 600                                                         | `textbook.css`  |
+
+`projector.css` and `textbook.css` load only while Projector text or the Modern textbook map style is on; an inline head script adds them before first paint (`remaster/src/atlas/theme.ts`, `settings.ts`).
 
 Suggested tokens: `--font-text: 'Alegreya', 'Historic Borders Scripts', Georgia, serif;` and `--font-sc: 'Alegreya SC', 'Historic Borders Scripts', Georgia, serif;`. Projector text swaps in `'Atkinson Hyperlegible Next', 'Historic Borders Scripts', system-ui, sans-serif`. Every face uses `font-display: swap`.
 
@@ -84,7 +91,7 @@ Suggested tokens: `--font-text: 'Alegreya', 'Historic Borders Scripts', Georgia,
 
 ### Bytes
 
-Measured on build `4085cf4e0756`. The 2026-11-18 rebuild `cdf13ca70db8`, after the historical names were normalized to NFC and U+FFFD removed, publishes 7 stacks × 12 ranges (84 PBFs, 2,227,586 bytes raw; the `65280-65535` range is gone) and 52 WOFF2 files (817,640 bytes).
+Measured on build `4085cf4e0756`. The 2026-11-18 rebuild `b785b3de646d` adds `Literata Italic` and Literata's UI faces for the Modern textbook map style: 8 stacks × 12 ranges (96 PBFs, 2,628,010 bytes raw) and 64 WOFF2 files (974,752 bytes). Every PBF of the seven earlier stacks is byte-identical to `cdf13ca70db8`; only the build directory moved. The earlier rebuild `cdf13ca70db8`, after the historical names were normalized to NFC and U+FFFD removed, publishes 7 stacks × 12 ranges (84 PBFs, 2,227,586 bytes raw; the `65280-65535` range is gone) and 52 WOFF2 files (817,640 bytes).
 
 | What                                                                     | Files | Bytes                                                     |
 | ------------------------------------------------------------------------ | ----: | --------------------------------------------------------- |
@@ -100,7 +107,7 @@ Measured on build `4085cf4e0756`. The 2026-11-18 rebuild `cdf13ca70db8`, after t
 
 Per stack, the 13 ranges total 363–382 KB raw for the five Alegreya stacks and 186–194 KB for Atkinson. Brotli-5 shrinks them to 108–117 KB and 62–65 KB. A page fetches only the ranges of the characters it draws.
 
-`yarn size:check` enforces these budgets: at most 160 glyph files, 3 MiB of glyphs, 128 KiB per PBF, 80 WOFF2 files, 1,100 KiB of WOFF2, 240 KiB of default Latin UI fonts and 64 KiB of projector Latin UI fonts.
+`yarn size:check` enforces these budgets: at most 160 glyph files, 3 MiB of glyphs, 128 KiB per PBF, 80 WOFF2 files, 1,100 KiB of WOFF2, 240 KiB of default Latin UI fonts, 64 KiB of projector Latin UI fonts and 72 KiB of textbook (Literata) Latin UI fonts (62 KiB on `b785b3de646d`).
 
 ## Coverage
 
@@ -163,6 +170,7 @@ Every font is under the SIL Open Font License 1.1. The OFL allows bundling, subs
 | Alegreya, Alegreya SC                          | Copyright 2011 The Alegreya Project Authors (Huerta Tipográfica)                       | `@fontsource/alegreya`, `@fontsource/alegreya-sc` 5.3.0 |
 | Alegreya Sans                                  | Copyright 2013 The Alegreya Sans Project Authors (Huerta Tipográfica)                  | `@fontsource/alegreya-sans` 5.3.0                       |
 | Atkinson Hyperlegible Next                     | Copyright 2020-2024 The Atkinson Hyperlegible Next Project Authors (Braille Institute) | `@fontsource/atkinson-hyperlegible-next` 5.3.0          |
+| Literata                                       | Copyright 2017 The Literata Project Authors (TypeTogether for Google)                  | `@fontsource/literata` 5.3.0                            |
 | Noto Sans                                      | Copyright 2022 The Noto Project Authors                                                | `google/fonts` @ `7af0d90`, subset by the build         |
 | Noto Sans Cherokee, Canadian Aboriginal, Osage | Copyright 2022 The Noto Project Authors                                                | `@fontsource/noto-sans-*` 5.3.0                         |
 

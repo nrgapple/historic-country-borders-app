@@ -22,13 +22,20 @@ export const FONTSTACK = {
   /** "Projector text": requested only while the setting is on. */
   projectorMedium: 'Atkinson Hyperlegible Next Medium',
   projectorBold: 'Atkinson Hyperlegible Next Bold',
+  /** "Modern textbook" water and ruins names; requested only in that style. */
+  textbookItalic: 'Literata Italic',
 } as const;
 
-/** UI and map-alias CSS (docs/FONTS.md): default on every page, map on map pages, projector on demand. */
+/**
+ * UI and map-alias CSS (docs/FONTS.md): default on every page, map on map
+ * pages, projector with Projector text or Modern textbook, textbook
+ * (Literata) with Modern textbook only.
+ */
 export const FONT_CSS = fonts.css as {
   default: string;
   map: string;
   projector: string;
+  textbook: string;
 };
 
 /** Each family's OFL license file, for the About dialog. */

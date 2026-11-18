@@ -10,7 +10,19 @@ import { APP } from './lib.mjs';
 const tokens = await import(
   pathToFileURL(path.join(APP, 'src/styles/tokens.ts')).href
 );
-const { COLOR, ERA_TINTS, WASHES, FONT, LAYOUT } = tokens;
+const {
+  COLOR,
+  ERA_TINTS,
+  WASHES,
+  FONT,
+  LAYOUT,
+  TEXTBOOK_COLOR,
+  TEXTBOOK_ERA_TINTS,
+  TEXTBOOK_WASHES,
+  TEXTBOOK_FONT,
+  TEXTBOOK_LINE_STRONG,
+  TEXTBOOK_MAP_ACCENT,
+} = tokens;
 
 const kebab = (s) => s.replace(/([a-z])([A-Z0-9])/g, '$1-$2').toLowerCase();
 const lines = [];
@@ -36,6 +48,11 @@ out('  --accent-wash: var(--era-medieval-wash);');
 out('  --accent-on-wash: var(--era-medieval-on-wash);');
 out(`  --font-serif: ${FONT.serif};`);
 out(`  --font-sc: ${FONT.smallCaps};`);
+out('  /* The year, titles and reading text; B sets Literata here. */');
+out('  --font-display: var(--font-serif);');
+out(`  --line-strong: ${COLOR.ink};`);
+out(`  --map-accent: ${ERA_TINTS.medieval.ink};`);
+out(`  --on-accent: ${COLOR.sheet};`);
 out(`  --panel-width: ${LAYOUT.panelWidth}px;`);
 out(`  --frame-inset: ${LAYOUT.frameInset}px;`);
 out(
@@ -56,11 +73,34 @@ for (const era of Object.keys(ERA_TINTS)) {
 }
 out();
 out(
-  '/* "Projector text" setting: Atkinson Hyperlegible Next for every UI string. */',
+  '/* Direction B, "Modern textbook" (Settings → Map style), set on <html data-theme>. */',
+);
+out(":root[data-theme='textbook'] {");
+for (const [k, v] of Object.entries(TEXTBOOK_COLOR))
+  out(`  --${kebab(k)}: ${v};`);
+for (const [era, t] of Object.entries(TEXTBOOK_ERA_TINTS)) {
+  out(`  --era-${era}: ${t.ink};`);
+  out(`  --era-${era}-wash: ${t.wash};`);
+  out(`  --era-${era}-on-wash: ${t.onWash};`);
+}
+TEXTBOOK_WASHES.forEach((w, i) => out(`  --wash-${i}: ${w.fill};`));
+out(`  --font-serif: ${TEXTBOOK_FONT.ui};`);
+out(`  --font-sc: ${TEXTBOOK_FONT.ui};`);
+out(`  --font-display: ${TEXTBOOK_FONT.display};`);
+out(`  --line-strong: ${TEXTBOOK_LINE_STRONG};`);
+out(`  --map-accent: ${TEXTBOOK_MAP_ACCENT};`);
+out('  --on-accent: #FFFFFF;');
+out('  /* No plate frame: the map runs to the edges of the stage. */');
+out('  --frame-inset: 0px;');
+out('}');
+out();
+out(
+  '/* "Projector text" setting: Atkinson Hyperlegible Next for every UI string (after B, so it wins). */',
 );
 out(":root[data-text='projector'] {");
 out(`  --font-serif: ${FONT.projector};`);
 out(`  --font-sc: ${FONT.projector};`);
+out(`  --font-display: ${FONT.projector};`);
 out('}');
 out();
 out(`/* Breakpoints (not usable in @media; documented for CSS authors):

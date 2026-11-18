@@ -13,6 +13,7 @@ import {
   PA_LAYER,
   PA_SOURCE,
 } from '../paStyle';
+import { districtFill, districtPalette } from '../palette';
 
 const require = createRequire(import.meta.url);
 const { checkStyleFontstacks } = require(
@@ -169,5 +170,77 @@ describe('Pennsylvania Classic-atlas style', () => {
     expect(
       props('football')[PA_LAYER.districtLabels].paint!['text-color'],
     ).toBe(PA_COLOR.ink);
+  });
+});
+
+describe('Pennsylvania Modern-textbook style', () => {
+  const both = (
+    changes: Partial<Settings> = {},
+    selectedId: number | null = null,
+    origin = '',
+  ) =>
+    (['classic', 'textbook'] as const).map((theme) =>
+      createPaStyle(origin, {
+        settings: { ...DEFAULT_SETTINGS, ...changes },
+        selectedId,
+        theme,
+      }),
+    );
+  const layer = (style: ReturnType<typeof styleFor>, id: string) =>
+    style.layers.find((l) => l.id === id)!;
+  const visibility = (style: ReturnType<typeof styleFor>, id: string) =>
+    (layer(style, id).layout as { visibility?: string } | undefined)
+      ?.visibility ?? 'visible';
+
+  it('is valid, with the same layers as Classic, in every settings combination', () => {
+    for (const changes of [{}, { projectorText: true }, { showLabels: false }])
+      for (const selected of [null, 3]) {
+        const [a, b] = both(changes, selected);
+        expect(
+          validateStyleMin(both(changes, selected, 'http://127.0.0.1')[1]),
+        ).toEqual([]);
+        expect(checkStyleFontstacks(b, manifest)).toEqual([]);
+        expect(b.layers.map((l) => l.id)).toEqual(a.layers.map((l) => l.id));
+      }
+  });
+
+  it('keeps the street basemap: streets, highways and names stay visible in B', () => {
+    const [, b] = both();
+    for (const id of [
+      PA_LAYER.roadMinor,
+      PA_LAYER.roadMajor,
+      PA_LAYER.roadHighway,
+      PA_LAYER.streetLabels,
+      PA_LAYER.roadLabels,
+      PA_LAYER.towns,
+    ])
+      expect(visibility(b, id)).toBe('visible');
+    // The district wash stays thin enough for the streets under it.
+    expect(
+      districtFillOpacity(DEFAULT_SETTINGS, 'textbook'),
+    ).toBeLessThanOrEqual(districtFillOpacity(DEFAULT_SETTINGS, 'classic'));
+  });
+
+  it('marks the selection with a hatch and casing in B, A’s band in Classic', () => {
+    const [a, b] = both({}, 3);
+    expect(visibility(b, PA_LAYER.selectedHatch)).toBe('visible');
+    expect(visibility(b, PA_LAYER.districtCasing)).toBe('visible');
+    expect(visibility(b, PA_LAYER.districtBand)).toBe('none');
+    expect(visibility(a, PA_LAYER.selectedHatch)).toBe('none');
+    expect(visibility(a, PA_LAYER.districtBand)).toBe('visible');
+  });
+
+  it('takes district fills from the one theme-aware palette', () => {
+    const [a, b] = both();
+    const fill = (s: typeof a) =>
+      JSON.stringify(
+        (layer(s, PA_LAYER.districtFill).paint as Record<string, unknown>)[
+          'fill-color'
+        ],
+      );
+    expect(fill(b)).toContain(JSON.stringify(districtFill('textbook')));
+    expect(fill(a)).toContain(JSON.stringify(districtFill('classic')));
+    expect(districtPalette('textbook').fills).toHaveLength(12);
+    expect(districtPalette('textbook').fills[0]).toBe('#F6B9A6');
   });
 });

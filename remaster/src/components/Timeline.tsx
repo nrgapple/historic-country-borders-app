@@ -363,7 +363,9 @@ export default function Timeline({
               <span className="timeline__current-era">
                 {displayYear !== undefined && (
                   <>
-                    {eraOf(displayYear).label}
+                    <span className="timeline__current-era-name">
+                      {eraOf(displayYear).label}
+                    </span>
                     <span className="timeline__current-range">
                       {ERA_RANGES[eraOf(displayYear).id]}
                     </span>

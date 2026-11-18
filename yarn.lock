@@ -817,6 +817,11 @@
   resolved "https://registry.yarnpkg.com/@fontsource/atkinson-hyperlegible-next/-/atkinson-hyperlegible-next-5.3.0.tgz#0a0c50ac9012f5fae793b40ddbc01b51d0812cd9"
   integrity sha512-8p1tHVoPDo6oYwSO3sMw5snGwFwSf3TmeSF9Gcj792GXdsg6oqvhoItbj6Hj/XZIk0Xs+Cwu6pkLBAl3Q5HrwA==
 
+"@fontsource/literata@5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/literata/-/literata-5.3.0.tgz#ce7bc310e8b605ce39db005e969321ab3867ed68"
+  integrity sha512-9JGMT5+YfBK49thoMq9ASaMRJErHT4V4QuMhAEwKHRLreOsIMP2xP6ZRLhPJ0e6YlET+kjWTJuN7LAxt9/gWGQ==
+
 "@fontsource/noto-sans-canadian-aboriginal@5.3.0":
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/@fontsource/noto-sans-canadian-aboriginal/-/noto-sans-canadian-aboriginal-5.3.0.tgz#e030ec767f7580d8dddbc7002c5559dcaf1d251c"

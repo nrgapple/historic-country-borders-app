@@ -10,6 +10,8 @@ export type { Overlay };
 
 export const useSettings = () => ({
   settings: useAtlas((s) => s.settings),
+  theme: useAtlas((s) => s.theme),
+  setTheme: actions.setTheme,
   updateSettings: actions.updateSettings as (
     changes: Partial<Settings>,
   ) => void,

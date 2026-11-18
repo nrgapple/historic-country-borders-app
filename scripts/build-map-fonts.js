@@ -307,7 +307,9 @@ async function build() {
   // as the CSS family, so these keep those glyphs in the same fonts. Faces are
   // declared fallback-first because, for overlapping unicode-ranges, the
   // browser tries the last declared face first.
-  const aliasRules = { default: [], projector: [] };
+  const aliasRules = Object.fromEntries(
+    Object.keys(CSS_FILES).map((group) => [group, []]),
+  );
   const chainFiles = {};
   for (const [name, chain] of Object.entries(chains)) {
     const { weight, style } = sniffedFace(name);
@@ -347,6 +349,11 @@ async function build() {
         'Projector text: Atkinson Hyperlegible Next UI faces and map alias faces.',
         'Load only when the Projector text setting is on.',
       ]) + `${[...uiRules.projector, ...aliasRules.projector].join('\n\n')}\n`,
+    [CSS_FILES.textbook]:
+      header([
+        'Modern textbook map style: Literata UI faces and map alias faces.',
+        'Load only while the Modern textbook map style is on (with projector.css).',
+      ]) + `${[...uiRules.textbook, ...aliasRules.textbook].join('\n\n')}\n`,
   };
   for (const [file, text] of Object.entries(css))
     fs.writeFileSync(path.join(PUBLIC_FONTS, file), text);

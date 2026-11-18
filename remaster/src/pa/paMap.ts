@@ -14,6 +14,7 @@ import {
   LOW_POWER_DROPS_GRAIN,
   resolveLowPower,
 } from '../adapters/mapStyle';
+import { addTextbookImages } from '../adapters/textbookStyle';
 import { trackEvent } from '../lib/analytics';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding } from '../lib/places';
@@ -39,7 +40,8 @@ import {
   type PaStyleOptions,
 } from './paStyle';
 import { loadDistrictIndex, type DistrictIndex } from './usePASchoolDistricts';
-import { HATCH_IMAGE, hatchImage, piaaName, ROMAN } from './colourBy';
+import { hatchImage, hatchImageId, piaaName, ROMAN } from './colourBy';
+import { THEME_IDS } from '../styles/tokens';
 import { sportsLabelLines } from './districts';
 
 setWorkerUrl(workerUrl);
@@ -131,6 +133,7 @@ export function mountPaMap(container: HTMLElement): MapHandle {
   const options = (): PaStyleOptions => ({
     settings: getState().settings,
     selectedId,
+    theme: getState().theme,
   });
 
   const map = new MapLibreMap({
@@ -150,11 +153,17 @@ export function mountPaMap(container: HTMLElement): MapHandle {
     fadeDuration: 150,
   });
   map.touchZoomRotate.disableRotation();
-  // The "no PIAA football" hatch is generated here, not loaded from a sprite.
+  // Generated images, not a sprite: Modern textbook's selection hatch and
+  // the "no PIAA football" hatch (one per theme).
   map.on('styleimagemissing', (event: { id: string }) => {
-    if (event.id === HATCH_IMAGE && !map.hasImage(HATCH_IMAGE))
-      map.addImage(HATCH_IMAGE, hatchImage(), { pixelRatio: 2 });
+    addTextbookImages(map);
+    for (const theme of THEME_IDS) {
+      const id = hatchImageId(theme);
+      if (event.id === id && !map.hasImage(id))
+        map.addImage(id, hatchImage(16, theme), { pixelRatio: 2 });
+    }
   });
+  map.once('style.load', () => addTextbookImages(map));
   map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
   // ODbL: the OpenStreetMap credit stays expanded (compact only on phones,
   // where MapLibre opens it on load and the visitor may close it).
@@ -320,7 +329,11 @@ export function mountPaMap(container: HTMLElement): MapHandle {
       container.removeAttribute('data-loaded');
       void load();
     }
-    if (state.place !== last.place || state.settings !== last.settings)
+    if (
+      state.place !== last.place ||
+      state.settings !== last.settings ||
+      state.theme !== last.theme
+    )
       setSelection();
     if (state.frame && state.frame !== last.frame) fit(state.frame.bounds);
     last = state;

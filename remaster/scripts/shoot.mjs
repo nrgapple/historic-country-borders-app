@@ -1,6 +1,9 @@
-// Screenshots of the remaster for design review against the Direction A mocks.
+// Screenshots of the remaster for design review against the design mocks.
 //   node scripts/shoot.mjs [baseUrl] [outDir]
 // Defaults: http://127.0.0.1:4410 and ../docs/product/remaster-shots.
+// THEME=classic|textbook stores that map style for both page families
+// (year pages and Pennsylvania) and suffixes each file name with it;
+// without THEME every page opens in its own default style.
 // Needs a running preview (yarn remaster:preview) and Playwright's Chromium
 // (PLAYWRIGHT_BROWSERS_PATH on the SSD).
 import fs from 'node:fs';
@@ -13,6 +16,9 @@ const out = path.resolve(
   process.argv[3] || path.join(APP, '../docs/product/remaster-shots'),
 );
 const only = process.env.ONLY ? new RegExp(process.env.ONLY) : null;
+const theme = process.env.THEME || null;
+if (theme && !['classic', 'textbook'].includes(theme))
+  throw new Error(`THEME must be classic or textbook, not ${theme}`);
 fs.mkdirSync(out, { recursive: true });
 
 const OTTOMAN = 'place=Ottoman%20Empire';
@@ -86,6 +92,15 @@ const SHOTS = [
     url: '/year/1492',
     width: 1440,
     height: 900,
+  },
+  // The year page at the PA phone size, with the same iPhone insets.
+  {
+    name: '1492-ottoman-insets-390x844',
+    url: `/year/1492?${OTTOMAN}`,
+    width: 390,
+    height: 844,
+    touch: true,
+    insets: { top: 47, bottom: 34 },
   },
   // iPhone 15 Pro with simulated insets (Chromium CDP), like the design's phone-safe shot.
   {
@@ -181,11 +196,15 @@ for (const shot of SHOTS) {
   });
   // These shots review the map; the first-visit welcome has its own
   // (scripts/shoot-welcome.mjs), so mark it as already seen.
-  await context.addInitScript(() => {
+  await context.addInitScript((style) => {
     try {
       localStorage.setItem('historic-borders-welcome:2026-remaster', 'shot');
+      if (style) {
+        localStorage.setItem('historic-borders-theme', style);
+        localStorage.setItem('historic-borders-theme:pa', style);
+      }
     } catch {}
-  });
+  }, theme);
   const page = await context.newPage();
   // Wikipedia is the only third-party request (on selection); keep shots
   // deterministic and offline with a fixed summary.
@@ -259,7 +278,7 @@ for (const shot of SHOTS) {
       }
     });
   }
-  const file = path.join(out, `${shot.name}.png`);
+  const file = path.join(out, `${shot.name}${theme ? `-${theme}` : ''}.png`);
   await page.screenshot({ path: file });
   console.log(`${shot.name}: ${path.relative(process.cwd(), file)}`);
   await context.close();

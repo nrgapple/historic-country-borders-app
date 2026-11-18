@@ -1,4 +1,6 @@
 @import './tokens.css';
+/* Direction B, "Modern textbook": shapes under :root[data-theme='textbook']. */
+@import './textbook.css';
 /* UI fonts: T3's /fonts/atlas.css, linked in the layout (docs/FONTS.md). */
 
 /* Direction A, "Classic atlas": cream paper, engraved ink, square corners.

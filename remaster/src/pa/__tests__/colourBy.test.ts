@@ -14,6 +14,9 @@ import {
   isColourBy,
   NO_FOOTBALL_FILTER,
   PA_COLOUR_PALETTES as P,
+  PA_COLOUR_PALETTES_TEXTBOOK,
+  colourPalettes,
+  hatchImageId,
   parseColourBy,
   piaaName,
 } from '../colourBy';
@@ -169,7 +172,30 @@ describe('Colour districts by', () => {
     expect(piaaName(12)).toBe('District XII');
   });
 
-  it('lists a contrast pair for every fill that carries a district name', () => {
-    expect(COLOUR_BY_CONTRAST_PAIRS).toHaveLength(6 + 1 + 12 + 6 + 1);
+  it('lists a contrast pair for every fill that carries a district name, in both map styles', () => {
+    expect(COLOUR_BY_CONTRAST_PAIRS).toHaveLength(2 * (6 + 1 + 12 + 6 + 1));
+    expect(
+      COLOUR_BY_CONTRAST_PAIRS.filter(([name]) => name.startsWith('B ')),
+    ).toHaveLength(6 + 1 + 12 + 6 + 1);
+  });
+
+  it('reads Modern textbook colours from its own palette, with the same scales', () => {
+    const B = colourPalettes('textbook');
+    expect(colourPalettes('classic')).toBe(P);
+    expect(B).toBe(PA_COLOUR_PALETTES_TEXTBOOK);
+    expect(B.football).toHaveLength(P.football.length);
+    expect(B.piaa).toHaveLength(P.piaa.length);
+    expect(B.enrollment).toHaveLength(P.enrollment.length);
+    const fill = JSON.stringify(fillColour('football', 'textbook'));
+    expect(fill).toContain(B.football[5]);
+    expect(fill).not.toContain(P.football[5]);
+    expect(hatchImageId('textbook')).not.toBe(hatchImageId('classic'));
+    const legend = colourLegend(
+      'piaa',
+      [{ f: 0, p: 3, e: 0 }],
+      undefined,
+      'textbook',
+    )!;
+    expect(legend.entries[2].fill).toBe(B.piaa[2]);
   });
 });

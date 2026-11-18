@@ -28,6 +28,7 @@ const vintage = formatVintage(index.source.vintage);
   description={`Interactive map of all ${pa.districtCount} Pennsylvania public school district boundaries, with county, intermediate unit, and career and technical school details.`}
   path="/pa/school-districts"
   era="modern"
+  themeScope="pa"
   bodyClass="atlas-page"
   mapPage
   preload={[{ href: pa.indexUrl, as: 'fetch', type: 'application/json' }]}

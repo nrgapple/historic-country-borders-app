@@ -2,8 +2,9 @@
  * "Colour districts by" for the Pennsylvania map: the modes, their palettes,
  * the MapLibre expressions that apply them, the legend and the URL parameter.
  *
- * Every colour comes from `PA_COLOUR_PALETTES`, so a second visual theme can
- * swap the palettes in one place. Every fill carries district names in ink
+ * Every colour comes from `colourPalettes(theme)`: `PA_COLOUR_PALETTES` for
+ * Classic atlas and `PA_COLOUR_PALETTES_TEXTBOOK` for Modern textbook (the
+ * page default), so each map style swaps the palettes in one place. Every fill carries district names in ink
  * (the selected name too, in bold: the madder selection ink is too dark for
  * the darkest steps, and the madder outline marks the selection), so
  * `tokens.test.ts` checks
@@ -17,7 +18,7 @@
  * - `e`: PIAA grade 9–11 enrollment of its public high schools; 0 = unknown
  */
 import type { ExpressionSpecification } from 'maplibre-gl';
-import { COLOR } from '../styles/tokens';
+import { COLOR, TEXTBOOK_COLOR, type ThemeId } from '../styles/tokens';
 
 type Expr = ExpressionSpecification;
 
@@ -61,7 +62,7 @@ export const piaaName = (n: number) => `District ${ROMAN[n - 1] ?? n}`;
  */
 export const ENROLLMENT_BREAKS = [225, 350, 500, 750, 1100] as const;
 
-/** The one palette object every mode reads. */
+/** The Classic atlas palettes (paper-toned). */
 export const PA_COLOUR_PALETTES = {
   /** 1A (light) → 6A (dark), yellow → green → blue. */
   football: ['#F4EEC4', '#D6E5B4', '#AFD4B4', '#8DC0BF', '#7CA6CC', '#7D8DCB'],
@@ -95,7 +96,58 @@ export const PA_COLOUR_PALETTES = {
   unknown: '#E2DCCD',
 } as const;
 
+type Palettes = {
+  football: readonly string[];
+  noFootball: { fill: string; hatch: string };
+  piaa: readonly string[];
+  enrollment: readonly string[];
+  unknown: string;
+};
+
+/**
+ * Modern textbook: the same scales, hue for hue, in B's brighter textbook
+ * range on a cool white ground (B's pastels for the PIAA districts, in the
+ * same order so neighbours stay apart). Ink names pass AA on every fill.
+ */
+export const PA_COLOUR_PALETTES_TEXTBOOK: Palettes = {
+  football: ['#FFF1A8', '#D8EEA0', '#A8DDB0', '#86CDCB', '#86B6E8', '#9AA3EC'],
+  noFootball: { fill: '#ECEEF1', hatch: '#8E99A6' },
+  piaa: [
+    '#F6B9A6',
+    '#B3CBEF',
+    '#D2E79A',
+    '#E3BFE3',
+    '#9FD7D3',
+    '#F5D77E',
+    '#C8BCEB',
+    '#F3B3C8',
+    '#B4DDA4',
+    '#E9CBA1',
+    '#A9DCEC',
+    '#DCC2D4',
+  ],
+  enrollment: [
+    '#F4EFFA',
+    '#E4DAF3',
+    '#D2C3EB',
+    '#BFACE2',
+    '#AD96D9',
+    '#9D84D1',
+  ],
+  unknown: '#E4E0D6',
+};
+
+/** The palettes for a map style: the one place every mode reads its colours. */
+export const colourPalettes = (theme: ThemeId = 'classic'): Palettes =>
+  theme === 'textbook' ? PA_COLOUR_PALETTES_TEXTBOOK : PA_COLOUR_PALETTES;
+
+const inkOf = (theme: ThemeId) =>
+  theme === 'textbook' ? TEXTBOOK_COLOR.ink : COLOR.ink;
+
 export const HATCH_IMAGE = 'pa-no-football';
+/** The "no PIAA football" hatch image for a map style (its hatch colour differs). */
+export const hatchImageId = (theme: ThemeId = 'classic') =>
+  theme === 'textbook' ? `${HATCH_IMAGE}-textbook` : HATCH_IMAGE;
 
 /** Per-channel sRGB mix of two #RRGGBB colours; `t` is the share of `b`. */
 const mix = (a: string, b: string, t: number) => {
@@ -109,12 +161,11 @@ const mix = (a: string, b: string, t: number) => {
     )
     .join('')}`;
 };
-/** The darker pigment of a fill, for the inner edge band. */
-export const edgeOf = (fill: string) => mix(fill, COLOR.ink, 0.38);
+/** The darker pigment of a fill: A's inner edge band, B's border line. */
+export const edgeOf = (fill: string, theme: ThemeId = 'classic') =>
+  mix(fill, inkOf(theme), 0.38);
 
-const P = PA_COLOUR_PALETTES;
-
-const enrollmentStep = (colours: readonly string[]): Expr =>
+const enrollmentStep = (colours: readonly string[], unknown: string): Expr =>
   [
     'case',
     ['>', ['coalesce', ['get', 'e'], 0], 0],
@@ -124,11 +175,15 @@ const enrollmentStep = (colours: readonly string[]): Expr =>
       colours[0],
       ...ENROLLMENT_BREAKS.flatMap((b, i) => [b, colours[i + 1]]),
     ],
-    P.unknown,
+    unknown,
   ] as unknown as Expr;
 
 /** The fill colour for a mode; `null` keeps the default washes. */
-export const fillColour = (mode: ColourBy): Expr | null => {
+export const fillColour = (
+  mode: ColourBy,
+  theme: ThemeId = 'classic',
+): Expr | null => {
+  const P = colourPalettes(theme);
   switch (mode) {
     case 'football':
       return [
@@ -145,31 +200,36 @@ export const fillColour = (mode: ColourBy): Expr | null => {
         P.unknown,
       ] as unknown as Expr;
     case 'enrollment':
-      return enrollmentStep(P.enrollment);
+      return enrollmentStep(P.enrollment, P.unknown);
     default:
       return null;
   }
 };
 
-/** The inner edge band for a mode; `null` keeps the default washes. */
-export const edgeColour = (mode: ColourBy): Expr | null => {
+/** The edge colour for a mode; `null` keeps the default washes. */
+export const edgeColour = (
+  mode: ColourBy,
+  theme: ThemeId = 'classic',
+): Expr | null => {
+  const P = colourPalettes(theme);
+  const edge = (fill: string) => edgeOf(fill, theme);
   switch (mode) {
     case 'football':
       return [
         'match',
         ['coalesce', ['get', 'f'], 0],
-        ...P.football.flatMap((c, i) => [i + 1, edgeOf(c)]),
+        ...P.football.flatMap((c, i) => [i + 1, edge(c)]),
         P.noFootball.hatch,
       ] as unknown as Expr;
     case 'piaa':
       return [
         'match',
         ['coalesce', ['get', 'p'], 0],
-        ...P.piaa.flatMap((c, i) => [i + 1, edgeOf(c)]),
-        edgeOf(P.unknown),
+        ...P.piaa.flatMap((c, i) => [i + 1, edge(c)]),
+        edge(P.unknown),
       ] as unknown as Expr;
     case 'enrollment':
-      return enrollmentStep(P.enrollment.map(edgeOf));
+      return enrollmentStep(P.enrollment.map(edge), edge(P.unknown));
     default:
       return null;
   }
@@ -193,10 +253,10 @@ export const SECOND_LINE: Record<Exclude<ColourBy, 'default'>, string> = {
 };
 
 /** The diagonal hatch image for "no football" (a 16 px tile). */
-export const hatchImage = (size = 16) => {
+export const hatchImage = (size = 16, theme: ThemeId = 'classic') => {
   const data = new Uint8Array(size * size * 4);
   const [r, g, b] = [1, 3, 5].map((i) =>
-    parseInt(P.noFootball.hatch.slice(i, i + 2), 16),
+    parseInt(colourPalettes(theme).noFootball.hatch.slice(i, i + 2), 16),
   );
   for (let y = 0; y < size; y += 1)
     for (let x = 0; x < size; x += 1) {
@@ -259,7 +319,10 @@ export const colourLegend = (
   mode: ColourBy,
   values: readonly ColourValues[],
   season?: string,
+  theme: ThemeId = 'classic',
 ): ColourLegend | null => {
+  const P = colourPalettes(theme);
+  const edgeFor = (fill: string) => edgeOf(fill, theme);
   const count = (test: (v: ColourValues) => boolean) =>
     districts(values.filter(test).length);
   switch (mode) {
@@ -274,7 +337,7 @@ export const colourLegend = (
               label: CLASS_NAMES[i],
               count: count((v) => v.f === i + 1),
               fill,
-              edge: edgeOf(fill),
+              edge: edgeFor(fill),
             }))
             .reverse(),
           {
@@ -297,7 +360,7 @@ export const colourLegend = (
             label: ROMAN[i],
             count: String(values.filter((v) => v.p === i + 1).length),
             fill,
-            edge: edgeOf(fill),
+            edge: edgeFor(fill),
           })),
           ...(values.some((v) => !v.p)
             ? [
@@ -306,7 +369,7 @@ export const colourLegend = (
                   label: 'Unknown',
                   count: String(values.filter((v) => !v.p).length),
                   fill: P.unknown,
-                  edge: edgeOf(P.unknown),
+                  edge: edgeFor(P.unknown),
                 },
               ]
             : []),
@@ -324,7 +387,7 @@ export const colourLegend = (
               label: enrollmentRangeLabel(i),
               count: count((v) => enrollmentBin(v.e) === i),
               fill,
-              edge: edgeOf(fill),
+              edge: edgeFor(fill),
             }))
             .reverse(),
           {
@@ -332,7 +395,7 @@ export const colourLegend = (
             label: 'No PIAA data',
             count: count((v) => !(v.e > 0)),
             fill: P.unknown,
-            edge: edgeOf(P.unknown),
+            edge: edgeFor(P.unknown),
           },
         ],
       };
@@ -362,16 +425,21 @@ export const colourSearch = (search: string, mode: ColourBy) => {
 
 /* ---- Contrast ------------------------------------------------------------ */
 
-/** Text-on-fill pairs that must pass WCAG AA; checked in tokens.test.ts. */
+/** Text-on-fill pairs that must pass WCAG AA (both map styles); checked in tokens.test.ts. */
 export const COLOUR_BY_CONTRAST_PAIRS: Array<
   [name: string, fg: string, bg: string]
-> = [
-  ...P.football.map((c, i) => `${CLASS_NAMES[i]} football fill:${c}`),
-  `no-football fill:${P.noFootball.fill}`,
-  ...P.piaa.map((c, i) => `PIAA ${ROMAN[i]} fill:${c}`),
-  ...P.enrollment.map((c, i) => `enrollment step ${i + 1} fill:${c}`),
-  `unknown fill:${P.unknown}`,
-].flatMap((entry): Array<[string, string, string]> => {
-  const [name, bg] = entry.split(/:(?=#)/);
-  return [[`district names on ${name}`, COLOR.ink, bg]];
+> = (['classic', 'textbook'] as const).flatMap((theme) => {
+  const P = colourPalettes(theme);
+  const tag = theme === 'textbook' ? 'B ' : '';
+  return [
+    ...P.football.map((c, i) => [`${CLASS_NAMES[i]} football fill`, c]),
+    ['no-football fill', P.noFootball.fill],
+    ...P.piaa.map((c, i) => [`PIAA ${ROMAN[i]} fill`, c]),
+    ...P.enrollment.map((c, i) => [`enrollment step ${i + 1} fill`, c]),
+    ['unknown fill', P.unknown],
+  ].map(([name, bg]): [string, string, string] => [
+    `${tag}district names on ${name}`,
+    inkOf(theme),
+    bg,
+  ]);
 });

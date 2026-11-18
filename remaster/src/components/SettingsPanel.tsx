@@ -2,6 +2,13 @@ import { useId, type ReactNode } from 'react';
 import Dialog from './Dialog';
 import { useChrome, useSettings } from '../atlas/hooks';
 import type { TextSize } from '../atlas/settings';
+import { THEME_LABELS, type ThemeId } from '../atlas/theme';
+import { THEME_IDS } from '../styles/tokens';
+
+const THEME_HINTS: Record<ThemeId, string> = {
+  classic: 'Cream paper, engraved serif, hand-tinted borders',
+  textbook: 'Crisp white, bright colours, clear sans-serif labels',
+};
 
 const TEXT_SIZES: Array<{ value: TextSize; label: string }> = [
   { value: 'small', label: 'Small' },
@@ -14,11 +21,13 @@ function Switch({
   description,
   checked,
   onChange,
+  disabled = false,
 }: {
   label: string;
   description?: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  disabled?: boolean;
 }) {
   const id = useId();
   return (
@@ -35,6 +44,7 @@ function Switch({
         role="switch"
         className="switch"
         checked={checked}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.checked)}
       />
     </div>
@@ -84,11 +94,14 @@ function Range({
   );
 }
 
-/** `children`: page-specific fields shown first (Pennsylvania's "Colour districts by"). */
+/** `children`: page-specific fields shown after Map style (Pennsylvania's "Colour districts by"). */
 export default function SettingsPanel({ children }: { children?: ReactNode }) {
-  const { settings, updateSettings, resetToDefaults } = useSettings();
+  const { settings, theme, setTheme, updateSettings, resetToDefaults } =
+    useSettings();
   const { overlay, closeOverlay } = useChrome();
   const sizeGroupId = useId();
+  const themeGroupId = useId();
+  const textbook = theme === 'textbook';
 
   return (
     <Dialog
@@ -98,6 +111,33 @@ export default function SettingsPanel({ children }: { children?: ReactNode }) {
       modal={false}
       className="settings-panel"
     >
+      <fieldset className="field">
+        <legend className="field__label" id={themeGroupId}>
+          Map style
+        </legend>
+        <div
+          className="segmented segmented--stacked"
+          role="radiogroup"
+          aria-labelledby={themeGroupId}
+        >
+          {THEME_IDS.map((id) => (
+            <label key={id} className="segmented__option">
+              <input
+                type="radio"
+                name="map-style"
+                value={id}
+                checked={theme === id}
+                onChange={() => setTheme(id)}
+              />
+              <span>
+                {THEME_LABELS[id]}
+                <small className="segmented__hint">{THEME_HINTS[id]}</small>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       {children}
 
       <Switch
@@ -140,7 +180,11 @@ export default function SettingsPanel({ children }: { children?: ReactNode }) {
 
       <Switch
         label="Uppercase labels"
-        checked={settings.textCase === 'upper'}
+        description={
+          textbook ? 'Modern textbook always sets names in capitals' : undefined
+        }
+        checked={textbook || settings.textCase === 'upper'}
+        disabled={textbook}
         onChange={(upper) =>
           updateSettings({ textCase: upper ? 'upper' : 'regular' })
         }

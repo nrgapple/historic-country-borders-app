@@ -87,7 +87,7 @@ const SHORTCUTS = [
 /** The atlas island for /pa/school-districts, over the same store as the year pages. */
 export default function SchoolDistrictsAtlas() {
   if (typeof window !== 'undefined') {
-    actions.init(PA_STORE_YEAR);
+    actions.init(PA_STORE_YEAR, { themeScope: 'pa' });
     applySharedColour();
   }
   return (
@@ -106,6 +106,7 @@ function PaApp() {
   const webgl = useAtlas((s) => s.webgl);
   const projectorText = useAtlas((s) => s.settings.projectorText);
   const colourBy = useAtlas((s) => s.settings.paColourBy);
+  const theme = useAtlas((s) => s.theme);
   const { data, isLoading, isEmpty, isError, isStale, retry } =
     usePASchoolDistricts();
 
@@ -127,8 +128,9 @@ function PaApp() {
           e: d.sports?.enrollment ?? 0,
         })),
         data?.sportsSource?.season ?? SPORTS.season,
+        theme,
       ),
-    [colourBy, districts, data],
+    [colourBy, districts, data, theme],
   );
 
   // The colouring is shareable: mirror it to `?colour=` (absent for the default).

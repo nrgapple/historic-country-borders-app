@@ -66,13 +66,22 @@ export async function interceptThirdParty(
   const origin = new URL(baseURL).origin;
   // The remaster's one-time welcome sheet is covered by its own e2e spec;
   // mark it seen so layouts are measured as returning visitors see them.
-  await context.addInitScript((key) => {
-    try {
-      localStorage.setItem(key, new Date(0).toISOString());
-    } catch {
-      // Storage blocked: the welcome then never opens by itself.
-    }
-  }, WELCOME_SEEN_KEY);
+  await context.addInitScript(
+    ({ key, theme }) => {
+      try {
+        localStorage.setItem(key, new Date(0).toISOString());
+        // LAYOUT_THEME=classic|textbook runs every page in that map style
+        // (remaster/src/atlas/theme.ts); unset, each page uses its default.
+        if (theme) {
+          localStorage.setItem('historic-borders-theme', theme);
+          localStorage.setItem('historic-borders-theme:pa', theme);
+        }
+      } catch {
+        // Storage blocked: the welcome then never opens by itself.
+      }
+    },
+    { key: WELCOME_SEEN_KEY, theme: process.env.LAYOUT_THEME ?? '' },
+  );
   await context.route(
     (url) => url.origin !== origin,
     (route) => {

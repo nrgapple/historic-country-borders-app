@@ -288,6 +288,16 @@
   }
 }
 
+/* A phone in landscape with the place panel open (the 700-1100 px rule above
+   moves the key to the top): once Safari's toolbars take their share, the
+   map beside the panel is shorter than the key, which would then reach into
+   the home-indicator inset. The panel carries the place; the key steps aside. */
+@media (min-width: 700px) and (max-width: 1100px) and (max-height: 520px) {
+  .stage[data-panel-open] .map-key {
+    display: none;
+  }
+}
+
 @media print {
   .map-key__toggle {
     display: none;

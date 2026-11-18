@@ -1,6 +1,6 @@
-# Historic Borders remaster (Astro 7, Direction A)
+# Historic Borders remaster (Astro 7, Directions A and B)
 
-The historical atlas rebuilt as static Astro 7 pages with one React 19 island and MapLibre GL JS 6, in the owner-approved Direction A, "Classic atlas". See [`docs/product/REMASTER_PLAN.md`](../docs/product/REMASTER_PLAN.md) and [`design/living-atlas/README.md`](../design/living-atlas/README.md).
+The historical atlas rebuilt as static Astro 7 pages with one React 19 island and MapLibre GL JS 6, in the owner-approved Direction A, "Classic atlas", with Direction B, "Modern textbook", as a second map style (Settings → Map style; the Pennsylvania map's default). See [`docs/product/REMASTER_PLAN.md`](../docs/product/REMASTER_PLAN.md) and [`design/living-atlas/README.md`](../design/living-atlas/README.md).
 
 **In production** since the P4 cutover (2026-11-18). This app builds into `remaster/dist/`, which `wrangler.toml` serves with the existing `/api/feedback` Worker. CI's `deploy` job ships the `remaster` job's tested build (artifact `remaster-dist`) as soon as that job and `validate` pass, then runs the production smoke test; the layout suite runs against the same build as a report and does not gate the deploy. The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back by reverting the cutover commit on `main`.
 
@@ -52,7 +52,19 @@ node remaster/scripts/shoot.mjs
 - A year change **pushes** a history entry; Back and Forward step through years (`popstate` restores year and place).
 - The camera is written with `replaceState` after `moveend`, with no React render.
 - `place` is mirrored with `replaceState`. A shared place stays in the link until the year's index proves it exists; a missing one is dropped. A shared place without a camera is framed.
-- Settings persist in `localStorage` under the current app's key; overlays and focus mode are per visit. `<html data-era>` sets the era accent, `<html data-text="projector">` the Projector-text font.
+- Settings persist in `localStorage` under the current app's key; overlays and focus mode are per visit. `<html data-era>` sets the era accent, `<html data-text="projector">` the Projector-text font, `<html data-theme>` the map style (below).
+- The map style is not in the URL: like the other settings it is a per-viewer preference.
+
+## Map styles (themes)
+
+Settings → **Map style** switches between **Classic atlas** (Direction A) and **Modern textbook** (Direction B, `design/living-atlas/b-modern-textbook.html`).
+
+- **Defaults and memory** (`src/atlas/theme.ts`): year pages default to Classic, `/pa/school-districts` to Modern textbook (a present-day street map, not a historical plate). Each page family remembers its own choice in `localStorage` (`historic-borders-theme`, `historic-borders-theme:pa`), so the PA choice never changes the atlas. "Reset to defaults" restores the page family's default.
+- **No flash**: the layout renders the page family's default on `<html data-theme>` and an inline head script swaps in a stored choice and adds B's font CSS (`projector.css` for Atkinson, `textbook.css` for Literata) before first paint.
+- **Chrome**: `tokens.ts` holds B's tokens (`TEXTBOOK_*`; `tokens.test.ts` checks AA for every B pair). `tokens.css` switches the same custom properties under `:root[data-theme='textbook']`, so components are not forked; `src/styles/textbook.css` adds B's shapes (chapter strip, pills, solid panel header, 2×2 fact grid, rounded key).
+- **Map**: `src/adapters/textbookStyle.ts` builds B from T6's Classic layer stack: same ids, sources and filters, B paint and layout, A's edge bands and waterlines hidden, and three B layers (selection hatch, white border casing, coastal shelf) that the Classic style carries hidden. A switch is therefore only `setPaintProperty`/`setLayoutProperty` (`src/lib/styleDiff.ts`): camera, sources, feature-state selection and viewport labels survive, and nothing reloads. The PA style (`src/pa/paStyle.ts`) works the same way; district fills come from `src/pa/palette.ts`.
+- **Low power** in B hides the dependency hatch and the shelf; the selection hatch and outline stay.
+- **Screenshots**: `THEME=textbook node remaster/scripts/shoot.mjs …`; layout suites: `LAYOUT_THEME=textbook BASE_URL=… yarn test:layout`.
 
 ## Adapters: sibling tracks
 

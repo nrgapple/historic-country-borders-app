@@ -112,7 +112,12 @@ export function mountMap(container: HTMLElement): MapHandle {
   const lowPower = resolveLowPower(window.location.search);
   const map = new MapLibreMap({
     container,
-    style: createStyle({ origin, settings: initial.settings, lowPower }),
+    style: createStyle({
+      origin,
+      settings: initial.settings,
+      lowPower,
+      theme: initial.theme,
+    }),
     center: [view.longitude, view.latitude],
     zoom: view.zoom,
     minZoom: 1,
@@ -295,7 +300,15 @@ export function mountMap(container: HTMLElement): MapHandle {
    */
   const applySelection = () => {
     if (!map.getSource(SOURCE.borders)) return;
-    applyDynamic(map, getState().settings, selection(), lowPower, anchors);
+    const state = getState();
+    applyDynamic(
+      map,
+      state.settings,
+      selection(),
+      lowPower,
+      anchors,
+      state.theme,
+    );
   };
 
   const fit = (bounds: Bbox) => {
@@ -378,7 +391,9 @@ export function mountMap(container: HTMLElement): MapHandle {
       zoom: map.getZoom(),
     });
   });
-  map.once('idle', () => addRelief(map, origin, getState().settings, lowPower));
+  map.once('idle', () =>
+    addRelief(map, origin, getState().settings, lowPower, getState().theme),
+  );
   map.on('idle', () => {
     const state = getState();
     if (!dataRequested || loadedYear !== state.year) return;
@@ -425,7 +440,9 @@ export function mountMap(container: HTMLElement): MapHandle {
       applySelection();
       // The panel opens or closes over the map: re-check names under it.
       relabel();
-    } else if (state.settings !== last.settings) {
+    } else if (state.settings !== last.settings || state.theme !== last.theme) {
+      // A theme switch sets the other theme's paint and layout on the same
+      // layers: camera, sources, selection and anchors are untouched.
       applySelection();
       relabel();
     }

@@ -8,6 +8,8 @@ Evidence: a working spike in `remaster-spike/`, measured against the current app
 
 **Target visual design (owner decision, 2026-11-17, final):** Direction A, "Classic atlas", from the design spike on branch `t3/living-atlas-design` (commit `48aaf45`, spec `design/living-atlas/README.md`), with three pieces taken from Direction B. See §2.1.
 
+**Second map style (owner request, 2026-11-18):** Direction B, "Modern textbook", ships as a switchable map style (Settings → Map style). Year pages default to Classic; the Pennsylvania school-district map defaults to Modern textbook because it is a present-day street map, not a historical plate. Each page family remembers its own choice. Implementation notes are in `remaster/README.md` ("Map styles").
+
 Conventions: **Observed** marks facts checked on the date given. **Assumption** marks things not verified. **Recommendation** marks this memo's proposals.
 
 ## 1. Recommendation in one paragraph

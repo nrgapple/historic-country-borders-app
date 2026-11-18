@@ -232,6 +232,32 @@ kbd {
   font-weight: 700;
 }
 
+.segmented--stacked {
+  flex-direction: column;
+}
+
+.segmented--stacked .segmented__option + .segmented__option {
+  border-left: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.segmented--stacked .segmented__option span {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.segmented__hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.segmented__option input:checked + span .segmented__hint {
+  color: inherit;
+}
+
 .segmented__option input:focus-visible + span {
   outline: 2px solid var(--focus);
   outline-offset: -3px;

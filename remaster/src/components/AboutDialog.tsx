@@ -75,11 +75,12 @@ export default function AboutDialog({
         {/* Text from docs/FONTS.md, "Licenses and attribution" (T3). */}
         <p>
           Map labels and text use Alegreya, Alegreya SC and Alegreya Sans by
-          Huerta Tipográfica, and Atkinson Hyperlegible Next by the Braille
-          Institute (for projector text). Names in Cherokee, Canadian Aboriginal
-          syllabics, Osage and some phonetic letters use Noto Sans fonts by the
-          Noto Project Authors. All fonts are used under the SIL Open Font
-          License 1.1.
+          Huerta Tipográfica, Atkinson Hyperlegible Next by the Braille
+          Institute (for projector text and the Modern textbook style), and
+          Literata by TypeTogether (Modern textbook). Names in Cherokee,
+          Canadian Aboriginal syllabics, Osage and some phonetic letters use
+          Noto Sans fonts by the Noto Project Authors. All fonts are used under
+          the SIL Open Font License 1.1.
         </p>
         <p className="about__licenses">
           Licenses:{' '}

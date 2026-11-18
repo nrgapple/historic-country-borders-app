@@ -8,6 +8,7 @@ import {
   type MapView,
 } from '../lib/mapView';
 import { eraOf, yearPath } from '../lib/years';
+import { THEME_TOKENS } from '../styles/tokens';
 import {
   DEFAULT_SETTINGS,
   loadProjectorFonts,
@@ -16,6 +17,14 @@ import {
   storeSettings,
   type Settings,
 } from './settings';
+import {
+  loadThemeFonts,
+  readStoredTheme,
+  storeTheme,
+  THEME_DEFAULTS,
+  type ThemeId,
+  type ThemeScope,
+} from './theme';
 
 /**
  * The atlas's whole client state in one small external store.
@@ -34,7 +43,9 @@ import {
  *   proven it exists, so a slow load cannot erase a shared link.
  *
  * Settings persist in localStorage (same key as the current app); overlays
- * and focus mode are per-visit.
+ * and focus mode are per-visit. The map style (theme) persists per page
+ * family (`theme.ts`): the year pages and the Pennsylvania map each keep
+ * their own choice and default.
  */
 
 export const YEARS: readonly number[] = historicalManifest.years;
@@ -61,6 +72,8 @@ export interface AtlasState {
   /** Status of the current year's map data. */
   status: DataStatus;
   settings: Settings;
+  /** Map style: Classic atlas or Modern textbook (`<html data-theme>`). */
+  theme: ThemeId;
   overlay: Overlay;
   /** The welcome card's page while `overlay` is 'welcome'. */
   welcomeView: WelcomeView;
@@ -81,6 +94,7 @@ const initialState = (year: number): AtlasState => ({
   place: null,
   status: 'loading',
   settings: DEFAULT_SETTINGS,
+  theme: THEME_DEFAULTS.atlas,
   overlay: null,
   welcomeView: 'notes',
   welcomeAuto: false,
@@ -95,6 +109,8 @@ let state: AtlasState = initialState(YEARS[0]);
 const listeners = new Set<Listener>();
 let started = false;
 let frameId = 0;
+/** Which page family's map-style choice this page reads and writes. */
+let themeScope: ThemeScope = 'atlas';
 
 export const getState = () => state;
 
@@ -123,6 +139,14 @@ const syncDocument = () => {
   const root = document.documentElement;
   const era = eraOf(state.year).id;
   if (root.dataset.era !== era) root.dataset.era = era;
+  if (root.dataset.theme !== state.theme) {
+    root.dataset.theme = state.theme;
+    // Browser chrome follows the page ground (cream paper or white).
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', THEME_TOKENS[state.theme].color.paper);
+  }
+  loadThemeFonts(state.theme);
   if (state.settings.projectorText) {
     loadProjectorFonts();
     root.dataset.text = 'projector';
@@ -141,14 +165,22 @@ const onPopState = () => {
 };
 
 export const actions = {
-  /** Starts the store from the prerendered year and the current URL. Idempotent. */
-  init(year: number) {
+  /**
+   * Starts the store from the prerendered year and the current URL. Idempotent.
+   * `themeScope` picks the page family whose map-style choice applies.
+   */
+  init(
+    year: number,
+    { themeScope: scope = 'atlas' }: { themeScope?: ThemeScope } = {},
+  ) {
     if (started) return;
     started = true;
+    themeScope = scope;
     state = {
       ...initialState(year),
       place: parsePlace(window.location.search) ?? null,
       settings: readStoredSettings(),
+      theme: readStoredTheme(scope),
     };
     window.addEventListener('popstate', onPopState);
     subscribe(syncDocument);
@@ -205,9 +237,19 @@ export const actions = {
     );
   },
 
+  /** Switches the map style for this page family and remembers it. */
+  setTheme(theme: ThemeId) {
+    if (theme === state.theme) return;
+    storeTheme(themeScope, theme);
+    set({ theme });
+    trackEvent('setting_changed', { name: 'theme', value: theme });
+  },
+
+  /** Restores the default settings and this page family's default map style. */
   resetSettings() {
     storeSettings(DEFAULT_SETTINGS);
-    set({ settings: DEFAULT_SETTINGS });
+    storeTheme(themeScope, THEME_DEFAULTS[themeScope]);
+    set({ settings: DEFAULT_SETTINGS, theme: THEME_DEFAULTS[themeScope] });
     trackEvent('settings_reset');
   },
 
@@ -268,5 +310,6 @@ export const __resetStore = (year: number = YEARS[0]) => {
   listeners.clear();
   started = false;
   frameId = 0;
+  themeScope = 'atlas';
   state = initialState(year);
 };

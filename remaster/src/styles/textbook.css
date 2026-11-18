@@ -1,0 +1,883 @@
+/* Direction B, "Modern textbook" (Settings → Map style), from
+   design/living-atlas/b-modern-textbook.html.
+
+   tokens.css already switches every colour and font custom property under
+   :root[data-theme='textbook']; this file changes only shapes and type that
+   differ from A: the era chapter strip, pills, the solid panel header, the
+   two-by-two fact grid, the rounded map key. Every rule is scoped to the
+   theme, so A is untouched.
+
+   Rules for authors: A's components change font sizes and paddings at their
+   breakpoints, and a theme selector outranks them, so set font-family,
+   font-weight and letter-spacing as longhands here and repeat a size only
+   with its breakpoint. The hard requirements still hold: no 100vh, edge UI
+   padded with var(--safe-*), the 1279 px finder collapse, the 860 px
+   two-row header, and colour-scheme: only light (tokens.css). */
+
+:root[data-theme='textbook'] {
+  --tb-radius: 8px;
+  --tb-shadow:
+    0 1px 2px rgba(20, 32, 43, 0.12), 0 6px 18px rgba(20, 32, 43, 0.12);
+}
+
+:root[data-theme='textbook'] body {
+  font-variant-numeric: normal;
+}
+
+/* Paper grain and the double-ruled plate frame are A's. */
+:root[data-theme='textbook'] .paper-grain {
+  background-image: none;
+}
+
+:root[data-theme='textbook'] .frame {
+  border: 0;
+}
+
+:root[data-theme='textbook'] .frame::before {
+  display: none;
+}
+
+/* B's amber focus ring, edged in ink so it shows on white and on every
+   era colour (the amber alone is only 2:1 on white). */
+:root[data-theme='textbook'] :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+:root[data-theme='textbook']
+  .timeline__current:has(.timeline__select:focus-visible) {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--focus);
+  border-radius: 6px;
+}
+
+/* ------------------------------------------- Top bar: the chapter strip */
+
+/* The era colour runs across the very top, under the status bar and the
+   Dynamic Island: the textbook chapter tab. Content starts below it. */
+:root[data-theme='textbook'] .topbar {
+  padding-top: 10px;
+  border-top: calc(var(--safe-top) + 6px) solid var(--accent);
+  border-bottom: 1px solid var(--hair);
+  background-color: var(--paper);
+}
+
+:root[data-theme='textbook'] .brand-mark {
+  width: 36px;
+  height: 36px;
+  padding: 5px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #ffffff;
+}
+
+:root[data-theme='textbook'] .brand__name {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 20px;
+}
+
+:root[data-theme='textbook'] .brand__subtitle,
+:root[data-theme='textbook'] .brand__compact-detail {
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .brand__compact-title {
+  letter-spacing: 0;
+}
+
+:root[data-theme='textbook'] .icon-button {
+  border-radius: 22px;
+}
+
+:root[data-theme='textbook'] .icon-button:hover {
+  border-color: transparent;
+  background: var(--paper-2);
+}
+
+:root[data-theme='textbook'] .icon-button[aria-expanded='true'] {
+  border-color: transparent;
+  background: var(--accent-wash);
+  color: var(--accent-on-wash);
+}
+
+/* ------------------------------------------------------------- Timeline */
+
+:root[data-theme='textbook'] .timeline__step {
+  border: 2px solid var(--hair);
+  border-radius: 22px;
+  background: var(--paper);
+  font-family: var(--font-sc);
+  font-weight: 700;
+  font-size: 16px;
+  padding: 0 14px 0 10px;
+}
+
+:root[data-theme='textbook'] .timeline__step--next {
+  padding: 0 10px 0 14px;
+}
+
+:root[data-theme='textbook'] .timeline__step:hover:not(:disabled) {
+  background: var(--paper);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+:root[data-theme='textbook'] .timeline__current-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+:root[data-theme='textbook'] .timeline__current-suffix {
+  margin-left: 4px;
+  font-family: var(--font-sc);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink-2);
+}
+
+:root[data-theme='textbook'] .timeline__current-era {
+  margin-top: 6px;
+  font-family: var(--font-sc);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+/* The era chip: a solid chapter colour with white capitals. */
+:root[data-theme='textbook'] .timeline__current-era-name {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='textbook'] .timeline__current-range {
+  margin-left: 8px;
+  font-family: var(--font-sc);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+:root[data-theme='textbook'] .timeline__eras {
+  gap: 3px;
+  height: 28px;
+  border: 0;
+}
+
+:root[data-theme='textbook'] .timeline__era {
+  padding: 0 9px;
+  border-left: 0;
+  border-radius: 5px 5px 0 0;
+}
+
+:root[data-theme='textbook'] .timeline__era[data-active] {
+  background: var(--accent);
+  box-shadow: none;
+}
+
+:root[data-theme='textbook'] .timeline__era-label {
+  font-family: var(--font-sc);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='textbook']
+  .timeline__era[data-era='prehistory']
+  .timeline__era-label {
+  color: var(--era-prehistory-on-wash);
+}
+:root[data-theme='textbook']
+  .timeline__era[data-era='ancient']
+  .timeline__era-label {
+  color: var(--era-ancient-on-wash);
+}
+:root[data-theme='textbook']
+  .timeline__era[data-era='medieval']
+  .timeline__era-label {
+  color: var(--era-medieval-on-wash);
+}
+:root[data-theme='textbook']
+  .timeline__era[data-era='early-modern']
+  .timeline__era-label {
+  color: var(--era-early-modern-on-wash);
+}
+:root[data-theme='textbook']
+  .timeline__era[data-era='modern']
+  .timeline__era-label {
+  color: var(--era-modern-on-wash);
+}
+
+:root[data-theme='textbook'] .timeline__era[data-active] .timeline__era-label {
+  color: var(--on-accent);
+}
+
+/* A light track under a 3 px accent rule, graded ticks, a ringed disc. */
+:root[data-theme='textbook'] .timeline__track {
+  height: 12px;
+  border: 0;
+  border-top: 3px solid var(--accent);
+  background: var(--paper-2);
+}
+
+:root[data-theme='textbook'] .timeline__tick {
+  top: 0;
+  width: 2px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--line-strong);
+}
+
+:root[data-theme='textbook'] .timeline__tick[data-major] {
+  height: 9px;
+  background: var(--ink-2);
+}
+
+:root[data-theme='textbook'] .timeline__tick[data-era-start] {
+  height: 9px;
+  background: var(--ink);
+}
+
+:root[data-theme='textbook'] .timeline__thumb,
+:root[data-theme='textbook'] .timeline[data-dragging] .timeline__thumb {
+  top: -14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 5px solid var(--accent);
+  box-shadow: 0 1px 3px rgba(20, 32, 43, 0.35);
+}
+
+:root[data-theme='textbook'] .timeline__thumb::before {
+  display: none;
+}
+
+:root[data-theme='textbook'] .timeline__hover {
+  bottom: calc(100% + 18px);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  background: var(--sheet);
+  box-shadow: var(--tb-shadow);
+  font-family: var(--font-sc);
+  font-weight: 700;
+}
+
+:root[data-theme='textbook'] .timeline__labels {
+  margin-top: 6px;
+}
+
+:root[data-theme='textbook'] .timeline__label {
+  font-family: var(--font-sc);
+  font-variant-numeric: normal;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+:root[data-theme='textbook'] .timeline__label[data-active] {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ------------------------------------------------- Shared controls */
+
+:root[data-theme='textbook'] .button {
+  min-height: 46px;
+  padding: 0 18px;
+  border: 2px solid var(--accent);
+  border-radius: 23px;
+  background: var(--sheet);
+  color: var(--accent);
+  font-family: var(--font-sc);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* Focus mode's floating buttons keep A's footprint beside the attribution. */
+:root[data-theme='textbook'] .focus-tools .button {
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+:root[data-theme='textbook'] .button:hover {
+  background: var(--accent-wash);
+}
+
+:root[data-theme='textbook'] .button--primary,
+:root[data-theme='textbook'] .button--primary:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:root[data-theme='textbook'] .input,
+:root[data-theme='textbook'] .place-finder__input {
+  border: 2px solid var(--hair);
+  border-radius: 22px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] textarea.input {
+  border-radius: var(--tb-radius);
+}
+
+:root[data-theme='textbook'] .place-finder__input:focus,
+:root[data-theme='textbook'] .input:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-color: var(--focus);
+}
+
+:root[data-theme='textbook'] .place-finder__list,
+:root[data-theme='textbook'] .place-finder__empty {
+  border: 1px solid var(--hair);
+  border-radius: var(--tb-radius);
+  box-shadow: var(--tb-shadow);
+}
+
+:root[data-theme='textbook'] .place-finder__option {
+  border-radius: 6px;
+}
+
+:root[data-theme='textbook'] .place-finder__detail {
+  font-style: normal;
+}
+
+:root[data-theme='textbook'] .section-label {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink);
+}
+
+:root[data-theme='textbook'] .section-label::after {
+  display: none;
+}
+
+/* ------------------------------------------------------- Dialogs */
+
+:root[data-theme='textbook'] .dialog {
+  border: 1px solid var(--hair);
+  outline: 0;
+  border-radius: 12px;
+  box-shadow: var(--tb-shadow);
+}
+
+:root[data-theme='textbook'] .dialog--modal::backdrop {
+  background: rgba(20, 32, 43, 0.35);
+}
+
+:root[data-theme='textbook'] .dialog__header {
+  border-bottom: 1px solid var(--hair);
+}
+
+:root[data-theme='textbook'] .dialog__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:root[data-theme='textbook'] .about__section h3,
+:root[data-theme='textbook'] .field__label {
+  letter-spacing: 0.02em;
+}
+
+:root[data-theme='textbook'] .field__hint,
+:root[data-theme='textbook'] .field__optional {
+  font-style: normal;
+}
+
+:root[data-theme='textbook'] .segmented {
+  border: 2px solid var(--hair);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+:root[data-theme='textbook'] .segmented__option + .segmented__option {
+  border-color: var(--hair);
+}
+
+:root[data-theme='textbook'] .switch,
+:root[data-theme='textbook'] .switch::after {
+  border-color: var(--line-strong);
+}
+
+:root[data-theme='textbook'] kbd {
+  border-color: var(--line-strong);
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------ Map stage */
+
+:root[data-theme='textbook'] .credit {
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.92);
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .maplibregl-ctrl-group {
+  border: 1px solid var(--hair);
+  border-radius: var(--tb-radius);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(20, 32, 43, 0.12);
+}
+
+:root[data-theme='textbook'] .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
+
+:root[data-theme='textbook'] .maplibregl-ctrl-attrib {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+:root[data-theme='textbook'] .changes-summary,
+:root[data-theme='textbook'] .welcome,
+:root[data-theme='textbook'] .banner {
+  border: 1px solid var(--hair);
+  outline: 0;
+  border-radius: var(--tb-radius);
+  box-shadow: var(--tb-shadow);
+}
+
+:root[data-theme='textbook'] .changes-summary__note,
+:root[data-theme='textbook'] .welcome__lede,
+:root[data-theme='textbook'] .map-loading__message {
+  font-style: normal;
+}
+
+:root[data-theme='textbook'] .welcome__header {
+  border-bottom: 1px solid var(--hair);
+}
+
+:root[data-theme='textbook'] .welcome__title,
+:root[data-theme='textbook'] .tour__title,
+:root[data-theme='textbook'] .projector-caption__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+:root[data-theme='textbook'] .welcome__eyebrow,
+:root[data-theme='textbook'] .tour__count,
+:root[data-theme='textbook'] .changes-summary__heading {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* --------------------------------------------------------- Map key */
+
+:root[data-theme='textbook'] .map-key {
+  border: 1px solid var(--hair);
+  outline: 0;
+  border-radius: var(--tb-radius);
+  box-shadow: var(--tb-shadow);
+  overflow: hidden;
+}
+
+:root[data-theme='textbook'] .map-key__plate {
+  text-align: left;
+}
+
+:root[data-theme='textbook'] .map-key__kicker {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='textbook'] .map-key__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:root[data-theme='textbook'] .map-key__sub,
+:root[data-theme='textbook'] .scalebar__caption {
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .map-key__legend {
+  border-top: 1px solid var(--hair);
+}
+
+:root[data-theme='textbook'] .map-key__item {
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .map-key__swatch {
+  border-width: 3px;
+  border-radius: 2px;
+}
+
+:root[data-theme='textbook'] .map-key[data-open] .map-key__bar {
+  border-top-color: var(--hair);
+}
+
+:root[data-theme='textbook'] .scalebar__bar {
+  border-width: 2px;
+  border-radius: 1px;
+}
+
+:root[data-theme='textbook'] .map-key__north text {
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+:root[data-theme='textbook'] .map-key__toggle {
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  letter-spacing: 0;
+}
+
+/* ---------------------------------------------- Place panel (sidebar) */
+
+:root[data-theme='textbook'] .place-panel {
+  border-left: 1px solid var(--hair);
+  box-shadow: none;
+}
+
+:root[data-theme='textbook'] .place-panel__scroll {
+  padding-top: 0;
+}
+
+/* The solid accent header: eyebrow and title in white. It stays in view
+   while the sidebar scrolls. */
+:root[data-theme='textbook'] .place-panel__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 -26px 18px;
+  padding: 18px 16px 18px 26px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:root[data-theme='textbook'] .place-panel__header .icon-button {
+  color: var(--on-accent);
+}
+
+:root[data-theme='textbook'] .place-panel__header .icon-button:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+:root[data-theme='textbook'] .place-panel__eyebrow {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+}
+
+:root[data-theme='textbook'] .place-panel__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+:root[data-theme='textbook'] .place-panel__subtitle {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--on-accent);
+}
+
+/* "At a glance": a tinted box with a two-by-two fact grid. */
+:root[data-theme='textbook'] .place-panel__factbox {
+  margin-top: 0;
+  padding: 12px 16px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--accent-wash);
+}
+
+:root[data-theme='textbook'] .place-panel__facts-title {
+  margin: 0 0 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-on-wash);
+}
+
+:root[data-theme='textbook'] .place-panel__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+:root[data-theme='textbook'] .place-panel__fact {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+:root[data-theme='textbook'] .place-panel__facts dt {
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:root[data-theme='textbook'] .place-panel__facts dd {
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+:root[data-theme='textbook'] .place-panel__facts dd small,
+:root[data-theme='textbook'] .place-panel__facts-source,
+:root[data-theme='textbook'] .lifespan__source,
+:root[data-theme='textbook'] .copy-link__status {
+  font-family: var(--font-sc);
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .place-panel__extract {
+  font-family: var(--font-display);
+  line-height: 1.6;
+}
+
+/* A sans drop cap in the accent. */
+:root[data-theme='textbook'] .place-panel__extract::first-letter {
+  padding: 5px 8px 0 0;
+  font-family: var(--font-sc);
+  font-weight: 700;
+  font-size: 58px;
+  line-height: 0.82;
+}
+
+:root[data-theme='textbook'] .place-panel__source {
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .place-panel__image {
+  border-color: var(--hair);
+  border-radius: 6px;
+}
+
+:root[data-theme='textbook'] .place-panel__foot {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Key dates: a rounded lifespan bar with a "this map" rule. */
+:root[data-theme='textbook'] .lifespan__track {
+  height: 10px;
+}
+
+:root[data-theme='textbook'] .lifespan__span {
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+}
+
+:root[data-theme='textbook'] .lifespan__span[data-soft-start] {
+  border-left-color: transparent;
+}
+
+:root[data-theme='textbook'] .lifespan__span[data-soft-end] {
+  border-right-color: transparent;
+}
+
+:root[data-theme='textbook'] .lifespan__marker {
+  width: 4px;
+  height: 24px;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
+}
+
+:root[data-theme='textbook']
+  .lifespan__figure[data-placement='before']
+  .lifespan__marker,
+:root[data-theme='textbook']
+  .lifespan__figure[data-placement='after']
+  .lifespan__marker {
+  background: var(--sheet);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+:root[data-theme='textbook'] .lifespan__ends {
+  font-family: var(--font-sc);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+:root[data-theme='textbook'] .lifespan__marker-label {
+  font-family: var(--font-sc);
+  font-size: 13px;
+}
+
+:root[data-theme='textbook'] .skeleton__line {
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------- Pennsylvania bar */
+
+:root[data-theme='textbook'] .pa-bar__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+:root[data-theme='textbook'] .pa-bar__meta {
+  font-style: normal;
+  font-weight: 500;
+}
+
+:root[data-theme='textbook'] .territories .pa-county h3 {
+  letter-spacing: 0.02em;
+}
+
+/* ---------------------------------------------- Landing and 404 pages */
+
+:root[data-theme='textbook'] .landing__inner {
+  border: 1px solid var(--hair);
+  outline: 0;
+  border-top: 6px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: var(--tb-shadow);
+}
+
+:root[data-theme='textbook'] .landing__lede {
+  font-style: normal;
+}
+
+/* -------------------------------------------------- Breakpoints */
+
+@media (max-width: 860px) {
+  :root[data-theme='textbook'] .timeline__step {
+    padding: 0;
+  }
+
+  /* A's 30 px compact mark, so the compact title keeps A's room. */
+  :root[data-theme='textbook'] .brand-mark {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    border-radius: 7px;
+  }
+
+  :root[data-theme='textbook'] .brand__compact-title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 699px) {
+  :root[data-theme='textbook'] .topbar {
+    padding-top: 8px;
+    border-top-width: calc(var(--safe-top) + 4px);
+  }
+
+  :root[data-theme='textbook'] .timeline__current-era-name {
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+
+  :root[data-theme='textbook'] .timeline__eras {
+    gap: 2px;
+    height: 24px;
+  }
+
+  :root[data-theme='textbook'] .timeline__era {
+    padding: 0 5px;
+  }
+
+  :root[data-theme='textbook'] .timeline__era-label {
+    letter-spacing: 0.03em;
+  }
+
+  :root[data-theme='textbook'] .timeline__label {
+    font-size: 13px;
+  }
+
+  /* The bottom sheet: rounded top corners, the handle inside the header. */
+  :root[data-theme='textbook'] .place-panel {
+    border-top: 0;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -4px 20px rgba(20, 32, 43, 0.18);
+  }
+
+  :root[data-theme='textbook'] .place-panel__handle {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    left: 50%;
+    width: 40px;
+    margin: 0 0 0 -20px;
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  :root[data-theme='textbook'] .place-panel__header {
+    position: static;
+    margin: 0 -18px 14px;
+    padding: 18px 10px 14px 18px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  :root[data-theme='textbook'] .place-panel__title {
+    font-size: 28px;
+  }
+
+  :root[data-theme='textbook'] .place-panel__subtitle {
+    display: none;
+  }
+
+  :root[data-theme='textbook'] .place-panel__foot {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  :root[data-theme='textbook'] .focus-tools .button {
+    padding: 0 10px;
+    font-size: 14px;
+  }
+}
+
+/* Short landscape screens: the chapter strip keeps A's header height, and
+   main's slim timeline (one row from 600 px, 18 px era bands) holds in B. */
+@media (max-height: 520px) {
+  :root[data-theme='textbook'] .topbar {
+    padding-top: 6px;
+    border-top-width: calc(var(--safe-top) + 4px);
+  }
+
+  :root[data-theme='textbook'] .timeline__eras {
+    gap: 2px;
+    height: 18px;
+  }
+
+  :root[data-theme='textbook'] .timeline__era {
+    padding: 0 5px;
+    border-radius: 4px 4px 0 0;
+  }
+
+  :root[data-theme='textbook'] .timeline__labels {
+    margin-top: 4px;
+  }
+
+  :root[data-theme='textbook'] .timeline__label {
+    font-size: 13px;
+  }
+}

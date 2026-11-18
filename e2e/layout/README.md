@@ -13,6 +13,7 @@ They use their own config, `playwright.layout.config.ts`, so `yarn test:e2e` sta
 ```bash
 yarn build && yarn test:layout                      # today's app; the config serves out/ on :3000
 BASE_URL=http://127.0.0.1:4400 yarn test:layout     # the spike or the remaster; nothing is started
+LAYOUT_THEME=textbook BASE_URL=… yarn test:layout   # every page in one remaster map style (classic|textbook)
 yarn test:layout --project='safe-area:*'            # one suite (or 'responsive:*', 'forced-dark:*')
 ```
 

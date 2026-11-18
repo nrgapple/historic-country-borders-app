@@ -156,7 +156,7 @@ export const CAPITAL_ATTR = {
  * imported because the manifest's `glyphs` key is 31 kB of per-face data the
  * map does not need; `style.test.ts` fails if the two ever differ.
  */
-export const GLYPHS_URL = '/glyphs/cdf13ca70db8/{fontstack}/{range}.pbf';
+export const GLYPHS_URL = '/glyphs/b785b3de646d/{fontstack}/{range}.pbf';
 
 /** Map-page CSS that names faces after each fontstack (combining-mark clusters). */
 export const MAP_ALIASES_CSS = '/fonts/map-aliases.css';

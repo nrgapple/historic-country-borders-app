@@ -38,7 +38,7 @@ Every producer name lives in `contract.ts`. The tests check it against the produ
 
 **T3, glyphs** (`docs/FONTS.md`, "Map fontstacks").
 
-- **Glyphs URL**: `/glyphs/cdf13ca70db8/{fontstack}/{range}.pbf`, pinned as `GLYPHS_URL`. It isn't imported because the manifest's `glyphs` key is 31 kB of per-face data; a test enforces equality.
+- **Glyphs URL**: `/glyphs/b785b3de646d/{fontstack}/{range}.pbf`, pinned as `GLYPHS_URL`. It isn't imported because the manifest's `glyphs` key is 31 kB of per-face data; a test enforces equality.
 - **Fontstacks**: each is a single-element `text-font` array.
   - `Alegreya SC Medium` / `Alegreya SC Bold`: states, Bold above 250,000 km² and for the selection.
   - `Alegreya Medium Italic`: seas and oceans.
