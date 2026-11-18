@@ -1699,6 +1699,26 @@ kbd {
   }
 }
 
+/* Responsive fixes found by e2e/layout/responsive.spec.ts (November 2026).
+   In the single-row header (PA map) the tools keep their width, so a long
+   compact title ellipsizes instead of squeezing the search button under
+   Map settings at 390 px. On phones the expanded search field matches the
+   36 px toolbar row, so it stays out of the year below it. */
+.topbar__row > .topbar__tools {
+  flex: none;
+}
+
+.brand__compact-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .place-finder[data-expanded] .place-finder__input {
+    height: 36px;
+  }
+}
+
 /* Copy link, in the details panel header. */
 .copy-link {
   margin-top: 10px;
