@@ -132,6 +132,17 @@ body.atlas-page {
   inset: 0;
 }
 
+/* T6's degree-ladder neatline, drawn from the live projection. */
+.neatline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  overflow: visible;
+  pointer-events: none;
+}
+
 .map-canvas--unavailable {
   position: absolute;
   inset: 0;

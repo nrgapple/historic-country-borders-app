@@ -1,14 +1,36 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "src/**/*", "test/**/*", "e2e/**/*", "*.ts"],
-  "exclude": ["dist", "node_modules"],
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "test/**/*",
+    "e2e/**/*",
+    "*.ts",
+    "../remaster-spike/src/atlas/classic/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "../remaster-spike/src/atlas/classic/*.test.ts"
+  ],
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "resolveJsonModule": true,
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": [
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ],
     "paths": {
-      "@repo/*": ["../*"]
+      "@repo/*": [
+        "../*"
+      ],
+      "maplibre-gl": [
+        "./node_modules/maplibre-gl"
+      ],
+      "geojson": [
+        "./node_modules/@types/geojson"
+      ]
     }
   }
 }

@@ -10,13 +10,16 @@ import {
 // after bundling, point it at the hashed worker asset on our origin.
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import {
-  addMarkerImage,
+  addMarkers,
   addRelief,
   applyDynamic,
+  attachNeatline,
+  attachPaperGrain,
   createStyle,
-  FEATURE_STATE,
   INTERACTIVE_LAYERS,
-  MARKER,
+  LOW_POWER_DROPS_GRAIN,
+  LOW_POWER_SIMPLE_NEATLINE,
+  resolveLowPower,
   SOURCE,
   type SelectionStyle,
 } from '../adapters/mapStyle';
@@ -29,7 +32,6 @@ import {
   prefetchYears,
   type YearIndex,
 } from '../adapters/yearData';
-import { yearContexts, yearContextUrl } from '../hooks/useYearContext';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding, paddingOffset } from '../lib/places';
 import { actions, getState, subscribe, YEARS, type AtlasState, type Bbox } from './store';
@@ -38,15 +40,6 @@ setWorkerUrl(workerUrl);
 
 const prefersReducedMotion = () =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-
-/**
- * Provisional low-end rule (plan §2.1, P3 sets the measured one): fewer
- * waterlines and no relief on devices reporting ≤ 2 GB or ≤ 2 cores.
- */
-const detectLowPower = () => {
-  const nav = navigator as Navigator & { deviceMemory?: number };
-  return (nav.deviceMemory ?? 8) <= 2 || (nav.hardwareConcurrency ?? 8) <= 2;
-};
 
 export interface MapHandle {
   map: MapLibreMap;
@@ -65,9 +58,13 @@ export function mountMap(container: HTMLElement): MapHandle {
   const view = parseMapView(window.location.search);
   // A shared place with no camera in the link is framed once it is known.
   let frameSharedPlace = Boolean(initial.place) && !hasMapView(window.location.search);
+  // The camera is written to the URL only when it changes, so a resize (or a
+  // plain deep link) never adds a camera the visitor did not choose.
+  let lastView = `${view.longitude.toFixed(4)},${view.latitude.toFixed(4)},${view.zoom.toFixed(2)}`;
+  const lowPower = resolveLowPower(window.location.search);
   const map = new MapLibreMap({
     container,
-    style: createStyle({ origin, settings: initial.settings, lowPower: detectLowPower() }),
+    style: createStyle({ origin, settings: initial.settings, lowPower }),
     center: [view.longitude, view.latitude],
     zoom: view.zoom,
     minZoom: 1,
@@ -84,10 +81,22 @@ export function mountMap(container: HTMLElement): MapHandle {
   map.touchZoomRotate.disableRotation();
   map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
   map.addControl(new AttributionControl({ compact: true }), 'bottom-right');
-  map.on('styleimagemissing', (event) => addMarkerImage(map, event.id));
-  map.once('style.load', () => {
-    for (const id of Object.values(MARKER)) addMarkerImage(map, id);
-  });
+  map.on('styleimagemissing', () => addMarkers(map));
+  map.once('style.load', () => addMarkers(map));
+
+  // T6's degree-ladder neatline (a single rule on phones and in low power)
+  // and the paper grain over the map frame, dropped in low power.
+  const cleanups: Array<() => void> = [];
+  const frame = container.parentElement ?? container;
+  const neatline = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  neatline.setAttribute('class', 'neatline');
+  neatline.setAttribute('aria-hidden', 'true');
+  frame.append(neatline);
+  cleanups.push(() => neatline.remove());
+  const phone = () => window.matchMedia?.('(max-width: 699px)').matches ?? false;
+  cleanups.push(attachNeatline(map, neatline, () => phone() || (lowPower && LOW_POWER_SIMPLE_NEATLINE)));
+  if (!(lowPower && LOW_POWER_DROPS_GRAIN)) cleanups.push(attachPaperGrain(frame));
+  container.dataset.lowPower = String(lowPower);
   // The credit strip and About carry the same sources: start the compact
   // attribution closed (MapLibre opens it on load) so it does not cover the
   // map; its (i) button still opens it.
@@ -100,8 +109,6 @@ export function mountMap(container: HTMLElement): MapHandle {
   let loadedYear = initial.year;
   let index: YearIndex | null = null;
   let names = new Map<string, number>();
-  /** The selected territory's capital names (Wikidata), hidden from the city layer. */
-  let capitals: string[] = [];
   let dataRequested = false;
   let destroyed = false;
 
@@ -135,24 +142,22 @@ export function mountMap(container: HTMLElement): MapHandle {
   const selection = (): SelectionStyle => {
     const place = getState().place;
     const id = place ? names.get(place) : undefined;
-    return { id: id ?? null, name: id === undefined ? null : place, capitals };
+    return {
+      id: id ?? null,
+      name: id === undefined ? null : place,
+      dependencyIds:
+        id === undefined ? [] : (index?.territories ?? []).filter((t) => t.dep && t.ov === id).map((t) => t.id),
+    };
   };
 
   /**
    * Every polygon of a territory shares its id (T1), so one feature-state
-   * selects the whole territory; its dependencies are marked too.
+   * selects the whole territory; T6's setSelection also marks its
+   * dependencies, and re-lays out only the label and capital layers.
    */
   const applySelection = () => {
     if (!map.getSource(SOURCE.borders)) return;
-    map.removeFeatureState({ source: SOURCE.borders });
-    const sel = selection();
-    if (sel.id !== null) {
-      map.setFeatureState({ source: SOURCE.borders, id: sel.id }, { [FEATURE_STATE.selected]: true });
-      for (const t of index?.territories ?? [])
-        if (t.dep && t.ov === sel.id)
-          map.setFeatureState({ source: SOURCE.borders, id: t.id }, { [FEATURE_STATE.overlordSelected]: true });
-    }
-    applyDynamic(map, getState().settings, sel);
+    applyDynamic(map, getState().settings, selection(), lowPower);
   };
 
   const fit = (bounds: Bbox) => {
@@ -170,21 +175,6 @@ export function mountMap(container: HTMLElement): MapHandle {
     map.easeTo({ ...camera, offset: paddingOffset(padding), duration: prefersReducedMotion() ? 0 : 900 });
   };
 
-  const loadCapitals = (year: number) => {
-    capitals = [];
-    const url = yearContextUrl(year);
-    if (!url) return;
-    yearContexts.load(url).then(
-      (context) => {
-        if (destroyed || year !== getState().year) return;
-        const place = getState().place;
-        capitals = (place && context.places[place]?.capital?.map((c) => c.label)) || [];
-        applySelection();
-      },
-      () => undefined,
-    );
-  };
-
   const loadIndex = (year: number) => {
     loadYearIndex(year).then(
       (loaded) => {
@@ -197,7 +187,6 @@ export function mountMap(container: HTMLElement): MapHandle {
         else if (place && frameSharedPlace) fit(framingBounds(loaded.territories[names.get(place)!].bbox));
         frameSharedPlace = false;
         applySelection();
-        loadCapitals(year);
       },
       () => {
         if (!destroyed && year === getState().year) actions.setStatus('error');
@@ -218,9 +207,12 @@ export function mountMap(container: HTMLElement): MapHandle {
   }
   map.on('moveend', () => {
     const center = map.getCenter().wrap();
+    const key = `${center.lng.toFixed(4)},${center.lat.toFixed(4)},${map.getZoom().toFixed(2)}`;
+    if (key === lastView) return;
+    lastView = key;
     actions.writeView({ longitude: center.lng, latitude: center.lat, zoom: map.getZoom() });
   });
-  map.once('idle', () => addRelief(map, origin));
+  map.once('idle', () => addRelief(map, origin, getState().settings, lowPower));
   map.on('idle', () => {
     const state = getState();
     if (!dataRequested || loadedYear !== state.year) return;
@@ -251,12 +243,10 @@ export function mountMap(container: HTMLElement): MapHandle {
       loadedYear = state.year;
       index = null;
       names = new Map();
-      capitals = [];
       setYearData(state.year);
       loadIndex(state.year);
     } else if (state.place !== last.place) {
       applySelection();
-      loadCapitals(state.year);
     } else if (state.settings !== last.settings) {
       applySelection();
     }
@@ -269,6 +259,7 @@ export function mountMap(container: HTMLElement): MapHandle {
     destroy() {
       destroyed = true;
       unsubscribe();
+      cleanups.forEach((cleanup) => cleanup());
       resizer?.disconnect();
       map.remove();
     },

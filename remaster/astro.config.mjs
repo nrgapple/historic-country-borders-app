@@ -16,6 +16,9 @@ export default defineConfig({
   integrations: [react()],
   server: { host: '127.0.0.1', port: 4321 },
   vite: {
+    // One tsconfig for every file, including T6's style module under
+    // remaster-spike/ (whose own tsconfig extends an Astro preset not installed there).
+    tsconfig: './tsconfig.json',
     // Keeps Vite's cache inside this SSD checkout.
     cacheDir: 'node_modules/.vite',
     resolve: { alias: { '@repo': repo } },
