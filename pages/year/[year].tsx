@@ -1,45 +1,30 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import historicalManifest from '../../data/historical-manifest.json';
-import Viewer from '../../components/Viewer';
-import { ConfigType } from '../../util/types';
+import HistoryAtlas from '../../components/HistoryAtlas';
+import { parseYearParam } from '../../lib/years';
 
-export interface DataProps {
+interface YearPageProps {
   years: number[];
-  user: string;
-  id: string;
-  config: ConfigType;
-  currentYear: string;
+  initialYear: number;
 }
 
-const YearPage = (props: DataProps) => <Viewer {...props} />;
+const YearPage = ({ years, initialYear }: YearPageProps) => (
+  <HistoryAtlas years={years} initialYear={initialYear} />
+);
 
 export const getStaticPaths: GetStaticPaths = async () => ({
   paths: historicalManifest.years.map((year) => ({
-    params: { year: year.toString() },
+    params: { year: String(year) },
   })),
   fallback: false,
 });
 
-export const getStaticProps: GetStaticProps<DataProps> = async ({ params }) => {
-  const currentYear = params?.year as string;
-
-  if (!historicalManifest.years.includes(Number(currentYear))) {
-    return { notFound: true };
-  }
-
-  return {
-    props: {
-      years: historicalManifest.years,
-      user: 'aourednik',
-      id: 'historical-basemaps',
-      config: {
-        name: 'Historic Borders',
-        description: 'Interactive historical country borders.',
-        commitDate: historicalManifest.source.commitDate,
-      },
-      currentYear,
-    },
-  };
+export const getStaticProps: GetStaticProps<YearPageProps> = async ({
+  params,
+}) => {
+  const initialYear = parseYearParam(params?.year, historicalManifest.years);
+  if (initialYear === undefined) return { notFound: true };
+  return { props: { years: historicalManifest.years, initialYear } };
 };
 
 export default YearPage;

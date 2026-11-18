@@ -1,13 +1,18 @@
 {
-  "name": "Historic Country Borders",
+  "name": "Historic Borders",
   "short_name": "Historic Borders",
-  "description": "Visualize country borders from different times in history (123,000 BC - 1994)",
+  "description": "An interactive atlas of world borders from 123,000 BC to 2010 AD",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#252525",
-  "theme_color": "#6930c3",
+  "background_color": "#F6F3EC",
+  "theme_color": "#F6F3EC",
   "orientation": "any",
   "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/favicon-96x96.png",
       "sizes": "96x96",
@@ -19,7 +24,11 @@
       "type": "image/png"
     }
   ],
-  "categories": ["education", "reference", "utilities"],
+  "categories": [
+    "education",
+    "reference",
+    "utilities"
+  ],
   "lang": "en",
   "dir": "ltr"
 }

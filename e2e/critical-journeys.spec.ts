@@ -152,13 +152,60 @@ test('historical deep links load static AD and BC border data without an API rou
   await expect(page).toHaveURL(/\/year\/1994$/);
   await expectReadyMap(page.getByTestId('map-container'));
   await expect(
-    page.getByRole('button', { name: 'Open settings' }),
+    page.getByRole('button', { name: 'Map settings' }),
   ).toBeVisible();
 
   await page.goto('/year/-100');
   await expect(page).toHaveURL(/\/year\/-100$/);
   await expectReadyMap(page.getByTestId('map-container'));
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '100 BC',
+  );
   expect(apiRequests).toEqual([]);
+});
+
+test('the timeline moves through time and keeps the shared map position', async ({
+  page,
+}) => {
+  await page.goto('/year/1492?lng=10.0000&lat=45.0000&zoom=4.00');
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  await page.getByRole('button', { name: 'Next year: 1500 AD' }).click();
+  await expect(page).toHaveURL(
+    /\/year\/1500\?lng=10\.0000&lat=45\.0000&zoom=4\.00$/,
+  );
+  await expect(page).toHaveTitle(/World borders in 1500 AD/);
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  await page.getByRole('slider', { name: 'Map year' }).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page).toHaveURL(/\/year\/1492\?/);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/year\/1500\?/);
+});
+
+test('selecting a territory shows its details with a safe Wikipedia fallback', async ({
+  page,
+}) => {
+  await page.goto('/year/1994?lng=0.5000&lat=0.5000&zoom=7.00');
+  const map = page.getByTestId('map-container');
+  await expectReadyMap(map);
+
+  const box = await map.boundingBox();
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
+
+  const panel = page.getByRole('complementary');
+  await expect(
+    panel.getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
+  // Wikipedia is blocked in tests, so the panel must degrade gracefully.
+  await expect(
+    panel.getByText('Wikipedia is unavailable right now.'),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
 });
 
 test('unknown years use the useful static 404', async ({ page }) => {
@@ -185,18 +232,16 @@ test('static preview fails feedback safely without an application server', async
   });
 
   await page.goto('/year/1994');
-  await page.getByText('Feedback', { exact: true }).click();
-  await page.getByText('Good', { exact: true }).click();
-  const submit = page.getByRole('button', { name: 'Send Feedback' });
+  await page.getByRole('button', { name: 'Feedback' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Send feedback' });
+  await dialog.getByRole('radio', { name: 'Good' }).check();
+  const submit = dialog.getByRole('button', {
+    name: 'Send feedback',
+    exact: true,
+  });
   await expect(submit).toBeEnabled();
-  const alert = new Promise<string>((resolve) =>
-    page.once('dialog', async (dialog) => {
-      resolve(dialog.message());
-      await dialog.accept();
-    }),
-  );
   await submit.click();
-  await expect(alert).resolves.toContain(
+  await expect(dialog.getByRole('alert')).toContainText(
     'Feedback is unavailable in local static preview',
   );
 });
@@ -208,7 +253,7 @@ test('Pennsylvania school districts load usable district data for cold and retur
 
   await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
   await expect(
-    page.getByRole('button', { name: 'Open settings' }),
+    page.getByRole('button', { name: 'Map settings' }),
   ).toBeVisible();
   await expect(page.getByText(/District boundaries: 2025-10/)).toBeVisible();
   await page.reload();

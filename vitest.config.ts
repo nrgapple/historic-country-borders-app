@@ -20,6 +20,8 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       include: [
         'components/**/*.{ts,tsx}',
+        'contexts/**/*.{ts,tsx}',
+        'lib/**/*.{ts,tsx}',
         'hooks/**/*.{ts,tsx}',
         'util/**/*.{ts,tsx}',
         'utils/**/*.{ts,tsx}',

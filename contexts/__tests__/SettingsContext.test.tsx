@@ -1,54 +1,41 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SettingsProvider, useSettings } from '../SettingsContext';
-import ReactGA4 from 'react-ga4';
-
-vi.mock('react-ga4', () => ({ default: { event: vi.fn() } }));
+import { beforeEach, describe, expect, it } from 'vitest';
+import {
+  DEFAULT_SETTINGS,
+  sanitizeSettings,
+  SettingsProvider,
+  STORAGE_KEY,
+  useSettings,
+} from '../SettingsContext';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <SettingsProvider>{children}</SettingsProvider>
 );
 
 describe('SettingsContext', () => {
-  beforeEach(() => {
-    localStorage.clear();
-    vi.clearAllMocks();
-  });
+  beforeEach(() => localStorage.clear());
 
-  it('provides defaults without removed source or comparison preferences', () => {
+  it('provides defaults', () => {
     const { result } = renderHook(() => useSettings(), { wrapper });
-    expect(result.current.settings).toEqual({
-      textSize: 'medium',
-      textCase: 'regular',
-      countryOpacity: 0.7,
-      borderThickness: 2,
-      showLabels: true,
-    });
+    expect(result.current.settings).toEqual(DEFAULT_SETTINGS);
   });
 
   it('updates, persists, and resets settings', () => {
     const { result } = renderHook(() => useSettings(), { wrapper });
     act(() => result.current.updateSettings({ textSize: 'large' }));
     expect(result.current.settings.textSize).toBe('large');
-    expect(
-      JSON.parse(localStorage.getItem('historic-borders-settings')!),
-    ).toEqual(expect.objectContaining({ textSize: 'large' }));
-    expect(ReactGA4.event).toHaveBeenCalledWith('setting_changed', {
-      setting_name: 'textSize',
-      previous_value: 'medium',
-      new_value: 'large',
-      setting_type: 'string',
-      change_method: 'settings_update',
-    });
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!)).toEqual(
+      expect.objectContaining({ textSize: 'large' }),
+    );
 
     act(() => result.current.resetToDefaults());
-    expect(result.current.settings.textSize).toBe('medium');
+    expect(result.current.settings).toEqual(DEFAULT_SETTINGS);
   });
 
-  it('sanitizes stored values and ignores unknown fields', () => {
+  it('restores sanitized stored values and ignores unknown fields', () => {
     localStorage.setItem(
-      'historic-borders-settings',
+      STORAGE_KEY,
       JSON.stringify({
         textSize: 'invalid',
         textCase: 'upper',
@@ -69,12 +56,13 @@ describe('SettingsContext', () => {
   });
 
   it('falls back safely when storage is malformed', () => {
-    localStorage.setItem('historic-borders-settings', '{broken');
+    localStorage.setItem(STORAGE_KEY, '{broken');
     const { result } = renderHook(() => useSettings(), { wrapper });
-    expect(result.current.settings.textSize).toBe('medium');
-    expect(ReactGA4.event).toHaveBeenCalledWith(
-      'settings_storage_error',
-      expect.objectContaining({ error_type: 'read_error' }),
-    );
+    expect(result.current.settings).toEqual(DEFAULT_SETTINGS);
+    expect(sanitizeSettings(null)).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('requires a provider', () => {
+    expect(() => renderHook(() => useSettings())).toThrow(/SettingsProvider/);
   });
 });

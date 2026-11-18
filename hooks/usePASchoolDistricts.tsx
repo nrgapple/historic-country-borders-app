@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import { createResource, fetchJson, useResource } from '../lib/resource';
 import { BordersEndpointData } from '../util/types';
 
 export interface SchoolDistrictSource {
@@ -61,36 +61,25 @@ export const validateSchoolDistrictArtifact = (
   return artifact;
 };
 
-const fetcher = async (url: string): Promise<SchoolDistrictArtifact> => {
-  const response = await fetch(url, { cache: 'force-cache' });
-  if (!response.ok) {
-    throw new Error(
-      `School district data is unavailable (HTTP ${response.status}).`,
-    );
-  }
-  return validateSchoolDistrictArtifact(await response.json());
-};
+/** The artifact is ~12 MB parsed; one copy is plenty. */
+export const schoolDistricts = createResource(
+  async (url, signal) =>
+    validateSchoolDistrictArtifact(await fetchJson<unknown>(url, signal)),
+  { maxEntries: 1 },
+);
 
 export const usePASchoolDistricts = () => {
-  const { data, error, mutate } = useSWR<SchoolDistrictArtifact>(
+  const { value, isLoading, error, retry } = useResource(
+    schoolDistricts,
     PA_SCHOOL_DISTRICTS_URL,
-    fetcher,
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
   );
 
-  const isLoading = !error && !data;
-  const isEmpty = Boolean(data && data.data.borders.features.length === 0);
-
   return {
-    data,
+    data: value,
     isLoading,
-    isEmpty,
+    isEmpty: Boolean(value && value.data.borders.features.length === 0),
     isError: error,
-    isStale: Boolean(data && isSourceStale(data.source.vintage)),
-    retry: () => void mutate(),
+    isStale: Boolean(value && isSourceStale(value.source.vintage)),
+    retry,
   } as const;
 };

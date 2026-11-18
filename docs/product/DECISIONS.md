@@ -34,6 +34,22 @@ M4 measurements identified the PA school artifact as the dominant transfer bottl
 
 FingerprintJS is an abuse-control input for the optional feedback endpoint, not a prerequisite for map browsing. It is dynamically loaded only after a visitor opens feedback, reducing ordinary startup code/CPU and privacy surface without weakening the feedback rate limit.
 
+### Classroom-first interface (2026-11 revamp)
+
+The primary audience is high-school teachers projecting the map and students using Chromebooks or phones. The interface follows a "textbook atlas" style: a large, readable year; era-grouped timeline; source-linked facts; no marketing toasts or emoji; projector-friendly contrast; and a focus mode that hides controls. See `docs/product/REVAMP_AUDIT.md`.
+
+### Physical basemap without modern borders
+
+Historical maps use a minimal inline Mapbox style (`lib/basemap.ts`): land, water, major rivers, and soft relief. Modern country borders, roads, and names are anachronistic under historical borders and confused readers; Mapbox Standard was also the heaviest startup cost on low-end GPUs. The school-district map keeps Mapbox Light because modern streets help people locate districts.
+
+### Bounded client data caches
+
+Map payloads are held in small LRU caches (two historical years, one school artifact, sixty Wikipedia summaries), superseded downloads are aborted, and adjacent years are only prefetched into the HTTP cache at idle, never under Save-Data or slow connections. Immutable, content-hashed static assets plus the browser HTTP cache are the long-term cache; no IndexedDB or service-worker cache is used.
+
+### Render-time atlas palette
+
+The pipelines' legacy 30-color assignments are remapped to a muted atlas palette by a Mapbox `match` expression. This keeps published data hashes stable while allowing visual-theme changes without a data refresh.
+
 ## Deferred
 
 ### Domain cutover

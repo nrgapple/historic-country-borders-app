@@ -1,336 +1,128 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Timeline from '../Timeline';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import historicalManifest from '../../data/historical-manifest.json';
+import Timeline, { chooseLabelledTicks, formatRulerLabel } from '../Timeline';
 
-// Mock ReactGA4
-vi.mock('react-ga4', () => ({
-  default: {
-    event: vi.fn(),
-  },
-}));
+// jsdom lacks PointerEvent; a MouseEvent subclass carries clientX and pointerId.
+if (typeof window.PointerEvent === 'undefined') {
+  class PointerEventPolyfill extends MouseEvent {
+    pointerId: number;
+    pointerType: string;
+    constructor(type: string, init: PointerEventInit = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 1;
+      this.pointerType = init.pointerType ?? 'mouse';
+    }
+  }
+  window.PointerEvent = PointerEventPolyfill as unknown as typeof PointerEvent;
+}
 
-// Mock scrollIntoView
-const mockScrollIntoView = vi.fn();
-Element.prototype.scrollIntoView = mockScrollIntoView;
+const years = [-500, -1, 100, 1492, 1500, 1914];
 
-// Mock getBoundingClientRect
-const mockGetBoundingClientRect = vi.fn();
-Element.prototype.getBoundingClientRect = mockGetBoundingClientRect;
+const renderTimeline = (value = 1492) => {
+  const onChange = vi.fn();
+  render(<Timeline years={years} value={value} onChange={onChange} />);
+  return onChange;
+};
 
-describe('Timeline Component', () => {
-  const mockOnChange = vi.fn();
-  const testYears = [
-    2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011,
-  ];
-
-  beforeEach(() => {
-    mockOnChange.mockClear();
-    mockScrollIntoView.mockClear();
-    mockGetBoundingClientRect.mockClear();
-
-    // Default mock implementations - simulate a container where not all buttons fit
-    mockGetBoundingClientRect.mockImplementation(function (this: Element) {
-      if (this.classList?.contains('timeline-years-container')) {
-        return {
-          left: 0,
-          right: 400,
-          width: 400,
-          height: 50,
-          top: 0,
-          bottom: 50,
-        };
-      }
-      if (this.classList?.contains('timeline-year-btn')) {
-        const index = Array.from(
-          (this.parentElement as Element).children,
-        ).indexOf(this);
-        const buttonWidth = 80;
-        return {
-          left: index * buttonWidth,
-          right: (index + 1) * buttonWidth,
-          width: buttonWidth,
-          height: 40,
-          top: 5,
-          bottom: 45,
-        };
-      }
-      return { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
-    });
+describe('Timeline', () => {
+  it('shows the selected year and its neighbours', () => {
+    renderTimeline();
+    const slider = screen.getByRole('slider', { name: 'Map year' });
+    expect(slider).toHaveAttribute('aria-valuetext', '1492 AD');
+    expect(slider).toHaveAttribute('aria-valuenow', '3');
+    expect(
+      screen.getByRole('button', { name: 'Previous year: 100 AD' }),
+    ).toBeEnabled();
+    expect(
+      screen.getByRole('button', { name: 'Next year: 1500 AD' }),
+    ).toBeEnabled();
+    expect(screen.getAllByText('Medieval').length).toBeGreaterThan(0);
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+  it('steps with the previous and next buttons', () => {
+    const onChange = renderTimeline();
+    fireEvent.click(screen.getByRole('button', { name: /Previous year/ }));
+    expect(onChange).toHaveBeenLastCalledWith(100, 'step');
+    fireEvent.click(screen.getByRole('button', { name: /Next year/ }));
+    expect(onChange).toHaveBeenLastCalledWith(1500, 'step');
   });
 
-  const renderTimeline = (index = 0) => {
-    return render(
-      <Timeline index={index} onChange={mockOnChange} years={testYears} />,
-    );
-  };
-
-  describe('Initial Rendering', () => {
-    it('renders timeline with correct current year in display', () => {
-      renderTimeline(0);
-      const currentYearDisplay = screen.getByText('2020', {
-        selector: '.timeline-current-year',
-      });
-      expect(currentYearDisplay).toBeInTheDocument();
-    });
-
-    it('renders all year buttons', () => {
-      renderTimeline(0);
-      testYears.forEach((year) => {
-        expect(screen.getByLabelText(`Go to year ${year}`)).toBeInTheDocument();
-      });
-    });
-
-    it('highlights the active year', () => {
-      renderTimeline(2);
-      const activeButton = screen.getByLabelText('Go to year 2018');
-      expect(activeButton).toHaveClass('active');
-    });
+  it('disables stepping past either end', () => {
+    renderTimeline(-500);
+    expect(
+      screen.getByRole('button', { name: 'Earliest year' }),
+    ).toBeDisabled();
   });
 
-  describe('Year Selection', () => {
-    it('calls onChange when a year button is clicked', () => {
-      renderTimeline(0);
-      const yearButton = screen.getByLabelText('Go to year 2018');
-      fireEvent.click(yearButton);
-      expect(mockOnChange).toHaveBeenCalledWith(2);
-    });
-
-    it('does not call onChange when arrow buttons are clicked', () => {
-      renderTimeline(0);
-      const nextButton = screen.getByLabelText('Next page of years');
-      fireEvent.click(nextButton);
-      expect(mockOnChange).not.toHaveBeenCalled();
-    });
+  it('supports slider keyboard interaction', () => {
+    const onChange = renderTimeline();
+    const slider = screen.getByRole('slider');
+    fireEvent.keyDown(slider, { key: 'ArrowRight' });
+    expect(onChange).toHaveBeenLastCalledWith(1500, 'keyboard');
+    fireEvent.keyDown(slider, { key: 'Home' });
+    expect(onChange).toHaveBeenLastCalledWith(-500, 'keyboard');
+    fireEvent.keyDown(slider, { key: 'End' });
+    expect(onChange).toHaveBeenLastCalledWith(1914, 'keyboard');
   });
 
-  describe('Arrow Button Scrolling', () => {
-    it('scrolls timeline when next arrow is clicked', async () => {
-      renderTimeline(0);
+  it('moves through time with page-level arrow keys but not while typing', () => {
+    const onChange = renderTimeline();
+    fireEvent.keyDown(document.body, { key: 'ArrowLeft' });
+    expect(onChange).toHaveBeenLastCalledWith(100, 'keyboard');
+    fireEvent.keyDown(document.body, { key: 'd' });
+    expect(onChange).toHaveBeenLastCalledWith(1500, 'keyboard');
 
-      await waitFor(() => {
-        const nextButton = screen.getByLabelText('Next page of years');
-        expect(nextButton).toBeInTheDocument();
-      });
-
-      const nextButton = screen.getByLabelText('Next page of years');
-
-      // Click the button - it may or may not call scrollIntoView depending on button state
-      // The important thing is that the component doesn't crash
-      fireEvent.click(nextButton);
-
-      // If the button is enabled and can scroll, scrollIntoView should be called
-      // If the button is disabled, it won't be called, and that's also valid behavior
-      // So we just ensure the component is still functional
-      expect(nextButton).toBeInTheDocument();
-    });
-
-    it('scrolls timeline when previous arrow is clicked with appropriate setup', async () => {
-      renderTimeline(5);
-
-      // Mock scenario where we can scroll previous (some buttons hidden to left)
-      mockGetBoundingClientRect.mockImplementation(function (this: Element) {
-        if (this.classList?.contains('timeline-years-container')) {
-          return {
-            left: 0,
-            right: 400,
-            width: 400,
-            height: 50,
-            top: 0,
-            bottom: 50,
-          };
-        }
-        if (this.classList?.contains('timeline-year-btn')) {
-          const index = Array.from(
-            (this.parentElement as Element).children,
-          ).indexOf(this);
-          const buttonWidth = 80;
-          // Simulate scroll position where some buttons are hidden to the left
-          const scrollOffset = 200;
-          return {
-            left: index * buttonWidth - scrollOffset,
-            right: (index + 1) * buttonWidth - scrollOffset,
-            width: buttonWidth,
-            height: 40,
-            top: 5,
-            bottom: 45,
-          };
-        }
-        return { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
-      });
-
-      await waitFor(() => {
-        const prevButton = screen.getByLabelText('Previous page of years');
-        expect(prevButton).toBeInTheDocument();
-      });
-
-      const prevButton = screen.getByLabelText('Previous page of years');
-      fireEvent.click(prevButton);
-
-      expect(mockScrollIntoView).toHaveBeenCalled();
-    });
+    onChange.mockClear();
+    const input = document.createElement('input');
+    document.body.appendChild(input);
+    fireEvent.keyDown(input, { key: 'ArrowLeft' });
+    fireEvent.keyDown(document.body, { key: 'ArrowLeft', metaKey: true });
+    expect(onChange).not.toHaveBeenCalled();
+    input.remove();
   });
 
-  describe('Button State Management', () => {
-    it('updates button states when manually scrolling', async () => {
-      const { container } = renderTimeline(0);
-      const scrollContainer = container.querySelector(
-        '.timeline-years-container',
+  it('selects the year under the pointer on release', () => {
+    const onChange = renderTimeline();
+    const slider = screen.getByRole('slider');
+    slider.getBoundingClientRect = () =>
+      ({ left: 0, width: 600, top: 0, height: 36 }) as DOMRect;
+    fireEvent.pointerDown(slider, { button: 0, clientX: 10, pointerId: 1 });
+    fireEvent.pointerMove(slider, { clientX: 590, pointerId: 1 });
+    expect(onChange).not.toHaveBeenCalled();
+    fireEvent.pointerUp(slider, { clientX: 590, pointerId: 1 });
+    expect(onChange).toHaveBeenCalledWith(1914, 'track');
+  });
+});
+
+describe('ruler labels', () => {
+  it('abbreviates deep-time years', () => {
+    expect(formatRulerLabel(-123000)).toBe('123k BC');
+    expect(formatRulerLabel(-3000)).toBe('3,000 BC');
+    expect(formatRulerLabel(1492)).toBe('1492');
+  });
+
+  it('never lets chosen labels overlap and always labels both ends', () => {
+    const all = historicalManifest.years;
+    [320, 768, 1200].forEach((width) => {
+      const chosen = Array.from(chooseLabelledTicks(all, width)).sort(
+        (a, b) => a - b,
       );
-
-      // Trigger scroll event
-      if (scrollContainer) {
-        fireEvent.scroll(scrollContainer);
-      }
-
-      // The component should handle the scroll event without errors
-      await waitFor(() => {
-        const prevButton = screen.getByLabelText('Previous page of years');
-        const nextButton = screen.getByLabelText('Next page of years');
-        expect(prevButton).toBeInTheDocument();
-        expect(nextButton).toBeInTheDocument();
+      const step = width / all.length;
+      const extent = (index: number) => {
+        const w = formatRulerLabel(all[index]).length * 6.6 + 14;
+        const c = (index + 0.5) * step;
+        if (index === 0) return [c - 4, c - 4 + w];
+        if (index === all.length - 1) return [c + 4 - w, c + 4];
+        return [c - w / 2, c + w / 2];
+      };
+      chosen.slice(1).forEach((index, i) => {
+        expect(extent(index)[0]).toBeGreaterThanOrEqual(extent(chosen[i])[1]);
       });
+      expect(chosen[0]).toBe(0);
+      expect(chosen[chosen.length - 1]).toBe(all.length - 1);
     });
-
-    it('handles button states correctly with different scroll positions', async () => {
-      const { container } = renderTimeline(0);
-
-      // Mock all buttons visible (wide container scenario)
-      mockGetBoundingClientRect.mockImplementation(function (this: Element) {
-        if (this.classList?.contains('timeline-years-container')) {
-          return {
-            left: 0,
-            right: 1000,
-            width: 1000,
-            height: 50,
-            top: 0,
-            bottom: 50,
-          };
-        }
-        if (this.classList?.contains('timeline-year-btn')) {
-          const index = Array.from(
-            (this.parentElement as Element).children,
-          ).indexOf(this);
-          return {
-            left: index * 80,
-            right: (index + 1) * 80,
-            width: 80,
-            height: 40,
-            top: 5,
-            bottom: 45,
-          };
-        }
-        return { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
-      });
-
-      const scrollContainer = container.querySelector(
-        '.timeline-years-container',
-      );
-      if (scrollContainer) {
-        fireEvent.scroll(scrollContainer);
-      }
-
-      await waitFor(() => {
-        const prevButton = screen.getByLabelText('Previous page of years');
-        const nextButton = screen.getByLabelText('Next page of years');
-        // In this scenario, both buttons should be disabled since all years are visible
-        expect(prevButton).toBeDisabled();
-        expect(nextButton).toBeDisabled();
-      });
-    });
-  });
-
-  describe('Window Resize Handling', () => {
-    it('recalculates visible years on window resize', async () => {
-      renderTimeline(0);
-
-      // Change container size
-      mockGetBoundingClientRect.mockImplementation(function (this: Element) {
-        if (this.classList?.contains('timeline-years-container')) {
-          return {
-            left: 0,
-            right: 300,
-            width: 300,
-            height: 50,
-            top: 0,
-            bottom: 50,
-          };
-        }
-        if (this.classList?.contains('timeline-year-btn')) {
-          const index = Array.from(
-            (this.parentElement as Element).children,
-          ).indexOf(this);
-          return {
-            left: index * 80,
-            right: (index + 1) * 80,
-            width: 80,
-            height: 40,
-            top: 5,
-            bottom: 45,
-          };
-        }
-        return { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
-      });
-
-      // Trigger resize
-      fireEvent(window, new Event('resize'));
-
-      // Should trigger recalculation (test passes if no errors thrown)
-      await waitFor(() => {
-        const currentYearDisplay = screen.getByText('2020', {
-          selector: '.timeline-current-year',
-        });
-        expect(currentYearDisplay).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('has proper aria labels for navigation buttons', () => {
-      renderTimeline(0);
-      expect(
-        screen.getByLabelText('Previous page of years'),
-      ).toBeInTheDocument();
-      expect(screen.getByLabelText('Next page of years')).toBeInTheDocument();
-    });
-
-    it('has proper aria labels for year buttons', () => {
-      renderTimeline(0);
-      testYears.forEach((year) => {
-        expect(screen.getByLabelText(`Go to year ${year}`)).toBeInTheDocument();
-      });
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('handles empty years array gracefully', () => {
-      const { container } = render(
-        <Timeline index={0} onChange={mockOnChange} years={[]} />,
-      );
-
-      const prevButton = screen.getByLabelText('Previous page of years');
-      const nextButton = screen.getByLabelText('Next page of years');
-      expect(prevButton).toBeDisabled();
-      expect(nextButton).toBeDisabled();
-
-      // Should not crash
-      expect(container).toBeInTheDocument();
-    });
-
-    it('handles single year', () => {
-      render(<Timeline index={0} onChange={mockOnChange} years={[2020]} />);
-
-      const yearButton = screen.getByLabelText('Go to year 2020');
-      expect(yearButton).toBeInTheDocument();
-
-      const prevButton = screen.getByLabelText('Previous page of years');
-      const nextButton = screen.getByLabelText('Next page of years');
-      expect(prevButton).toBeDisabled();
-      expect(nextButton).toBeDisabled();
-    });
+    expect(chooseLabelledTicks(all, 0).size).toBe(0);
   });
 });

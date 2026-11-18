@@ -2,6 +2,8 @@
 
 [Historic Borders](https://historicborders.app/) is an interactive map for exploring selected political-border snapshots from 123,000 BC through 2010. Select a place to read a source-backed Wikipedia summary, move through the timeline, or explore the Pennsylvania school-district map.
 
+It is designed to work like a textbook atlas for classrooms: readable on a projector, simple on a Chromebook or phone, and every view is shareable by URL (see [docs/QUERY_PARAMS.md](docs/QUERY_PARAMS.md)). Keyboard: ← / → change year.
+
 Historical and administrative boundaries are third-party data and may be approximate, disputed, or incomplete. Follow the in-app source links and consult original sources for academic or legal use.
 
 ## Requirements
@@ -57,7 +59,8 @@ The application exports static HTML and committed map assets for Cloudflare Work
 - Historical map data: [source, pin, validation, and uncertainty](docs/HISTORICAL_DATA.md)
 - Country descriptions: [Wikipedia](https://www.wikipedia.org/)
 - Pennsylvania districts: PASDA (source, vintage, and limitations are documented in [docs/PA_SCHOOL_DISTRICTS.md](docs/PA_SCHOOL_DISTRICTS.md))
-- Maps: [Mapbox](https://www.mapbox.com/)
+- Maps: [Mapbox](https://www.mapbox.com/) GL JS; historical maps use a minimal physical basemap without modern borders (`lib/basemap.ts`)
+- Product audit and design rationale: [docs/product/REVAMP_AUDIT.md](docs/product/REVAMP_AUDIT.md)
 
 See [PRODUCT.md](PRODUCT.md), [docs/UPGRADE_HARNESS_PLAN.md](docs/UPGRADE_HARNESS_PLAN.md), and [docs/product/DECISIONS.md](docs/product/DECISIONS.md) for product and architecture constraints.
 

@@ -1,34 +1,35 @@
 import Link from 'next/link';
 import Layout from '../components/Layout';
+import { BrandMark } from '../components/Icon';
 
 export default function NotFoundPage() {
   return (
     <Layout
       title="Map not found"
       description="That historical map year is not available."
-      url="https://historicborders.app/404"
+      path="/404"
+      noindex
     >
-      <main
-        style={{
-          maxWidth: '42rem',
-          margin: '10vh auto',
-          padding: '2rem',
-          fontFamily: "'Times New Roman', serif",
-          color: '#654321',
-        }}
-      >
-        <h1>That map is not available</h1>
-        <p>
-          The year or page in this link is not one of the published Historic
-          Borders maps.
-        </p>
-        <p>
-          <Link href="/">Explore an available historical year</Link> or{' '}
-          <Link href="/pa/school-districts">
-            open Pennsylvania school districts
-          </Link>
-          .
-        </p>
+      <main className="landing">
+        <div className="landing__inner">
+          <p className="landing__brand">
+            <BrandMark size={28} />
+            Historic Borders
+          </p>
+          <h1 className="landing__title">That map is not available</h1>
+          <p className="landing__lede">
+            The year or page in this link is not one of the published Historic
+            Borders maps.
+          </p>
+          <p className="landing__actions">
+            <Link className="button button--primary" href="/">
+              Explore an available historical year
+            </Link>
+            <Link className="button" href="/pa/school-districts">
+              Open Pennsylvania school districts
+            </Link>
+          </p>
+        </div>
       </main>
     </Layout>
   );

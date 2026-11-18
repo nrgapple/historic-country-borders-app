@@ -1,9 +1,9 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { SWRConfig } from 'swr';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   isSourceStale,
+  schoolDistricts,
   usePASchoolDistricts,
   validateSchoolDistrictArtifact,
 } from '../../hooks/usePASchoolDistricts';
@@ -62,12 +62,7 @@ const artifact = {
   places: { type: 'FeatureCollection', features: [] },
 };
 
-const wrapper = ({ children }: React.PropsWithChildren) => (
-  <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
-    {children}
-  </SWRConfig>
-);
-
+beforeEach(() => schoolDistricts.clear());
 afterEach(() => vi.unstubAllGlobals());
 
 describe('usePASchoolDistricts', () => {
@@ -76,15 +71,16 @@ describe('usePASchoolDistricts', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => artifact }),
     );
-    const { result } = renderHook(() => usePASchoolDistricts(), { wrapper });
+    const { result } = renderHook(() => usePASchoolDistricts());
 
     expect(result.current.isLoading).toBe(true);
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.data?.data.borders.features).toHaveLength(1);
     expect(result.current.isEmpty).toBe(false);
-    expect(fetch).toHaveBeenCalledWith('/data/pa-school-districts.json', {
-      cache: 'force-cache',
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      '/data/pa-school-districts.json',
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
   });
 
   it('reports empty and malformed artifacts distinctly', async () => {
@@ -95,7 +91,7 @@ describe('usePASchoolDistricts', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => empty }),
     );
-    const emptyResult = renderHook(() => usePASchoolDistricts(), { wrapper });
+    const emptyResult = renderHook(() => usePASchoolDistricts());
     await waitFor(() => expect(emptyResult.result.current.isEmpty).toBe(true));
 
     expect(() => validateSchoolDistrictArtifact({ schemaVersion: 1 })).toThrow(
@@ -109,9 +105,8 @@ describe('usePASchoolDistricts', () => {
         json: async () => ({ schemaVersion: 1 }),
       }),
     );
-    const malformedResult = renderHook(() => usePASchoolDistricts(), {
-      wrapper,
-    });
+    schoolDistricts.clear();
+    const malformedResult = renderHook(() => usePASchoolDistricts());
     await waitFor(() =>
       expect(malformedResult.result.current.isError).toBeTruthy(),
     );
@@ -122,7 +117,7 @@ describe('usePASchoolDistricts', () => {
       'fetch',
       vi.fn().mockResolvedValue({ ok: false, status: 503 }),
     );
-    const { result } = renderHook(() => usePASchoolDistricts(), { wrapper });
+    const { result } = renderHook(() => usePASchoolDistricts());
     await waitFor(() => expect(result.current.isError).toBeTruthy());
     expect(result.current.isLoading).toBe(false);
     expect(result.current.retry).toEqual(expect.any(Function));
@@ -135,7 +130,6 @@ describe('usePASchoolDistricts', () => {
     vi.stubGlobal('fetch', fetchMock);
     const { result } = renderHook(
       () => [usePASchoolDistricts(), usePASchoolDistricts()] as const,
-      { wrapper },
     );
     await waitFor(() => expect(result.current[1].data).toBeTruthy());
     expect(fetchMock).toHaveBeenCalledOnce();

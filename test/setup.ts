@@ -62,4 +62,5 @@ vi.mock('react-map-gl', () => ({
   Layer: vi.fn(() => null),
   Popup: vi.fn(({ children }) => children),
   NavigationControl: vi.fn(() => null),
+  useMap: vi.fn(() => ({ current: undefined })),
 }));

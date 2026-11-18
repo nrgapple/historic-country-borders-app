@@ -1,36 +1,36 @@
 import React, {
   createContext,
+  ReactNode,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
-  ReactNode,
 } from 'react';
-import ReactGA4 from 'react-ga4';
+import { trackEvent } from '../lib/analytics';
 
 export type TextSize = 'small' | 'medium' | 'large';
 export type TextCase = 'regular' | 'upper';
 
-interface Settings {
+export interface Settings {
   textSize: TextSize;
   textCase: TextCase;
+  /** Fill opacity for countries and districts, 0.1–1. */
   countryOpacity: number;
+  /** Border width preference, 0–4. */
   borderThickness: number;
   showLabels: boolean;
 }
 
 interface SettingsContextType {
   settings: Settings;
-  updateSettings: (newSettings: Partial<Settings>) => void;
+  updateSettings: (changes: Partial<Settings>) => void;
   resetToDefaults: () => void;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(
-  undefined,
-);
+export const STORAGE_KEY = 'historic-borders-settings';
 
-const STORAGE_KEY = 'historic-borders-settings';
-
-const DEFAULT_SETTINGS: Settings = {
+export const DEFAULT_SETTINGS: Settings = {
   textSize: 'medium',
   textCase: 'regular',
   countryOpacity: 0.7,
@@ -38,129 +38,85 @@ const DEFAULT_SETTINGS: Settings = {
   showLabels: true,
 };
 
-const getInitialSettings = (): Settings => {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
+const inRange = (value: unknown, min: number, max: number) =>
+  typeof value === 'number' && value >= min && value <= max;
 
+/** Accepts only known, in-range values; anything else falls back to defaults. */
+export const sanitizeSettings = (value: unknown): Settings => {
+  const raw = (value && typeof value === 'object' ? value : {}) as Record<
+    string,
+    unknown
+  >;
+  return {
+    textSize: ['small', 'medium', 'large'].includes(raw.textSize as string)
+      ? (raw.textSize as TextSize)
+      : DEFAULT_SETTINGS.textSize,
+    textCase: ['regular', 'upper'].includes(raw.textCase as string)
+      ? (raw.textCase as TextCase)
+      : DEFAULT_SETTINGS.textCase,
+    countryOpacity: inRange(raw.countryOpacity, 0.1, 1)
+      ? (raw.countryOpacity as number)
+      : DEFAULT_SETTINGS.countryOpacity,
+    borderThickness: inRange(raw.borderThickness, 0, 4)
+      ? (raw.borderThickness as number)
+      : DEFAULT_SETTINGS.borderThickness,
+    showLabels:
+      typeof raw.showLabels === 'boolean'
+        ? raw.showLabels
+        : DEFAULT_SETTINGS.showLabels,
+  };
+};
+
+const readStoredSettings = (): Settings => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return DEFAULT_SETTINGS;
-
-    const parsed = JSON.parse(stored);
-    return {
-      textSize: ['small', 'medium', 'large'].includes(parsed.textSize)
-        ? parsed.textSize
-        : DEFAULT_SETTINGS.textSize,
-      textCase: ['regular', 'upper'].includes(parsed.textCase)
-        ? parsed.textCase
-        : DEFAULT_SETTINGS.textCase,
-      countryOpacity:
-        typeof parsed.countryOpacity === 'number' &&
-        parsed.countryOpacity >= 0.1 &&
-        parsed.countryOpacity <= 1
-          ? parsed.countryOpacity
-          : DEFAULT_SETTINGS.countryOpacity,
-      borderThickness:
-        typeof parsed.borderThickness === 'number' &&
-        parsed.borderThickness >= 0 &&
-        parsed.borderThickness <= 4
-          ? parsed.borderThickness
-          : DEFAULT_SETTINGS.borderThickness,
-      showLabels:
-        typeof parsed.showLabels === 'boolean'
-          ? parsed.showLabels
-          : DEFAULT_SETTINGS.showLabels,
-    };
-  } catch (error) {
-    console.warn('Failed to read settings from localStorage:', error);
-    ReactGA4.event('settings_storage_error', {
-      error_type: 'read_error',
-      storage_type: 'localStorage',
-      operation: 'settings_load',
-      error_name: error instanceof Error ? error.name : 'unknown_error',
-    });
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored ? sanitizeSettings(JSON.parse(stored)) : DEFAULT_SETTINGS;
+  } catch {
     return DEFAULT_SETTINGS;
   }
 };
 
-const saveSettings = (settings: Settings) => {
-  if (typeof window === 'undefined') return;
-
+const storeSettings = (settings: Settings) => {
   try {
-    const startTime = performance.now();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    ReactGA4.event('settings_saved', {
-      storage_type: 'localStorage',
-      settings_count: Object.keys(settings).length,
-      save_duration_ms: Math.round(performance.now() - startTime),
-      operation: 'settings_save',
-    });
-  } catch (error) {
-    console.warn('Failed to save settings to localStorage:', error);
-    ReactGA4.event('settings_storage_error', {
-      error_type: 'save_error',
-      storage_type: 'localStorage',
-      operation: 'settings_save',
-      error_name: error instanceof Error ? error.name : 'unknown_error',
-    });
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  } catch {
+    // Private browsing or full storage: settings still apply for this visit.
   }
 };
 
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
+
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [isInitialized, setIsInitialized] = useState(false);
+  // Start from defaults so server and first client render match, then restore.
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
-    const restored = getInitialSettings();
-    setSettings(restored);
-    setIsInitialized(true);
-    ReactGA4.event('settings_restored', {
-      source: 'localStorage',
-      settings_count: Object.keys(restored).length,
-      has_custom_settings:
-        JSON.stringify(restored) !== JSON.stringify(DEFAULT_SETTINGS),
-    });
+    setSettings(readStoredSettings());
   }, []);
 
-  const updateSettings = (changes: Partial<Settings>) => {
-    const updated = { ...settings, ...changes };
-    setSettings(updated);
-    saveSettings(updated);
-
-    Object.entries(changes).forEach(([key, newValue]) => {
-      const oldValue = settings[key as keyof Settings];
-      ReactGA4.event('setting_changed', {
-        setting_name: key,
-        previous_value: String(oldValue),
-        new_value: String(newValue),
-        setting_type: typeof newValue,
-        change_method: 'settings_update',
-      });
+  const updateSettings = useCallback((changes: Partial<Settings>) => {
+    setSettings((current) => {
+      const next = sanitizeSettings({ ...current, ...changes });
+      storeSettings(next);
+      return next;
     });
-  };
+    Object.entries(changes).forEach(([name, value]) =>
+      trackEvent('setting_changed', { name, value: String(value) }),
+    );
+  }, []);
 
-  const resetToDefaults = () => {
-    const changedCount = Object.keys(DEFAULT_SETTINGS).filter(
-      (key) =>
-        settings[key as keyof Settings] !==
-        DEFAULT_SETTINGS[key as keyof Settings],
-    ).length;
+  const resetToDefaults = useCallback(() => {
     setSettings(DEFAULT_SETTINGS);
-    saveSettings(DEFAULT_SETTINGS);
-    ReactGA4.event('settings_reset', {
-      reset_target: 'defaults',
-      previous_customizations: changedCount,
-      reset_method: 'manual_reset',
-      had_customizations: changedCount > 0,
-    });
-  };
+    storeSettings(DEFAULT_SETTINGS);
+    trackEvent('settings_reset');
+  }, []);
 
-  const value = isInitialized
-    ? { settings, updateSettings, resetToDefaults }
-    : {
-        settings: DEFAULT_SETTINGS,
-        updateSettings: () => {},
-        resetToDefaults: () => {},
-      };
+  const value = useMemo(
+    () => ({ settings, updateSettings, resetToDefaults }),
+    [settings, updateSettings, resetToDefaults],
+  );
 
   return (
     <SettingsContext.Provider value={value}>
