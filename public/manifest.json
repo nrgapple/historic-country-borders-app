@@ -24,11 +24,7 @@
       "type": "image/png"
     }
   ],
-  "categories": [
-    "education",
-    "reference",
-    "utilities"
-  ],
+  "categories": ["education", "reference", "utilities"],
   "lang": "en",
   "dir": "ltr"
 }

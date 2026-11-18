@@ -8,8 +8,8 @@ const budgets = {
   totalJavaScript: 2100 * 1024,
   largestJavaScriptChunk: 1550 * 1024,
   initialRouteJavaScript: 400 * 1024,
-  historicalDataTotal: 38 * 1024 * 1024,
-  historicalDataLargest: 2900 * 1024,
+  historicalDataTotal: 32 * 1024 * 1024,
+  historicalDataLargest: 2600 * 1024,
   schoolDataRaw: 12000 * 1024,
   schoolDataBrotli: 1850 * 1024,
 };

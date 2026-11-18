@@ -153,10 +153,10 @@ describe('historical data pipeline', () => {
     });
     expect(border.properties.COLOR).toMatch(/^#[0-9A-F]{6}$/);
     const [label] = payload.data.labels.features;
-    expect(label.properties).toMatchObject({
-      NAME: 'Precisia',
-      COLOR: border.properties.COLOR,
-    });
+    // Labels carry only what the label layer reads.
+    expect(Object.keys(label.properties).sort()).toEqual(['AREA', 'NAME']);
+    expect(label.properties.NAME).toBe('Precisia');
+    expect(label.properties.AREA).toBeGreaterThan(0);
     label.geometry.coordinates.forEach((value: number) =>
       expect(Number(value.toFixed(5))).toBe(value),
     );
@@ -167,6 +167,57 @@ describe('historical data pipeline', () => {
       10.123456789012345,
     );
     expect(countFallbackRings(payload)).toBe(0);
+  });
+
+  it('omits empty upstream properties from published features', () => {
+    const payload = buildPayload(
+      1000,
+      {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: { NAME: 'Sparse', wikipedia: null, ABBREVN: '' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [0, 0],
+                  [1, 0],
+                  [1, 1],
+                  [0, 0],
+                ],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              name: 'Town',
+              inhabitedSince: 0,
+              inhabitedUntil: null,
+              'name.fr': null,
+            },
+            geometry: { type: 'Point', coordinates: [0.5, 0.5] },
+          },
+        ],
+      },
+    );
+    expect(payload.data.borders.features[0].properties).not.toHaveProperty(
+      'wikipedia',
+    );
+    expect(payload.data.borders.features[0].properties).not.toHaveProperty(
+      'ABBREVN',
+    );
+    expect(payload.places.features[0].properties).toEqual({
+      name: 'Town',
+      inhabitedSince: 0,
+    });
   });
 
   it('drops consecutive duplicate positions created by rounding', () => {

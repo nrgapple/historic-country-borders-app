@@ -62,7 +62,7 @@ Final deterministic runs had zero navigation/map readiness errors. The school st
 - total generated JavaScript <= 2,100 KiB;
 - largest JavaScript chunk <= 1,550 KiB;
 - initial JavaScript for each map route <= 400 KiB;
-- historical payloads <= 38 MiB total and <= 2,900 KiB each (tightened from 55 MiB/3,500 KiB by the addendum below);
+- historical payloads <= 32 MiB total and <= 2,600 KiB each (tightened from 55 MiB/3,500 KiB by the addenda below);
 - school payload <= 12,000 KiB raw and <= 1,850 KiB Brotli.
 
 Current measured values pass: 2,044.6 KiB total JS, 1,496.2 KiB largest chunk, 382.4/359.8 KiB initial map-route JS, 54,311.9 KiB historical total, 3,299.0 KiB largest historical payload, and 11,742.0/1,755.3 KiB raw/Brotli school data.
@@ -98,3 +98,15 @@ Observed facts: the historical pipeline now publishes coordinates at five decima
 All byte values are in bytes. Feature, label, place, and zero-area counts are unchanged in every year. 208 rings in 28 years would collapse below four positions after rounding and keep their original coordinates. All of them are upstream slivers less than a metre wide or already degenerate. Historical route-initial JavaScript is unchanged (382.5 KiB). The browser bundles `data/historical-assets.json`, so the fallback count is recorded once, not per year. `yarn size:check` now enforces 38 MiB total and 2,900 KiB largest. Those limits leave about 7% headroom.
 
 Assumption: the smaller input should lower parse time and memory, most of all on low-end devices. No production Web Vitals were measured for this change.
+
+## Addendum: compact properties and the classroom revamp (2026-11-18 UTC)
+
+Observed facts:
+
+- **Payload properties:**
+  - Published places drop null, undefined, and empty properties. Upstream carries about 130 such keys per place.
+  - Borders drop empty properties too.
+  - Labels now carry only `NAME` and `AREA`, the two fields the label layer reads. Previously they duplicated every border property.
+- **Payload size:** the total is 30,900,555 bytes raw, down from 37,207,476 after rounding and 55,615,413 originally (−44.4% overall). The largest payload (1492) is 2,505,665 bytes raw and 530,596 bytes Brotli. The Brotli total barely changed (7,220,844): repetitive null keys compress well, but browsers no longer have to parse them.
+- **JavaScript:** in the classroom revamp, Mapbox GL is a dynamically loaded chunk. Route-initial JavaScript for `/year/[year]` fell from 382.5 KiB to 332.5 KiB raw, and for `/pa/school-districts` from 359.8 KiB to 308.8 KiB (`yarn size:check`).
+- **Client caching:** the client keeps at most two parsed historical years in memory. Before, SWR kept every visited year for the life of the tab.

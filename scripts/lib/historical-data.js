@@ -226,6 +226,16 @@ function validatePlacesSource(collection) {
   return collection;
 }
 
+// Upstream records carry many always-null keys (about 130 per place). They
+// add transfer and parse cost without information, so they are not published.
+function compactProperties(properties) {
+  return Object.fromEntries(
+    Object.entries(properties || {}).filter(
+      ([, value]) => value !== null && value !== undefined && value !== '',
+    ),
+  );
+}
+
 function processBorders(collection) {
   validateBorderSource(collection);
   const borders = [];
@@ -266,17 +276,17 @@ function processBorders(collection) {
       borders.push({
         type: 'Feature',
         geometry: publishGeometry(feature.geometry, context),
-        properties: { ...feature.properties, NAME: name, COLOR: color },
+        properties: {
+          ...compactProperties(feature.properties),
+          NAME: name,
+          COLOR: color,
+        },
       });
       labels.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: label.coordinates },
-        properties: {
-          ...feature.properties,
-          NAME: name,
-          COLOR: color,
-          AREA: label.area,
-        },
+        // Labels need only text and a size priority; details live on borders.
+        properties: { NAME: name, AREA: label.area },
       });
     });
 
@@ -302,6 +312,7 @@ function placesForYear(year, places) {
       })
       .map((feature) => ({
         ...feature,
+        properties: compactProperties(feature.properties),
         geometry: {
           ...feature.geometry,
           coordinates: roundPosition(feature.geometry.coordinates),
