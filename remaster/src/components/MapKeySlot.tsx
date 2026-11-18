@@ -45,7 +45,10 @@ const loadGlobeLand = (): Promise<Ring[]> =>
   loadLand().then((fc) => (fc ? landRings(fc) : []));
 
 export interface MapKeyProps {
-  year: number;
+  /** Year pages: the plate title is the year and its era. */
+  year?: number;
+  /** Other maps (Pennsylvania): the plate title, set explicitly. */
+  plate?: { kicker: string; title: string; sub: string };
   /** The live map, once mounted (from the controller's handle). */
   map?: MapLibreMap | null;
   /** T6's low-power mode: the dependency swatch drops its hatch. */
@@ -70,13 +73,25 @@ export interface MapKeyProps {
  */
 export default function MapKeySlot({
   year,
+  plate,
   map = null,
   lowPower = false,
   onLayout,
   underSheet = false,
 }: MapKeyProps) {
-  const era = eraOf(year);
-  const accent = ERA_TINTS[era.id as EraId]?.ink ?? COLOR.ink;
+  const era = year === undefined ? null : eraOf(year);
+  const accent = era
+    ? (ERA_TINTS[era.id as EraId]?.ink ?? COLOR.ink)
+    : COLOR.ink;
+  const title =
+    plate ??
+    (year !== undefined && era
+      ? {
+          kicker: 'The World in',
+          title: formatYear(year),
+          sub: `${era.label} era`,
+        }
+      : null);
   // null = automatic (open on wide screens, closed on compact ones).
   const [choice, setChoice] = useState<boolean | null>(null);
   const [compact, setCompact] = useState(false);
@@ -174,11 +189,13 @@ export default function MapKeySlot({
             width={128}
             height={128}
           />
-          <div className="map-key__plate">
-            <p className="map-key__kicker">The World in</p>
-            <p className="map-key__title">{formatYear(year)}</p>
-            <p className="map-key__sub">{era.label} era</p>
-          </div>
+          {title && (
+            <div className="map-key__plate">
+              <p className="map-key__kicker">{title.kicker}</p>
+              <p className="map-key__title">{title.title}</p>
+              <p className="map-key__sub">{title.sub}</p>
+            </div>
+          )}
         </div>
         {legend.length > 0 && (
           <ul className="map-key__legend" aria-label="Legend">

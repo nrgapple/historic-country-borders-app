@@ -41,7 +41,7 @@ import {
 } from '../adapters/yearData';
 import { loadLand } from '../lib/land';
 import { hasMapView, parseMapView } from '../lib/mapView';
-import { focusPadding, paddingOffset } from '../lib/places';
+import { focusPadding } from '../lib/places';
 import {
   actions,
   getState,
@@ -331,11 +331,13 @@ export function mountMap(container: HTMLElement): MapHandle {
       { padding, maxZoom: 6 },
     );
     if (!camera) return;
-    // Move with `offset` rather than `padding`: padding stays on the camera
-    // and would skew the centre written to shared links.
+    // MapLibre 6 already shifts `camera.center` by the asymmetric padding
+    // (cameraForBoxAndBearing), so adding `offset` would shift it twice. Ease
+    // to the centre and zoom only: no padding stays on the camera, so the
+    // centre written to shared links stays the map's centre.
     map.easeTo({
-      ...camera,
-      offset: paddingOffset(padding),
+      center: camera.center,
+      zoom: camera.zoom,
       duration: prefersReducedMotion() ? 0 : 900,
     });
   };

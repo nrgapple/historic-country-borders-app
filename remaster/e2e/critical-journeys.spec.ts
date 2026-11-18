@@ -5,7 +5,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
  * to the Astro build. Year data is intercepted with one fixture territory in
  * T1's split format; the basemap, glyphs and fonts are served from the
  * build itself (first-party), and every third-party request is blocked.
- * The Pennsylvania journeys stay with the current app until the PA port (P5).
+ * The Pennsylvania journeys are in pa-school-districts.spec.ts (P5).
  */
 
 const yearOf = (url: string) => {

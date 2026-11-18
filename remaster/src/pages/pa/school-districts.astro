@@ -1,0 +1,54 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Base from '../../layouts/Base.astro';
+import SchoolDistrictsAtlas from '../../pa/SchoolDistrictsAtlas';
+import pa from '../../data/pa.json';
+import { countyName, districtFullName, formatVintage } from '../../pa/districts';
+import type { DistrictIndex } from '../../pa/usePASchoolDistricts';
+
+// Build-time read of the district index: crawlers, no-JS and no-WebGL
+// visitors get every district, grouped by county, with its provenance.
+const index: DistrictIndex = JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), 'public', pa.indexUrl), 'utf8'),
+);
+const byCounty = new Map<string, string[]>();
+for (const d of index.districts) {
+  const county = countyName(d) ?? 'Other';
+  if (!byCounty.has(county)) byCounty.set(county, []);
+  byCounty.get(county)!.push(districtFullName(d));
+}
+const counties = [...byCounty.entries()]
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([county, names]) => [county, names.sort((a, b) => a.localeCompare(b))] as const);
+const vintage = formatVintage(index.source.vintage);
+---
+<Base
+  title="Pennsylvania school districts map"
+  description={`Interactive map of all ${pa.districtCount} Pennsylvania public school district boundaries, with county, intermediate unit, and career and technical school details.`}
+  path="/pa/school-districts"
+  era="modern"
+  bodyClass="atlas-page"
+  mapPage
+  preload={[{ href: pa.indexUrl, as: 'fetch', type: 'application/json' }]}
+>
+  <noscript><style>.atlas { display: none; } .territories { position: static; }</style></noscript>
+  <SchoolDistrictsAtlas client:load />
+  <section class="territories" id="districts" aria-labelledby="districts-title">
+    <h2 id="districts-title">Pennsylvania’s {pa.districtCount} school districts, by county</h2>
+    <p>
+      Boundaries from the {vintage} Pennsylvania School Districts dataset published by PennDOT and distributed by
+      <a href={index.source.metadataUrl}>PASDA</a>. Boundaries are for reference only: to confirm which school a home is
+      assigned to, contact the school district. To correct a boundary, contact PennDOT through PASDA.
+    </p>
+    <div class="pa-counties">
+      {counties.map(([county, names]) => (
+        <div class="pa-county">
+          <h3>{county}</h3>
+          <ul>{names.map((n) => <li>{n}</li>)}</ul>
+        </div>
+      ))}
+    </div>
+    <p><a href="/year/1914">World history map</a> · <a href="/">Random year</a></p>
+  </section>
+</Base>

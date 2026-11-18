@@ -1,0 +1,35 @@
+{
+  "title": "Pennsylvania street basemap source",
+  "publisher": "Protomaps daily planet build (OpenStreetMap data, Protomaps Basemaps tile schema)",
+  "license": "ODbL-1.0. Map data © OpenStreetMap contributors, https://www.openstreetmap.org/copyright; tile schema by Protomaps (https://protomaps.com).",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "attribution": "<a href=\"https://protomaps.com\">Protomaps</a> © <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>",
+  "retrievedAt": "2026-11-18",
+  "archive": {
+    "url": "https://build.protomaps.com/20260811.pmtiles",
+    "buildDate": "2026-08-11",
+    "basemapsVersion": "4.15.1",
+    "bytes": 137295889397,
+    "etag": "\"e4343a15fa4bf60f81112ba7784a3f73-512\"",
+    "b3sum": "b2aa7f4b1858ec873bd2fb6aff1393ce330ad4d236f2b4f9ad1875e910c1eb8e",
+    "listing": "https://build-metadata.protomaps.dev/builds.json",
+    "note": "Pinned by URL, byte size and etag; the refresh aborts if any differs. Older daily builds are thinned upstream, so this one was chosen because it has already been kept for three months. If it disappears, pick a newer build from the listing, update this record, rerun the refresh and review the diff."
+  },
+  "coverage": {
+    "outer": {
+      "bbox": [-86.5, 34, -68.8, 47.5],
+      "zooms": [0, 8],
+      "note": "The map's maxBounds, so the state fits on a 320 px phone at the minimum zoom."
+    },
+    "margin": {
+      "bbox": [-81.2, 39.2, -74.1, 42.8],
+      "zooms": [9, 10],
+      "note": "Pennsylvania plus about 50 km."
+    },
+    "state": {
+      "zooms": [11, 13],
+      "dilateTiles": 1,
+      "note": "Tiles that touch the union of the 500 PASDA district polygons, grown by one tile (3.7-15 km)."
+    }
+  }
+}

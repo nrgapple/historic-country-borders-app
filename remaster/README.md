@@ -14,7 +14,7 @@ export YARN_CACHE_FOLDER="/Volumes/External SSD/Developer/Caches/yarn"
 export PLAYWRIGHT_BROWSERS_PATH="/Volumes/External SSD/Developer/Caches/ms-playwright"
 yarn install --frozen-lockfile
 
-yarn remaster:build        # data + tokens check + astro build -> remaster/dist (55 pages)
+yarn remaster:build        # data + tokens check + astro build -> remaster/dist (56 pages)
 yarn remaster:preview      # Workers-like server on http://127.0.0.1:4410
 yarn remaster:test         # Vitest (jsdom), React 19
 yarn remaster:test:e2e     # Playwright critical journeys against dist/ (port 4411)
@@ -31,17 +31,19 @@ node remaster/scripts/shoot.mjs
 
 ## Architecture
 
-| Path                                                     | Purpose                                                                                                                                          |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/pages/year/[year].astro`                            | Prerendered year page: SEO head, preloads of the year's files, the island, and a crawlable territory list (also the no-JS / no-WebGL fallback)   |
-| `src/pages/index.astro`                                  | Inline random-year redirect plus a crawlable list of all years                                                                                   |
-| `src/pages/404.astro`, `sitemap.xml.ts`, `robots.txt.ts` | Static 404, sitemap (same shape as `scripts/generate-sitemap.js`), robots from the repository's `public/robots.txt`                              |
-| `src/atlas/store.ts`                                     | The single store and URL contract (below)                                                                                                        |
-| `src/atlas/mapController.ts`                             | Imperative MapLibre controller; subscribes to the store, so camera moves never re-render React                                                   |
-| `src/atlas/Atlas.tsx`                                    | The island: header, map stage, panel, dialogs                                                                                                    |
-| `src/adapters/*`                                         | One module per sibling track (below)                                                                                                             |
-| `src/components/*`                                       | Ported components with per-component CSS, restyled to Direction A                                                                                |
-| `src/styles/tokens.ts`                                   | The one token file. `tokens.css` is generated from it (`yarn --cwd remaster tokens`) and checked at build; the map style imports the same values |
+| Path                                                     | Purpose                                                                                                                                            |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/year/[year].astro`                            | Prerendered year page: SEO head, preloads of the year's files, the island, and a crawlable territory list (also the no-JS / no-WebGL fallback)     |
+| `src/pages/index.astro`                                  | Inline random-year redirect plus a crawlable list of all years                                                                                     |
+| `src/pages/pa/school-districts.astro`                    | Prerendered PA page: the PA island and a crawlable list of all 500 districts by county (also the no-JS / no-WebGL fallback)                        |
+| `src/pa/*`                                               | PA island (`SchoolDistrictsAtlas.tsx`), its MapLibre controller and `pa-tiles://` protocol (`paMap.ts`), style (`paStyle.ts`) and district helpers |
+| `src/pages/404.astro`, `sitemap.xml.ts`, `robots.txt.ts` | Static 404, sitemap (same shape as `scripts/generate-sitemap.js`), robots from the repository's `public/robots.txt`                                |
+| `src/atlas/store.ts`                                     | The single store and URL contract (below)                                                                                                          |
+| `src/atlas/mapController.ts`                             | Imperative MapLibre controller; subscribes to the store, so camera moves never re-render React                                                     |
+| `src/atlas/Atlas.tsx`                                    | The island: header, map stage, panel, dialogs                                                                                                      |
+| `src/adapters/*`                                         | One module per sibling track (below)                                                                                                               |
+| `src/components/*`                                       | Ported components with per-component CSS, restyled to Direction A                                                                                  |
+| `src/styles/tokens.ts`                                   | The one token file. `tokens.css` is generated from it (`yarn --cwd remaster tokens`) and checked at build; the map style imports the same values   |
 
 ### Store and URL contract
 
@@ -63,6 +65,7 @@ Each dependency is read through one module, and every track is integrated:
 | T3 fonts and glyphs    | `src/adapters/glyphs.ts`, `scripts/sync-public.mjs`  | `t3/self-host-fonts-glyphs` @ `5db4b01`: `data/map-fonts.json`, `/fonts/{atlas,map-aliases,projector}.css` |
 | T4 layout suites       | root `playwright.layout.config.ts`                   | `t3/layout-test-harness` @ `5d394e7`; the year heading carries `data-year-heading`                         |
 | T6 Classic-atlas style | `src/adapters/mapStyle.ts`                           | `t3/classic-atlas-map-style` @ `4dab0b1`: imported in place from `remaster-spike/src/atlas/classic/`       |
+| T8 PA street basemap   | `src/data/pa.json`, `scripts/build-pa.mjs`           | `data/pa-basemap-manifest.json` (build `pm-20260811-r1`, docs/PA_BASEMAP.md); district tiles built here    |
 
 Notes:
 
@@ -88,5 +91,5 @@ Notes:
 
 ## Left for later milestones
 
-- **PA school districts (P5).** `/pa/school-districts` is still the current app; the sitemap lists it, and T4's PA layout cases fail against this build until the port.
+- **PA school districts (P5).** Ported: `/pa/school-districts` is an Astro page over the same store and chrome, with T8's street basemap and a district tile tree (docs/PA_BASEMAP.md, docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"). The PA page uses T7's map key with a "Commonwealth of Pennsylvania" plate; a PA-specific legend (washes, streets, county lines) and the PA scale bar are still to do. Check budgets with `yarn size:check --remaster`.
 - **React Compiler.** Not enabled yet; the ported components keep their hand-written memo hooks.

@@ -5675,6 +5675,13 @@ playwright@1.65.1:
   dependencies:
     playwright-core "1.65.1"
 
+pmtiles@4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/pmtiles/-/pmtiles-4.5.0.tgz#09172312c8691e4ce66677f77aeb6c125d33cf32"
+  integrity sha512-CBeD4SoUluFziGdy/8k7FOjQxQy486n+929W/tWophauvMICpkZ26vGBWhDt/6b1FZQWNaf4jFdT/5+q0Wii5w==
+  dependencies:
+    fflate "^0.8.2"
+
 polylabel@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/polylabel/-/polylabel-1.1.0.tgz#9483e64fc7a12a49f43e07e7a06752214ed2a8e7"
@@ -7155,6 +7162,19 @@ vite@6.4.6:
   optionalDependencies:
     fsevents "~2.3.3"
 
+vite@8.3.8, vite@^8.3.6:
+  version "8.3.8"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-8.3.8.tgz#ad713bf2e46c241f344b5e50401297b77a08621d"
+  integrity sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA==
+  dependencies:
+    lightningcss "^1.33.0"
+    picomatch "^4.0.7"
+    postcss "^8.5.32"
+    rolldown "~1.2.18"
+    tinyglobby "^0.2.17"
+  optionalDependencies:
+    fsevents "~2.3.3"
+
 "vite@^5.0.0 || ^6.0.0 || ^7.0.0-0":
   version "6.3.5"
   resolved "https://registry.yarnpkg.com/vite/-/vite-6.3.5.tgz#fec73879013c9c0128c8d284504c6d19410d12a3"
@@ -7166,19 +7186,6 @@ vite@6.4.6:
     postcss "^8.5.3"
     rollup "^4.34.9"
     tinyglobby "^0.2.13"
-  optionalDependencies:
-    fsevents "~2.3.3"
-
-vite@^8.3.6:
-  version "8.3.8"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-8.3.8.tgz#ad713bf2e46c241f344b5e50401297b77a08621d"
-  integrity sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA==
-  dependencies:
-    lightningcss "^1.33.0"
-    picomatch "^4.0.7"
-    postcss "^8.5.32"
-    rolldown "~1.2.18"
-    tinyglobby "^0.2.17"
   optionalDependencies:
     fsevents "~2.3.3"
 

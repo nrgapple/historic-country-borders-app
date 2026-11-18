@@ -8,8 +8,7 @@ export const GET: APIRoute = () =>
   new Response(
     sitemapXml([
       { path: '/', priority: '1.0' },
-      // Still served by the current app until the PA port (P5); listed so the
-      // sitemap stays complete when this build replaces out/ (P4).
+      // The Astro PA page (P5).
       { path: '/pa/school-districts', priority: '0.8' },
       ...historicalManifest.years.map((year) => ({
         path: `/year/${year}`,

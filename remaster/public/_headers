@@ -14,6 +14,11 @@
 /data/context/*
   Cache-Control: public, max-age=31536000, immutable
 
+# PA district index (content-hashed). Its tiles, and T8's street basemap,
+# are under /tiles/* below (docs/PA_BASEMAP.md).
+/data/pa/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /api/feedback
   Cache-Control: no-store
 

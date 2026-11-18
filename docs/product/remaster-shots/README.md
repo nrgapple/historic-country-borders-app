@@ -36,3 +36,20 @@ Retaken with the T7 build (`node remaster/scripts/shoot.mjs`); the `-key-open`/`
 - **Labels, 1914.** Before T7, the German Empire had no name (it touched the Austro-Hungarian name and was dropped) and the Russian Empire was clipped at the right edge at 1440 and missing at 1024 and 390. Now the German Empire's name moves one line up, and the Russian Empire is named in its visible part at every width and at z2.6 and z3.2.
 - **Labels under the key.** At 1024 with the key open, Spain's name moves into the visible part of Spain; Morocco and Spanish Morocco, whose points sit under or beside the key with too little visible land, are hidden rather than drawn half under it. Closing the key brings them back.
 - **Not handled.** Sea and ocean names are not re-anchored (the Atlantic's name runs under the key in `1815-europe-1440x900.png`), and a name clipped at a map edge whose territory is under 100,000 km² or mostly off screen stays clipped (the Ottoman Empire at the right edge of the 1914 phone shot).
+
+## Pennsylvania school districts (P5, T8)
+
+Taken 2026-11-18 the same way (`ONLY=pa node remaster/scripts/shoot.mjs <base>`). The district is selected by `?place=` with no camera in the link, so the app frames it clear of the panel or bottom sheet. Wikipedia is intercepted with fixture text marked as such.
+
+| File                                  | View                                                                                                                                                                                                        |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pa-state-college-1440x900.png`       | State College Area selected, desktop: plate title with the PASDA vintage and source, gazetteer panel with county, IU, CTC and AUN, then Wikipedia, then the boundary source, caveat and correction guidance |
+| `pa-state-college-1024x768.png`       | Same, tablet landscape (finder collapsed to its button)                                                                                                                                                     |
+| `pa-state-college-insets-390x844.png` | Same, phone with simulated 47/34 px insets (CDP), island and home bar drawn: compact "PA school districts · Boundaries Oct 2025" header, district framed above the bottom sheet, ODbL credit at the top     |
+| `pa-camp-hill-streets-1440x900.png`   | Camp Hill selected at z14.6: T8's named residential streets (z14 streets in z12 tiles), the selection band inside the district edge                                                                         |
+| `pa-state-1440x900.png`               | The whole state, nothing selected: district names in small caps lead; cities in spaced roman capitals; overzoomed context outside the state                                                                 |
+
+Notes:
+
+- The map key slot shows a PA plate title only; T7's map key (and its PA form) had not landed on any sibling branch.
+- The OpenStreetMap credit is in the attribution control and the credit strip on every size; About repeats it.
