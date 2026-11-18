@@ -1,12 +1,8 @@
 name: Deploy
 
-# Production deploys happen only from main, after CI has passed for that exact
-# commit. A manual dispatch can redeploy the current main.
+# Manual redeploy of the current main (rebuilds from source). Ordinary
+# deploys run in CI's deploy job right after the remaster job passes.
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -18,10 +14,6 @@ concurrency:
 
 jobs:
   deploy:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
@@ -33,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc

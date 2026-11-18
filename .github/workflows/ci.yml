@@ -8,9 +8,11 @@ on:
 permissions:
   contents: read
 
+# Pull requests cancel superseded runs. Pushes to main never cancel, so a
+# deploy that has started always finishes; the next push deploys after it.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   dependency-review:
@@ -69,12 +71,12 @@ jobs:
 
   layout:
     # Safe-area (iPhone insets), responsive widths and forced-dark suites from
-    # playwright.layout.config.ts. Kept separate so the main validate job stays fast.
+    # playwright.layout.config.ts, run against the production remaster build.
+    # A report, not a deploy gate: the deploy job does not wait for it.
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      NEXT_TELEMETRY_DISABLED: '1'
-      NEXT_PUBLIC_MAPBOX_TOKEN: test-token
+      ASTRO_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,9 +85,20 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: yarn build
+      - run: yarn remaster:build
       - run: yarn playwright install --with-deps chromium webkit
+      - name: Serve the remaster build
+        run: |
+          node remaster/scripts/serve.mjs remaster/dist 4410 > serve.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4410/ > /dev/null && exit 0
+            sleep 1
+          done
+          cat serve.log
+          exit 1
       - run: yarn test:layout
+        env:
+          BASE_URL: http://127.0.0.1:4410
       - name: Upload layout-test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
@@ -98,12 +111,14 @@ jobs:
           retention-days: 7
 
   remaster:
-    # The Astro + MapLibre remaster in remaster/ (not deployed until the P4 cutover).
+    # The production app (Astro + MapLibre, remaster/). Its tested build is
+    # the artifact the deploy job ships.
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      NEXT_TELEMETRY_DISABLED: '1'
       ASTRO_TELEMETRY_DISABLED: '1'
+      # Optional Google Analytics ID, baked into the static bundle.
+      PUBLIC_GA_FOUR: ${{ vars.NEXT_PUBLIC_GA_FOUR }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -113,6 +128,16 @@ jobs:
       - run: corepack enable
       - run: yarn install --frozen-lockfile
       - run: yarn remaster:build
+      - run: node scripts/validate-remaster-dist.js
+      - name: Keep the build for the deploy job
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: remaster-dist
+          path: remaster/dist/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
       - run: yarn remaster:type-check
       - run: yarn remaster:test
       # The remaster pins its own Playwright; `yarn --cwd remaster playwright`
@@ -130,3 +155,46 @@ jobs:
             remaster/test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  deploy:
+    # Production: ships the remaster job's tested build as soon as it and the
+    # shared data/script checks pass. Rebuilding would add minutes for nothing.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [remaster, validate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL || 'https://historicborders.app' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: remaster-dist
+          path: remaster/dist/
+      - run: node scripts/validate-remaster-dist.js
+      - name: Deploy to Cloudflare Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: yarn wrangler deploy --message "main ${GITHUB_SHA::7}"
+      - name: Static production smoke test
+        env:
+          BASE_URL: ${{ vars.PRODUCTION_URL || 'https://historic-borders.champtoday.workers.dev' }}
+        # New assets can take a few seconds to reach every Cloudflare edge.
+        run: |
+          for attempt in 1 2 3 4; do
+            yarn smoke:production && exit 0
+            echo "Smoke attempt $attempt failed; retrying in 15 s"
+            sleep 15
+          done
+          exit 1

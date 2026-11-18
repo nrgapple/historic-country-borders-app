@@ -2,7 +2,7 @@
 
 The historical atlas rebuilt as static Astro 7 pages with one React 19 island and MapLibre GL JS 6, in the owner-approved Direction A, "Classic atlas". See [`docs/product/REMASTER_PLAN.md`](../docs/product/REMASTER_PLAN.md) and [`design/living-atlas/README.md`](../design/living-atlas/README.md).
 
-**In production** since the P4 cutover (2026-11-18). This app builds into `remaster/dist/`, which `wrangler.toml` serves with the existing `/api/feedback` Worker. The Deploy workflow runs `yarn remaster:build`, `scripts/validate-remaster-dist.js` and the production smoke test. Roll back by reverting the cutover commit on `main`.
+**In production** since the P4 cutover (2026-11-18). This app builds into `remaster/dist/`, which `wrangler.toml` serves with the existing `/api/feedback` Worker. CI's `deploy` job ships the `remaster` job's tested build (artifact `remaster-dist`) as soon as that job and `validate` pass, then runs the production smoke test; the layout suite runs against the same build as a report and does not gate the deploy. The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back by reverting the cutover commit on `main`.
 
 ## Commands
 
