@@ -1,5 +1,5 @@
 /**
- * Split per-year historical files for the remaster's map worker.
+ * Split per-year historical files for the app's map worker.
  *
  * Each year's combined payload (`{ data: { borders, labels }, places }`, still
  * used by the production app) is split into three content-hashed files:

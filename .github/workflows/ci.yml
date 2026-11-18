@@ -33,8 +33,8 @@ jobs:
           allow-ghsas: GHSA-fc5q-39xc-vjpf
 
   checks:
-    # Formatting, type-check and unit tests for the data scripts and the
-    # feedback Worker, plus validation of every committed data artifact.
+    # Formatting and offline validation of every committed data artifact.
+    # A report, not a deploy gate.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -45,11 +45,12 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: yarn checks
+      - run: yarn format:check
+      - run: yarn data:validate
 
-  remaster:
-    # The production app (Astro + MapLibre, remaster/). Its tested build is
-    # the artifact the deploy job ships.
+  app:
+    # The production app (Astro + MapLibre). Its tested build is the
+    # artifact the deploy job ships.
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -64,46 +65,44 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: yarn remaster:build
-      - run: node scripts/validate-remaster-dist.js
+      - run: yarn build
+      - run: yarn dist:validate
       - run: yarn cloudflare:check
       - run: yarn size:check
       - name: Keep the build for the deploy job
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: remaster-dist
-          path: remaster/dist/
+          name: dist
+          path: dist/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
-      - run: yarn remaster:type-check
-      - run: yarn remaster:test
-      # The remaster pins its own Playwright; `yarn --cwd remaster playwright`
-      # resolves the root's older one and installs the wrong browsers.
+      - run: yarn type-check
+      # App, data-script and Worker unit tests (vitest.config.ts projects).
+      - run: yarn test
       # apt has hung this step for 20+ minutes on GitHub runners.
-      - run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
-        working-directory: remaster
+      - run: yarn playwright install --with-deps chromium firefox webkit
         timeout-minutes: 8
-      - run: yarn remaster:test:e2e
-      - name: Upload remaster browser-test artifacts
+      - run: yarn test:e2e
+      - name: Upload browser-test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: remaster-playwright-report
+          name: playwright-report
           path: |
-            remaster/playwright-report/
-            remaster/test-results/
+            playwright-report/
+            test-results/
           if-no-files-found: ignore
           retention-days: 7
 
   deploy:
-    # Production: ships the remaster job's tested build as soon as it passes.
+    # Production: ships the app job's tested build as soon as it passes.
     # It does not wait for `checks` (reported separately) and the layout
     # suites run in their own workflow (layout.yml), so neither can hold a
     # release. Rebuilding here would add minutes for nothing.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [remaster]
+    needs: [app]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
@@ -122,9 +121,9 @@ jobs:
       - run: yarn install --frozen-lockfile
       - uses: actions/download-artifact@v4
         with:
-          name: remaster-dist
-          path: remaster/dist/
-      - run: node scripts/validate-remaster-dist.js
+          name: dist
+          path: dist/
+      - run: yarn dist:validate
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

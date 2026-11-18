@@ -7,6 +7,6 @@ compatibility_date = "2025-09-01"
 workers_dev = true
 
 [assets]
-directory = "./remaster/dist"
+directory = "./dist"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"

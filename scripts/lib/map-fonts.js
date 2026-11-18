@@ -184,7 +184,7 @@ const CSS_FILES = {
 /**
  * Property keys whose string values can become map labels. Covers today's
  * published year files (`NAME`, `ABBREVN`, `SUBJECTO`, `PARTOF`, place `name`)
- * and the remaster's slim label files (`n` territory name, `p` place name).
+ * and the app's slim label files (`n` territory name, `p` place name).
  */
 const NAME_KEYS = ['NAME', 'ABBREVN', 'SUBJECTO', 'PARTOF', 'name', 'n', 'p'];
 /** Directories, relative to the repository root, scanned for published names. */

@@ -86,8 +86,8 @@ describe('contrast helpers', () => {
 });
 
 describe('Direction A tokens (design/living-atlas/a-classic-atlas.html)', () => {
-  // Until the remaster's token file exists, the Direction A mock is the
-  // source of truth. Point this at the token file when T5 adds it.
+  // The Direction A design mock; the app's own tokens (src/styles/tokens.ts)
+  // are checked in src/styles/tokens.test.ts.
   const tokens = readTokens(read('design/living-atlas/a-classic-atlas.html'));
   const eras = ['prehistory', 'ancient', 'medieval', 'early-modern', 'modern'];
   const grounds = ['paper', 'paper-2', 'sheet'];

@@ -11,8 +11,11 @@
 /test-results/
 /blob-report/
 
-# production
-/build
+# build output and generated files (yarn data, yarn build)
+/dist/
+/build/
+/.astro/
+/src/data/
 
 # misc
 .DS_Store

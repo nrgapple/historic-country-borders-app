@@ -37,7 +37,7 @@ yarn data:validate:pa-basemap  # offline; also part of yarn data:validate
 - The cache is `PA_BASEMAP_CACHE_DIR` (default `.cache/pa-basemap/<build date>/`, gitignored): decompressed MVTs, and an empty `.none` marker for tiles the archive does not have.
 - The refresh aborts if the archive's etag differs from the pin, or if any Range response is short or changes etag mid-run.
 - It writes the new tree to `<tree>.tmp` and swaps it in only when complete, then removes older recipe builds.
-- `yarn remaster:build`, tests and validation never touch the network. `yarn remaster:build` copies the committed tree into `remaster/dist/tiles/pa/<build>/`.
+- `yarn build`, tests and validation never touch the network. `yarn build` copies the committed tree into `dist/tiles/pa/<build>/`.
 
 ## Max zoom: z12 with z14 streets, by measurement
 
@@ -55,7 +55,7 @@ Protomaps names residential streets only from z14. At z12 and z13 its tiles carr
 
 **Decision: z0–12 with z14 streets, trimmed.**
 
-- **Files.** 3,864 instead of 13,109. With T2's 1,368 files, the district tiles and everything else, the remaster deploys 6,570 files against the 16,000 gate (`yarn size:check`). Any z13 tree would have used most of the remaining headroom; native z14 alone exceeds Cloudflare's 20,000-file limit.
+- **Files.** 3,864 instead of 13,109. With T2's 1,368 files, the district tiles and everything else, the app deploys 6,570 files against the 16,000 gate (`yarn size:check`). Any z13 tree would have used most of the remaining headroom; native z14 alone exceeds Cloudflare's 20,000-file limit.
 - **Detail.** A z12 tile at extent 4096 is a 1.9 m grid at 41° N, and the street geometry is z14's, simplified to 2 grid units. MapLibre overzooms z12 to the page's max zoom 15, where one grid unit is one pixel.
 - **Bytes.** The published tree is smaller than any z13 option. Streets are most of it: z12 is 24.3 MiB, and 15.9 MiB of that is residential streets. "Trimmed" means water polygons under 1,024 tile units² (ponds a few pixels across) are dropped ring by ring, and streets are simplified at 2 units instead of 1.
 - **The plan's estimate** (§5: "about 10k files at z13") was the state only. The tree also needs z0–12 around it, and a bounding box rather than the state outline at z13 would be 17,658 files.
@@ -72,7 +72,7 @@ From `data/pa-basemap-sources.json`:
 
 The state outline comes from the committed district artifact, so it needs no extra source. Edges are densified to a quarter tile, so the straight 42° N border is covered, and interiors are filled by scanline.
 
-**The page never requests a missing tile.** The manifest's `coverage` lists per zoom the rows of covered `[x0, x1]` runs (about 3 KB), and the page bundles it. The map loads tiles through a `pa-tiles://` protocol (`remaster/src/pa/paMap.ts`):
+**The page never requests a missing tile.** The manifest's `coverage` lists per zoom the rows of covered `[x0, x1]` runs (about 3 KB), and the page bundles it. The map loads tiles through a `pa-tiles://` protocol (`src/pa/paMap.ts`):
 
 - a covered tile is fetched from `/tiles/pa/<build>/{z}/{x}/{y}.pbf`;
 - an uncovered one is rejected without a request.
@@ -95,7 +95,7 @@ One vector source, `pa-basemap`, z0–12, extent 4096, Mapbox Vector Tile v2, fo
 
 ## Style
 
-The page's style module is `remaster/src/pa/paStyle.ts`. It uses Direction A's tokens (`remaster/src/styles/tokens.ts`) and T3's fontstacks.
+The page's style module is `src/pa/paStyle.ts`. It uses Direction A's tokens (`src/styles/tokens.ts`) and T3's fontstacks.
 
 - **Order.** Paper (land) → district washes → water → streets → county and state lines → district edge bands, borders and selection → street, water and place names → district names. The district names are drawn last, so they claim space first.
 - **Streets in ink.**
@@ -112,20 +112,20 @@ The page's style module is `remaster/src/pa/paStyle.ts`. It uses Direction A's t
 
 These are enforced by `yarn data:validate:pa-basemap` (`BUDGETS` in `scripts/lib/pa-basemap.js`) and by `yarn size:check`:
 
-| Budget                    |   Limit |                   Current |
-| ------------------------- | ------: | ------------------------: |
-| PA tiles                  |   4,500 |                     3,864 |
-| PA tile bytes             |  48 MiB |                  36.8 MiB |
-| Largest PA tile           | 256 KiB |                   107 KiB |
-| Any deployable file       |  25 MiB | 2.0 MiB (`1492.polygons`) |
-| Remaster deployable files |  16,000 |                     6,570 |
+| Budget              |   Limit |                   Current |
+| ------------------- | ------: | ------------------------: |
+| PA tiles            |   4,500 |                     3,864 |
+| PA tile bytes       |  48 MiB |                  36.8 MiB |
+| Largest PA tile     | 256 KiB |                   107 KiB |
+| Any deployable file |  25 MiB | 2.0 MiB (`1492.polygons`) |
+| Deployable files    |  16,000 |                     6,570 |
 
 ## Upgrading
 
 1. Pick a newer build from the listing.
 2. Update `archive` in `data/pa-basemap-sources.json`: url, buildDate, basemapsVersion, bytes, etag and b3sum.
 3. Run `yarn data:refresh:pa-basemap`. A new build id `pm-<date>-r<recipe>` replaces the old directory.
-4. Review the manifest diff (files, bytes, per-zoom counts, layer counts) and spot-check `yarn remaster:build` + `node remaster/scripts/shoot.mjs` (`ONLY=pa`).
+4. Review the manifest diff (files, bytes, per-zoom counts, layer counts) and spot-check `yarn build` + `node scripts/shoot.mjs` (`ONLY=pa`).
 5. Commit the tree and manifest together.
 
 Changing the recipe (layers, attributes, tolerance, coverage) means bumping `RECIPE` in `scripts/lib/pa-basemap.js`.

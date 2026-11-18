@@ -49,4 +49,4 @@ yarn test tests/feedback-function.test.ts
 yarn cloudflare:check
 ```
 
-Local `yarn remaster:preview` intentionally returns a safe 503 because static preview has no Worker secrets. Account setup, preview submission, rate-limit/quota verification, and rollback steps are in `docs/CLOUDFLARE_DEPLOYMENT.md`.
+Local `yarn preview` intentionally returns a safe 503 because static preview has no Worker secrets. Account setup, preview submission, rate-limit/quota verification, and rollback steps are in `docs/CLOUDFLARE_DEPLOYMENT.md`.

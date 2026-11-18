@@ -6,12 +6,12 @@ These Playwright suites implement the acceptance checks in `docs/product/REMASTE
 - `responsive.spec.ts` covers §9.5, widths from 390 to 1440 px.
 - `forced-dark.spec.ts` covers §9.6, forced dark mode and a dark preference.
 
-They use their own config, `playwright.layout.config.ts`, apart from the app's journeys (`yarn remaster:test:e2e`).
+They use their own config, `playwright.layout.config.ts`, apart from the app's journeys (`yarn test:e2e`).
 
 ## Running
 
 ```bash
-yarn remaster:build && yarn test:layout             # the config serves remaster/dist on :4410
+yarn build && yarn test:layout             # the config serves dist on :4410
 BASE_URL=http://127.0.0.1:4412 yarn test:layout     # an already running server; nothing is started
 LAYOUT_THEME=textbook BASE_URL=… yarn test:layout   # every page in one map style (classic|textbook)
 yarn test:layout --project='safe-area:*'            # one suite (or 'responsive:*', 'forced-dark:*')
@@ -68,9 +68,9 @@ A control is checked for overlap only if a hit test at its center reaches it. Co
 
 Chromium also compares a top-bar screenshot against a browser without force-dark, and allows at most 1% of pixels to change. A self-test first confirms that force-dark really darkens an unprotected white page, so the pixel check can't pass vacuously.
 
-## Hooks for the remaster
+## Hooks for the app
 
-- Mark the visible year with `data-year-heading`. Today's `.timeline__current-value` and `.projector-caption__title` also work.
+- Mark the visible year with `data-year-heading`. The old Next.js app's `.timeline__current-value` and `.projector-caption__title` also work.
 - Map attribution is found through `.maplibregl-ctrl-attrib`, `.mapboxgl-ctrl-attrib`, or `[data-attribution]`.
 - Read `--test-inset-*` in the global tokens file, as §2.2 describes.
 - The pages under test are listed in `LAYOUT_PAGES` in `support.ts`.

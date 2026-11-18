@@ -5,8 +5,8 @@
  * of a stylesheet (or an HTML file's inline <style>), resolving `var()`
  * references. Token pairs are then checked with `contrastRatio`, compositing
  * translucent colours over their backdrop first. The same helpers check
- * Direction A's tokens (design/living-atlas); the remaster's token
- * file only needs a new pair list.
+ * Direction A's tokens (design/living-atlas); the app's own token
+ * file is checked by src/styles/tokens.test.ts.
  */
 
 export type Rgba = { r: number; g: number; b: number; a: number };

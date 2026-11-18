@@ -594,7 +594,7 @@ describe('committed basemap', () => {
       'cache-control': immutable,
     });
     expect(
-      resolveHeaders(rules, '/tiles/pa/2026-11-01/13/2300/3000.mvt'),
+      resolveHeaders(rules, '/tiles/pa/pm-20260811-r1/13/2300/3000.pbf'),
     ).toMatchObject({
       'content-type': 'application/x-protobuf',
       'cache-control': immutable,

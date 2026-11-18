@@ -1,7 +1,7 @@
 // Measures the two ways to ship Pennsylvania's district polygons to the
-// remaster (REMASTER_PLAN §9.2 P5): the current single static artifact
+// site (REMASTER_PLAN §9.2 P5): the current single static artifact
 // against a district vector-tile tree. Offline; prints the table recorded in
-// docs/PA_SCHOOL_DISTRICTS.md ("Remaster data format").
+// docs/PA_SCHOOL_DISTRICTS.md ("Site data format").
 //
 //   yarn data:measure:pa-districts
 import fs from 'node:fs';

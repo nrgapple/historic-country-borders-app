@@ -56,7 +56,7 @@ Validate committed data without network access:
 yarn data:validate
 ```
 
-Normal `yarn remaster:build` never runs the refresh command and does not contact PASDA.
+Normal `yarn build` never runs the refresh command and does not contact PASDA.
 
 ## Required source properties
 
@@ -74,9 +74,9 @@ Every property must be a non-empty string. Polygon rings must be closed, contain
 
 Unit/integration tests cover fixture normalization, Polygon/MultiPolygon labels, area calculation, empty and malformed input, unavailable upstream/static data, stale vintage classification, cache-deduplicated consumers, and fixture detail selection. Playwright covers cold and returning school-map journeys in Chromium, Firefox, and WebKit with deterministic request interception.
 
-## Remaster data format (P5)
+## Site data format (P5)
 
-The Astro app (`remaster/`, production since 2026-11-18) draws the 500 districts from the committed artifact in a different shape. The Next.js page described above was removed with the legacy app.
+The Astro app (production since 2026-11-18) draws the 500 districts from the committed artifact in a different shape. The Next.js page described above was removed with the legacy app.
 
 **Measured** with `yarn data:measure:pa-districts` (2026-11-18). JSON.parse is timed in Node on the development Mac, best of 3. "State view" is the Brotli-5 bytes of the tiles that cover Pennsylvania at the zoom that frames it: about z7 on a 1440 × 900 desktop and about z5 on a 390 px phone.
 
@@ -97,13 +97,13 @@ The finder, the panel and the labels need every district's properties, bounds an
 - **Precision.** The grid matches z12's 1.8 m at a quarter of z12's files. geojson-vt keeps every source vertex at the top zoom, and 7.2 m or 3.6 m grids would move a boundary that follows a street by a visible amount at street zoom.
 - **Files.** 838 tiles (z4–11; z4 so a 320 px phone at the minimum zoom still shows districts) fit easily under the 16,000-file gate next to T8's street basemap.
 
-**Build.** `remaster/scripts/build-pa.mjs` runs in `yarn remaster:build`. It is offline and deterministic, reads only the committed, validated artifact, and caches its output in `remaster/node_modules/.cache` by input hash. It writes:
+**Build.** `scripts/build-pa.mjs` runs in `yarn build`. It is offline and deterministic, reads only the committed, validated artifact, and caches its output in `node_modules/.cache/pa-districts` by input hash. It writes:
 
-- `remaster/public/tiles/pa-districts/<hash>/{z}/{x}/{y}.pbf`: source-layer `districts`. The feature id is the district's index, and `c` is a wash index (0–11), chosen so that districts sharing a boundary vertex never share a wash. `f`, `p` and `e` are the PIAA football class rank, PIAA district and grade 9–11 enrollment from `data/pa-sports.json` ("High-school sports" below).
-- `remaster/public/data/pa/districts.<hash>.json`: schema 2. It holds the same `source` and `validation` records as the artifact, a `sportsSource` record and `piaaLabels`, plus one entry per district with `id`, the PASDA properties, `km2`, `bbox`, an interior `label` point and its PIAA `sports` record (or `null`).
-- `remaster/src/data/pa.json`: the URLs, tile coverage and vintage the page bundles.
+- `build/public/tiles/pa-districts/<hash>/{z}/{x}/{y}.pbf`: source-layer `districts`. The feature id is the district's index, and `c` is a wash index (0–11), chosen so that districts sharing a boundary vertex never share a wash. `f`, `p` and `e` are the PIAA football class rank, PIAA district and grade 9–11 enrollment from `data/pa-sports.json` ("High-school sports" below).
+- `build/public/data/pa/districts.<hash>.json`: schema 2. It holds the same `source` and `validation` records as the artifact, a `sportsSource` record and `piaaLabels`, plus one entry per district with `id`, the PASDA properties, `km2`, `bbox`, an interior `label` point and its PIAA `sports` record (or `null`).
+- `src/data/pa.json`: the URLs, tile coverage and vintage the page bundles.
 
-**Provenance in the remaster panel.** Selecting a district, on the map or with the finder, shows:
+**Provenance in the panel.** Selecting a district, on the map or with the finder, shows:
 
 - the county, intermediate unit, career and technical school, and AUN, with official acronyms kept (IU, CTC, AVTS, BLaST, ARIN, PA);
 - the PASDA vintage and source link;
@@ -114,7 +114,7 @@ Feedback repeats the correction guidance and adds that street and place names ar
 
 ## High-school sports (PIAA)
 
-The remaster panel shows each district's PIAA high schools with their football class, the district's PIAA district and its grade 9–11 enrollment. Settings → "Colour districts by" recolours the map by football class, PIAA district or enrollment. The choice is stored with the other settings and shared as `?colour=football|piaa|enrollment`. The finder also matches "6A" or "District III": choosing the group frames its districts and switches the colouring to match.
+The panel shows each district's PIAA high schools with their football class, the district's PIAA district and its grade 9–11 enrollment. Settings → "Colour districts by" recolours the map by football class, PIAA district or enrollment. The choice is stored with the other settings and shared as `?colour=football|piaa|enrollment`. The finder also matches "6A" or "District III": choosing the group frames its districts and switches the colouring to match.
 
 ### Sources
 
@@ -176,7 +176,7 @@ Everything else is reported as unmatched, never guessed.
 
 ### Colours
 
-`remaster/src/pa/colourBy.ts` holds every palette in `PA_COLOUR_PALETTES`, the breaks and the MapLibre expressions:
+`src/pa/colourBy.ts` holds every palette in `PA_COLOUR_PALETTES`, the breaks and the MapLibre expressions:
 
 - **Football class:** six steps from pale yellow (1A) to blue (6A), and a hatched neutral for no football.
 - **PIAA district:** twelve categorical hues, with Roman-numeral region labels below z9.

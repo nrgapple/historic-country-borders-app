@@ -1,7 +1,7 @@
 name: Layout
 
 # Safe-area (iPhone insets), responsive widths and forced-dark suites from
-# playwright.layout.config.ts, run against the production remaster build.
+# playwright.layout.config.ts, run against the production build.
 # A report, not a deploy gate. It lives apart from CI on purpose: CI runs on
 # main queue per ref and never cancel, so a stuck layout shard there would
 # delay the next push's deploy. Here every new push to the same ref cancels
@@ -40,13 +40,13 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: yarn remaster:build
+      - run: yarn build
       # apt has hung this step for 20+ minutes on GitHub runners.
       - run: yarn playwright install --with-deps chromium webkit
         timeout-minutes: 8
-      - name: Serve the remaster build
+      - name: Serve the build
         run: |
-          node remaster/scripts/serve.mjs remaster/dist 4410 > serve.log 2>&1 &
+          node scripts/serve.mjs dist 4410 > serve.log 2>&1 &
           for attempt in $(seq 1 30); do
             curl -sf http://127.0.0.1:4410/ > /dev/null && exit 0
             sleep 1

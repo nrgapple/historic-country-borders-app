@@ -3,14 +3,13 @@ import type { Insets } from './e2e/layout/support';
 
 /**
  * Layout acceptance suites (REMASTER_PLAN §9.4–9.6): safe areas, responsive
- * widths and forced dark mode, against the production build (remaster/dist).
+ * widths and forced dark mode, against the production build (dist/).
  *
- *   yarn test:layout                                   # serves remaster/dist on :4410
+ *   yarn test:layout                                   # serves dist/ on :4410
  *   BASE_URL=http://127.0.0.1:4412 yarn test:layout    # an already running server
  *   yarn test:layout --project='safe-area:*'           # one suite
  *
- * Without BASE_URL the config serves remaster/dist (run `yarn remaster:build`
- * first). With BASE_URL nothing is started.
+ * Without BASE_URL the config serves dist/ (run `yarn build` first). With BASE_URL nothing is started.
  */
 const baseURL = process.env.BASE_URL || 'http://127.0.0.1:4410';
 
@@ -43,7 +42,7 @@ const withoutBrowser = (device: (typeof devices)[string]) => {
 };
 
 // Chromium's new headless mode draws WebGL on the GPU. The default headless
-// shell uses SwiftShader, where the remaster's Classic-atlas layers on a full
+// shell uses SwiftShader, where the app's Classic-atlas layers on a full
 // year (1492, 500 BC) stall the main thread past the test timeout.
 const GPU_CHROMIUM = { launchOptions: { channel: 'chromium' } };
 
@@ -137,7 +136,7 @@ export default defineConfig<{ insets: Insets }>({
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'node remaster/scripts/serve.mjs remaster/dist 4410',
+        command: 'node scripts/serve.mjs dist 4410',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

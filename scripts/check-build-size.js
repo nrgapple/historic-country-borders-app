@@ -1,7 +1,7 @@
 'use strict';
 
-// Performance and build-size budgets for the production build (remaster/dist).
-// Run after `yarn remaster:build`. Every file in the build counts against the
+// Performance and build-size budgets for the production build (dist).
+// Run after `yarn build`. Every file in the build counts against the
 // Cloudflare Free plan's per-version file limit; the per-year data, glyph and
 // font budgets keep first loads small on school networks.
 const fs = require('fs');
@@ -10,7 +10,7 @@ const zlib = require('zlib');
 const { checkDeployableFiles } = require('./lib/deploy-files');
 
 const ROOT = path.join(__dirname, '..');
-const DIST = path.join(ROOT, 'remaster/dist');
+const DIST = path.join(ROOT, 'dist');
 const budgets = {
   // Split per-year files, measured at Brotli quality 5, close to what
   // Cloudflare's on-the-fly compression sends. 1492 is the outlier
@@ -61,14 +61,14 @@ const enforce = (label, actual, limit) => {
 };
 
 if (!fs.existsSync(DIST)) {
-  console.error('Missing remaster/dist. Run `yarn remaster:build` first.');
+  console.error('Missing dist. Run `yarn build` first.');
   process.exit(1);
 }
 
 // Every file wrangler uploads, including the T2 basemap, T8's PA street
 // basemap and the district tiles.
 const deployable = checkDeployableFiles(DIST);
-errors.push(...deployable.errors.map((e) => `remaster/dist: ${e}`));
+errors.push(...deployable.errors.map((e) => `dist: ${e}`));
 const count = (rel) => walk(path.join(DIST, rel)).length;
 
 const split = { polygons: [], labels: [], index: [] };
@@ -175,7 +175,7 @@ enforce(
 const summary = [
   '## Performance and build-size budgets',
   '',
-  `- Deployable files in remaster/dist/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
+  `- Deployable files in dist/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
   `  - T2 basemap ${count('tiles/basemap') + count('basemap')}, T8 PA street basemap ${count('tiles/pa')}, PA district tiles ${count('tiles/pa-districts')}, glyphs ${count('glyphs')}, fonts ${count('fonts')}, year data ${count('data/historical') + count('data/context')}`,
   `- Split historical data (${years} years): ${formatKiB(splitTotal)} total / ${formatKiB(budgets.splitDataTotal)}; Brotli-5 largest polygons ${formatKiB(largestBrotli('polygons'))} / ${formatKiB(budgets.splitPolygonsLargestBrotli)}, labels ${formatKiB(largestBrotli('labels'))} / ${formatKiB(budgets.splitLabelsLargestBrotli)}, index ${formatKiB(largestBrotli('index'))} / ${formatKiB(budgets.splitIndexLargestBrotli)}; ${polygonYearsOver300} polygon years over 300 KiB / ${budgets.splitPolygonYearsOver300KiB}`,
   `- Capitals: ${formatKiB(capitalsLargest)} largest / ${formatKiB(budgets.capitalsDataLargest)}`,

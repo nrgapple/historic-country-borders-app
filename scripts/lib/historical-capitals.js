@@ -1,5 +1,5 @@
 /**
- * Per-year capital points for the remaster map, built offline from:
+ * Per-year capital points for the map, built offline from:
  *
  * - the per-year context files (capitals already filtered to statements
  *   definitely valid in that year; see docs/HISTORICAL_CONTEXT.md);

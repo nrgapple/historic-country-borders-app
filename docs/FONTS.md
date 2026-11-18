@@ -1,6 +1,6 @@
 # Fonts and map glyphs
 
-Status: built and validated for the remaster (track T3, 2026-11-18). The app's Astro shell (T5) and the Classic-atlas style (T6) consume them.
+Status: built and validated (track T3, 2026-11-18). The app's Astro shell (T5) and the Classic-atlas style (T6) consume them.
 
 All type is self-hosted under the SIL Open Font License 1.1. The map makes no font or glyph request to a third party.
 
@@ -34,7 +34,7 @@ Use **exactly** these strings, each as a **single-element** `text-font` array. A
 | `Atkinson Hyperlegible Next Bold`   | Projector text: state names, in uppercase plus letter-spacing | 700 normal    | projector |
 | `Literata Italic`                   | Modern textbook: sea, river and ruins names                   | 400 italic    | textbook  |
 
-The Modern textbook map style (`remaster/src/adapters/textbookStyle.ts`) uses the two Atkinson stacks for state, district and city names and `Literata Italic` for water; it never requests an Alegreya stack. One Literata stack keeps the glyph budget: the mock's Literata Medium Italic seas and Atkinson ExtraBold large states are drawn with Literata Italic and Atkinson Bold.
+The Modern textbook map style (`src/adapters/textbookStyle.ts`) uses the two Atkinson stacks for state, district and city names and `Literata Italic` for water; it never requests an Alegreya stack. One Literata stack keeps the glyph budget: the mock's Literata Medium Italic seas and Atkinson ExtraBold large states are drawn with Literata Italic and Atkinson Bold.
 
 Each stack is its primary font, then a Noto Sans subset (same weight and style), then Noto Sans Cherokee, Noto Sans Canadian Aboriginal and Noto Sans Osage. Atkinson has no italic stack, following plan §2.1 ("Atkinson (Medium/Bold)"). Projector water names are therefore upright. If T6 wants italic water in projector mode, add `Atkinson Hyperlegible Next Medium Italic` to `FONTSTACKS` in `scripts/lib/map-fonts.js` and rebuild; that adds 13 files.
 
@@ -83,7 +83,7 @@ Without a CSS face named after the stack, the browser draws those clusters in a 
 | `Atkinson Hyperlegible Next` | 400, 400 italic, 500, 700                                                    | `projector.css` |
 | `Literata`                   | 400, 400 italic, 600                                                         | `textbook.css`  |
 
-`projector.css` and `textbook.css` load only while Projector text or the Modern textbook map style is on; an inline head script adds them before first paint (`remaster/src/atlas/theme.ts`, `settings.ts`).
+`projector.css` and `textbook.css` load only while Projector text or the Modern textbook map style is on; an inline head script adds them before first paint (`src/atlas/theme.ts`, `settings.ts`).
 
 Suggested tokens: `--font-text: 'Alegreya', 'Historic Borders Scripts', Georgia, serif;` and `--font-sc: 'Alegreya SC', 'Historic Borders Scripts', Georgia, serif;`. Projector text swaps in `'Atkinson Hyperlegible Next', 'Historic Borders Scripts', system-ui, sans-serif`. Every face uses `font-display: swap`.
 
@@ -136,7 +136,7 @@ The plan expected Ethiopic, Canadian syllabics and Deseret. The data has **no Et
 
 ## Glyph rendering: PBF vs local
 
-The measurement is in `remaster-spike/scripts/measure-glyphs.mjs`, with results in `remaster-spike/results/glyphs.json` and screenshots in `remaster-spike/shots/glyphs-*.png`. It runs MapLibre 6.19.0 with the Classic-atlas label layers on 1492 and 1914 data, under 4× CPU and with and without Fast 3G. It compares three modes:
+The measurement was in the design spike's `remaster-spike/scripts/measure-glyphs.mjs`, with results in `remaster-spike/results/glyphs.json` and screenshots in `remaster-spike/shots/glyphs-*.png`; the spike was removed on 2026-11-18 and these files are in the git history. It runs MapLibre 6.19.0 with the Classic-atlas label layers on 1492 and 1914 data, under 4× CPU and with and without Fast 3G. It compares three modes:
 
 - **pbf:** the glyphs URL, with `map-aliases.css` for clusters.
 - **faces:** the style's `font-faces`, with the PBFs as fallback.

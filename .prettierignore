@@ -17,21 +17,13 @@ public/fonts/
 public/glyphs/
 test-results/
 yarn.lock
-remaster-spike/
 
-# Remaster build output and generated data (yarn remaster:data).
-remaster/dist/
-remaster/.astro/
-remaster/public/data/
-remaster/public/tiles/
-remaster/public/glyphs/
-remaster/public/fonts/
-remaster/public/basemap/
-remaster/public/shared/
-remaster/src/data/
-remaster/test-results/
-remaster/playwright-report/
+# Build output and generated files (yarn data, yarn build).
+dist/
+build/
+.astro/
+src/data/
 
 # Static design reference mockups (Direction A spec), not app code.
 design/
-remaster/src/styles/tokens.css
+src/styles/tokens.css

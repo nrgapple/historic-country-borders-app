@@ -1,26 +1,22 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "alwaysStrict": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "lib": ["dom", "dom.iterable", "ES2022"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmit": true,
-    "noFallthroughCasesInSwitch": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "esnext",
-    "types": ["vitest/globals", "node"]
-  },
+  "extends": "astro/tsconfigs/strict",
   "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "test/**/*",
     "tests/**/*.ts",
-    "test/**/*.ts",
+    "e2e/**/*",
     "worker/**/*.ts",
-    "e2e/layout/**/*.ts",
-    "*.config.ts"
-  ]
+    "*.ts"
+  ],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "resolveJsonModule": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
+    "paths": {
+      "@repo/*": ["./*"]
+    }
+  }
 }

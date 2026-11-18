@@ -13,7 +13,7 @@ Everything is static. Facts come from an explicit, reviewed refresh; ordinary bu
 | `data/historical-context-facts.json`    | yes       | no      | Pinned facts snapshot: per entity revision ID (`lastrevid`), retrieval time, and the trimmed claims publication reads.  |
 | `data/historical-context.json`          | yes       | yes     | Year → `/data/context/<year>.<hash>.json` manifest (about 3 KB).                                                        |
 | `public/data/context/*.json`            | yes       | no      | One immutable file per published year: facts valid in that year keyed by NAME, plus `changes` versus the previous year. |
-| `public/data/context/*.capitals.*.json` | yes       | no      | One immutable file per year of capital points `{ name, t, qid }` for the remaster map (see Capital points).             |
+| `public/data/context/*.capitals.*.json` | yes       | no      | One immutable file per year of capital points `{ name, t, qid }` for the map (see Capital points).                      |
 | `data/historical-capitals.json`         | yes       | no      | Capitals manifest: URL, hash, bytes and counts per year, and every rejected capital with its reason.                    |
 | `.cache/wikidata/`                      | no        | no      | Gitignored raw-response cache (trimmed entities, searches, Wikipedia title lookups) so reruns are cheap.                |
 
@@ -129,7 +129,7 @@ Validation (`yarn data:validate:context`) checks the mapping against the publish
 
 ## Capital points
 
-The remaster map marks each territory's capital. Positions come from Wikidata **coordinate location (P625)** of the capital items the facts already name.
+The map marks each territory's capital. Positions come from Wikidata **coordinate location (P625)** of the capital items the facts already name.
 
 **Fetching.** The snapshot's `referenced` entry for every capital item (any P36 value of a snapshot entity) carries either `coordinates: [lon, lat]` or `coordinateIssue`, plus `coordinateRevision`, the item revision read. The full refresh fills these. `--coordinates` adds them to the committed snapshot and leaves every other pinned fact alone. Both use the same cache, batching and politeness rules as the rest of the refresh. At the 2026-11-18 run, 555 capital items took 12 requests.
 

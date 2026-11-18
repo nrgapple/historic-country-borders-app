@@ -53,7 +53,7 @@ describe('production static smoke checks', () => {
     ]);
   });
 
-  it('expects an immutable cache on the remaster district index', async () => {
+  it('expects an immutable cache on the hashed district index', async () => {
     await expect(
       runProductionSmoke({
         baseUrl: 'https://historicborders.app',

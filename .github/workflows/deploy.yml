@@ -1,7 +1,7 @@
 name: Deploy
 
 # Manual redeploy of the current main (rebuilds from source). Ordinary
-# deploys run in CI's deploy job right after the remaster job passes.
+# deploys run in CI's deploy job right after the app job passes.
 on:
   workflow_dispatch:
 
@@ -41,9 +41,9 @@ jobs:
             if [ -z "${!name}" ]; then echo "::error::Missing secret $name"; missing=1; fi
           done
           exit $missing
-      # Production serves the Astro remaster (remaster/dist). No Mapbox.
-      - run: yarn remaster:build
-      - run: node scripts/validate-remaster-dist.js
+      # Production serves the Astro build (dist/). No Mapbox.
+      - run: yarn build
+      - run: yarn dist:validate
       - name: Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

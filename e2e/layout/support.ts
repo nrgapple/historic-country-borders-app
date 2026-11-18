@@ -1,11 +1,11 @@
 /**
  * Shared helpers for the layout acceptance suites (REMASTER_PLAN §9.4–9.6).
  *
- * The suites are app-agnostic: they run against today's Next.js export, the
- * remaster spike, or the Astro remaster through BASE_URL. They therefore rely
- * on roles, standard elements, and a short list of documented hooks
- * (`[data-year-heading]`, plus today's class names as fallbacks) instead of
- * component internals.
+ * The suites are app-agnostic: they run against any build through BASE_URL
+ * (they were written against the old Next.js export, the design spike and
+ * this app). They therefore rely on roles, standard elements, and a short
+ * list of documented hooks (`[data-year-heading]`, plus older class names as
+ * fallbacks) instead of component internals.
  *
  * Map data on the app's own origin is static and is served as-is, so layouts
  * are measured with real place names and panel content. Third-party requests
@@ -40,7 +40,7 @@ export type LayoutPage = (typeof LAYOUT_PAGES)[number];
 /** Everything a visitor can press, type into, or drag. */
 export const INTERACTIVE =
   'a[href], button, input:not([type="hidden"]), select, textarea, summary, [role="slider"], [role="combobox"], [role="button"], [tabindex]:not([tabindex="-1"])';
-/** The visible year. The remaster should mark it with data-year-heading. */
+/** The visible year. The app marks it with data-year-heading. */
 export const YEAR_HEADING =
   '[data-year-heading], .timeline__current-value, .projector-caption__title';
 /** Map attribution, which must stay readable and out of the insets. */
@@ -55,7 +55,7 @@ const LONG_EXTRACT = Array.from(
     'This fixture paragraph stands in for a Wikipedia summary so the place panel has realistic height in layout tests.',
 ).join(' ');
 
-/** remaster/src/lib/welcome.ts welcomeKey() for the current release notes. */
+/** src/lib/welcome.ts welcomeKey() for the current release notes. */
 const WELCOME_SEEN_KEY = 'historic-borders-welcome:2026-remaster';
 
 /** Intercepts third-party traffic so layouts are deterministic and free. */
@@ -64,14 +64,14 @@ export async function interceptThirdParty(
   baseURL: string,
 ) {
   const origin = new URL(baseURL).origin;
-  // The remaster's one-time welcome sheet is covered by its own e2e spec;
+  // The app's one-time welcome sheet is covered by its own e2e spec;
   // mark it seen so layouts are measured as returning visitors see them.
   await context.addInitScript(
     ({ key, theme }) => {
       try {
         localStorage.setItem(key, new Date(0).toISOString());
         // LAYOUT_THEME=classic|textbook runs every page in that map style
-        // (remaster/src/atlas/theme.ts); unset, each page uses its default.
+        // (src/atlas/theme.ts); unset, each page uses its default.
         if (theme) {
           localStorage.setItem('historic-borders-theme', theme);
           localStorage.setItem('historic-borders-theme:pa', theme);

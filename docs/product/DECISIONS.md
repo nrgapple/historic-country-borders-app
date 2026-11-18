@@ -170,6 +170,18 @@ Decision: delete the Next.js app (pages, components, hooks, contexts, styles, Ne
 
 Rollback: the app is in git history before this change; it was already not deployed.
 
+### The Astro app is the repository root (2026-11-18)
+
+Observed: with the Next.js app gone, the production app still lived in `remaster/` as a nohoisted Yarn workspace, imported its Classic-atlas style from the design spike (`remaster-spike/src/atlas/classic/`), and every command carried a `remaster:` prefix.
+
+Decision: move the app to the root as one package. `remaster/{src,scripts,e2e,test}` and its configs moved with history (`git mv`); `remaster/package.json` merged into the root with its exact pins (Astro 7.4.12, React 19.3.1, Vite 8.3.8, Vitest 5.1.0, Playwright 1.65.1) and one regenerated `yarn.lock`. The Classic-atlas module and its tests moved to `src/atlas/classic/`, and `remaster-spike/` was deleted (its measurements, results and screenshots are in the git history). One `tsconfig.json` and one Vitest config (projects `app`, jsdom, and `data`, node) cover everything; `remaster/e2e/*` joined `e2e/` beside `e2e/layout/`. Commands lose the prefix: `dev`, `build`, `preview`, `data`, `tokens`, `type-check`, `test`, `test:e2e`, `test:layout`, `dist:validate` (`scripts/validate-dist.js`), `size:check`, `cloudflare:check`. `wrangler.toml` and `wrangler.preview.toml` serve `./dist`; CI's job is `app`, its artifact `dist`, and `deploy` still needs only that job.
+
+`public/` stays the committed source tree and is not Astro's publicDir: it also holds data that must not ship (53 combined year payloads, the 12 MB PASDA source artifact). `yarn data` stages what ships into the gitignored `build/public/`, as it did into `remaster/public/`. The app's `_headers` replaced the legacy root `public/_headers`, so data validation now checks the rules production actually serves. User-facing persisted keys are unchanged, including `historic-borders-welcome:2026-remaster`, so returning visitors do not see the welcome again. The production smoke script now reads the hashed PA index from the live page when there is no local build: the scheduled uptime check has no build and had failed on every run since the cutover.
+
+Observed: the build has the same 6,590 deployable files as before; data, tiles, fonts and glyphs are byte-identical, and only eight JS chunk hashes change (the bundler drops a Node-mode interop flag on the React import now that the package is not `type: module`, which resolves to the same object).
+
+Rollback: revert this commit.
+
 ## Deferred
 
 ### Domain cutover

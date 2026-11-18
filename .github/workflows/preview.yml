@@ -42,9 +42,9 @@ jobs:
             echo "::notice::Preview skipped: CLOUDFLARE_API_TOKEN is not set."
           fi
       - if: steps.configured.outputs.ok == 'true'
-        run: yarn remaster:build
+        run: yarn build
       - if: steps.configured.outputs.ok == 'true'
-        run: node scripts/validate-remaster-dist.js
+        run: yarn dist:validate
       - name: Deploy preview Worker
         if: steps.configured.outputs.ok == 'true'
         id: upload

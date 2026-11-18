@@ -1,9 +1,12 @@
+# Cloudflare Workers Static Assets rules for the production build (dist/).
+# Copied into the build by scripts/sync-public.mjs; data:validate:fonts and
+# the basemap tests check the glyph, font and tile rules here.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
 
-/_next/static/*
+/_astro/*
   Cache-Control: public, max-age=31536000, immutable
 
 /data/historical/*
@@ -12,40 +15,33 @@
 /data/context/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Map glyph PBFs live under a content-addressed build directory. Wrangler
-# sends .pbf with no Content-Type; this type is also on Cloudflare's
-# compression list.
-/glyphs/*
-  Content-Type: application/x-protobuf
+# PA district index (content-hashed). Its tiles, and T8's street basemap,
+# are under /tiles/* below (docs/PA_BASEMAP.md).
+/data/pa/*
   Cache-Control: public, max-age=31536000, immutable
-
-# Content-hashed WOFF2 files. The CSS and license copies in /fonts/ keep the
-# default revalidating cache because their names are stable.
-/fonts/files/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/data/pa-school-districts.json
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /api/feedback
   Cache-Control: no-store
 
-# Vector tile trees live under /tiles/<tree>/<build>/ and are immutable: a new
-# build gets a new directory (docs/BASEMAP.md). Wrangler sends .pbf with no
-# Content-Type and .mvt as application/vnd.mapbox-vector-tile, which Cloudflare
-# does not compress; application/x-protobuf is on its compression list.
+# T2 basemap tiles and relief: immutable per build directory (docs/BASEMAP.md).
+# Wrangler sends .pbf with no Content-Type; application/x-protobuf is on
+# Cloudflare's compression list.
 /tiles/*
   Cache-Control: public, max-age=31536000, immutable
 
 /tiles/*.pbf
   Content-Type: application/x-protobuf
 
-/tiles/*.mvt
-  Content-Type: application/x-protobuf
-
-# Basemap relief image, locator-globe land and TileJSON, per build.
 /basemap/*
   Cache-Control: public, max-age=31536000, immutable
 
 /basemap/*.webp
   Content-Type: image/webp
+
+# T3 map glyphs and fonts: content-hashed per build (docs/FONTS.md).
+/glyphs/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/x-protobuf
+
+/fonts/files/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -46,7 +46,7 @@ const checkResponse = async (
 const runProductionSmoke = async ({
   baseUrl,
   historicalAssetPath,
-  // The remaster serves a content-hashed district index under /data/pa/.
+  // The app serves a content-hashed district index under /data/pa/.
   schoolAssetPath = '/data/pa-school-districts.json',
   fetchImpl = fetch,
 }) => {

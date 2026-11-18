@@ -168,11 +168,11 @@ Per zoom, observed in `data/basemap-manifest.json`:
 
 The app's `minZoom` is 1, so it never requests the z0 tile. A typical world view at map zoom 1.5–2 loads four to eight z1/z2 tiles, about 100–170 KB raw before compression. A Europe view at z4 loads about a dozen z4 tiles, about 20–60 KB.
 
-**File budget.** The whole-deployment file count, including PA and rollback assets, is gated by `yarn size:check` and `yarn remaster:dist:validate` (`scripts/lib/deploy-files.js`). The basemap's share is capped here.
+**File budget.** The whole-deployment file count, including PA and rollback assets, is gated by `yarn size:check` and `yarn dist:validate` (`scripts/lib/deploy-files.js`). The basemap's share is capped here.
 
 ## Regenerating
 
-The refresh is explicit and network-using. It never runs in `yarn remaster:build`, CI or deploy.
+The refresh is explicit and network-using. It never runs in `yarn build`, CI or deploy.
 
 ```bash
 source ~/.nvm/nvm.sh && nvm use 22
