@@ -31,6 +31,9 @@ const PAGES = [
 
 const TOP_BAR = 'header, [role="banner"]';
 
+const keywords = (value: string | null) =>
+  (value ?? '').trim().split(/\s+/).filter(Boolean).sort();
+
 const computedColors = (page: Page) =>
   page.evaluate((topBarSelector) => {
     const bg = (el: Element | null) =>
@@ -43,7 +46,7 @@ const computedColors = (page: Page) =>
           ?.content.trim() ?? null,
       body: bg(document.body),
       topBar: bg(document.querySelector(topBarSelector)),
-      panel: bg(document.querySelector('[role="complementary"]')),
+      panel: bg(document.querySelector('aside, [role="complementary"]')),
       text: getComputedStyle(document.body).color,
     };
   }, TOP_BAR);
@@ -155,8 +158,15 @@ for (const target of PAGES) {
       const darkColors = await computedColors(dark);
       const lightColors = await computedColors(light);
 
-      expect(darkColors.meta, '<meta name="color-scheme">').toBe('only light');
-      expect(darkColors.colorScheme, ':root color-scheme').toBe('only light');
+      // Browsers serialize `only light` as `light only`; the order is free.
+      expect(keywords(darkColors.meta), '<meta name="color-scheme">').toEqual([
+        'light',
+        'only',
+      ]);
+      expect(keywords(darkColors.colorScheme), ':root color-scheme').toEqual([
+        'light',
+        'only',
+      ]);
       expect(darkColors.topBar, 'top bar is present').not.toBeNull();
       if (target.panel) {
         expect(darkColors.panel, 'place panel is open').not.toBeNull();
