@@ -137,14 +137,21 @@
   color: var(--ink-2);
 }
 
-/* Ruler: the era row, the track and the printed years share one hit area. */
+/* Ruler: the era row, the track and the printed years share one hit area,
+   at least 62 px tall at every size (44 px is the touch minimum).
+   touch-action: none hands every gesture that starts on it to the timeline:
+   with pan-y, iOS Safari could take a slightly diagonal drag as a page scroll
+   and cancel it. The header has nothing to scroll, and the map below keeps
+   its own gestures. */
 .timeline__ruler {
   position: relative;
   margin-top: 12px;
   padding-bottom: 6px;
   user-select: none;
   -webkit-user-select: none;
-  touch-action: pan-y;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
   cursor: pointer;
 }
 
@@ -212,7 +219,6 @@
     var(--sheet) 0 calc(100% / var(--years, 53)),
     var(--ink) calc(100% / var(--years, 53)) calc(200% / var(--years, 53))
   );
-  touch-action: none;
 }
 
 .timeline__track:focus-visible {

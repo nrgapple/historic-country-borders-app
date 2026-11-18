@@ -125,8 +125,24 @@ export const ERA_RANGES: Record<string, string> = {
   modern: '1800 – today',
 };
 
-/** Pointer travel, in px, before a press on a printed year becomes a drag. */
+/**
+ * Pointer travel, in px, before a press counts as a drag: a press on a
+ * printed year keeps that year until then, and a cancelled press commits
+ * only after it.
+ */
 const DRAG_THRESHOLD_PX = 4;
+
+interface Press {
+  pointerId: number;
+  /** clientX at the press. */
+  x: number;
+  /** The printed year pressed, until the press becomes a drag. */
+  labelIndex: number | null;
+  /** The year index currently previewed. */
+  index: number;
+  /** Whether the pointer has travelled at least DRAG_THRESHOLD_PX. */
+  moved: boolean;
+}
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -148,11 +164,11 @@ export default function Timeline({
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  // The press in progress, kept in a ref so pointer handlers never depend on
+  // when React re-renders (WebKit can deliver capture events between them).
   // A press that starts on a printed year selects that year unless the
   // pointer then moves far enough to count as a drag.
-  const pressRef = useRef<{ x: number; labelIndex: number | null } | null>(
-    null,
-  );
+  const pressRef = useRef<Press | null>(null);
   const selectId = useId();
 
   const lastIndex = years.length - 1;
@@ -200,42 +216,87 @@ export default function Timeline({
   };
 
   // The era row, the track, and the printed years all share one hit area.
+  // Touch and mouse go through the same path; the year is committed once, on
+  // release, so the map loads one year rather than every year passed over.
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0) return;
-    event.currentTarget.setPointerCapture?.(event.pointerId);
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (event.isPrimary === false || pressRef.current) return;
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // A synthetic or already-released pointer: the ruler still receives
+      // its events while the finger stays over it.
+    }
     trackRef.current?.focus({ preventScroll: true });
     const labelIndex = labelIndexOf(event.target);
-    pressRef.current = { x: event.clientX, labelIndex };
-    setDragIndex(labelIndex ?? indexFromPointer(event.clientX));
+    const index = labelIndex ?? indexFromPointer(event.clientX);
+    pressRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      labelIndex,
+      index,
+      moved: false,
+    };
+    setHoverIndex(null);
+    setDragIndex(index);
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    const index = indexFromPointer(event.clientX);
     const press = pressRef.current;
-    if (dragIndex !== null) {
-      if (
-        press?.labelIndex != null &&
-        Math.abs(event.clientX - press.x) < DRAG_THRESHOLD_PX
-      ) {
-        return;
+    if (!press || press.pointerId !== event.pointerId) {
+      if (!press && event.pointerType === 'mouse')
+        setHoverIndex(indexFromPointer(event.clientX));
+      return;
+    }
+    if (!press.moved) {
+      if (Math.abs(event.clientX - press.x) < DRAG_THRESHOLD_PX) {
+        // A press on a printed year keeps that year until it becomes a drag.
+        if (press.labelIndex != null) return;
+      } else {
+        press.moved = true;
       }
-      if (press) press.labelIndex = null;
-      setDragIndex(index);
-    } else if (event.pointerType === 'mouse') setHoverIndex(index);
+    }
+    press.labelIndex = null;
+    press.index = indexFromPointer(event.clientX);
+    setDragIndex(press.index);
+  };
+
+  const endPress = (press: Press, index: number | null) => {
+    if (pressRef.current !== press) return;
+    pressRef.current = null;
+    setDragIndex(null);
+    if (index !== null) commit(index, 'track');
   };
 
   const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (dragIndex === null) return;
-    const index =
-      pressRef.current?.labelIndex ?? indexFromPointer(event.clientX);
-    pressRef.current = null;
-    setDragIndex(null);
-    commit(index, 'track');
+    const press = pressRef.current;
+    if (!press || press.pointerId !== event.pointerId) return;
+    endPress(press, press.labelIndex ?? indexFromPointer(event.clientX));
   };
 
-  const cancelDrag = () => {
-    pressRef.current = null;
-    setDragIndex(null);
+  // The browser took the gesture (a scroll, a system gesture, an incoming
+  // call). After a real horizontal drag the visitor was choosing a year, so
+  // the year last shown is kept; a press that had not moved is discarded.
+  const cancelDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const press = pressRef.current;
+    if (!press || press.pointerId !== event.pointerId) return;
+    endPress(press, press.moved ? press.index : null);
+  };
+
+  // Lost capture without a pointerup or pointercancel (the ruler was hidden
+  // or capture was released elsewhere) ends the press like a cancel. Capture
+  // events bubble, so only the ruler's own counts, and the end waits a task:
+  // WebKit may fire lostpointercapture just before the pointerup it follows.
+  const handleLostPointerCapture = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (event.target !== event.currentTarget) return;
+    const press = pressRef.current;
+    if (!press || press.pointerId !== event.pointerId) return;
+    window.setTimeout(
+      () => endPress(press, press.moved ? press.index : null),
+      0,
+    );
   };
 
   const step = useCallback(
@@ -403,7 +464,7 @@ export default function Timeline({
         onPointerMove={handlePointerMove}
         onPointerUp={finishDrag}
         onPointerCancel={cancelDrag}
-        onLostPointerCapture={cancelDrag}
+        onLostPointerCapture={handleLostPointerCapture}
         onPointerLeave={() => setHoverIndex(null)}
       >
         <div className="timeline__eras" aria-hidden="true">
