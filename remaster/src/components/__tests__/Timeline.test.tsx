@@ -98,6 +98,91 @@ describe('Timeline', () => {
     fireEvent.pointerUp(slider, { clientX: 590, pointerId: 1 });
     expect(onChange).toHaveBeenCalledWith(1914, 'track');
   });
+
+  describe('touch drags', () => {
+    // Six years over 600 px: 100 px per year.
+    const setup = (value = 1492) => {
+      const onChange = renderTimeline(value);
+      const slider = screen.getByRole('slider');
+      slider.getBoundingClientRect = () =>
+        ({ left: 0, width: 600, top: 0, height: 16 }) as DOMRect;
+      const ruler = slider.closest('.timeline__ruler') as HTMLElement;
+      const heading = () =>
+        document.querySelector('[data-year-heading]')?.textContent;
+      const touch = { pointerId: 7, pointerType: 'touch' };
+      return { onChange, slider, ruler, heading, touch };
+    };
+
+    it('previews the year under the finger and commits once on release', () => {
+      const { onChange, slider, heading, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+      fireEvent.pointerMove(slider, { ...touch, clientX: 450 });
+      fireEvent.pointerMove(slider, { ...touch, clientX: 150 });
+      expect(heading()).toBe('1');
+      expect(onChange).not.toHaveBeenCalled();
+      fireEvent.pointerUp(slider, { ...touch, clientX: 150 });
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith(-1, 'track');
+    });
+
+    it('jumps to the year tapped', () => {
+      const { onChange, slider, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 550 });
+      fireEvent.pointerUp(slider, { ...touch, clientX: 550 });
+      expect(onChange).toHaveBeenCalledWith(1914, 'track');
+    });
+
+    it('keeps the previewed year when the browser cancels a real drag', () => {
+      const { onChange, slider, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+      fireEvent.pointerMove(slider, { ...touch, clientX: 50 });
+      fireEvent.pointerCancel(slider, { ...touch, clientX: 0 });
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith(-500, 'track');
+    });
+
+    it('discards a cancelled press that never moved', () => {
+      const { onChange, slider, heading, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 50 });
+      fireEvent.pointerMove(slider, { ...touch, clientX: 52 });
+      fireEvent.pointerCancel(slider, { ...touch, clientX: 52 });
+      expect(onChange).not.toHaveBeenCalled();
+      expect(heading()).toBe('1492');
+    });
+
+    it('ignores capture lost by a child and lost just before pointerup', () => {
+      const { onChange, slider, ruler, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+      // Bubbled from the implicitly captured track: not the ruler's capture.
+      fireEvent.lostPointerCapture(slider, touch);
+      fireEvent.pointerMove(slider, { ...touch, clientX: 550 });
+      // WebKit may release the ruler's capture just before the pointerup.
+      fireEvent.lostPointerCapture(ruler, touch);
+      fireEvent.pointerUp(slider, { ...touch, clientX: 550 });
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledWith(1914, 'track');
+    });
+
+    it('ends a drag whose capture is lost with no pointerup', async () => {
+      const { onChange, slider, ruler, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+      fireEvent.pointerMove(slider, { ...touch, clientX: 150 });
+      fireEvent.lostPointerCapture(ruler, touch);
+      expect(onChange).not.toHaveBeenCalled();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(onChange).toHaveBeenCalledWith(-1, 'track');
+    });
+
+    it('ignores a second finger', () => {
+      const { onChange, slider, touch } = setup();
+      fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+      fireEvent.pointerDown(slider, { pointerId: 8, clientX: 50 });
+      fireEvent.pointerUp(slider, { pointerId: 8, clientX: 50 });
+      expect(onChange).not.toHaveBeenCalled();
+      fireEvent.pointerUp(slider, { ...touch, clientX: 450 });
+      expect(onChange).toHaveBeenCalledWith(1500, 'track');
+    });
+  });
 });
 
 describe('Timeline year chooser and ruler labels', () => {
