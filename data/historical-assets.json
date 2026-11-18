@@ -14,19 +14,23 @@
       "file": "data/historical-place-overrides.json",
       "sha256": "e6eaa7d65440a7b3438fb420b383596ea803de5f980fa3911da48d9e1e8fa58b"
     },
+    "placeClasses": {
+      "file": "data/historical-place-classes.json",
+      "sha256": "a48be7a13bbc978d775b5fc774f6f2c2145203a4358bcaff5532cf7150869372"
+    },
     "places": {
       "file": "places.geojson",
       "sha256": "ed7289b777df83c117e096fe2d10a9b22d24620c9f050b4ba59a09d42bf954e2",
       "bytes": 4845378
     }
   },
-  "refreshedAt": "2026-11-18T01:16:43.840Z",
+  "refreshedAt": "2026-11-18T04:54:25.930Z",
   "roundingFallbackRings": 208,
   "assets": {
     "100": {
-      "url": "/data/historical/100.13f89f46e0032068.json",
-      "sha256": "13f89f46e00320681b6f2cd8a99b651be421d3823bd0670a50afb33de3a8c304",
-      "bytes": 331928,
+      "url": "/data/historical/100.191f5022c9574793.json",
+      "sha256": "191f5022c957479384b16969908f9a6685a9aa26c5271d1a707b497d73dbb3f3",
+      "bytes": 331926,
       "source": {
         "file": "world_100.geojson",
         "sha256": "20265dc221c92f070f88d0a2ab6459b6942a86c2b865524131c9a1f546e03e86",
@@ -120,9 +124,9 @@
       }
     },
     "700": {
-      "url": "/data/historical/700.eac3c34d13ea4b8c.json",
-      "sha256": "eac3c34d13ea4b8cfc98a43049822fe014033aafde0a10dc2a9fa12d7c5c475f",
-      "bytes": 406085,
+      "url": "/data/historical/700.3a01576336187e7a.json",
+      "sha256": "3a01576336187e7afd88450e491f9b926af1ed665f91e86f5ebe16906b412b77",
+      "bytes": 405996,
       "source": {
         "file": "world_700.geojson",
         "sha256": "31b42c6efc118c855db3c18f3b5cb4fba9d2f1b5112ded77c6ddc364037f08fe",
@@ -264,9 +268,9 @@
       }
     },
     "1492": {
-      "url": "/data/historical/1492.99537151a31fdc21.json",
-      "sha256": "99537151a31fdc214925ff142bc50f1b58c7b84833c0d5392c9efc3ce1950405",
-      "bytes": 2503970,
+      "url": "/data/historical/1492.95420203300670d8.json",
+      "sha256": "95420203300670d816086fe5e4c438fbf9a31de887f9b59a614442d97bbf16de",
+      "bytes": 2503964,
       "source": {
         "file": "world_1492.geojson",
         "sha256": "b952a7804cc4ed6c14aaebcb78e2e087c34ee5b1ffa1b659325cdfb45a806af3",
@@ -408,9 +412,9 @@
       }
     },
     "1815": {
-      "url": "/data/historical/1815.740b846d8b96287b.json",
-      "sha256": "740b846d8b96287be82bd9709163935f7207329e88276f843d9eaee87048fc87",
-      "bytes": 1339021,
+      "url": "/data/historical/1815.a93f33df5ba5467b.json",
+      "sha256": "a93f33df5ba5467b7573dc75e18d468cf1b5bb1889e575dcf190af23e3a75f72",
+      "bytes": 1338987,
       "source": {
         "file": "world_1815.geojson",
         "sha256": "62afcd6e3f1f598a05e42550a358083bbb75e63e122ebb5a4383f019632115e9",
@@ -552,9 +556,9 @@
       }
     },
     "1994": {
-      "url": "/data/historical/1994.d5e681d523827dd1.json",
-      "sha256": "d5e681d523827dd1ee76ef8842f6669cd7612067321b62e9af0718bb9f98d376",
-      "bytes": 1012378,
+      "url": "/data/historical/1994.1bfb9fde9fad5233.json",
+      "sha256": "1bfb9fde9fad5233a2916c6f5d9f67d798945500231d461be75d0323bc162f54",
+      "bytes": 1012358,
       "source": {
         "file": "world_1994.geojson",
         "sha256": "5aa74eb004e085a39faff7e39b4b20c4c1f0c78feabc9d87e0abd62daf09f2b1",
@@ -568,9 +572,9 @@
       }
     },
     "2000": {
-      "url": "/data/historical/2000.6952e06e14780f37.json",
-      "sha256": "6952e06e14780f370b9fd554f1361823ff12da8b61b4c9545aab4a4426f1c0dd",
-      "bytes": 964400,
+      "url": "/data/historical/2000.d4898a1b0eccdcdd.json",
+      "sha256": "d4898a1b0eccdcddf9d014fa7eb0dbbeebffa41b447cada4a5903d853fc36889",
+      "bytes": 964380,
       "source": {
         "file": "world_2000.geojson",
         "sha256": "c00d1952b51eb89724df883182f40fac7a938d85425ae63aa2019ac211856ea8",
@@ -584,9 +588,9 @@
       }
     },
     "2010": {
-      "url": "/data/historical/2010.cd78b1da54806047.json",
-      "sha256": "cd78b1da5480604749640229be8a5e92b79218d60cf7da2a2cd9d1b95afa999a",
-      "bytes": 964391,
+      "url": "/data/historical/2010.71ad29d6d7fda6bb.json",
+      "sha256": "71ad29d6d7fda6bb2dc1e17d447e9da46f9506a377b3e1ce911f73c640556372",
+      "bytes": 964371,
       "source": {
         "file": "world_2010.geojson",
         "sha256": "a75e768634e7242ec69d461bf51961a7d92073d387eb55cc4feafccd824a0aa7",
@@ -648,9 +652,9 @@
       }
     },
     "-5000": {
-      "url": "/data/historical/bc5000.ab284505db37b73f.json",
-      "sha256": "ab284505db37b73fc93eae9303f01db65055b39d26c5f7716283841dee7a45b2",
-      "bytes": 494056,
+      "url": "/data/historical/bc5000.2a9b79eee721de6b.json",
+      "sha256": "2a9b79eee721de6b76d7a58298a2c8dfb90185c21a45f501b72ef36b7e1d27b9",
+      "bytes": 494024,
       "source": {
         "file": "world_bc5000.geojson",
         "sha256": "4ae8721545dd9236e0cfe414e83f9da28ec681f70d23d80c18407fa28cf1908c",
@@ -760,9 +764,9 @@
       }
     },
     "-500": {
-      "url": "/data/historical/bc500.8648526252bbd2f9.json",
-      "sha256": "8648526252bbd2f96438e785527d6e35eb4b97eac9d292fed5eae2432a02bd8e",
-      "bytes": 348274,
+      "url": "/data/historical/bc500.85a34b0bc2a66dc8.json",
+      "sha256": "85a34b0bc2a66dc84265daf241be616efb4dee9eb7139f7f261570daf4fc529a",
+      "bytes": 348272,
       "source": {
         "file": "world_bc500.geojson",
         "sha256": "ebf257ef748c37906de08f8a2c5410c85b06957ac72c2f0e6a13eae67de12e57",
@@ -776,9 +780,9 @@
       }
     },
     "-400": {
-      "url": "/data/historical/bc400.4ddc9d52c112d33f.json",
-      "sha256": "4ddc9d52c112d33f9681102e36ce11139ba57ada5cdb2ebe79fbc204929556e2",
-      "bytes": 384998,
+      "url": "/data/historical/bc400.821b2bf6589676a8.json",
+      "sha256": "821b2bf6589676a8dc2d7240341b688af8ed2f067c8b1370a6aeb36f89f23388",
+      "bytes": 384996,
       "source": {
         "file": "world_bc400.geojson",
         "sha256": "5c1eced870abf8514533cae5b6d2f8a4531f037f4c37a1d1443ab0660497ab42",
@@ -792,9 +796,9 @@
       }
     },
     "-323": {
-      "url": "/data/historical/bc323.559b4342c260ef04.json",
-      "sha256": "559b4342c260ef04c95d314cd8a5c7968ea8a14841f8f3a6ff2168ee453835d8",
-      "bytes": 310797,
+      "url": "/data/historical/bc323.6a0cf37e47f92f69.json",
+      "sha256": "6a0cf37e47f92f695bf3c6d1e73f146150ab3b957bd08768bb63e02e4971b91c",
+      "bytes": 310795,
       "source": {
         "file": "world_bc323.geojson",
         "sha256": "03eadec707e29647de3c4e75391da9792fe08affb9d1a2dae2bfd9519a88a72d",
@@ -808,9 +812,9 @@
       }
     },
     "-300": {
-      "url": "/data/historical/bc300.495520fb1ee77386.json",
-      "sha256": "495520fb1ee773864f3f98eb0af53dc5b00e462caf19b24ba8525fd55b8f0734",
-      "bytes": 315701,
+      "url": "/data/historical/bc300.7439bb82919f9d8f.json",
+      "sha256": "7439bb82919f9d8f6c0218f6969c4cde2cd5f59ca4c638fb7580d94bcfc2feec",
+      "bytes": 315699,
       "source": {
         "file": "world_bc300.geojson",
         "sha256": "24cd984081f859e9af906a5b48097c7eb1ee83ef066f83e6d87854848d8bd4f2",
@@ -824,9 +828,9 @@
       }
     },
     "-200": {
-      "url": "/data/historical/bc200.c64c6b871298f606.json",
-      "sha256": "c64c6b871298f606398bc0806d2bbfdac63356836ed8d3d895458155037445b5",
-      "bytes": 431070,
+      "url": "/data/historical/bc200.f17ae956fb36a9b0.json",
+      "sha256": "f17ae956fb36a9b0954c777fdea97ce45695abccc83e052178ed14e4ccfb2754",
+      "bytes": 431068,
       "source": {
         "file": "world_bc200.geojson",
         "sha256": "4fd73b9d463e6d31a54c5437fbc7a08d24dfeadcabd2a50ddbcd363abf8d82f8",
@@ -840,9 +844,9 @@
       }
     },
     "-100": {
-      "url": "/data/historical/bc100.c2bd828d15e08a99.json",
-      "sha256": "c2bd828d15e08a997ae22ffb6a54f3fc39b5c389da3caca7fa1c8eae8f2b017d",
-      "bytes": 318244,
+      "url": "/data/historical/bc100.cc503269b9201075.json",
+      "sha256": "cc503269b92010750d2a53bd022f448935af28a9cfc31ec9d78559daf27324a1",
+      "bytes": 318242,
       "source": {
         "file": "world_bc100.geojson",
         "sha256": "710c05247c2e1bc99bf6ad334a939143a5451cfa7bb1c9087e18821eda67c9d0",
@@ -856,9 +860,9 @@
       }
     },
     "-1": {
-      "url": "/data/historical/bc1.bc1a4b90dade68ec.json",
-      "sha256": "bc1a4b90dade68ec0be09ef56e47ca24116796acd15af38409fcc6ec23476f16",
-      "bytes": 324029,
+      "url": "/data/historical/bc1.7dcddeda99adee99.json",
+      "sha256": "7dcddeda99adee99eaaaa5a0f1ebe56067d4a0cc429038414fb3b6383790dc7d",
+      "bytes": 324027,
       "source": {
         "file": "world_bc1.geojson",
         "sha256": "0099bac4e9d74dce953c63802252d3021d7cc1ec54bc9ae2ba48e93c6c442e9a",

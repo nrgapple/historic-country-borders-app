@@ -12,6 +12,7 @@
     "build": "NODE_OPTIONS=--max-old-space-size=4096 next build",
     "data:refresh": "yarn data:refresh:historical && yarn data:refresh:schools",
     "data:refresh:historical": "node scripts/refresh-historical-data.js",
+    "data:build:historical-split": "node scripts/build-historical-split.js",
     "data:refresh:schools": "node scripts/refresh-school-districts.js",
     "data:refresh:basemap": "node scripts/refresh-basemap.js",
     "data:measure:basemap": "node scripts/refresh-basemap.js --measure",

@@ -108,6 +108,29 @@ The tiles carry five layers:
 
 **Unverified until P0:** whether Workers Static Assets compresses `application/x-protobuf`. See `docs/BASEMAP.md`.
 
+### Split historical year files for the remaster (2026-11, T1)
+
+Observed: the remaster hands map data to MapLibre's worker by URL (`docs/product/REMASTER_PLAN.md` §6). The combined per-year payload mixes polygons, labels and places with every source property. Direction A needs inward line offsets, which require RFC 7946 winding. Six source borders had an empty or whitespace-only `NAME` that passed validation. Upstream places have no type, so ruins were drawn as living cities.
+
+Decision:
+
+- **Split files.** Each year also publishes three content-hashed files, recorded in `data/historical-split-assets.json`:
+  - polygons with only a territory `id`, the atlas wash `c` (legacy slot mod 12, as in the approved mock) and dependency fields `dep`/`ov`/`oc`, rewound to RFC 7946;
+  - labels (`n`, `a` in km²) and places (`p`, `k` city/site);
+  - a territory index (`NAME`, `PARTOF`, `SUBJECTO`, `BORDERPRECISION`, an antimeridian-aware `bbox`, the label point).
+- **Offline rebuild.** The split files are a pure function of the committed combined payloads and a reviewed place-class file, so `yarn data:validate` rebuilds them offline and requires byte-for-byte equality.
+- **Combined files kept.** The combined files keep their shape for production until P4. They change only by removing blank names and trimming padded ones (15 files).
+- **Blank names.** A blank NAME is never published. The split files fall back to the source's own `ABBREVN` (recorded as `nameFrom`). Otherwise the polygon stays on the map without an id or label. No name is invented, so the 1994–2010 Swiss polygon stays unnamed until a reviewed override exists.
+- **Archaeological sites.** They come from `data/historical-place-classes.json`, a sourced, reviewed list checked against upstream on refresh like the end-date overrides: 11 places, some with a `from` year.
+- **Capital points.** Capital points per year combine Wikidata P625 (pinned in the context snapshot, fetched by the explicit refresh) with the split polygons. They are published only when inside or within 50 km of the territory, and every rejection is listed for review.
+- **Budgets.** `yarn size:check` budgets split files at Brotli-5 and encodes the plan's vector-tile trigger: at most five polygon years above 300 KiB.
+
+Rejected alternatives:
+
+- Rewinding or slimming the combined files would change production payloads for no production benefit.
+- Taking ABBREVN in the combined files would add names the committed Wikidata mapping has not reconciled.
+- `.geojson` file names: their content type on Workers Static Assets is unverified until P0, and `.json` is compressed.
+
 ## Deferred
 
 ### Domain cutover

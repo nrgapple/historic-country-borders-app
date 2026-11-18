@@ -11,6 +11,9 @@ public/tiles/
 public/basemap/
 .cache/
 data/historical-context-facts.json
+# Generated and rebuilt byte for byte by yarn data:validate.
+data/historical-split-assets.json
+data/historical-capitals.json
 test-results/
 yarn.lock
 remaster-spike/

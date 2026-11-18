@@ -7,6 +7,11 @@ const {
   sha256,
   validatePayload,
 } = require('./lib/historical-data');
+const {
+  SPLIT_KINDS,
+  buildSplitAssetsFromRoot,
+} = require('./lib/historical-split');
+const { publishedHistoricalFiles } = require('./build-historical-split');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -35,6 +40,20 @@ function main() {
   ) {
     fail(
       'place overrides changed since the last refresh; run yarn data:refresh:historical',
+    );
+  }
+  const placeClassesPath = path.join(
+    ROOT,
+    'data',
+    'historical-place-classes.json',
+  );
+  if (
+    !fs.existsSync(placeClassesPath) ||
+    sha256(fs.readFileSync(placeClassesPath, 'utf8')) !==
+      assetManifest.source.placeClasses?.sha256
+  ) {
+    fail(
+      'place classes changed since the last refresh; run yarn data:refresh:historical',
     );
   }
   if (
@@ -105,9 +124,55 @@ function main() {
   if (fallbackRings !== assetManifest.roundingFallbackRings)
     fail('rounding fallback ring count mismatch');
 
+  const split = validateSplitFiles(expectedYears);
+
+  const published = publishedHistoricalFiles(ROOT);
+  const stray = fs
+    .readdirSync(path.join(ROOT, 'public', 'data', 'historical'))
+    .filter((file) => !published.has(file));
+  if (stray.length) fail(`unreferenced historical files: ${stray.join(', ')}`);
+
   console.log(
-    `Historical data is valid (${expectedYears.length} payloads, ${totalBytes} bytes, ${fallbackRings} unrounded fallback rings)`,
+    `Historical data is valid (${expectedYears.length} payloads, ${totalBytes} bytes, ${fallbackRings} unrounded fallback rings; ${split.files} split files, ${split.bytes} bytes, rebuilt offline)`,
   );
+}
+
+/**
+ * Offline rebuild check: the split files must equal, byte for byte, what the
+ * builder derives from the committed payloads and place classes. The builder
+ * also validates winding, ids, names, dependencies, and place kinds.
+ */
+function validateSplitFiles(expectedYears) {
+  const manifestPath = path.join(ROOT, 'data', 'historical-split-assets.json');
+  if (!fs.existsSync(manifestPath)) fail('split asset manifest is missing');
+  const committed = fs.readFileSync(manifestPath, 'utf8');
+  let rebuilt;
+  try {
+    rebuilt = buildSplitAssetsFromRoot(ROOT);
+  } catch (error) {
+    fail(`split files cannot be rebuilt: ${error.message}`);
+  }
+  const years = Object.keys(JSON.parse(committed).years || {});
+  if (
+    years.length !== expectedYears.length ||
+    expectedYears.some((year) => !years.includes(year))
+  )
+    fail('split years do not match route years');
+  if (committed !== rebuilt.manifestJson)
+    fail(
+      'split manifest differs from an offline rebuild; run yarn data:build:historical-split',
+    );
+  let bytes = 0;
+  rebuilt.files.forEach(({ name, json }) => {
+    const file = path.join(ROOT, 'public', 'data', 'historical', name);
+    if (!fs.existsSync(file)) fail(`split file ${name} is missing`);
+    if (fs.readFileSync(file, 'utf8') !== json)
+      fail(`split file ${name} differs from an offline rebuild`);
+    bytes += Buffer.byteLength(json);
+  });
+  if (rebuilt.files.length !== expectedYears.length * SPLIT_KINDS.length)
+    fail('split file count mismatch');
+  return { files: rebuilt.files.length, bytes };
 }
 
 try {
