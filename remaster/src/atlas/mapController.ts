@@ -48,6 +48,7 @@ import {
   type AtlasState,
   type Bbox,
 } from './store';
+import { collapseAttributionOnIdle } from './attribution';
 
 setWorkerUrl(workerUrl);
 
@@ -149,11 +150,7 @@ export function mountMap(container: HTMLElement): MapHandle {
   // The credit strip and About carry the same sources: start the compact
   // attribution closed (MapLibre opens it on load) so it does not cover the
   // map; its (i) button still opens it.
-  map.once('idle', () =>
-    container
-      .querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
-      ?.classList.remove('maplibregl-compact-show'),
-  );
+  collapseAttributionOnIdle(map, container);
 
   let loadedYear = initial.year;
   let index: YearIndex | null = null;

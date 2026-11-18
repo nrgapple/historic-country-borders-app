@@ -121,7 +121,7 @@ test('the harness really forces dark mode (Chromium)', async ({
     shot,
     await (async () => {
       await page.setContent(
-        '<meta name="color-scheme" content="only light"><body style="margin:0;background:#ffffff"><div style="height:200px"></div></body>',
+        '<meta name="color-scheme" content="light only"><body style="margin:0;background:#ffffff"><div style="height:200px"></div></body>',
       );
       return page.screenshot({ clip: { x: 0, y: 0, width: 50, height: 50 } });
     })(),
@@ -158,7 +158,7 @@ for (const target of PAGES) {
       const darkColors = await computedColors(dark);
       const lightColors = await computedColors(light);
 
-      // Browsers serialize `only light` as `light only`; the order is free.
+      // The order of `light only` is free; the keywords are compared sorted.
       expect(keywords(darkColors.meta), '<meta name="color-scheme">').toEqual([
         'light',
         'only',

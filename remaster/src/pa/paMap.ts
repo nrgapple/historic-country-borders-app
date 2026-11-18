@@ -46,6 +46,7 @@ import { loadDistrictIndex, type DistrictIndex } from './usePASchoolDistricts';
 import { hatchImage, hatchImageId, piaaName, ROMAN } from './colourBy';
 import { THEME_IDS } from '../styles/tokens';
 import { sportsLabelLines } from './districts';
+import { collapseAttributionOnIdle } from '../atlas/attribution';
 
 setWorkerUrl(workerUrl);
 
@@ -176,12 +177,11 @@ export function mountPaMap(container: HTMLElement): MapHandle {
     else addHatches(event.id);
   });
   map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
-  // ODbL: the OpenStreetMap credit stays expanded (compact only on phones,
-  // where MapLibre opens it on load and the visitor may close it).
-  map.addControl(
-    new AttributionControl({ compact: undefined }),
-    'bottom-right',
-  );
+  // ODbL: an (i) button like the year pages. About and the key's credit
+  // carry the same sources, so it starts closed (MapLibre opens it on load)
+  // instead of running across the map; the button still opens it.
+  map.addControl(new AttributionControl({ compact: true }), 'bottom-right');
+  collapseAttributionOnIdle(map, container);
 
   const cleanups: Array<() => void> = [];
   const frame = container.parentElement ?? container;

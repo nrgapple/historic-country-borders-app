@@ -205,6 +205,10 @@ test('the street basemap credits OpenStreetMap (ODbL) and every map file is firs
   await expect(page.locator('.maplibregl-ctrl-attrib')).toContainText(
     'OpenStreetMap',
   );
+  // An (i) button like the year pages, not a strip across the map.
+  await expect(
+    page.locator('.maplibregl-ctrl-attrib.maplibregl-compact'),
+  ).toHaveCount(1);
   await expect(page.locator('.credit')).toContainText('ODbL');
   expect(offOrigin).toEqual([]);
   // Tiles outside the published coverage are never requested.

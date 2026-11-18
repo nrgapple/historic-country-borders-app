@@ -116,7 +116,7 @@ The acceptance check is in §9.4 and is required by every milestone from P1 on.
 The owner hit two defects that are now fixed on the current app. The remaster must not reintroduce them.
 
 - **Tablet top bar.** On an iPad in Safari, about 1000 CSS px wide, the top bar ran off the right edge. The fix is commit `3ebf542` ("keep the top bar inside tablet widths without overlaps", branch `t3/topbar-fit`; the owner reports it merged to main). Below 1280 px the place finder collapses to a search button, and the two-row header applies up to 860 px. The ported `Timeline`/`Toolbar`/`PlaceFinder` must carry those breakpoints. Direction A's taller timeline must be checked at every tablet width, because the mockups were shot only at 1440 and 390/393 px.
-- **Forced dark mode.** Commit `902d770` sets `color-scheme: only light` on `:root` and `<meta name="color-scheme" content="only light">`, so browsers that auto-darken pages leave the light-only atlas palette alone. Chrome's "Auto Dark Mode for Web Contents" and Samsung Internet are examples. The Astro layout and the global tokens file must keep both. The spike already does.
+- **Forced dark mode.** Commit `902d770` set `color-scheme: only light` on `:root` and the `color-scheme` meta tag, so browsers that auto-darken pages leave the light-only atlas palette alone. Chrome's "Auto Dark Mode for Web Contents", Samsung Internet and Safari 27.3's Adaptive Dark Mode are examples. On 2026-11-18 both were rewritten as `light only`, the order WebKit's Adaptive Dark Mode announcement documents, after an iPad in Dark appearance showed the PA header text washed out and the fact table darkened. The Astro layout and the global tokens file must keep both. The spike already does.
 
 The acceptance checks are §9.5 and §9.6, required from P1 on.
 
@@ -580,9 +580,9 @@ A failure lists the offending element pairs with their boxes, as the safe-area p
 
 ### 9.6 Forced-dark-mode acceptance check (required from P1)
 
-1. **Static check** (`yarn static:validate`): every HTML file in the build output has `<meta name="color-scheme" content="only light">`, and the built CSS sets `color-scheme: only light` on `:root`.
+1. **Static check** (`yarn static:validate`): every HTML file in the build output has `<meta name="color-scheme" content="light only">`, and the built CSS sets `color-scheme: light only` on `:root`.
 2. **Chromium.** Launch with `--enable-features=WebContentsForceDark` and `colorScheme: 'dark'`. Load `/year/1492` and `/pa/school-districts`, then assert:
-   - `getComputedStyle(document.documentElement).colorScheme === 'only light'`;
+   - `getComputedStyle(document.documentElement).colorScheme === 'light only'`;
    - the computed background colors of `body`, the top bar, and the place panel equal the light tokens (e.g. paper `#fffdf8`).
 
    Then compare a screenshot crop of the top bar against the light-mode crop, with a pixel-diff threshold of ≤ 1%. Force-dark recolors pixels without changing computed styles, so the pixel comparison is the real test.

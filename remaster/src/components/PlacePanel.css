@@ -6,8 +6,9 @@
   z-index: 5;
   top: var(--frame-inset);
   right: var(--frame-inset);
-  /* Plan §2.2 rule 3: the panel ends above the home indicator. */
-  bottom: max(var(--frame-inset), var(--safe-bottom));
+  /* The page runs to the bottom edge; its button row pads clear of the
+     home indicator (plan §2.2 rule 3) instead of leaving map showing below. */
+  bottom: var(--frame-inset);
   width: min(var(--panel-width), calc(100% - 2 * var(--frame-inset)));
   display: flex;
   flex-direction: column;
@@ -174,6 +175,7 @@
   display: flex;
   gap: 8px;
   padding: 12px 26px;
+  padding-bottom: calc(12px + var(--safe-bottom));
   border-top: 1px solid var(--hair);
   background: var(--sheet);
 }
@@ -311,8 +313,9 @@
     top: auto;
     left: 0;
     right: 0;
-    /* Plan §2.2 rule 3: a bottom sheet keeps clear of the home indicator. */
-    bottom: max(var(--frame-inset), var(--safe-bottom));
+    /* The sheet reaches the screen edge; its button row clears the home
+       indicator (plan §2.2 rule 3). */
+    bottom: var(--frame-inset);
     width: auto;
     max-height: 47%;
     border-left: 0;
@@ -348,7 +351,7 @@
   }
 
   .place-panel__foot {
-    padding: 10px 18px;
+    padding: 10px 18px calc(10px + var(--safe-bottom));
   }
 
   .place-panel__foot .button {
