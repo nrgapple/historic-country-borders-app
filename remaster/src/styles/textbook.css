@@ -12,7 +12,7 @@
    font-weight and letter-spacing as longhands here and repeat a size only
    with its breakpoint. The hard requirements still hold: no 100vh, edge UI
    padded with var(--safe-*), the 1279 px finder collapse, the 860 px
-   two-row header, and colour-scheme: light only (tokens.css). */
+   two-row header, and colour-scheme: light dark only at the root, light only inside <body> (tokens.css). */
 
 :root[data-theme='textbook'] {
   --tb-radius: 8px;
@@ -857,7 +857,7 @@
 
 /* Short landscape screens: the chapter strip keeps A's header height, and
    main's slim timeline (one row from 600 px, 18 px era bands) holds in B. */
-@media (max-height: 520px) {
+@media (max-height: 640px) {
   :root[data-theme='textbook'] .topbar {
     padding-top: 6px;
     border-top-width: calc(var(--safe-top) + 4px);

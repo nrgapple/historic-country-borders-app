@@ -165,10 +165,13 @@ jobs:
           retention-days: 7
 
   deploy:
-    # Production: ships the remaster job's tested build as soon as it and the
-    # shared data/script checks pass. Rebuilding would add minutes for nothing.
+    # Production: ships the remaster job's tested build as soon as it passes.
+    # It does not wait for `validate` (the legacy Next.js app's quality and
+    # browser tests, which still run and report): the legacy app is not
+    # deployed, and its browser install once hung for 20+ minutes and held a
+    # release. Rebuilding here would add minutes for nothing.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [remaster, validate]
+    needs: [remaster]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:

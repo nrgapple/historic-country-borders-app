@@ -370,6 +370,9 @@
    squeezes into the bottom inset. */
 @media (max-height: 360px) {
   .place-panel {
+    /* The whole page scrolls here, so it stops above the home indicator
+       rather than scrolling text into it. */
+    bottom: max(var(--frame-inset), var(--safe-bottom));
     overflow: auto;
     overscroll-behavior: contain;
   }

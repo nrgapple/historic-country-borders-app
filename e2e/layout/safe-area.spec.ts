@@ -145,8 +145,9 @@ for (const target of LAYOUT_PAGES) {
       expect
         .soft(await insetViolations(page, insets), 'elements in the insets')
         .toEqual([]);
-      // Step 4: no fixed element over the home indicator, and the phone
-      // place panel ends above it.
+      // Step 4: no fixed element over the home indicator. The phone place
+      // panel's paper may run to the screen edge, but its controls end
+      // above the home indicator.
       expect
         .soft(
           await fixedBottomProblems(page, insets.bottom),
@@ -156,13 +157,33 @@ for (const target of LAYOUT_PAGES) {
       if ('panel' in target && target.panel) {
         const panel = page.getByRole('complementary').first();
         await expect.soft(panel).toBeVisible();
-        const box = await panel.boundingBox();
-        const { height } = page.viewportSize()!;
+        // Measured against the layout viewport, as the inset checks are.
+        const gapUnderControls = await panel.evaluate(
+          (element) =>
+            window.innerHeight -
+            Math.max(
+              ...[...element.querySelectorAll('button, a[href]')]
+                // Only controls a finger can reach (not scrolled out of view).
+                .filter((control) => {
+                  const rect = control.getBoundingClientRect();
+                  if (rect.width === 0 || rect.height === 0) return false;
+                  const hit = document.elementFromPoint(
+                    rect.left + rect.width / 2,
+                    rect.top + rect.height / 2,
+                  );
+                  return hit !== null && control.contains(hit);
+                })
+                // Scrolled content is clipped at the panel's own edge.
+                .map((control) =>
+                  Math.min(
+                    control.getBoundingClientRect().bottom,
+                    element.getBoundingClientRect().bottom,
+                  ),
+                ),
+            ),
+        );
         expect
-          .soft(
-            box ? height - (box.y + box.height) : -1,
-            'gap under the place panel (px)',
-          )
+          .soft(gapUnderControls, 'gap under the place panel controls (px)')
           .toBeGreaterThanOrEqual(insets.bottom);
       }
       // Step 5: the page opts into the full screen and avoids 100vh.

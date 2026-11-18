@@ -158,12 +158,16 @@ for (const target of PAGES) {
       const darkColors = await computedColors(dark);
       const lightColors = await computedColors(light);
 
-      // The order of `light only` is free; the keywords are compared sorted.
+      // `light dark only`: Safari's Adaptive Dark Mode skips pages declaring
+      // dark support (some builds ignore `light only`) and `only` keeps
+      // Chromium's force-dark off; the checks below prove it still renders light.
       expect(keywords(darkColors.meta), '<meta name="color-scheme">').toEqual([
+        'dark',
         'light',
         'only',
       ]);
       expect(keywords(darkColors.colorScheme), ':root color-scheme').toEqual([
+        'dark',
         'light',
         'only',
       ]);

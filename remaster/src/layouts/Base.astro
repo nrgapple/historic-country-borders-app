@@ -65,8 +65,10 @@ const canonical = generateCanonicalUrl(path);
     <meta property="og:image:alt" content="A hand-coloured historical atlas map with a timeline of eras" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content={SEO_CONFIG.themeColor} />
-    <!-- Light-only design: stop browsers from auto-darkening the page (§2.3). -->
-    <meta name="color-scheme" content="light only" />
+    <!-- Light-only design. `light dark` makes Safari's Adaptive Dark Mode skip
+         the page (some builds ignore `light only`); `only` keeps Chrome's
+         force-dark off; global.css pins everything inside <body> to light (§2.3). -->
+    <meta name="color-scheme" content="light dark only" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />

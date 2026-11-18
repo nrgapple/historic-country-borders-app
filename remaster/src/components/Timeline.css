@@ -420,9 +420,10 @@
   }
 }
 
-/* Short landscape screens (phones, small projectors at low resolution):
+/* Short screens up to 640 px tall (phones in landscape, iPads in landscape
+   with Safari's tab bar, small projectors at low resolution):
    one header row so the map keeps the height, and slim era bands. */
-@media (max-height: 520px) {
+@media (max-height: 640px) {
   .timeline__eras {
     height: 18px;
   }
@@ -453,7 +454,7 @@
   }
 }
 
-@media (max-height: 520px) and (min-width: 600px) {
+@media (max-height: 640px) and (min-width: 600px) {
   .timeline__head {
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas: 'lead step trail';

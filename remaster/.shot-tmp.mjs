@@ -1,0 +1,10 @@
+import { webkit } from 'playwright';
+const [out, path, theme] = process.argv.slice(2);
+const b = await webkit.launch();
+const p = await b.newPage({ viewport:{width:1000,height:565}, colorScheme:'dark', hasTouch:true });
+await p.addInitScript((t) => { localStorage.setItem('historic-borders-welcome:2026-remaster','1'); if (t) { localStorage.setItem('historic-borders-theme', t); localStorage.setItem('historic-borders-theme:pa', t);} }, theme||'');
+await p.goto('http://localhost:4410'+path);
+await p.waitForTimeout(4500);
+await p.screenshot({ path: out });
+console.log(await p.evaluate(() => [getComputedStyle(document.documentElement).colorScheme, getComputedStyle(document.body).colorScheme, getComputedStyle(document.querySelector('.atlas')||document.body).colorScheme].join(' | ')));
+await b.close();

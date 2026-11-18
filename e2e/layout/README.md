@@ -38,7 +38,7 @@ Each project checks five pages. For each page it runs three cases: at rest, and 
 
 - Every visible control, text block, year heading, and map attribution stays inside the viewport minus the insets.
 - No `position: fixed` element sits over the home indicator.
-- The phone place panel ends above the home indicator.
+- The phone place panel's controls end above the home indicator (its paper may run to the screen edge).
 - The year heading moves less than 4 px when the toolbar resizes.
 - The HTML has `viewport-fit=cover`, and first-party CSS has no `100vh`.
 
@@ -63,8 +63,7 @@ A control is checked for overlap only if a hit test at its center reaches it. Co
 
 **Forced dark.** Chromium runs with `--enable-features=WebContentsForceDark` and WebKit with `colorScheme: 'dark'`. Each run checks:
 
-- the `color-scheme` meta tag reads `light only` (the order WebKit documents for Safari's Adaptive Dark Mode opt-out);
-- `:root` computes `color-scheme: light only`;
+- the `color-scheme` meta tag and `:root` read `light dark only`: `light dark` makes Safari's Adaptive Dark Mode skip the page and `only` stops Chrome's force-dark (everything inside `<body>` is pinned to `light only`);
 - the backgrounds of the body, top bar, and place panel match a light-mode reference load.
 
 Chromium also compares a top-bar screenshot against a browser without force-dark, and allows at most 1% of pixels to change. A self-test first confirms that force-dark really darkens an unprotected white page, so the pixel check can't pass vacuously.

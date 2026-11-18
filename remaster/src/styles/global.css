@@ -16,8 +16,19 @@
 html,
 body {
   margin: 0;
+  background-color: var(--paper);
+  color: var(--ink);
   /* Old-browser fallback; full-height layouts below use dvh. */
   height: 100%;
+}
+
+/* The root says `light dark only` so auto-darkening browsers leave the page
+   alone: Safari's Adaptive Dark Mode skips pages that declare dark support,
+   and `only` stops Chrome's force-dark (tokens.css). Every element inside
+   <body> stays light, including form controls, scrollbars and dialogs, and
+   keeps `only` because Chrome forces dark element by element. */
+body > * {
+  color-scheme: light only;
 }
 
 body {

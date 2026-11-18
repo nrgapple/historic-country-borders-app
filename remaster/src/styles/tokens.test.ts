@@ -57,7 +57,7 @@ describe('Direction A tokens', () => {
       execFileSync(process.execPath, [script, '--check'], { stdio: 'pipe' }),
     ).not.toThrow();
     const css = fs.readFileSync(path.resolve('src/styles/tokens.css'), 'utf8');
-    expect(css).toContain('color-scheme: light only;');
+    expect(css).toContain('color-scheme: light dark only;');
     expect(css).not.toMatch(/\b100vh\b/);
     // B switches the same custom properties, and Projector text still wins.
     const b = css.indexOf(":root[data-theme='textbook']");
