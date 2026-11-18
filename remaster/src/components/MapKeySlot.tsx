@@ -167,7 +167,7 @@ export default function MapKeySlot({
   };
 
   const scale: ScaleBar | null = view
-    ? scaleBar(view.center[1], view.zoom, compact ? 96 : 132, 48)
+    ? scaleBar(view.center[1], view.zoom, compact ? 96 : 112, 48)
     : null;
 
   return (
@@ -192,7 +192,12 @@ export default function MapKeySlot({
           {title && (
             <div className="map-key__plate">
               <p className="map-key__kicker">{title.kicker}</p>
-              <p className="map-key__title">{title.title}</p>
+              <p
+                className="map-key__title"
+                data-long={title.title.length > 8 || undefined}
+              >
+                {title.title}
+              </p>
               <p className="map-key__sub">{title.sub}</p>
             </div>
           )}

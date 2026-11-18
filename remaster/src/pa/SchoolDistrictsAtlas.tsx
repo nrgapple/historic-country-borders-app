@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Toolbar, { Brand, RestoreControlsButton } from '../components/Toolbar';
 import PlacePanel from '../components/PlacePanel';
 import SettingsPanel from '../components/SettingsPanel';
@@ -62,6 +62,8 @@ export default function SchoolDistrictsAtlas() {
 }
 
 function PaApp() {
+  // The controller's handle, for the map key (globe and scale bar).
+  const [mapHandle, setMapHandle] = useState<MapHandle | null>(null);
   const place = useAtlas((s) => s.place);
   const focusMode = useAtlas((s) => s.focusMode);
   const webgl = useAtlas((s) => s.webgl);
@@ -178,7 +180,7 @@ function PaApp() {
         data-panel-open={panelOpen || undefined}
       >
         <div className="frame">
-          <PaMapView />
+          <PaMapView onMount={setMapHandle} />
         </div>
 
         <MapStatus
@@ -195,6 +197,8 @@ function PaApp() {
 
         {!focusMode && (
           <MapKeySlot
+            map={mapHandle?.map}
+            lowPower={mapHandle?.lowPower}
             plate={{
               kicker: 'Commonwealth of',
               title: 'Pennsylvania',
@@ -360,7 +364,11 @@ const districtSubtitle = (d: District) =>
     .filter(Boolean)
     .join(' · ') || undefined;
 
-function PaMapView() {
+function PaMapView({
+  onMount,
+}: {
+  onMount: (handle: MapHandle | null) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const webgl = useAtlas((s) => s.webgl);
 
@@ -377,13 +385,15 @@ function PaMapView() {
         handle = mountPaMap(ref.current);
         (window as unknown as { __atlasMap?: MapHandle['map'] }).__atlasMap =
           handle.map;
+        onMount(handle);
       })
       .catch(() => actions.setWebgl(false));
     return () => {
       cancelled = true;
       handle?.destroy();
+      onMount(null);
     };
-  }, []);
+  }, [onMount]);
 
   useEffect(() => {
     if (webgl) delete document.documentElement.dataset.webgl;

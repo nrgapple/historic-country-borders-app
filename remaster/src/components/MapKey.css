@@ -11,7 +11,7 @@
   z-index: 3;
   display: flex;
   flex-direction: column;
-  width: 236px;
+  width: 248px;
   max-width: calc(100% - 2 * var(--frame-inset) - 40px);
   background-color: var(--sheet);
   border: 1px solid var(--ink);
@@ -60,6 +60,12 @@
   font: 700 25px/1.05 var(--font-sc);
   letter-spacing: 0.04em;
   font-variant-numeric: lining-nums;
+}
+
+/* Names such as "Pennsylvania" beside the globe. */
+.map-key__title[data-long] {
+  font-size: 17px;
+  letter-spacing: 0.02em;
 }
 
 .map-key__sub {
@@ -166,6 +172,7 @@
 }
 
 .map-key__toggle {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
