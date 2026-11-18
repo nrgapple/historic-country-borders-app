@@ -208,6 +208,34 @@ test('selecting a territory shows its details with a safe Wikipedia fallback', a
   await expect(panel).toBeHidden();
 });
 
+test('a teacher finds a territory by name and shares the selection', async ({
+  page,
+}) => {
+  await page.goto('/year/1994');
+  const map = page.getByTestId('map-container');
+  await expectReadyMap(map);
+
+  const finder = page.getByRole('combobox', { name: 'Find a place' });
+  await finder.fill('fixture');
+  await page.getByRole('option', { name: 'Fixture Country' }).click();
+
+  const panel = page.getByRole('complementary');
+  await expect(
+    panel.getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
+  await expect(panel.getByRole('button', { name: 'Copy link' })).toBeVisible();
+
+  await page.reload();
+  await expectReadyMap(map);
+  await expect(
+    page
+      .getByRole('complementary')
+      .getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
+});
+
 test('unknown years use the useful static 404', async ({ page }) => {
   const response = await page.goto('/year/9999');
   expect(response?.status()).toBe(404);

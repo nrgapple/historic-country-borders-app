@@ -1,6 +1,7 @@
 import React, {
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -35,6 +36,10 @@ interface MapCanvasProps {
   interactiveLayerId: string;
   onFeatureClick: (properties: FeatureProperties | undefined) => void;
   customAttribution?: string | string[];
+  /** Zoom buttons; hidden in projector (focus) mode. */
+  showNavigation?: boolean;
+  /** Called once the map exists, for imperative camera moves. */
+  onReady?: (map: MapRef) => void;
   /** Layers render only once the style is ready, avoiding style-loading races. */
   children: ReactNode;
 }
@@ -51,9 +56,11 @@ export default function MapCanvas({
   interactiveLayerId,
   onFeatureClick,
   customAttribution,
+  showNavigation = true,
+  onReady,
   children,
 }: MapCanvasProps) {
-  const mapRef = useRef<MapRef>(null);
+  const onReadyRef = useRef(onReady);
   const [loaded, setLoaded] = useState(false);
   const [cursor, setCursor] = useState<string>('');
 
@@ -68,6 +75,16 @@ export default function MapCanvas({
   }, []);
 
   const handleLoad = useCallback(() => setLoaded(true), []);
+
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
+  // Hand the map over as soon as it exists. Camera moves work before `load`,
+  // which can be delayed for a long time by slow or blocked basemap tiles.
+  const attachMap = useCallback((map: MapRef | null) => {
+    if (map) onReadyRef.current?.(map);
+  }, []);
 
   const handleMoveEnd = useCallback((event: ViewStateChangeEvent) => {
     const { longitude, latitude, zoom } = event.viewState;
@@ -97,7 +114,7 @@ export default function MapCanvas({
   return (
     <div className="map-canvas">
       <Map
-        ref={mapRef}
+        ref={attachMap}
         reuseMaps
         mapboxAccessToken={token}
         mapStyle={mapStyle}
@@ -118,7 +135,9 @@ export default function MapCanvas({
         customAttribution={customAttribution}
         style={{ position: 'absolute', inset: 0 }}
       >
-        <NavigationControl position="bottom-right" showCompass={false} />
+        {showNavigation && (
+          <NavigationControl position="bottom-right" showCompass={false} />
+        )}
         {loaded && children}
       </Map>
     </div>

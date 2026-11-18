@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Layout from './Layout';
 import Toolbar, { Brand, RestoreControlsButton } from './Toolbar';
@@ -7,13 +7,22 @@ import SettingsPanel from './SettingsPanel';
 import AboutDialog from './AboutDialog';
 import FeedbackDialog from './FeedbackDialog';
 import MapStatus from './MapStatus';
+import PlaceFinder from './PlaceFinder';
+import ProjectorCaption from './ProjectorCaption';
 import type { FeatureProperties } from './map/MapCanvas';
 import { useChrome } from '../contexts/ChromeContext';
 import {
   STALE_AFTER_MONTHS,
   usePASchoolDistricts,
 } from '../hooks/usePASchoolDistricts';
+import { useMapFocus, useSharedPlace } from '../hooks/useSharedPlace';
 import { trackEvent } from '../lib/analytics';
+import {
+  featureBounds,
+  featuresNamed,
+  PlaceOption,
+  placeOptionsFromFeatures,
+} from '../lib/places';
 
 const SchoolDistrictsMap = dynamic(() => import('./map/SchoolDistrictsMap'), {
   ssr: false,
@@ -66,6 +75,27 @@ interface Selection {
   properties: FeatureProperties;
 }
 
+/** "NORTHAMPTON" → "Northampton County". */
+const countyName = (properties: FeatureProperties) => {
+  const county = text(properties.CTY_NAME);
+  if (!county) return undefined;
+  const name = county
+    .toLowerCase()
+    .replace(/\b([a-z])/g, (letter) => letter.toUpperCase());
+  return / county$/i.test(name) ? name : `${name} County`;
+};
+
+/** Districts in the finder; county names match too. */
+const districtOption = {
+  label: (properties: FeatureProperties) =>
+    districtFullName(properties) || undefined,
+  detail: countyName,
+  keywords: (properties: FeatureProperties) =>
+    [text(properties.NAME), countyName(properties)].filter(
+      (value): value is string => Boolean(value),
+    ),
+};
+
 export default function SchoolDistrictsAtlas() {
   const { focusMode } = useChrome();
   const { data, isLoading, isEmpty, isError, isStale, retry } =
@@ -84,6 +114,40 @@ export default function SchoolDistrictsAtlas() {
     },
     [],
   );
+
+  // Place finder and shareable `?place=` links.
+  const { onMapReady, focusBounds } = useMapFocus(11);
+  const features = data?.data.borders.features;
+  const placeOptions = useMemo(
+    () => (features ? placeOptionsFromFeatures(features, districtOption) : []),
+    [features],
+  );
+
+  const showPlace = useCallback(
+    (name: string, frame: boolean) => {
+      const matches = featuresNamed(features ?? [], name);
+      const properties = matches[0]?.properties;
+      if (!properties) return false;
+      setSelection({ name, properties });
+      if (frame) focusBounds(featureBounds(matches));
+      return true;
+    },
+    [features, focusBounds],
+  );
+
+  const handleFind = useCallback(
+    (option: PlaceOption) => {
+      if (showPlace(option.name, true))
+        trackEvent('district_select', { name: option.name });
+    },
+    [showPlace],
+  );
+
+  useSharedPlace({
+    ready: Boolean(data) && !isLoading,
+    selectedName: selection?.name,
+    restore: showPlace,
+  });
 
   const closePanel = useCallback(() => setSelection(undefined), []);
 
@@ -115,6 +179,7 @@ export default function SchoolDistrictsAtlas() {
           data={data?.data}
           selectedName={selection?.name}
           onSelect={handleSelect}
+          onReady={onMapReady}
         />
 
         {!focusMode && (
@@ -137,7 +202,14 @@ export default function SchoolDistrictsAtlas() {
                 )}
                 {isEmpty && !isError && 'No school districts are available.'}
               </p>
-              <Toolbar />
+              <div className="topbar__tools">
+                <PlaceFinder
+                  options={placeOptions}
+                  onSelect={handleFind}
+                  collapsible
+                />
+                <Toolbar />
+              </div>
             </div>
             <SettingsPanel />
             {isStale && data && (
@@ -158,7 +230,16 @@ export default function SchoolDistrictsAtlas() {
           </header>
         )}
 
-        {focusMode && <RestoreControlsButton />}
+        {focusMode && (
+          <>
+            <ProjectorCaption
+              place={
+                selection ? districtFullName(selection.properties) : undefined
+              }
+            />
+            <RestoreControlsButton />
+          </>
+        )}
 
         {!focusMode && selection && (
           <PlacePanel
