@@ -22,12 +22,15 @@ interface AboutDialogProps {
   sources: ReactNode;
   /** Keyboard shortcuts relevant to the page. */
   shortcuts?: Array<{ keys: string[]; action: string }>;
+  /** Reopens the welcome card on its tour or its release notes. */
+  onWelcome?: (view: 'tour' | 'notes') => void;
 }
 
 export default function AboutDialog({
   intro = HISTORICAL_INTRO,
   sources,
   shortcuts = [],
+  onWelcome,
 }: AboutDialogProps) {
   const { overlay, closeOverlay } = useChrome();
 
@@ -39,6 +42,28 @@ export default function AboutDialog({
       className="about"
     >
       {intro}
+
+      {onWelcome && (
+        <p className="about__welcome">
+          New here, or back after a while?{' '}
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => onWelcome('tour')}
+          >
+            Take the tour
+          </button>{' '}
+          or{' '}
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => onWelcome('notes')}
+          >
+            read what’s new
+          </button>
+          .
+        </p>
+      )}
 
       <section className="about__section">
         <h3>Sources and accuracy</h3>

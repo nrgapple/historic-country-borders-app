@@ -70,6 +70,14 @@ Notes:
 - **Low power.** T6's heuristic decides at map mount; `?lowPower=1` or `?lowPower=0` overrides it.
 - **Fonts.** `atlas.css` loads on every page, `map-aliases.css` on year pages, and `projector.css` only while Projector text is on (a head script restores it before first paint).
 
+## First-visit welcome
+
+`src/components/Welcome.tsx` is the one-time "Historic Borders is back" card: six release notes, then a five-card tour with inline SVG vignettes (`WelcomeArt.tsx`). It is non-modal: a corner card on the map from 700 px, a bottom sheet above the home indicator on phones, so T4's suites run with it open.
+
+- **When it shows** (`src/lib/welcome.ts`, `src/atlas/useWelcome.ts`): on a first visit, once dismissal is remembered in `localStorage` under `historic-borders-welcome:<WELCOME_VERSION>`. Bump `WELCOME_VERSION` and the notes to show a later release. If the browser cannot store the dismissal, it never opens by itself.
+- **When it waits or closes:** never in focus mode; a shared `?place=` link keeps its first view until the visitor interacts and the panel closes. Selecting a place, opening another overlay or entering focus mode closes it, and every close counts as dismissal.
+- **Reopening:** About → "Take the tour" or "read what’s new" (`actions.openWelcome`).
+
 ## Left for T7 and later milestones
 
 - **Map key (P3, T7).** `src/components/MapKeySlot.tsx` holds the bottom-left slot, its safe-area clearance and phone rules, and prints only the plate title. Build the key from `legendEntries(drawnClasses(map))` (re-exported by `mapStyle.ts`, called on `moveend`/`idle`), the scale bar from the live camera, and the locator globe from `GLOBE_LAND_URL` in `basemap.ts`. The map instance is `window.__atlasMap` today; T7 should get it from the controller's handle instead.

@@ -79,6 +79,13 @@ for (const shot of SHOTS) {
     hasTouch: Boolean(shot.touch),
     isMobile: shot.width < 700,
   });
+  // These shots review the map; the first-visit welcome has its own
+  // (scripts/shoot-welcome.mjs), so mark it as already seen.
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('historic-borders-welcome:2026-remaster', 'shot');
+    } catch {}
+  });
   const page = await context.newPage();
   // Wikipedia is the only third-party request (on selection); keep shots
   // deterministic and offline with a fixed summary.
