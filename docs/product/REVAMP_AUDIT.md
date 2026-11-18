@@ -103,6 +103,7 @@ A selected territory stays selected across years while it still exists.
 
 **SEO:**
 
+- `public/og-image.png` (1200 × 630), rendered from the real 1914 map, replaces a share image that did not exist.
 - Per-year titles, such as "World borders in 1492 AD · Historic Borders", with accurate descriptions and canonical URLs that exclude query strings.
 - A single JSON-LD block.
 - Pinch zoom is allowed again.
@@ -129,4 +130,3 @@ See `docs/M4_PERFORMANCE_REPORT.md` for the method and the numbers from `yarn si
    - a "Classroom" link-copy button that includes the current year and view;
    - optional "key events of this era" notes from a curated, source-backed list;
    - district search on the school map (already on the backlog).
-4. **Add an Open Graph image.** Generate `public/og-image.png` (1200 × 630) from a real map render so shared links preview well. The metadata already points to it.
