@@ -1,9 +1,10 @@
 import manifest from '../data/years.json';
 
 export const YEARS: readonly number[] = manifest.years;
-const files = manifest.files as Record<string, { map: string; labels: string; index: string }>;
+const files = manifest.files as Record<string, { map: string; labels: string; capitals: string; index: string }>;
 export const mapUrl = (year: number) => new URL(files[year].map, location.href).href;
 export const labelsUrl = (year: number) => new URL(files[year].labels, location.href).href;
+export const capitalsUrl = (year: number) => new URL(files[year].capitals, location.href).href;
 export const indexUrl = (year: number) => files[year].index;
 
 /** [name, partOf, subjectTo, precision, [w, s, e, n]]; the array index is the map feature id. */

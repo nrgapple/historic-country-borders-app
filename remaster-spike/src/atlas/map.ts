@@ -4,9 +4,38 @@ import { AttributionControl, Map as MLMap, NavigationControl, setWorkerUrl, type
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 
 setWorkerUrl(workerUrl);
-import { atlasStyle, borderLayers, bordersSource, labelsSource } from './style';
+import {
+  addMarkerImages,
+  addRelief,
+  applyStyleOptions,
+  classicAtlasStyle,
+  detectLowPower,
+  LAYER,
+  SOURCE,
+  setSelection,
+  withDefaults,
+  type ClassicStyleOptions,
+  type Selection,
+} from './style';
 import { actions, getState, readView, subscribe } from './store';
-import { labelsUrl, loadIndex, mapUrl, prefetchYears, YEARS, type YearIndex } from './data';
+import { capitalsUrl, labelsUrl, loadIndex, mapUrl, prefetchYears, YEARS, type YearIndex } from './data';
+
+/** Style options from the URL, for the harness: ?lowPower=1&projector=1&text=large&case=upper&opacity=0.5&border=3&labels=0 */
+export function optionsFromQuery(search = location.search): Partial<ClassicStyleOptions> {
+  const p = new URLSearchParams(search);
+  const num = (k: string) => (p.get(k) !== null && Number.isFinite(Number(p.get(k))) ? Number(p.get(k)) : undefined);
+  const settings: Partial<ClassicStyleOptions['settings']> = {};
+  const text = p.get('text');
+  if (text === 'small' || text === 'medium' || text === 'large') settings.textSize = text;
+  if (p.get('case') === 'upper') settings.textCase = 'upper';
+  if (num('opacity') !== undefined) settings.countryOpacity = num('opacity');
+  if (num('border') !== undefined) settings.borderThickness = num('border');
+  if (p.get('labels') === '0') settings.showLabels = false;
+  const out: Partial<ClassicStyleOptions> = { settings: settings as ClassicStyleOptions['settings'] };
+  if (p.has('lowPower')) out.lowPower = p.get('lowPower') === '1';
+  if (p.get('projector') === '1') out.projectorText = true;
+  return out;
+}
 
 /**
  * Imperative MapLibre controller. It owns the map and subscribes to the store;
@@ -14,13 +43,15 @@ import { labelsUrl, loadIndex, mapUrl, prefetchYears, YEARS, type YearIndex } fr
  * MapLibre by URL, so it is downloaded and parsed in MapLibre's worker and the
  * main thread never holds a parsed copy.
  */
-export function mountMap(container: HTMLElement) {
+export function mountMap(container: HTMLElement, initial: Partial<ClassicStyleOptions> = optionsFromQuery()) {
   const origin = location.origin;
   const { year } = getState();
   const view = readView();
+  // Low-power default from device hints, decided before the style is built.
+  let options = withDefaults({ ...initial, lowPower: initial.lowPower ?? probeLowPower() });
   const map = new MLMap({
     container,
-    style: atlasStyle(origin),
+    style: classicAtlasStyle(origin, {}, options),
     center: view.center,
     zoom: view.zoom,
     minZoom: 1,
@@ -34,37 +65,39 @@ export function mountMap(container: HTMLElement) {
   map.addControl(new AttributionControl({ compact: true }), 'bottom-right');
   map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
   (window as unknown as { __map: MLMap }).__map = map; // measurement hook
+  map.on('styleimagemissing', () => addMarkerImages(map));
 
   // The page preloads this year's file. Wait for that download to finish before
   // MapLibre's worker requests the same URL, so the worker is served from the
   // HTTP cache instead of downloading it a second time; the main thread only
   // drains bytes and never parses them.
-  const firstUrl = mapUrl(year);
   const warm = (url: string) => fetch(url, { credentials: 'same-origin' }).then((r) => r.arrayBuffer()).catch(() => undefined);
-  const warmed = warm(firstUrl);
-  const warmedLabels = warm(labelsUrl(year));
-  const addBorders = () => {
-    if (map.getSource('borders')) return;
-    map.addSource('borders', bordersSource(loadedYear === year ? firstUrl : mapUrl(loadedYear)));
-    map.addSource('labels', labelsSource(labelsUrl(loadedYear)));
-    for (const layer of borderLayers) map.addLayer(layer);
-  };
-  // isStyleLoaded() is also false while basemap tiles load, so track the
-  // one-time 'style.load' ourselves.
+  const warmed = Promise.all([warm(mapUrl(year)), warm(labelsUrl(year))]);
   const styleLoaded = new Promise<void>((resolve) => map.once('style.load', () => resolve()));
-  void Promise.all([warmed, warmedLabels, styleLoaded]).then(addBorders);
+  let loadedYear = year;
+  const setYearData = (y: number) => {
+    (map.getSource(SOURCE.borders) as GeoJSONSource | undefined)?.setData(mapUrl(y));
+    (map.getSource(SOURCE.labels) as GeoJSONSource | undefined)?.setData(labelsUrl(y));
+    (map.getSource(SOURCE.capitals) as GeoJSONSource | undefined)?.setData(capitalsUrl(y));
+  };
+  void Promise.all([warmed, styleLoaded]).then(() => {
+    addMarkerImages(map);
+    setYearData(loadedYear);
+    // Relief is decoration: fetch it only after the borders have painted.
+    map.once('idle', () => addRelief(map, origin, options));
+  });
 
   let index: YearIndex | null = null;
-  let loadedYear = year;
-
-  const applySelection = () => {
-    if (!map.getSource('borders')) return;
-    map.removeFeatureState({ source: 'borders' });
+  const selection = (): Selection | null => {
     const name = getState().selected;
-    if (!name || !index || index.year !== loadedYear) return;
-    index.territories.forEach((t, id) => {
-      if (t[0] === name) map.setFeatureState({ source: 'borders', id }, { selected: true });
-    });
+    if (!name || !index || index.year !== loadedYear) return null;
+    const id = index.territories.findIndex((t) => t[0] === name);
+    return id < 0 ? null : { id, name };
+  };
+  const applySelection = () => {
+    if (!map.getSource(SOURCE.borders)) return;
+    options = { ...options, selected: selection() };
+    setSelection(map, options.selected, options);
   };
 
   const loadYearIndex = (y: number) =>
@@ -78,19 +111,20 @@ export function mountMap(container: HTMLElement) {
     }, () => actions.setStatus('error'));
 
   map.on('click', (e: MapMouseEvent) => {
-    const hit = map.queryRenderedFeatures(e.point, { layers: ['borders-fill'] })[0];
+    const hit = map.queryRenderedFeatures(e.point, { layers: [LAYER.territoryFill] })[0];
     const id = typeof hit?.id === 'number' ? hit.id : undefined;
     const name = id !== undefined && index ? index.territories[id]?.[0] : undefined;
     actions.select(name ?? null);
   });
-  map.on('mousemove', 'borders-fill', () => (map.getCanvas().style.cursor = 'pointer'));
-  map.on('mouseleave', 'borders-fill', () => (map.getCanvas().style.cursor = ''));
+  map.on('mousemove', LAYER.territoryFill, () => (map.getCanvas().style.cursor = 'pointer'));
+  map.on('mouseleave', LAYER.territoryFill, () => (map.getCanvas().style.cursor = ''));
   map.on('moveend', () => {
     const c = map.getCenter();
     actions.writeView(c.lng, c.lat, map.getZoom());
   });
+  // Dependencies of the selection are found in loaded tiles; mark new tiles too.
   map.on('sourcedata', (e) => {
-    if (e.sourceId === 'borders' && e.isSourceLoaded) applySelection();
+    if (e.sourceId === SOURCE.borders && e.isSourceLoaded) applySelection();
   });
   map.on('idle', () => {
     if (getState().status !== 'loading' || loadedYear !== getState().year) return;
@@ -101,7 +135,7 @@ export function mountMap(container: HTMLElement) {
     idle(() => prefetchYears([YEARS[i - 1], YEARS[i + 1]].filter((y) => y !== undefined)));
   });
   map.on('error', (e) => {
-    if ((e as { sourceId?: string }).sourceId === 'borders') actions.setStatus('error');
+    if ((e as { sourceId?: string }).sourceId === SOURCE.borders) actions.setStatus('error');
   });
 
   void loadYearIndex(year);
@@ -111,8 +145,7 @@ export function mountMap(container: HTMLElement) {
     if (s.year !== loadedYear) {
       loadedYear = s.year;
       index = null;
-      (map.getSource('borders') as GeoJSONSource | undefined)?.setData(mapUrl(s.year));
-      (map.getSource('labels') as GeoJSONSource | undefined)?.setData(labelsUrl(s.year));
+      setYearData(s.year);
       void loadYearIndex(s.year);
     }
     if (s.selected !== lastSelected) {
@@ -123,6 +156,14 @@ export function mountMap(container: HTMLElement) {
 
   return {
     map,
+    get options() {
+      return options;
+    },
+    /** Settings, Projector text or low-power changed. */
+    setOptions(partial: Partial<ClassicStyleOptions>) {
+      options = withDefaults({ ...options, ...partial, settings: { ...options.settings, ...partial.settings } });
+      applyStyleOptions(map, options);
+    },
     flyToBounds(b: [number, number, number, number]) {
       map.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding: 48, maxZoom: 6, duration: 600 });
     },
@@ -131,6 +172,13 @@ export function mountMap(container: HTMLElement) {
       map.remove();
     },
   };
+}
+
+function probeLowPower() {
+  const gl = document.createElement('canvas').getContext('webgl2');
+  const low = detectLowPower(gl);
+  gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  return low;
 }
 
 export const supportsWebGL2 = () => {
