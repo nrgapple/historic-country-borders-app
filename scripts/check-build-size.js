@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
+const { checkDeployableFiles } = require('./lib/deploy-files');
 
 const ROOT = path.join(__dirname, '..');
 const chunksDirectory = path.join(ROOT, '.next/static/chunks');
@@ -93,6 +94,12 @@ if (!contextSizes.length)
 enforce('Context data total', contextTotal, budgets.contextDataTotal);
 enforce('Largest context file', contextLargest, budgets.contextDataLargest);
 
+// Every file wrangler uploads counts against the Free plan's per-version
+// limit. DEPLOY_DIR lets the remaster point this at dist/.
+const deployDirectory = path.join(ROOT, process.env.DEPLOY_DIR || 'out');
+const deployable = checkDeployableFiles(deployDirectory);
+errors.push(...deployable.errors);
+
 const schoolDataPath = path.join(ROOT, 'out/data/pa-school-districts.json');
 const schoolRaw = bytes(schoolDataPath);
 const schoolBrotli = zlib.brotliCompressSync(
@@ -113,6 +120,7 @@ const summary = [
   `- Historical data: ${formatKiB(historicalTotal)} total / ${formatKiB(budgets.historicalDataTotal)}; ${formatKiB(historicalLargest)} largest / ${formatKiB(budgets.historicalDataLargest)}`,
   `- Context data: ${formatKiB(contextTotal)} total / ${formatKiB(budgets.contextDataTotal)}; ${formatKiB(contextLargest)} largest / ${formatKiB(budgets.contextDataLargest)}`,
   `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
+  `- Deployable files in ${path.relative(ROOT, deployDirectory)}/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
 ];
 
 console.log(summary.slice(2).join('\n'));
