@@ -45,6 +45,8 @@ yarn data:validate            # validate all committed map data offline
 yarn data:refresh             # explicitly refresh both pinned upstream datasets
 yarn data:refresh:historical  # explicitly refresh pinned historical artifacts
 yarn data:refresh:schools     # explicitly refresh pinned PASDA artifact
+yarn data:reconcile:context   # explicitly map territory names to Wikidata items
+yarn data:refresh:context     # explicitly refresh per-year Wikidata facts
 yarn static:validate          # verify static routes/assets and dynamic isolation
 yarn preview                  # serve out/ with deep-link and 404 behavior
 yarn format:check && yarn lint
@@ -57,6 +59,7 @@ Tests use fixtures and do not require production credentials or live third-party
 The application exports static HTML and committed map assets for Cloudflare Workers Static Assets. Normal pages and map assets invoke no Worker code; only the exactly routed, bounded feedback Worker path is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
 
 - Historical map data: [source, pin, validation, and uncertainty](docs/HISTORICAL_DATA.md)
+- Year facts and "What changed": [Wikidata reconciliation and publication](docs/HISTORICAL_CONTEXT.md)
 - Country descriptions: [Wikipedia](https://www.wikipedia.org/)
 - Pennsylvania districts: PASDA (source, vintage, and limitations are documented in [docs/PA_SCHOOL_DISTRICTS.md](docs/PA_SCHOOL_DISTRICTS.md))
 - Maps: [Mapbox](https://www.mapbox.com/) GL JS; historical maps use a minimal physical basemap without modern borders (`lib/basemap.ts`)

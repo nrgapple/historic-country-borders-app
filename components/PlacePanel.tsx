@@ -6,6 +6,10 @@ import { useWikiSummary } from '../hooks/useWiki';
 export interface PlaceFact {
   label: string;
   value: string;
+  /** Source link for the value, e.g. the Wikidata statement. */
+  href?: string;
+  /** Short source credit shown under the facts, e.g. "Wikidata". */
+  source?: string;
 }
 
 interface PlacePanelProps {
@@ -34,6 +38,9 @@ export default function PlacePanel({
     wikiQuery ?? name,
   );
   const closeRef = useRef<HTMLButtonElement>(null);
+  const factSources = [
+    ...new Set(facts.flatMap((fact) => (fact.source ? [fact.source] : []))),
+  ];
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -71,10 +78,28 @@ export default function PlacePanel({
             {facts.map((fact) => (
               <div key={fact.label} className="place-panel__fact">
                 <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
+                <dd>
+                  {fact.href ? (
+                    <a
+                      href={fact.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={fact.source && `Source: ${fact.source}`}
+                    >
+                      {fact.value}
+                    </a>
+                  ) : (
+                    fact.value
+                  )}
+                </dd>
               </div>
             ))}
           </dl>
+        )}
+        {factSources.length > 0 && (
+          <p className="place-panel__facts-source">
+            Facts: {factSources.join(', ')}
+          </p>
         )}
 
         <section className="place-panel__wiki" aria-live="polite">

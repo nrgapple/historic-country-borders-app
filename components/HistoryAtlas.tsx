@@ -10,12 +10,15 @@ import SettingsPanel from './SettingsPanel';
 import AboutDialog from './AboutDialog';
 import FeedbackDialog from './FeedbackDialog';
 import MapStatus from './MapStatus';
+import ChangesSummary from './ChangesSummary';
 import PlaceFinder from './PlaceFinder';
 import ProjectorCaption from './ProjectorCaption';
 import type { FeatureProperties } from './map/MapCanvas';
 import { useChrome } from '../contexts/ChromeContext';
 import { useHistoricalBorders } from '../hooks/useHistoricalBorders';
 import { useMapFocus, useSharedPlace } from '../hooks/useSharedPlace';
+import { useYearContext } from '../hooks/useYearContext';
+import { contextFacts } from '../lib/yearContext';
 import { trackEvent } from '../lib/analytics';
 import {
   featureBounds,
@@ -104,6 +107,7 @@ export default function HistoryAtlas({
     [years, index],
   );
   const borders = useHistoricalBorders(year, neighbours);
+  const yearContext = useYearContext(year);
   const [selection, setSelection] = useState<Selection>();
 
   const setYear = useCallback(
@@ -253,9 +257,16 @@ export default function HistoryAtlas({
           <PlacePanel
             eyebrow={`Territory · ${yearLabel}`}
             name={selection.name}
-            facts={countryFacts(selection.properties)}
+            facts={[
+              ...countryFacts(selection.properties),
+              ...contextFacts(yearContext.current, selection.name),
+            ]}
             onClose={closePanel}
           />
+        )}
+
+        {!focusMode && !selection && (
+          <ChangesSummary context={yearContext.value} year={year} />
         )}
 
         <FeedbackDialog />

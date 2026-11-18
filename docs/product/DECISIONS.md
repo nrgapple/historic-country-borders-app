@@ -54,6 +54,12 @@ Map payloads are held in small LRU caches (two historical years, one school arti
 
 The pipelines' legacy 30-color assignments are remapped to a muted atlas palette by a Mapbox `match` expression. This keeps published data hashes stable while allowing visual-theme changes without a data refresh.
 
+### Static Wikidata facts and "What changed" per year (2026-11)
+
+Observed: the place panel showed only border-source properties and a Wikipedia summary, so students could not see who ruled a territory or where its capital was in the selected year. Wikidata holds dated capital, head-of-state, and lifespan statements under CC0, but its coverage is uneven and its names do not always match the source maps.
+
+Decision: an explicit, network-using refresh (`yarn data:reconcile:context`, `yarn data:refresh:context`) maps territory NAMEs to Wikidata items. It is conservative: exact name or Wikipedia title, polity type, and date checks; ambiguous or unmatched names get no facts. It then pins each entity's revision in a committed snapshot and publishes one small immutable context file per year. A file holds only facts definitely valid in that year, plus a "What changed" summary computed from our own border payloads. The browser bundles only a year → URL manifest and fetches one static file per year. Builds, page views, and crawlers never contact Wikidata, and `yarn data:validate:context` rebuilds every file from the snapshot offline. Each fact links to its Wikidata source, and the panel credits "Facts: Wikidata". This amends "Wikipedia-only country information": Wikipedia remains the only prose source; Wikidata adds short structured facts and nothing is generated. See `docs/HISTORICAL_CONTEXT.md`.
+
 ## Deferred
 
 ### Domain cutover

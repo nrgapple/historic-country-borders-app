@@ -6,5 +6,7 @@ playwright-report/
 public/sitemap.xml
 public/data/pa-school-districts.json
 public/data/historical/
+public/data/context/
+data/historical-context-facts.json
 test-results/
 yarn.lock
