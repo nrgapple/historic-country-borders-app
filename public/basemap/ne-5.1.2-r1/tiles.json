@@ -1,0 +1,65 @@
+{
+  "tilejson": "3.0.0",
+  "name": "Historic Borders physical basemap ne-5.1.2-r1",
+  "attribution": "<a href=\"https://www.naturalearthdata.com/\">Natural Earth</a>",
+  "tiles": [
+    "/tiles/basemap/ne-5.1.2-r1/{z}/{x}/{y}.pbf"
+  ],
+  "minzoom": 0,
+  "maxzoom": 5,
+  "bounds": [
+    -180,
+    -85.0511,
+    180,
+    85.0511
+  ],
+  "vector_layers": [
+    {
+      "id": "ocean",
+      "description": "Ocean mask: the world minus Natural Earth land, cut on the z3 tile grid. Paint above territory fills.",
+      "fields": {},
+      "minzoom": 0,
+      "maxzoom": 5
+    },
+    {
+      "id": "coast",
+      "description": "Coastlines from land rings, water on the right: a positive line-offset moves seaward.",
+      "fields": {
+        "landmass_km2": "Number"
+      },
+      "minzoom": 0,
+      "maxzoom": 5
+    },
+    {
+      "id": "lakes",
+      "description": "Natural Earth lakes and reservoirs. Paint above territory fills.",
+      "fields": {
+        "rank": "Number",
+        "name": "String"
+      },
+      "minzoom": 0,
+      "maxzoom": 5
+    },
+    {
+      "id": "rivers",
+      "description": "Major rivers (Natural Earth River class, lake centerlines excluded).",
+      "fields": {
+        "rank": "Number",
+        "name": "String"
+      },
+      "minzoom": 0,
+      "maxzoom": 5
+    },
+    {
+      "id": "marine_labels",
+      "description": "One label point per sea or ocean, at the pole of inaccessibility.",
+      "fields": {
+        "name": "String",
+        "kind": "String",
+        "rank": "Number"
+      },
+      "minzoom": 0,
+      "maxzoom": 5
+    }
+  ]
+}
