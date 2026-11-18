@@ -55,7 +55,6 @@ export const districtFacts = (properties: DistrictProperties): PlaceFact[] => {
   const county = text(properties.CTY_NAME);
   const unit = text(properties.IU_NAME);
   const career = text(properties.AVTS);
-  const aun = text(properties.AUN_NUM);
   if (county) facts.push({ label: 'County', value: titleCase(county) });
   if (unit) facts.push({ label: 'Intermediate unit', value: titleCase(unit) });
   if (career)
@@ -63,8 +62,8 @@ export const districtFacts = (properties: DistrictProperties): PlaceFact[] => {
       label: 'Career & technical school',
       value: titleCase(career),
     });
-  if (aun)
-    facts.push({ label: 'Administrative unit number (AUN)', value: aun });
+  // AUN_NUM is not shown: in the PASDA layer it is the career and technical
+  // school's AUN (74 values across 500 districts), not the district's.
   return facts;
 };
 

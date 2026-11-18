@@ -145,7 +145,6 @@ test('a parent finds a district by keyboard and shares it, with its source and c
     ['County', 'Northampton'],
     ['Intermediate unit', 'Colonial IU 20'],
     ['Career & technical school', 'Career Institute of Technology'],
-    ['Administrative unit number (AUN)', '120483007'],
   ])
     await expect(
       panel.locator('.place-panel__fact', { hasText: label }),

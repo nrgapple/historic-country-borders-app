@@ -36,7 +36,6 @@ describe('school district details', () => {
         label: 'Career & technical school',
         value: 'Career Institute of Technology',
       },
-      { label: 'Administrative unit number (AUN)', value: '120483007' },
     ]);
   });
 

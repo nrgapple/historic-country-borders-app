@@ -17,6 +17,17 @@
   min-width: 0;
 }
 
+/* The compact title shrinks with an ellipsis instead of running under the
+   tools on phones. */
+.pa-bar__leading {
+  overflow: hidden;
+}
+
+.pa-bar__leading .brand {
+  display: flex;
+  max-width: 100%;
+}
+
 .pa-bar__plate {
   min-width: 0;
   text-align: center;

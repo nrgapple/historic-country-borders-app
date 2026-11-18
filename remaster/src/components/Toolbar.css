@@ -50,6 +50,8 @@
   font-size: 13px;
   color: var(--ink-2);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar__tools {
