@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "overrides": [
+    {
+      "name": "Arabia",
+      "qid": null,
+      "reason": "the 1880–1900 'Arabia' is the Arabian interior, not the Roman province Arabia Petraea (Q221353)"
+    },
+    {
+      "name": "Bulgar Khanate",
+      "qid": null,
+      "reason": "overlaps the First Bulgarian Empire (Q203817) in only one of six map years; identity unclear"
+    },
+    {
+      "name": "England",
+      "qid": "Q179876",
+      "reason": "the 1000–1500 territory is the Kingdom of England, not the modern constituent country (Q21)"
+    },
+    {
+      "name": "Eora",
+      "qid": null,
+      "reason": "Eora are an Aboriginal people; the alias match is the city of Sydney (Q3130)"
+    },
+    {
+      "name": "Pergamon",
+      "qid": null,
+      "reason": "the 200 BC territory is the Attalid kingdom; the title match is the ancient city (Q18986)"
+    },
+    {
+      "name": "Persia",
+      "qid": null,
+      "reason": "Q83311 is a 'succession of empires'; its statements do not identify the polity of a given map year"
+    },
+    {
+      "name": "Venice",
+      "qid": "Q4948",
+      "reason": "the 1000–1715 territory is the Republic of Venice, not the city (Q641)"
+    }
+  ]
+}

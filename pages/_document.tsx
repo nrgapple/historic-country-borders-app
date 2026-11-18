@@ -24,6 +24,8 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content={SEO_CONFIG.themeColor} />
+        {/* Light-only design: stop browsers from auto-darkening the page. */}
+        <meta name="color-scheme" content="only light" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="preconnect" href="https://api.mapbox.com" crossOrigin="" />
         <script

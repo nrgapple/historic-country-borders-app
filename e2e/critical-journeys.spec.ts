@@ -99,6 +99,35 @@ const schoolDistrictResponse = {
   places: { type: 'FeatureCollection', features: [] },
 };
 
+// Per-year Wikidata context; the year comes from the requested file name.
+const contextResponse = (url: string) => {
+  const name = new URL(url).pathname.split('/').pop() ?? '';
+  const [token] = name.split('.');
+  const year = token.startsWith('bc') ? -Number(token.slice(2)) : Number(token);
+  return {
+    schemaVersion: 1,
+    year,
+    source: {
+      name: 'Wikidata',
+      license: 'CC0-1.0',
+      retrievedAt: '2026-11-17T00:00:00.000Z',
+    },
+    places: {
+      'Fixture Country': {
+        qid: 'Q1',
+        existed: { start: 1900, end: 2000 },
+        capital: [{ qid: 'Q2', label: 'Fixture City' }],
+      },
+    },
+    changes: {
+      previousYear: year - 1,
+      appeared: ['Fixture Country'],
+      disappeared: ['Former Fixture'],
+      changed: [],
+    },
+  };
+};
+
 const emptyMapboxStyle = {
   version: 8,
   name: 'Deterministic test style',
@@ -109,6 +138,9 @@ const emptyMapboxStyle = {
 test.beforeEach(async ({ page }) => {
   await page.route('**/data/historical/*.json', (route) =>
     route.fulfill({ json: historicalMapResponse }),
+  );
+  await page.route('**/data/context/*.json', (route) =>
+    route.fulfill({ json: contextResponse(route.request().url()) }),
   );
   await page.route('**/data/pa-school-districts.json', (route) =>
     route.fulfill({ json: schoolDistrictResponse }),
@@ -221,6 +253,27 @@ test('the timeline moves through time and keeps the shared map position', async 
   await expect(page).toHaveURL(/\/year\/1500\?/);
 });
 
+test('a student can pick a year by name or by its printed label', async ({
+  page,
+}) => {
+  await page.goto('/year/1492?lng=10.0000&lat=45.0000&zoom=4.00');
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  await page
+    .getByRole('combobox', { name: 'Choose a year' })
+    .selectOption({ label: '1815 AD' });
+  await expect(page).toHaveURL(/\/year\/1815\?lng=10\.0000/);
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  // The printed ruler labels are click targets, not just the ticks.
+  await page.locator('.timeline__labels').getByText('2010').click();
+  await expect(page).toHaveURL(/\/year\/2010\?/);
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '2010 AD',
+  );
+});
+
 test('selecting a territory shows its details with a safe Wikipedia fallback', async ({
   page,
 }) => {
@@ -239,8 +292,59 @@ test('selecting a territory shows its details with a safe Wikipedia fallback', a
   await expect(
     panel.getByText('Wikipedia is unavailable right now.'),
   ).toBeVisible();
+  // Year-specific facts come from the static context file and link to Wikidata.
+  await expect(
+    panel.getByRole('link', { name: 'Fixture City' }),
+  ).toHaveAttribute('href', 'https://www.wikidata.org/wiki/Q1#P36');
+  await expect(panel.getByText('1900–2000 AD')).toBeVisible();
+  await expect(panel.getByText('Facts: Wikidata')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
+});
+
+test('a teacher finds a territory by name and shares the selection', async ({
+  page,
+}) => {
+  await page.goto('/year/1994');
+  const map = page.getByTestId('map-container');
+  await expectReadyMap(map);
+
+  const finder = page.getByRole('combobox', { name: 'Find a place' });
+  await finder.fill('fixture');
+  await page.getByRole('option', { name: 'Fixture Country' }).click();
+
+  const panel = page.getByRole('complementary');
+  await expect(
+    panel.getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
+  await expect(panel.getByRole('button', { name: 'Copy link' })).toBeVisible();
+
+  await page.reload();
+  await expectReadyMap(map);
+  await expect(
+    page
+      .getByRole('complementary')
+      .getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
+});
+
+test('the year summary lists what changed and opens from the keyboard', async ({
+  page,
+}) => {
+  await page.goto('/year/1994');
+  await expectReadyMap(page.getByTestId('map-container'));
+
+  const toggle = page.getByText('What changed since 1993');
+  await expect(toggle).toBeVisible();
+  await expect(page.getByText('Former Fixture')).toBeHidden();
+  await toggle.focus();
+  await page.keyboard.press('Enter');
+  await expect(
+    page.getByRole('heading', { name: /Gone from the map/ }),
+  ).toBeVisible();
+  await expect(page.getByText('Former Fixture')).toBeVisible();
 });
 
 test('unknown years use the useful static 404', async ({ page }) => {
@@ -250,8 +354,11 @@ test('unknown years use the useful static 404', async ({ page }) => {
     page.getByRole('heading', { name: 'That map is not available' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('link', { name: 'Explore an available historical year' }),
+    page.getByRole('link', { name: 'Open a random year' }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'See the world in 1914' }),
+  ).toHaveAttribute('href', '/year/1914');
 });
 
 test('static preview fails feedback safely without an application server', async ({
@@ -269,11 +376,15 @@ test('static preview fails feedback safely without an application server', async
   await page.goto('/year/1994');
   await page.getByRole('button', { name: 'Feedback' }).click();
   const dialog = page.getByRole('dialog', { name: 'Send feedback' });
-  await dialog.getByRole('radio', { name: 'Good' }).check();
   const submit = dialog.getByRole('button', {
     name: 'Send feedback',
     exact: true,
   });
+  await expect(submit).toBeDisabled();
+  // A message alone is enough; the rating is optional.
+  await dialog
+    .getByLabel('What did you notice on this map?')
+    .fill('A border looks wrong');
   await expect(submit).toBeEnabled();
   await submit.click();
   await expect(dialog.getByRole('alert')).toContainText(
@@ -293,4 +404,29 @@ test('Pennsylvania school districts load usable district data for cold and retur
   await expect(page.getByText(/District boundaries: 2025-10/)).toBeVisible();
   await page.reload();
   await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
+});
+
+test('Pennsylvania shows a visible loading message and keeps its title on phones', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let release: () => void = () => undefined;
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/data/pa-school-districts.json', async (route) => {
+    await released;
+    await route.fulfill({ json: schoolDistrictResponse });
+  });
+
+  await page.goto('/pa/school-districts');
+  await expect(page.getByTestId('map-loading')).toHaveText(
+    'Loading 500 district boundaries…',
+  );
+  await expect(page.getByText('PA school districts')).toBeVisible();
+
+  release();
+  await expectReadyMap(page.getByTestId('pa-school-districts-map-container'));
+  await expect(page.getByTestId('map-loading')).toBeHidden();
+  await expect(page.getByText('Boundaries Oct 2025')).toBeVisible();
 });

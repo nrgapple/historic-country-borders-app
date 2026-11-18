@@ -23,7 +23,10 @@ export default function NotFoundPage() {
           </p>
           <p className="landing__actions">
             <Link className="button button--primary" href="/">
-              Explore an available historical year
+              Open a random year
+            </Link>
+            <Link className="button" href="/year/1914">
+              See the world in 1914
             </Link>
             <Link className="button" href="/pa/school-districts">
               Open Pennsylvania school districts

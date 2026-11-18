@@ -10,6 +10,8 @@ const budgets = {
   initialRouteJavaScript: 400 * 1024,
   historicalDataTotal: 32 * 1024 * 1024,
   historicalDataLargest: 2600 * 1024,
+  contextDataTotal: 2 * 1024 * 1024,
+  contextDataLargest: 96 * 1024,
   schoolDataRaw: 12000 * 1024,
   schoolDataBrotli: 1850 * 1024,
 };
@@ -81,6 +83,16 @@ enforce(
   budgets.historicalDataLargest,
 );
 
+const contextSizes = walk(path.join(ROOT, 'out/data/context'))
+  .filter((file) => file.endsWith('.json'))
+  .map(bytes);
+const contextTotal = contextSizes.reduce((total, size) => total + size, 0);
+const contextLargest = Math.max(0, ...contextSizes);
+if (!contextSizes.length)
+  errors.push('Context data: no files in out/data/context');
+enforce('Context data total', contextTotal, budgets.contextDataTotal);
+enforce('Largest context file', contextLargest, budgets.contextDataLargest);
+
 const schoolDataPath = path.join(ROOT, 'out/data/pa-school-districts.json');
 const schoolRaw = bytes(schoolDataPath);
 const schoolBrotli = zlib.brotliCompressSync(
@@ -99,6 +111,7 @@ const summary = [
       `- ${route} initial JavaScript: ${formatKiB(size)} / ${formatKiB(budgets.initialRouteJavaScript)}`,
   ),
   `- Historical data: ${formatKiB(historicalTotal)} total / ${formatKiB(budgets.historicalDataTotal)}; ${formatKiB(historicalLargest)} largest / ${formatKiB(budgets.historicalDataLargest)}`,
+  `- Context data: ${formatKiB(contextTotal)} total / ${formatKiB(budgets.contextDataTotal)}; ${formatKiB(contextLargest)} largest / ${formatKiB(budgets.contextDataLargest)}`,
   `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
 ];
 

@@ -1,6 +1,7 @@
 import React, {
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -35,6 +36,10 @@ interface MapCanvasProps {
   interactiveLayerId: string;
   onFeatureClick: (properties: FeatureProperties | undefined) => void;
   customAttribution?: string | string[];
+  /** Zoom buttons; hidden in projector (focus) mode. */
+  showNavigation?: boolean;
+  /** Called once the map exists, for imperative camera moves. */
+  onReady?: (map: MapRef) => void;
   /** Layers render only once the style is ready, avoiding style-loading races. */
   children: ReactNode;
 }
@@ -69,9 +74,12 @@ export default function MapCanvas({
   interactiveLayerId,
   onFeatureClick,
   customAttribution,
+  showNavigation = true,
+  onReady,
   children,
 }: MapCanvasProps) {
   const mapRef = useRef<MapRef | null>(null);
+  const onReadyRef = useRef(onReady);
   const [loaded, setLoaded] = useState(false);
   const [cursor, setCursor] = useState<string>('');
   const [webgl] = useState(supportsWebGL);
@@ -88,16 +96,22 @@ export default function MapCanvas({
 
   const handleLoad = useCallback(() => setLoaded(true), []);
 
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
   // Data layers need only a parsed style, not a fully rendered basemap.
   // 'style.load' fires before tiles arrive, so slow or blocked basemap tiles
   // (school networks, tests) never keep borders off the map. A reused map may
-  // already have its style, so check before waiting.
+  // already have its style, so check before waiting. The map is also handed
+  // over immediately: camera moves work before the style finishes.
   const attachMap = useCallback((ref: MapRef | null) => {
     mapRef.current = ref;
-    const map = ref?.getMap() as
-      | (ReturnType<MapRef['getMap']> & { style?: { _loaded?: boolean } })
-      | undefined;
-    if (!map) return;
+    if (!ref) return;
+    onReadyRef.current?.(ref);
+    const map = ref.getMap() as ReturnType<MapRef['getMap']> & {
+      style?: { _loaded?: boolean };
+    };
     if (map.style?._loaded) setLoaded(true);
     else map.once('style.load', () => setLoaded(true));
   }, []);
@@ -168,7 +182,9 @@ export default function MapCanvas({
         customAttribution={customAttribution}
         style={{ position: 'absolute', inset: 0 }}
       >
-        <NavigationControl position="bottom-right" showCompass={false} />
+        {showNavigation && (
+          <NavigationControl position="bottom-right" showCompass={false} />
+        )}
         {loaded && children}
       </Map>
     </div>

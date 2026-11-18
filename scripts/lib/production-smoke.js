@@ -56,7 +56,7 @@ const runProductionSmoke = async ({
     { path: '/', content: 'Historic Borders' },
     { path: '/year/1994', content: 'Historic Borders' },
     { path: '/year/-100', content: 'Historic Borders' },
-    { path: '/pa/school-districts', content: 'Pennsylvania School Districts' },
+    { path: '/pa/school-districts', content: 'Pennsylvania school districts' },
     { path: historicalAssetPath, method: 'HEAD', cache: IMMUTABLE_CACHE },
     {
       path: '/data/pa-school-districts.json',

@@ -1,10 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import Icon from './Icon';
+import CopyLinkButton from './CopyLinkButton';
 import { useWikiSummary } from '../hooks/useWiki';
 
 export interface PlaceFact {
   label: string;
   value: string;
+  /** Source link for the value, e.g. the Wikidata statement. */
+  href?: string;
+  /** Short source credit shown under the facts, e.g. "Wikidata". */
+  source?: string;
 }
 
 interface PlacePanelProps {
@@ -15,6 +20,8 @@ interface PlacePanelProps {
   /** Search phrase for Wikipedia; defaults to the name. */
   wikiQuery?: string;
   note?: string;
+  /** Shows a "Copy link" action for sharing this selection. */
+  shareable?: boolean;
   onClose: () => void;
 }
 
@@ -24,12 +31,16 @@ export default function PlacePanel({
   facts = [],
   wikiQuery,
   note,
+  shareable = true,
   onClose,
 }: PlacePanelProps) {
   const { summary, isLoading, isMissing, error, retry } = useWikiSummary(
     wikiQuery ?? name,
   );
   const closeRef = useRef<HTMLButtonElement>(null);
+  const factSources = [
+    ...new Set(facts.flatMap((fact) => (fact.source ? [fact.source] : []))),
+  ];
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -48,6 +59,7 @@ export default function PlacePanel({
           <h2 className="place-panel__title" id="place-panel-title">
             {name}
           </h2>
+          {shareable && <CopyLinkButton key={name} />}
         </div>
         <button
           ref={closeRef}
@@ -66,10 +78,28 @@ export default function PlacePanel({
             {facts.map((fact) => (
               <div key={fact.label} className="place-panel__fact">
                 <dt>{fact.label}</dt>
-                <dd>{fact.value}</dd>
+                <dd>
+                  {fact.href ? (
+                    <a
+                      href={fact.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={fact.source && `Source: ${fact.source}`}
+                    >
+                      {fact.value}
+                    </a>
+                  ) : (
+                    fact.value
+                  )}
+                </dd>
               </div>
             ))}
           </dl>
+        )}
+        {factSources.length > 0 && (
+          <p className="place-panel__facts-source">
+            Facts: {factSources.join(', ')}
+          </p>
         )}
 
         <section className="place-panel__wiki" aria-live="polite">

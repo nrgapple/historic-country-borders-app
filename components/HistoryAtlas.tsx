@@ -10,10 +10,22 @@ import SettingsPanel from './SettingsPanel';
 import AboutDialog from './AboutDialog';
 import FeedbackDialog from './FeedbackDialog';
 import MapStatus from './MapStatus';
+import ChangesSummary from './ChangesSummary';
+import PlaceFinder from './PlaceFinder';
+import ProjectorCaption from './ProjectorCaption';
 import type { FeatureProperties } from './map/MapCanvas';
 import { useChrome } from '../contexts/ChromeContext';
 import { useHistoricalBorders } from '../hooks/useHistoricalBorders';
+import { useMapFocus, useSharedPlace } from '../hooks/useSharedPlace';
+import { useYearContext } from '../hooks/useYearContext';
+import { contextFacts } from '../lib/yearContext';
 import { trackEvent } from '../lib/analytics';
+import {
+  featureBounds,
+  featuresNamed,
+  PlaceOption,
+  placeOptionsFromFeatures,
+} from '../lib/places';
 import { formatYearLong, parseYearParam, yearPath } from '../lib/years';
 import { yearPageDescription, yearPageTitle } from '../config/seo';
 
@@ -50,11 +62,30 @@ interface Selection {
   properties: FeatureProperties;
 }
 
+/** Territories in the finder, with "Part of …" to tell similar names apart. */
+const territoryOption = {
+  detail: (properties: FeatureProperties) => {
+    const name = text(properties.NAME);
+    const partOf = text(properties.PARTOF);
+    return partOf && partOf !== name ? `Part of ${partOf}` : undefined;
+  },
+};
+
 const sourceDate = new Date(historicalManifest.source.commitDate);
 
 const SHORTCUTS = [
-  { keys: ['←', '→'], action: 'Previous or next year' },
-  { keys: ['Home', 'End'], action: 'First or last year (timeline focused)' },
+  {
+    keys: ['←', '→'],
+    action: 'Previous or next year (when the map is not focused)',
+  },
+  {
+    keys: ['Home', 'End'],
+    action: 'First or last year (when the timeline is focused)',
+  },
+  {
+    keys: ['←', '↑', '→', '↓'],
+    action: 'Pan the map (when the map is focused)',
+  },
   { keys: ['Esc'], action: 'Close the details panel' },
 ];
 
@@ -76,6 +107,7 @@ export default function HistoryAtlas({
     [years, index],
   );
   const borders = useHistoricalBorders(year, neighbours);
+  const yearContext = useYearContext(year);
   const [selection, setSelection] = useState<Selection>();
 
   const setYear = useCallback(
@@ -117,6 +149,41 @@ export default function HistoryAtlas({
     [year],
   );
 
+  // Place finder and shareable `?place=` links.
+  const { onMapReady, focusBounds } = useMapFocus(6);
+  const features = borders.value?.data.borders.features;
+  const placeOptions = useMemo(
+    () => (features ? placeOptionsFromFeatures(features, territoryOption) : []),
+    [features],
+  );
+
+  const showPlace = useCallback(
+    (name: string, frame: boolean) => {
+      const matches = featuresNamed(features ?? [], name);
+      const properties = matches[0]?.properties;
+      if (!properties) return false;
+      setSelection({ name, properties });
+      if (frame) focusBounds(featureBounds(matches));
+      return true;
+    },
+    [features, focusBounds],
+  );
+
+  const handleFind = useCallback(
+    (option: PlaceOption) => {
+      if (showPlace(option.name, true))
+        trackEvent('country_select', { name: option.name, year });
+    },
+    [showPlace, year],
+  );
+
+  useSharedPlace({
+    ready: Boolean(borders.value && !borders.isPrevious),
+    selectedName: selection?.name,
+    restore: showPlace,
+    syncKey: year,
+  });
+
   const closePanel = useCallback(() => setSelection(undefined), []);
   const yearLabel = formatYearLong(year);
   const dataState = borders.error
@@ -147,6 +214,7 @@ export default function HistoryAtlas({
           data={borders.value}
           selectedName={selection?.name}
           onSelect={handleSelect}
+          onReady={onMapReady}
         />
 
         {!focusMode && (
@@ -156,7 +224,16 @@ export default function HistoryAtlas({
               value={year}
               onChange={setYear}
               leading={<Brand />}
-              trailing={<Toolbar />}
+              trailing={
+                <div className="topbar__tools">
+                  <PlaceFinder
+                    options={placeOptions}
+                    onSelect={handleFind}
+                    collapsible
+                  />
+                  <Toolbar />
+                </div>
+              }
             />
             <SettingsPanel />
             <MapStatus
@@ -169,15 +246,27 @@ export default function HistoryAtlas({
           </header>
         )}
 
-        {focusMode && <RestoreControlsButton />}
+        {focusMode && (
+          <>
+            <ProjectorCaption title={yearLabel} place={selection?.name} />
+            <RestoreControlsButton />
+          </>
+        )}
 
         {!focusMode && selection && (
           <PlacePanel
             eyebrow={`Territory · ${yearLabel}`}
             name={selection.name}
-            facts={countryFacts(selection.properties)}
+            facts={[
+              ...countryFacts(selection.properties),
+              ...contextFacts(yearContext.current, selection.name),
+            ]}
             onClose={closePanel}
           />
+        )}
+
+        {!focusMode && !selection && (
+          <ChangesSummary context={yearContext.value} year={year} />
         )}
 
         <FeedbackDialog />
@@ -213,19 +302,28 @@ export default function HistoryAtlas({
               <p>
                 Each map is a snapshot around one year. Borders are
                 reconstructions: most are approximate, some were contested, and
-                many peoples had no fixed borders at all. Found a mistake?{' '}
+                many peoples had no fixed borders at all.{' '}
                 <a
                   href="https://github.com/aourednik/historical-basemaps/issues"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Report it upstream
+                  Report a border error to the map data project
                 </a>
                 .
               </p>
               <p>
                 Basemap © Mapbox © OpenStreetMap. Summaries from Wikipedia (CC
-                BY-SA 4.0).
+                BY-SA 4.0). Capitals, rulers, and dates from{' '}
+                <a
+                  href="https://www.wikidata.org/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikidata
+                </a>{' '}
+                (CC0), matched to these maps by name and reviewed; most peoples
+                and cultures on early maps have no such facts.
               </p>
             </>
           }

@@ -85,10 +85,17 @@ export const INK = '#2B2824';
 export const HALO = 'rgba(255, 253, 248, 0.92)';
 export const SELECTED_STROKE = '#8F2D1C';
 
-const LABEL_SIZES: Record<Settings['textSize'], [number, number]> = {
+/** "Large" is sized for projection: legible from the back of a classroom. */
+export const LABEL_SIZES: Record<Settings['textSize'], [number, number]> = {
   small: [9, 16],
   medium: [10.5, 19],
-  large: [12.5, 23],
+  large: [14, 28],
+};
+
+export const PLACE_SCALE: Record<Settings['textSize'], number> = {
+  small: 0.85,
+  medium: 1,
+  large: 1.5,
 };
 
 export const labelSizeExpression = (
@@ -108,7 +115,7 @@ export const labelSizeExpression = (
 };
 
 export const placeSizeExpression = (textSize: Settings['textSize']) => {
-  const scale = textSize === 'small' ? 0.85 : textSize === 'large' ? 1.2 : 1;
+  const scale = PLACE_SCALE[textSize] ?? 1;
   return [
     'interpolate',
     ['linear'],

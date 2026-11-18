@@ -9,6 +9,9 @@
 /data/historical/*
   Cache-Control: public, max-age=31536000, immutable
 
+/data/context/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /data/pa-school-districts.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 

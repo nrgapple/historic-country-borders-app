@@ -6,7 +6,18 @@ import { useChrome } from '../contexts/ChromeContext';
 export const REPOSITORY_URL =
   'https://github.com/nrgapple/historic-country-borders-app';
 
+/** Opening paragraph for the world history maps. */
+export const HISTORICAL_INTRO = (
+  <p className="dialog__lede">
+    Historic Borders is a free, open-source atlas for exploring how political
+    boundaries have changed. Select any territory to read a short Wikipedia
+    summary.
+  </p>
+);
+
 interface AboutDialogProps {
+  /** Page-specific opening paragraph(s). */
+  intro?: ReactNode;
   /** Page-specific description of the data on screen. */
   sources: ReactNode;
   /** Keyboard shortcuts relevant to the page. */
@@ -14,6 +25,7 @@ interface AboutDialogProps {
 }
 
 export default function AboutDialog({
+  intro = HISTORICAL_INTRO,
   sources,
   shortcuts = [],
 }: AboutDialogProps) {
@@ -26,11 +38,7 @@ export default function AboutDialog({
       title="About this map"
       className="about"
     >
-      <p className="dialog__lede">
-        Historic Borders is a free, open-source atlas for exploring how
-        political boundaries have changed. Select any territory to read a short
-        Wikipedia summary.
-      </p>
+      {intro}
 
       <section className="about__section">
         <h3>Sources and accuracy</h3>
@@ -61,6 +69,11 @@ export default function AboutDialog({
           <li>
             <Link href="/year/1914" onClick={closeOverlay}>
               World history map
+            </Link>
+          </li>
+          <li>
+            <Link href="/" onClick={closeOverlay}>
+              Random year
             </Link>
           </li>
           <li>
