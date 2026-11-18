@@ -369,14 +369,44 @@ button {
 }
 
 .timeline__current {
+  position: relative;
+  min-width: 168px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  transition: background-color 120ms var(--ease);
+}
+
+.timeline__current:hover {
+  background: var(--surface-2);
+}
+
+.timeline__current:has(.timeline__select:focus-visible) {
+  box-shadow: 0 0 0 2px var(--focus);
+}
+
+/* The native year chooser sits invisibly over the large year. */
+.timeline__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.timeline__current-display {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: center;
   column-gap: 6px;
-  min-width: 168px;
-  padding: 0 6px;
   text-align: center;
+  pointer-events: none;
 }
 
 .timeline__current-value {
@@ -389,6 +419,9 @@ button {
 }
 
 .timeline__current-suffix {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -407,16 +440,21 @@ button {
 
 .timeline__ruler {
   padding: 6px 22px 10px;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .timeline__eras {
   display: flex;
   height: 18px;
   font-size: 0.6875rem;
-  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  /* --ink-2 on --surface is about 7.6:1; the active era adds weight. */
+  color: var(--ink-2);
+  font-weight: 500;
 }
 
 .timeline__era {
@@ -426,7 +464,7 @@ button {
   border-left: 1px solid var(--line-strong);
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   transition: color 150ms var(--ease);
 }
 
@@ -437,20 +475,13 @@ button {
 
 .timeline__era[data-active] {
   color: var(--ink);
-}
-
-.timeline__era-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 750;
 }
 
 .timeline__track {
   position: relative;
   height: 36px;
-  cursor: pointer;
-  touch-action: none;
   border-radius: 6px;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .timeline__track:focus {
@@ -544,6 +575,10 @@ button {
   transform: translateX(-50%);
   white-space: nowrap;
   line-height: 16px;
+}
+
+.timeline__label:hover {
+  color: var(--ink);
 }
 
 .timeline__label[data-edge='start'] {
@@ -1353,4 +1388,74 @@ kbd {
   .mapboxgl-control-container {
     display: none;
   }
+}
+
+/* -------------------------------------------------------------------------
+   Classroom review fixes (November 2026): compact header title, first-load
+   message, and the school-district About caveat. Kept separate from the
+   sections above so parallel work can merge cleanly.
+   ------------------------------------------------------------------------- */
+
+/* Shown where the brand name is hidden, so phones keep the map's title. */
+.brand__compact {
+  display: none;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.brand__compact-title {
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand__compact-detail {
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .brand__compact {
+    display: flex;
+  }
+}
+
+/* Centered message for the first data load only. */
+.map-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
+}
+
+.map-loading__message {
+  margin: 0;
+  max-width: 22rem;
+  padding: 12px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.about__caveat {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--warning-line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--warning-soft);
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }

@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useId, useState } from 'react';
+import React, { FormEvent, ReactNode, useEffect, useId, useState } from 'react';
 import Dialog from './Dialog';
 import { useChrome } from '../contexts/ChromeContext';
 import { useFingerPrint } from '../hooks/useFingerPrint';
@@ -18,7 +18,29 @@ type Status =
   | { kind: 'sent' }
   | { kind: 'error'; message: string };
 
-export default function FeedbackDialog() {
+/** Where to send corrections to the historical border data. */
+export const HISTORICAL_CORRECTIONS = (
+  <>
+    To correct a historical border, open an issue with the{' '}
+    <a
+      href="https://github.com/aourednik/historical-basemaps/issues"
+      target="_blank"
+      rel="noreferrer"
+    >
+      historical-basemaps project
+    </a>
+    , which publishes the border data.
+  </>
+);
+
+interface FeedbackDialogProps {
+  /** Page-specific advice on where to report data errors. */
+  corrections?: ReactNode;
+}
+
+export default function FeedbackDialog({
+  corrections = HISTORICAL_CORRECTIONS,
+}: FeedbackDialogProps) {
   const { overlay, closeOverlay } = useChrome();
   const open = overlay === 'feedback';
   // Fingerprinting is an abuse control for this optional form only; its code
@@ -31,6 +53,8 @@ export default function FeedbackDialog() {
   const ratingGroupId = useId();
   const messageId = useId();
   const emailId = useId();
+  const hintId = useId();
+  const hasMessage = message.trim().length > 0;
 
   useEffect(() => {
     if (open && status.kind === 'sent') setStatus({ kind: 'idle' });
@@ -40,7 +64,7 @@ export default function FeedbackDialog() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!rating || !visitorId) return;
+    if ((!rating && !hasMessage) || !visitorId) return;
     setStatus({ kind: 'sending' });
     try {
       const response = await fetch('/api/feedback', {
@@ -49,7 +73,7 @@ export default function FeedbackDialog() {
         body: JSON.stringify({
           user: email.trim(),
           message: message.trim(),
-          rate: rating,
+          rate: rating ?? '',
           visitorId,
           metadata: { page: window.location.pathname },
         }),
@@ -63,8 +87,8 @@ export default function FeedbackDialog() {
         );
       }
       trackEvent('feedback_submit', {
-        rating,
-        has_message: Boolean(message.trim()),
+        rating: rating ?? 'none',
+        has_message: hasMessage,
       });
       setRating(null);
       setMessage('');
@@ -85,29 +109,35 @@ export default function FeedbackDialog() {
     <Dialog open={open} onClose={closeOverlay} title="Send feedback">
       {status.kind === 'sent' ? (
         <div className="feedback__done" role="status">
-          <p>Thanks — your feedback was sent.</p>
+          <p>Thanks. Your feedback was sent.</p>
           <button type="button" className="button" onClick={closeOverlay}>
             Close
           </button>
         </div>
       ) : (
         <form className="feedback" onSubmit={handleSubmit}>
-          <p className="dialog__lede">
-            What’s working, what’s broken, what’s missing? Map border errors are
-            best reported to the{' '}
-            <a
-              href="https://github.com/aourednik/historical-basemaps/issues"
-              target="_blank"
-              rel="noreferrer"
-            >
-              historical-basemaps project
-            </a>
-            , which publishes the data.
-          </p>
+          <div className="field">
+            <label className="field__label" htmlFor={messageId}>
+              What did you notice on this map?
+            </label>
+            <textarea
+              id={messageId}
+              className="input"
+              rows={4}
+              maxLength={2000}
+              aria-describedby={hintId}
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+            />
+            <p className="field__hint" id={hintId}>
+              {corrections}
+            </p>
+          </div>
 
           <fieldset className="field">
             <legend className="field__label" id={ratingGroupId}>
-              How is it so far?
+              How well does the map work for you?{' '}
+              <span className="field__optional">optional</span>
             </legend>
             <div
               className="segmented"
@@ -128,20 +158,6 @@ export default function FeedbackDialog() {
               ))}
             </div>
           </fieldset>
-
-          <div className="field">
-            <label className="field__label" htmlFor={messageId}>
-              Message <span className="field__optional">optional</span>
-            </label>
-            <textarea
-              id={messageId}
-              className="input"
-              rows={4}
-              maxLength={2000}
-              value={message}
-              onChange={(event) => setMessage(event.target.value)}
-            />
-          </div>
 
           <div className="field">
             <label className="field__label" htmlFor={emailId}>
@@ -169,7 +185,11 @@ export default function FeedbackDialog() {
             <button
               type="submit"
               className="button button--primary"
-              disabled={!rating || !visitorId || status.kind === 'sending'}
+              disabled={
+                (!rating && !hasMessage) ||
+                !visitorId ||
+                status.kind === 'sending'
+              }
             >
               {status.kind === 'sending' ? 'Sending…' : 'Send feedback'}
             </button>

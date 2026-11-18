@@ -1,8 +1,13 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import historicalManifest from '../../data/historical-manifest.json';
-import Timeline, { chooseLabelledTicks, formatRulerLabel } from '../Timeline';
+import Timeline, {
+  chooseLabelledTicks,
+  eraBandLabel,
+  formatRulerLabel,
+} from '../Timeline';
+import { eraSpans } from '../../lib/years';
 
 // jsdom lacks PointerEvent; a MouseEvent subclass carries clientX and pointerId.
 if (typeof window.PointerEvent === 'undefined') {
@@ -93,6 +98,107 @@ describe('Timeline', () => {
     expect(onChange).not.toHaveBeenCalled();
     fireEvent.pointerUp(slider, { clientX: 590, pointerId: 1 });
     expect(onChange).toHaveBeenCalledWith(1914, 'track');
+  });
+});
+
+describe('Timeline year chooser and ruler labels', () => {
+  const allYears = historicalManifest.years;
+
+  // jsdom has no layout; give the track a width so labels are chosen.
+  const renderWithWidth = (width: number, value = 1492, list = allYears) => {
+    widthSpy = vi
+      .spyOn(HTMLElement.prototype, 'clientWidth', 'get')
+      .mockReturnValue(width);
+    const onChange = vi.fn();
+    render(<Timeline years={list} value={value} onChange={onChange} />);
+    const slider = screen.getByRole('slider');
+    slider.getBoundingClientRect = () =>
+      ({ left: 0, width, top: 0, height: 36 }) as DOMRect;
+    return onChange;
+  };
+
+  let widthSpy: { mockRestore: () => void } | undefined;
+  afterEach(() => widthSpy?.mockRestore());
+
+  it('selects a year by clicking its printed label', () => {
+    const onChange = renderWithWidth(1150);
+    const label = screen.getByText('1914');
+    expect(label).toHaveClass('timeline__label');
+    // Press slightly off the tick: the label's own year still wins.
+    fireEvent.pointerDown(label, { button: 0, clientX: 1000, pointerId: 1 });
+    fireEvent.pointerMove(label, { clientX: 1002, pointerId: 1 });
+    fireEvent.pointerUp(label, { clientX: 1002, pointerId: 1 });
+    expect(onChange).toHaveBeenCalledWith(1914, 'track');
+  });
+
+  it('scrubs from a printed label when the pointer drags away', () => {
+    const onChange = renderWithWidth(1150);
+    const label = screen.getByText('1914');
+    fireEvent.pointerDown(label, { button: 0, clientX: 960, pointerId: 1 });
+    fireEvent.pointerMove(label, { clientX: 1149, pointerId: 1 });
+    fireEvent.pointerUp(label, { clientX: 1149, pointerId: 1 });
+    expect(onChange).toHaveBeenCalledWith(2010, 'track');
+  });
+
+  it('treats the era row as part of the track', () => {
+    const onChange = renderWithWidth(1150);
+    const era = screen.getByText('Prehistory');
+    fireEvent.pointerDown(era, { button: 0, clientX: 2, pointerId: 1 });
+    fireEvent.pointerUp(era, { clientX: 2, pointerId: 1 });
+    expect(onChange).toHaveBeenCalledWith(-123000, 'track');
+  });
+
+  it('lists every year by era in a native select', () => {
+    const onChange = renderWithWidth(1150);
+    const select = screen.getByRole('combobox', { name: 'Choose a year' });
+    expect(select).toHaveValue('1492');
+    expect(screen.getAllByRole('option')).toHaveLength(allYears.length);
+    const groups = Array.from(select.querySelectorAll('optgroup')).map(
+      (group) => group.label,
+    );
+    expect(groups).toEqual([
+      'Prehistory',
+      'Ancient',
+      'Medieval',
+      'Early modern',
+      'Modern',
+    ]);
+    expect(
+      screen.getByRole('option', { name: '123,000 BC' }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(select, { target: { value: '1815' } });
+    expect(onChange).toHaveBeenCalledWith(1815, 'select');
+  });
+
+  it('uses short era names when the bands are narrow', () => {
+    renderWithWidth(362);
+    const eraNames = Array.from(
+      document.querySelectorAll('.timeline__era-label'),
+    ).map((element) => element.textContent);
+    expect(eraNames).toEqual([
+      'Pre.',
+      'Ancient',
+      'Medieval',
+      'Early',
+      'Modern',
+    ]);
+    // The current era is still named in full under the large year.
+    expect(document.querySelector('.timeline__current-era')).toHaveTextContent(
+      'Medieval',
+    );
+  });
+
+  it('chooses era names that fit at phone and desktop widths', () => {
+    const spans = eraSpans(allYears);
+    // A 390 px phone leaves a 362 px track after gutters and padding.
+    expect(
+      spans.map((span) => eraBandLabel(span, allYears.length, 362)),
+    ).toEqual(['Pre.', 'Ancient', 'Medieval', 'Early', 'Modern']);
+    expect(
+      spans.map((span) => eraBandLabel(span, allYears.length, 1150)),
+    ).toEqual(spans.map((span) => span.era.label));
+    expect(eraBandLabel(spans[0], allYears.length, 0)).toBe('Prehistory');
   });
 });
 

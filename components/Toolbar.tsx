@@ -1,17 +1,39 @@
 import React from 'react';
-import Link from 'next/link';
 import Icon, { BrandMark, IconName } from './Icon';
 import { Overlay, useChrome } from '../contexts/ChromeContext';
 
-export function Brand({ subtitle }: { subtitle?: string }) {
+interface BrandProps {
+  subtitle?: string;
+  /** Shown in place of the name and subtitle when the header is narrow. */
+  compactTitle?: string;
+  /** A second line under the compact title, such as the data vintage. */
+  compactDetail?: string;
+}
+
+/**
+ * The atlas title. It does not navigate: "/" opens a random year, which would
+ * replace a lesson a teacher has prepared. About lists the other maps.
+ */
+export function Brand({ subtitle, compactTitle, compactDetail }: BrandProps) {
   return (
-    <Link href="/" className="brand" aria-label="Historic Borders home">
+    <div className="brand">
       <BrandMark />
       <span className="brand__text">
         <span className="brand__name">Historic Borders</span>
         {subtitle && <span className="brand__subtitle">{subtitle}</span>}
       </span>
-    </Link>
+      {compactTitle && (
+        <span className="brand__compact">
+          <span className="brand__compact-title">{compactTitle}</span>
+          {compactDetail && (
+            <span className="brand__compact-detail">
+              <span className="visually-hidden">, </span>
+              {compactDetail}
+            </span>
+          )}
+        </span>
+      )}
+    </div>
   );
 }
 

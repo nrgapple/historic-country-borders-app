@@ -13,12 +13,16 @@ export interface Era {
   from: number;
 }
 
-/** Ordered oldest → newest. Boundaries are conventional, not authoritative. */
+/**
+ * Ordered oldest → newest. Boundaries are conventional, not authoritative.
+ * `shortLabel` replaces `label` on the timeline when the era's band is too
+ * narrow; it must fit the band at a 390 px phone width.
+ */
 export const ERAS: readonly Era[] = [
   {
     id: 'prehistory',
     label: 'Prehistory',
-    shortLabel: 'Prehist.',
+    shortLabel: 'Pre.',
     from: -Infinity,
   },
   { id: 'ancient', label: 'Ancient', shortLabel: 'Ancient', from: -3000 },
@@ -26,7 +30,7 @@ export const ERAS: readonly Era[] = [
   {
     id: 'early-modern',
     label: 'Early modern',
-    shortLabel: 'Early mod.',
+    shortLabel: 'Early',
     from: 1500,
   },
   { id: 'modern', label: 'Modern', shortLabel: 'Modern', from: 1800 },

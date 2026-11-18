@@ -53,8 +53,18 @@ interface Selection {
 const sourceDate = new Date(historicalManifest.source.commitDate);
 
 const SHORTCUTS = [
-  { keys: ['←', '→'], action: 'Previous or next year' },
-  { keys: ['Home', 'End'], action: 'First or last year (timeline focused)' },
+  {
+    keys: ['←', '→'],
+    action: 'Previous or next year (when the map is not focused)',
+  },
+  {
+    keys: ['Home', 'End'],
+    action: 'First or last year (when the timeline is focused)',
+  },
+  {
+    keys: ['←', '↑', '→', '↓'],
+    action: 'Pan the map (when the map is focused)',
+  },
   { keys: ['Esc'], action: 'Close the details panel' },
 ];
 
@@ -213,13 +223,13 @@ export default function HistoryAtlas({
               <p>
                 Each map is a snapshot around one year. Borders are
                 reconstructions: most are approximate, some were contested, and
-                many peoples had no fixed borders at all. Found a mistake?{' '}
+                many peoples had no fixed borders at all.{' '}
                 <a
                   href="https://github.com/aourednik/historical-basemaps/issues"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Report it upstream
+                  Report a border error to the map data project
                 </a>
                 .
               </p>
