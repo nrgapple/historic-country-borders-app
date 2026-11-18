@@ -38,6 +38,7 @@ export const SOURCE = {
   basemap: 'basemap',
   borders: 'borders',
   labels: 'labels',
+  capitals: 'capitals',
   graticule: 'graticule',
   relief: 'relief',
 } as const;
@@ -69,9 +70,18 @@ export const INTERACTIVE_LAYERS = [LAYER.territoryFill];
 
 /** Year data attributes (T1 format; see src/adapters/yearData.ts). */
 const ATTR = { wash: 'c', name: 'n', area: 'a', place: 'p', placeKind: 'k' } as const;
-/** The stand-in year files carry the source AREA in m². */
-const AREA_TO_KM2 = 1e-6;
+/** T1's label points carry the largest part's area in km². */
+const AREA_TO_KM2 = 1;
 const PLACE_KIND_SITE = 'site';
+/** T1 capital points: `name`, and `t` = territory id. */
+const CAPITAL_ATTR = { name: 'name', territory: 't' } as const;
+
+/** Feature-state keys set on the borders source (T6 contract names). */
+export const FEATURE_STATE = {
+  selected: 'selected',
+  /** A dependency (`ov`) of the selected territory. */
+  overlordSelected: 'overlordSelected',
+} as const;
 
 /**
  * Legend metadata for T7's map key: only classes the map actually draws.
@@ -81,16 +91,21 @@ export const LEGEND = [
   { id: 'selected', label: 'Selected territory', layer: LAYER.selectedLine },
   { id: 'capital', label: 'Capital of the selected territory', layer: LAYER.selectedCapital },
   { id: 'city', label: 'City or town', layer: LAYER.places },
-  { id: 'site', label: 'Archaeological site', layer: LAYER.places, requires: 'site class (T1)' },
+  { id: 'site', label: 'Archaeological site', layer: LAYER.places },
 ] as const;
 
 export const MARKER = { city: 'hb-city', capital: 'hb-capital', site: 'hb-site' } as const;
 
 /** What the style needs to know about the current selection. */
 export interface SelectionStyle {
+  /** The selected territory's id in this year's data, or null. */
+  id: number | null;
   /** The selected territory's name, or null. */
   name: string | null;
-  /** Place names to mark as the selected territory's capital (from Wikidata). */
+  /**
+   * The selected territory's capital names (Wikidata). The capital marker
+   * replaces any city point of the same name, so no dot is drawn twice.
+   */
   capitals: string[];
 }
 
@@ -109,6 +124,7 @@ type Layout = Record<string, unknown>;
 const EMPTY = { type: 'FeatureCollection' as const, features: [] };
 const NONE = '\u0000none';
 const selected = ['boolean', ['feature-state', 'selected'], false] as ExpressionSpecification;
+const overlordSelected = ['boolean', ['feature-state', 'overlordSelected'], false] as ExpressionSpecification;
 const km2 = ['*', ['to-number', ['get', ATTR.area], 0], AREA_TO_KM2] as ExpressionSpecification;
 
 const wash = (key: 'fill' | 'edge') =>
@@ -215,7 +231,7 @@ const placeLayout = (s: Settings): Layout => {
 const capitalLayout = (s: Settings): Layout => ({
   visibility: s.showLabels ? 'visible' : 'none',
   'icon-image': MARKER.capital,
-  'text-field': ['get', ATTR.place],
+  'text-field': ['get', CAPITAL_ATTR.name],
   'text-font': stack(s, 'city'),
   'text-size': 16 * textScale(s),
   'text-transform': transform(s),
@@ -225,7 +241,12 @@ const capitalLayout = (s: Settings): Layout => ({
 });
 
 const capitalFilter = (sel: SelectionStyle) =>
-  ['all', ['has', ATTR.place], ['in', ['get', ATTR.place], ['literal', sel.capitals]]] as FilterSpecification;
+  ['==', ['to-number', ['get', CAPITAL_ATTR.territory], -1], sel.id ?? -2] as FilterSpecification;
+
+const placeFilter = (sel: SelectionStyle) =>
+  (sel.id === null
+    ? ['has', ATTR.place]
+    : ['all', ['has', ATTR.place], ['!', ['in', ['get', ATTR.place], ['literal', sel.capitals]]]]) as FilterSpecification;
 
 const borderWidth = (s: Settings) => {
   const k = s.borderThickness / 2;
@@ -261,7 +282,7 @@ export const graticule = (step = 10) => {
  * the year's URLs once the preloaded downloads finish.
  */
 export function createStyle({ origin, settings: s, lowPower = false }: StyleOptions): StyleSpecification {
-  const sel: SelectionStyle = { name: null, capitals: [] };
+  const sel: SelectionStyle = { id: null, name: null, capitals: [] };
   const waterlines = (lowPower ? [2.5, 5.5] : [2.5, 5.5, 9.5, 14.5]).map(
     (offset, i): LayerSpecification => ({
       id: LAYER.waterline(i),
@@ -299,6 +320,7 @@ export function createStyle({ origin, settings: s, lowPower = false }: StyleOpti
           'Borders: <a href="https://github.com/aourednik/historical-basemaps">historical-basemaps</a> (GPL-3.0)',
       },
       [SOURCE.labels]: { type: 'geojson', data: EMPTY },
+      [SOURCE.capitals]: { type: 'geojson', data: EMPTY },
       [SOURCE.graticule]: { type: 'geojson', data: graticule(10) },
     },
     layers: [
@@ -331,7 +353,8 @@ export function createStyle({ origin, settings: s, lowPower = false }: StyleOpti
           'line-color': MADDER,
           'line-width': ['interpolate', ['linear'], ['zoom'], 2, 5, 6, 12],
           'line-offset': ['interpolate', ['linear'], ['zoom'], 2, -2.5, 6, -6],
-          'line-opacity': ['case', selected, 0.38, 0],
+          // The selection, and more faintly its colonies and vassals.
+          'line-opacity': ['case', selected, 0.38, overlordSelected, 0.2, 0],
         },
       },
       {
@@ -462,14 +485,14 @@ export function createStyle({ origin, settings: s, lowPower = false }: StyleOpti
         type: 'symbol',
         source: SOURCE.labels,
         minzoom: 2.5,
-        filter: ['has', ATTR.place],
+        filter: placeFilter(sel),
         layout: placeLayout(s),
         paint: { 'text-color': COLOR.ink, 'text-halo-color': 'rgba(247, 240, 222, 0.95)', 'text-halo-width': 1.6 },
       } as unknown as LayerSpecification,
       {
         id: LAYER.selectedCapital,
         type: 'symbol',
-        source: SOURCE.labels,
+        source: SOURCE.capitals,
         filter: capitalFilter(sel),
         layout: capitalLayout(s),
         paint: { 'text-color': COLOR.ink, 'text-halo-color': 'rgba(247, 240, 222, 0.95)', 'text-halo-width': 1.8 },
@@ -517,6 +540,7 @@ export function applyDynamic(map: MapLibreMap, s: Settings, sel: SelectionStyle)
     COLOR.ink,
   ]);
   setLayout(map, LAYER.places, placeLayout(s));
+  map.setFilter(LAYER.places, placeFilter(sel));
   setLayout(map, LAYER.selectedCapital, capitalLayout(s));
   map.setFilter(LAYER.selectedCapital, capitalFilter(sel));
   setLayout(map, LAYER.seaLabels, { 'text-font': stack(s, 'sea') });

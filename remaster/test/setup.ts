@@ -18,11 +18,12 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-})) as unknown as typeof ResizeObserver;
+// A class, not vi.fn(() => …): Vitest 5 mocks of arrow functions cannot be constructed.
+globalThis.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as unknown as typeof ResizeObserver;
 
 // jsdom has no <dialog> methods.
 if (typeof HTMLDialogElement !== 'undefined') {

@@ -8,7 +8,7 @@ const PRECISION: Record<number, string> = {
   3: 'Set by treaty or law',
 };
 
-const clean = (value: string | null | undefined) =>
+const clean = (value: string | undefined) =>
   value && value.trim() ? value.trim() : undefined;
 
 /**
@@ -16,24 +16,23 @@ const clean = (value: string | null | undefined) =>
  * the source records it ("Part of …", or "Subject to …").
  */
 export const territorySubtitle = (territory: Territory): string | undefined => {
-  const [name, partOfRaw, subjectToRaw] = territory;
-  const partOf = clean(partOfRaw);
-  const subjectTo = clean(subjectToRaw);
-  if (partOf && partOf !== name) return `Part of ${partOf}`;
-  if (subjectTo && subjectTo !== name) return `Subject to ${subjectTo}`;
+  const partOf = clean(territory.PARTOF);
+  const subjectTo = clean(territory.SUBJECTO);
+  if (partOf && partOf !== territory.NAME) return `Part of ${partOf}`;
+  if (subjectTo && subjectTo !== territory.NAME) return `Subject to ${subjectTo}`;
   return undefined;
 };
 
 /** Facts from the border data itself (Historical Basemaps). */
 export const territoryFacts = (territory: Territory): PlaceFact[] => {
-  const [name, partOfRaw, subjectToRaw, precisionRaw] = territory;
-  const partOf = clean(partOfRaw);
-  const subjectTo = clean(subjectToRaw);
+  const name = territory.NAME;
+  const partOf = clean(territory.PARTOF);
+  const subjectTo = clean(territory.SUBJECTO);
   const facts: PlaceFact[] = [];
   // The subtitle names the first relation; a second, different one is a fact.
   if (partOf && partOf !== name && subjectTo && subjectTo !== name && subjectTo !== partOf)
     facts.push({ label: 'Subject to', value: subjectTo, source: 'Historical Basemaps' });
-  const precision = PRECISION[Number(precisionRaw)];
+  const precision = PRECISION[Number(territory.BORDERPRECISION)];
   if (precision)
     facts.push({ label: 'Borders', value: precision, kind: 'borders', source: 'Historical Basemaps' });
   return facts;

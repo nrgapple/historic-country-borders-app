@@ -129,6 +129,7 @@ describe('PlacePanel source links', () => {
       screen.getByRole('link', { name: 'Constantinople' }),
     ).toHaveAttribute('href', 'https://www.wikidata.org/wiki/Q12560#P36');
     expect(screen.getByText('Approximate').closest('a')).toBeNull();
-    expect(screen.getByText('Facts: Wikidata')).toBeInTheDocument();
+    // Direction A credits the fact box once, with the licence.
+    expect(screen.getByText('Facts from Wikidata (CC0).')).toBeInTheDocument();
   });
 });

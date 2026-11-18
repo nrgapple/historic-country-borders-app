@@ -1,7 +1,6 @@
-import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import historicalManifest from '../../data/historical-manifest.json';
+import historicalManifest from '@repo/data/historical-manifest.json';
 import Timeline, {
   chooseLabelledTicks,
   eraBandLabel,
@@ -120,28 +119,29 @@ describe('Timeline year chooser and ruler labels', () => {
   let widthSpy: { mockRestore: () => void } | undefined;
   afterEach(() => widthSpy?.mockRestore());
 
+  // 1392 px is the ruler of the 1440 px Direction A desktop mock.
   it('selects a year by clicking its printed label', () => {
-    const onChange = renderWithWidth(1150);
+    const onChange = renderWithWidth(1392);
     const label = screen.getByText('1914');
     expect(label).toHaveClass('timeline__label');
     // Press slightly off the tick: the label's own year still wins.
-    fireEvent.pointerDown(label, { button: 0, clientX: 1000, pointerId: 1 });
-    fireEvent.pointerMove(label, { clientX: 1002, pointerId: 1 });
-    fireEvent.pointerUp(label, { clientX: 1002, pointerId: 1 });
+    fireEvent.pointerDown(label, { button: 0, clientX: 1160, pointerId: 1 });
+    fireEvent.pointerMove(label, { clientX: 1162, pointerId: 1 });
+    fireEvent.pointerUp(label, { clientX: 1162, pointerId: 1 });
     expect(onChange).toHaveBeenCalledWith(1914, 'track');
   });
 
   it('scrubs from a printed label when the pointer drags away', () => {
-    const onChange = renderWithWidth(1150);
+    const onChange = renderWithWidth(1392);
     const label = screen.getByText('1914');
-    fireEvent.pointerDown(label, { button: 0, clientX: 960, pointerId: 1 });
-    fireEvent.pointerMove(label, { clientX: 1149, pointerId: 1 });
-    fireEvent.pointerUp(label, { clientX: 1149, pointerId: 1 });
+    fireEvent.pointerDown(label, { button: 0, clientX: 1160, pointerId: 1 });
+    fireEvent.pointerMove(label, { clientX: 1391, pointerId: 1 });
+    fireEvent.pointerUp(label, { clientX: 1391, pointerId: 1 });
     expect(onChange).toHaveBeenCalledWith(2010, 'track');
   });
 
   it('treats the era row as part of the track', () => {
-    const onChange = renderWithWidth(1150);
+    const onChange = renderWithWidth(1392);
     const era = screen.getByText('Prehistory');
     fireEvent.pointerDown(era, { button: 0, clientX: 2, pointerId: 1 });
     fireEvent.pointerUp(era, { clientX: 2, pointerId: 1 });
@@ -176,13 +176,8 @@ describe('Timeline year chooser and ruler labels', () => {
     const eraNames = Array.from(
       document.querySelectorAll('.timeline__era-label'),
     ).map((element) => element.textContent);
-    expect(eraNames).toEqual([
-      'Pre.',
-      'Ancient',
-      'Medieval',
-      'Early',
-      'Modern',
-    ]);
+    // Direction A's larger small caps: narrow washes go unlabelled rather than clip.
+    expect(eraNames).toEqual(['', 'Ancient', 'Medieval', '', 'Modern']);
     // The current era is still named in full under the large year.
     expect(document.querySelector('.timeline__current-era')).toHaveTextContent(
       'Medieval',
@@ -194,9 +189,14 @@ describe('Timeline year chooser and ruler labels', () => {
     // A 390 px phone leaves a 362 px track after gutters and padding.
     expect(
       spans.map((span) => eraBandLabel(span, allYears.length, 362)),
-    ).toEqual(['Pre.', 'Ancient', 'Medieval', 'Early', 'Modern']);
+    ).toEqual(['', 'Ancient', 'Medieval', '', 'Modern']);
+    // A 1024 px tablet: the prehistory wash takes the short name.
     expect(
-      spans.map((span) => eraBandLabel(span, allYears.length, 1150)),
+      spans.map((span) => eraBandLabel(span, allYears.length, 976)),
+    ).toEqual(['Pre.', 'Ancient', 'Medieval', 'Early', 'Modern']);
+    // The 1440 px desktop of the design mock.
+    expect(
+      spans.map((span) => eraBandLabel(span, allYears.length, 1392)),
     ).toEqual(spans.map((span) => span.era.label));
     expect(eraBandLabel(spans[0], allYears.length, 0)).toBe('Prehistory');
   });
@@ -230,5 +230,15 @@ describe('ruler labels', () => {
       expect(chosen[chosen.length - 1]).toBe(all.length - 1);
     });
     expect(chooseLabelledTicks(all, 0).size).toBe(0);
+  });
+
+  it('always prints the selected year (Direction A)', () => {
+    const all = historicalManifest.years;
+    const selected = all.indexOf(1492);
+    [320, 768, 1200].forEach((width) => {
+      expect(chooseLabelledTicks(all, width, selected).has(selected)).toBe(true);
+    });
+    // Without a selection the choice is unchanged.
+    expect(chooseLabelledTicks(all, 1200, -1)).toEqual(chooseLabelledTicks(all, 1200));
   });
 });

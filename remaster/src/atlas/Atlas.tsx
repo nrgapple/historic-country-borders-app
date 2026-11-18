@@ -11,7 +11,7 @@ import PlaceFinder from '../components/PlaceFinder';
 import ProjectorCaption from '../components/ProjectorCaption';
 import LifespanBar from '../components/LifespanBar';
 import MapKeySlot from '../components/MapKeySlot';
-import { useYearIndex, type Territory } from '../adapters/yearData';
+import { framingBounds, useYearIndex, type Territory } from '../adapters/yearData';
 import { useYearContext } from '../hooks/useYearContext';
 import { wikidataUrl } from '../lib/yearContext';
 import type { PlaceOption } from '../lib/places';
@@ -35,11 +35,11 @@ const SHORTCUTS = [
 const sourceDate = new Date(sources.historical.commitDate);
 
 const territoryOption = (t: Territory): PlaceOption => {
-  const partOf = t[1]?.trim();
+  const partOf = t.PARTOF?.trim();
   return {
-    name: t[0],
-    label: t[0],
-    detail: partOf && partOf !== t[0] ? `Part of ${partOf}` : undefined,
+    name: t.NAME,
+    label: t.NAME,
+    detail: partOf && partOf !== t.NAME ? `Part of ${partOf}` : undefined,
     keywords: [],
   };
 };
@@ -77,7 +77,7 @@ function AtlasApp() {
   }, [webgl, index.value, index.isLoading, index.error]);
 
   const territories = index.value?.territories;
-  const territory = territories?.find((t) => t[0] === place);
+  const territory = territories?.find((t) => t.NAME === place);
   const options = useMemo(() => (territories ? territories.map(territoryOption) : []), [territories]);
 
   const setYear = useCallback(
@@ -86,10 +86,10 @@ function AtlasApp() {
   );
   const handleFind = useCallback(
     (option: PlaceOption) => {
-      const match = territories?.find((t) => t[0] === option.name);
+      const match = territories?.find((t) => t.NAME === option.name);
       if (!match) return;
-      actions.select(match[0], { track: true });
-      actions.frame(match[4]);
+      actions.select(match.NAME, { track: true });
+      actions.frame(framingBounds(match.bbox));
     },
     [territories],
   );

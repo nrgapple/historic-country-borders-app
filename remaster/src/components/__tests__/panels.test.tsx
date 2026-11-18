@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, type ComponentProps, type ReactNode } from 'react';
 import {
   act,
   fireEvent,
@@ -13,30 +13,21 @@ import FeedbackDialog from '../FeedbackDialog';
 import AboutDialog from '../AboutDialog';
 import MapStatus from '../MapStatus';
 import Toolbar, { Brand } from '../Toolbar';
-import { countryFacts } from '../HistoryAtlas';
-import {
-  districtFacts,
-  districtFullName,
-  titleCase,
-} from '../SchoolDistrictsAtlas';
-import {
-  ChromeProvider,
-  Overlay,
-  useChrome,
-} from '../../contexts/ChromeContext';
-import { SettingsProvider, useSettings } from '../../contexts/SettingsContext';
+import { panelFacts, territoryFacts, territorySubtitle } from '../../atlas/facts';
+import { useChrome, useSettings, type Overlay } from '../../atlas/hooks';
+import { __resetStore } from '../../atlas/store';
 import { __resetWikiCache } from '../../hooks/useWiki';
-
-vi.mock('next/router', () => ({
-  useRouter: () => ({ query: {}, push: vi.fn(), isReady: true }),
-}));
 vi.mock('../../hooks/useFingerPrint', () => ({
   useFingerPrint: (enabled: boolean) => (enabled ? 'visitor-1' : null),
 }));
 
 function OpenOverlay({ overlay }: { overlay: Exclude<Overlay, null> }) {
-  const { openOverlay } = useChrome();
-  useEffect(() => openOverlay(overlay), [openOverlay, overlay]);
+  const { openOverlay, closeOverlay } = useChrome();
+  // Overlays live in the store, so close on unmount like the old provider did.
+  useEffect(() => {
+    openOverlay(overlay);
+    return () => closeOverlay();
+  }, [openOverlay, closeOverlay, overlay]);
   return null;
 }
 
@@ -45,11 +36,13 @@ function SettingsProbe() {
   return <output data-testid="settings">{JSON.stringify(settings)}</output>;
 }
 
-const withProviders = (children: React.ReactNode) => (
-  <SettingsProvider>
-    <ChromeProvider>{children}</ChromeProvider>
-  </SettingsProvider>
-);
+// Settings and overlays live in the atlas store (no providers any more).
+const withProviders = (children: ReactNode) => <>{children}</>;
+
+beforeEach(() => {
+  window.history.replaceState(null, '', '/');
+  __resetStore();
+});
 
 describe('PlacePanel', () => {
   beforeEach(() => {
@@ -113,60 +106,51 @@ describe('PlacePanel', () => {
 });
 
 describe('place facts', () => {
-  it('derives readable country facts without repeating the name', () => {
-    expect(
-      countryFacts({
-        NAME: 'Crimean Khanate',
-        PARTOF: 'Ottoman Empire',
-        SUBJECTO: 'Ottoman Empire',
-        BORDERPRECISION: 1,
-      }),
-    ).toEqual([
-      { label: 'Part of', value: 'Ottoman Empire' },
-      { label: 'Border precision', value: 'Approximate' },
+  const territory = (fields: object) => ({ id: 0, NAME: 'x', bbox: [0, 0, 1, 1] as [number, number, number, number], ...fields });
+
+  // Direction A: the relation becomes the italic subtitle; the fact box holds
+  // the "In <year>" facts with border precision as "Borders".
+  it('derives readable territory facts without repeating the name', () => {
+    const crimea = territory({
+      NAME: 'Crimean Khanate',
+      PARTOF: 'Ottoman Empire',
+      SUBJECTO: 'Ottoman Empire',
+      BORDERPRECISION: 1,
+    });
+    expect(territorySubtitle(crimea)).toBe('Part of Ottoman Empire');
+    expect(territoryFacts(crimea)).toEqual([
+      { label: 'Borders', value: 'Approximate', kind: 'borders', source: 'Historical Basemaps' },
     ]);
-    expect(countryFacts({ NAME: 'France', PARTOF: 'France' })).toEqual([]);
+    const france = territory({ NAME: 'France', PARTOF: 'France' });
+    expect(territorySubtitle(france)).toBeUndefined();
+    expect(territoryFacts(france)).toEqual([]);
+    expect(territorySubtitle(territory({ NAME: 'Wallachia', SUBJECTO: 'Ottoman Empire' }))).toBe(
+      'Subject to Ottoman Empire',
+    );
   });
 
-  it('formats school district details', () => {
-    const properties = {
-      NAME: 'Pen Argyl Area',
-      SCHOOL_DIS: 'Pen Argyl Area SD',
-      CTY_NAME: 'NORTHAMPTON',
-      IU_NAME: 'COLONIAL IU 20',
-      AVTS: 'CAREER INSTITUTE OF TECHNOLOGY',
-      AUN_NUM: '120483007',
-    };
-    expect(districtFullName(properties)).toBe('Pen Argyl Area School District');
-    expect(districtFacts(properties)).toEqual([
-      { label: 'County', value: 'Northampton' },
-      { label: 'Intermediate unit', value: 'Colonial IU 20' },
-      {
-        label: 'Career & technical school',
-        value: 'Career Institute of Technology',
+  it('orders the fact box as Capital, Ruler, Existed, Borders', () => {
+    const context = {
+      schemaVersion: 1 as const,
+      year: 1492,
+      source: { name: 'Wikidata', license: 'CC0-1.0', retrievedAt: '2026-11-17' },
+      changes: null,
+      places: {
+        'Ottoman Empire': {
+          qid: 'Q12560',
+          existed: { start: 1299, end: 1922 },
+          capital: [{ qid: 'Q16869', label: 'Constantinople' }],
+          headOfState: [{ qid: 'Q1', label: 'Bayezid II', start: 1481, end: 1512 }],
+        },
       },
-      { label: 'Administrative unit number (AUN)', value: '120483007' },
-    ]);
-  });
-
-  it('keeps official acronyms in district details', () => {
-    expect(titleCase('PHILADELPHIA IU 26')).toBe('Philadelphia IU 26');
-    expect(titleCase('PHILADELPHIA AVTS')).toBe('Philadelphia AVTS');
-    expect(titleCase('KEYSTONE CENTRAL CTC')).toBe('Keystone Central CTC');
-    expect(titleCase('CTC OF LACKAWANNA COUNTY')).toBe(
-      'CTC of Lackawanna County',
+    };
+    const facts = panelFacts(
+      territory({ NAME: 'Ottoman Empire', BORDERPRECISION: 1 }),
+      context,
+      'Ottoman Empire',
     );
-    expect(titleCase('CENTRAL PA INSTITUTE OF SCIENCE & TECHNOLOGY')).toBe(
-      'Central PA Institute of Science & Technology',
-    );
-    expect(titleCase('PITTSBURGH-MT OLIVER IU 2')).toBe(
-      'Pittsburgh-Mt Oliver IU 2',
-    );
-    expect(titleCase('MCKEAN')).toBe('McKean');
-    expect(titleCase('BLAST IU 17')).toBe('BLaST IU 17');
-    expect(districtFacts({ AVTS: 'NULL', CTY_NAME: 'ADAMS' })).toEqual([
-      { label: 'County', value: 'Adams' },
-    ]);
+    expect(facts.map((f) => f.label)).toEqual(['Capital', 'Ruler', 'Existed', 'Borders']);
+    expect(facts[1].value).toBe('Bayezid II (1481–1512 AD)');
   });
 });
 
@@ -334,7 +318,7 @@ describe('FeedbackDialog', () => {
 
 describe('AboutDialog', () => {
   const openAbout = (
-    props: Partial<React.ComponentProps<typeof AboutDialog>>,
+    props: Partial<ComponentProps<typeof AboutDialog>>,
   ) =>
     render(
       withProviders(

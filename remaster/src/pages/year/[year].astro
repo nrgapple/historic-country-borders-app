@@ -15,7 +15,7 @@ const files = (manifest.files as Record<string, { map: string; labels: string; i
 // Build-time read of the year's territory index: crawlers, no-JS and no-WebGL
 // visitors get a real, readable list of the territories on this map.
 const index = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', files.index), 'utf8'));
-const names: string[] = [...new Set<string>(index.territories.map((t: [string]) => t[0]))].sort((a, b) =>
+const names: string[] = [...new Set<string>(index.territories.map((t: { NAME: string }) => t.NAME))].sort((a, b) =>
   a.localeCompare(b),
 );
 const label = formatYearLong(year);

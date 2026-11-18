@@ -87,9 +87,9 @@ const STACKS = {
 };
 const bundles = {};
 const usedRanges = new Set();
-const yearsDir = path.join(APP, 'public/data/years');
+const yearsDir = path.join(APP, 'public/data/historical');
 if (fs.existsSync(yearsDir))
-  for (const f of fs.readdirSync(yearsDir).filter((f) => f.endsWith('.labels.geojson')))
+  for (const f of fs.readdirSync(yearsDir).filter((f) => /\.labels\.[0-9a-f]+\.json$/.test(f)))
     for (const ft of JSON.parse(fs.readFileSync(path.join(yearsDir, f))).features) {
       const s = ft.properties.n || ft.properties.p;
       if (s) for (const ch of s) usedRanges.add(Math.floor(ch.codePointAt(0) / 256) * 256);

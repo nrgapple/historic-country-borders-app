@@ -14,12 +14,15 @@ import {
   addRelief,
   applyDynamic,
   createStyle,
+  FEATURE_STATE,
   INTERACTIVE_LAYERS,
   MARKER,
   SOURCE,
   type SelectionStyle,
 } from '../adapters/mapStyle';
 import {
+  capitalsUrl,
+  framingBounds,
   labelsUrl,
   loadYearIndex,
   mapUrl,
@@ -94,6 +97,7 @@ export function mountMap(container: HTMLElement): MapHandle {
   let loadedYear = initial.year;
   let index: YearIndex | null = null;
   let names = new Map<string, number>();
+  /** The selected territory's capital names (Wikidata), hidden from the city layer. */
   let capitals: string[] = [];
   let dataRequested = false;
   let destroyed = false;
@@ -101,11 +105,13 @@ export function mountMap(container: HTMLElement): MapHandle {
   const setYearData = (year: number) => {
     const borders = map.getSource(SOURCE.borders) as GeoJSONSource | undefined;
     const labels = map.getSource(SOURCE.labels) as GeoJSONSource | undefined;
+    const capitalPoints = map.getSource(SOURCE.capitals) as GeoJSONSource | undefined;
     if (!borders || !labels) return;
     container.removeAttribute('data-loaded');
     map.removeFeatureState({ source: SOURCE.borders });
     void borders.setData(mapUrl(year));
     void labels.setData(labelsUrl(year));
+    void capitalPoints?.setData(capitalsUrl(year) ?? { type: 'FeatureCollection', features: [] });
     dataRequested = true;
     // The index may already be here: re-apply the selection to the new data.
     if (index?.year === year) applySelection();
@@ -125,15 +131,24 @@ export function mountMap(container: HTMLElement): MapHandle {
 
   const selection = (): SelectionStyle => {
     const place = getState().place;
-    return { name: place && names.has(place) ? place : null, capitals };
+    const id = place ? names.get(place) : undefined;
+    return { id: id ?? null, name: id === undefined ? null : place, capitals };
   };
 
+  /**
+   * Every polygon of a territory shares its id (T1), so one feature-state
+   * selects the whole territory; its dependencies are marked too.
+   */
   const applySelection = () => {
     if (!map.getSource(SOURCE.borders)) return;
     map.removeFeatureState({ source: SOURCE.borders });
     const sel = selection();
-    const id = sel.name ? names.get(sel.name) : undefined;
-    if (id !== undefined) map.setFeatureState({ source: SOURCE.borders, id }, { selected: true });
+    if (sel.id !== null) {
+      map.setFeatureState({ source: SOURCE.borders, id: sel.id }, { [FEATURE_STATE.selected]: true });
+      for (const t of index?.territories ?? [])
+        if (t.dep && t.ov === sel.id)
+          map.setFeatureState({ source: SOURCE.borders, id: t.id }, { [FEATURE_STATE.overlordSelected]: true });
+    }
     applyDynamic(map, getState().settings, sel);
   };
 
@@ -172,11 +187,11 @@ export function mountMap(container: HTMLElement): MapHandle {
       (loaded) => {
         if (destroyed || year !== getState().year) return;
         index = loaded;
-        names = new Map(loaded.territories.map((t, id) => [t[0], id]));
+        names = new Map(loaded.territories.map((t) => [t.NAME, t.id]));
         const place = getState().place;
         // A shared or carried-over place survives only if it exists this year.
         if (place && !names.has(place)) actions.select(null);
-        else if (place && frameSharedPlace) fit(loaded.territories[names.get(place)!][4]);
+        else if (place && frameSharedPlace) fit(framingBounds(loaded.territories[names.get(place)!].bbox));
         frameSharedPlace = false;
         applySelection();
         loadCapitals(year);
@@ -191,7 +206,7 @@ export function mountMap(container: HTMLElement): MapHandle {
   map.on('click', (event: MapMouseEvent) => {
     const hit = map.queryRenderedFeatures(event.point, { layers: INTERACTIVE_LAYERS })[0];
     const id = typeof hit?.id === 'number' ? hit.id : undefined;
-    const name = id !== undefined ? index?.territories[id]?.[0] : undefined;
+    const name = id !== undefined ? index?.territories[id]?.NAME : undefined;
     actions.select(name ?? null, { track: Boolean(name) });
   });
   for (const layer of INTERACTIVE_LAYERS) {

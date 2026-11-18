@@ -27,7 +27,7 @@ const SHOTS = [
   { name: '1492-ottoman-iphone-insets-393x852', url: `/year/1492?${OTTOMAN}`, width: 393, height: 852, touch: true, insets: { top: 59, bottom: 34 } },
 ];
 
-const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const browser = await chromium.launch({ channel: 'chromium' });
 for (const shot of SHOTS) {
   if (only && !only.test(shot.name)) continue;
   const context = await browser.newContext({
