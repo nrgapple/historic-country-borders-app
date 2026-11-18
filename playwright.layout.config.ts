@@ -43,6 +43,11 @@ const withoutBrowser = (device: (typeof devices)[string]) => {
   return { ...rest, deviceScaleFactor: 1 };
 };
 
+// Chromium's new headless mode draws WebGL on the GPU. The default headless
+// shell uses SwiftShader, where the remaster's Classic-atlas layers on a full
+// year (1492, 500 BC) stall the main thread past the test timeout.
+const GPU_CHROMIUM = { launchOptions: { channel: 'chromium' } };
+
 export default defineConfig<{ insets: Insets }>({
   testDir: './e2e/layout',
   outputDir: './test-results/layout',
@@ -85,6 +90,7 @@ export default defineConfig<{ insets: Insets }>({
         use: {
           ...withoutBrowser(device),
           browserName: 'chromium' as const,
+          ...GPU_CHROMIUM,
           insets,
         },
       },
@@ -95,6 +101,7 @@ export default defineConfig<{ insets: Insets }>({
       use: {
         ...withoutBrowser(devices['Pixel 7']),
         browserName: 'chromium',
+        ...GPU_CHROMIUM,
         insets: { top: 24, right: 0, bottom: 24, left: 0 },
       },
     },
@@ -102,7 +109,7 @@ export default defineConfig<{ insets: Insets }>({
     {
       name: 'responsive:chromium',
       testMatch: /responsive\.spec\.ts/,
-      use: { browserName: 'chromium' },
+      use: { browserName: 'chromium', ...GPU_CHROMIUM },
     },
     {
       name: 'responsive:webkit',
