@@ -35,6 +35,13 @@ const ATLAS_COLORS = [
   '#D5DBDB',
 ];
 
+// Upstream borders are hand-drawn historical approximations with
+// kilometre-level accuracy. Five decimal places (about 1.1 m at the equator)
+// keep far more precision than the source supports while removing transfer,
+// parse, and memory cost from ~15-digit coordinates.
+const COORDINATE_PRECISION = 5;
+const MIN_RING_POSITIONS = 4;
+
 function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
@@ -76,6 +83,69 @@ function assertRing(ring, context) {
   if (first[0] !== last[0] || first[1] !== last[1]) {
     throw new Error(`${context} contains an open linear ring`);
   }
+}
+
+function roundCoordinate(value) {
+  return Number(value.toFixed(COORDINATE_PRECISION));
+}
+
+function roundPosition(position) {
+  return position.map(roundCoordinate);
+}
+
+function samePosition(a, b) {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+// Rounds a closed ring and drops consecutive duplicate positions. Rounding
+// never changes the first/last equality of a closed ring, so the result stays
+// closed. If the ring would collapse below a valid linear ring, the original
+// unrounded ring is kept for that ring only and reported as a fallback.
+function publishRing(ring) {
+  const rounded = [];
+  ring.forEach((position) => {
+    const next = roundPosition(position);
+    if (!rounded.length || !samePosition(rounded[rounded.length - 1], next)) {
+      rounded.push(next);
+    }
+  });
+  if (rounded.length < MIN_RING_POSITIONS) {
+    return { ring, fallback: true };
+  }
+  return { ring: rounded, fallback: false };
+}
+
+function publishPolygons(polygons) {
+  let fallbackRings = 0;
+  const coordinates = polygons.map((polygon) =>
+    polygon.map((ring) => {
+      const published = publishRing(ring);
+      if (published.fallback) fallbackRings += 1;
+      return published.ring;
+    }),
+  );
+  return { coordinates, fallbackRings };
+}
+
+function publishGeometry(geometry, context) {
+  const { coordinates } = publishPolygons(polygonParts(geometry, context));
+  return {
+    ...geometry,
+    coordinates: geometry.type === 'Polygon' ? coordinates[0] : coordinates,
+  };
+}
+
+function countFallbackRings(payload) {
+  return payload.data.borders.features.reduce(
+    (total, feature) =>
+      total +
+      publishPolygons(
+        feature.geometry.type === 'Polygon'
+          ? [feature.geometry.coordinates]
+          : feature.geometry.coordinates,
+      ).fallbackRings,
+    0,
+  );
 }
 
 function polygonParts(geometry, context) {
@@ -171,17 +241,22 @@ function processBorders(collection) {
     .forEach((feature, index) => {
       const name = feature.properties.NAME;
       const color = textbookColor(String(feature.properties.SUBJECTO || name));
-      const candidates = polygonParts(
-        feature.geometry,
-        `Historical border feature ${index}`,
-      ).map((coordinates) => {
-        const polygon = {
-          type: 'Feature',
-          properties: {},
-          geometry: { type: 'Polygon', coordinates },
-        };
-        return { coordinates: polylabel(coordinates), area: area(polygon) };
-      });
+      const context = `Historical border feature ${index}`;
+      // Area and label placement use the source geometry so zero-area source
+      // anomalies are reported exactly as upstream publishes them.
+      const candidates = polygonParts(feature.geometry, context).map(
+        (coordinates) => {
+          const polygon = {
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'Polygon', coordinates },
+          };
+          return {
+            coordinates: roundPosition(polylabel(coordinates)),
+            area: area(polygon),
+          };
+        },
+      );
       const label = candidates.reduce(
         (largest, candidate) =>
           !largest || candidate.area > largest.area ? candidate : largest,
@@ -190,7 +265,7 @@ function processBorders(collection) {
 
       borders.push({
         type: 'Feature',
-        geometry: feature.geometry,
+        geometry: publishGeometry(feature.geometry, context),
         properties: { ...feature.properties, NAME: name, COLOR: color },
       });
       labels.push({
@@ -215,15 +290,23 @@ function placesForYear(year, places) {
   validatePlacesSource(places);
   return {
     type: 'FeatureCollection',
-    features: places.features.filter(({ properties }) => {
-      const since = properties.inhabitedSince;
-      const until = properties.inhabitedUntil;
-      return (
-        Number.isFinite(since) &&
-        year >= since &&
-        (!Number.isFinite(until) || year <= until)
-      );
-    }),
+    features: places.features
+      .filter(({ properties }) => {
+        const since = properties.inhabitedSince;
+        const until = properties.inhabitedUntil;
+        return (
+          Number.isFinite(since) &&
+          year >= since &&
+          (!Number.isFinite(until) || year <= until)
+        );
+      })
+      .map((feature) => ({
+        ...feature,
+        geometry: {
+          ...feature.geometry,
+          coordinates: roundPosition(feature.geometry.coordinates),
+        },
+      })),
   };
 }
 
@@ -242,21 +325,48 @@ function validatePayload(payload, context = 'Historical payload') {
   ) {
     throw new Error(`${context} labels and borders differ in length`);
   }
-  payload.data.borders.features.forEach((feature, index) =>
-    polygonParts(feature.geometry, `${context} border ${index}`),
-  );
-  payload.data.labels.features.forEach((feature, index) => {
-    if (feature.geometry?.type !== 'Point')
-      throw new Error(`${context} label ${index} is not a Point`);
-    assertPosition(feature.geometry.coordinates, `${context} label ${index}`);
+  payload.data.borders.features.forEach((feature, index) => {
+    const borderContext = `${context} border ${index}`;
+    polygonParts(feature.geometry, borderContext).forEach((polygon) =>
+      polygon.forEach((ring) => {
+        // Publishing is idempotent: a rounded ring republishes unchanged, and
+        // a fallback ring still collapses and is retained as-is.
+        const published = publishRing(ring).ring;
+        if (
+          published.length !== ring.length ||
+          published.some((position, i) => !samePosition(position, ring[i]))
+        ) {
+          throw new Error(
+            `${borderContext} has unrounded or duplicate coordinates`,
+          );
+        }
+      }),
+    );
   });
+  const assertRoundedPoint = (feature, pointContext) => {
+    if (feature?.geometry?.type !== 'Point')
+      throw new Error(`${pointContext} is not a Point`);
+    const position = feature.geometry.coordinates;
+    assertPosition(position, pointContext);
+    if (!samePosition(roundPosition(position), position))
+      throw new Error(`${pointContext} has unrounded coordinates`);
+  };
+  payload.data.labels.features.forEach((feature, index) =>
+    assertRoundedPoint(feature, `${context} label ${index}`),
+  );
+  payload.places.features.forEach((feature, index) =>
+    assertRoundedPoint(feature, `${context} place ${index}`),
+  );
   return payload;
 }
 
 module.exports = {
+  COORDINATE_PRECISION,
   buildPayload,
+  countFallbackRings,
   processBorders,
   placesForYear,
+  publishRing,
   sha256,
   sourceYear,
   validateBorderSource,

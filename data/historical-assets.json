@@ -16,12 +16,13 @@
       "bytes": 4845378
     }
   },
-  "refreshedAt": "2026-09-02T21:59:16.069Z",
+  "refreshedAt": "2026-11-18T00:15:10.953Z",
+  "roundingFallbackRings": 208,
   "assets": {
     "100": {
-      "url": "/data/historical/100.220f7c9eefd31800.json",
-      "sha256": "220f7c9eefd318009693394fc56eb4fb4185b5d7e0ef3500cb1f1fcf2cef9293",
-      "bytes": 664472,
+      "url": "/data/historical/100.1fab05775142eca0.json",
+      "sha256": "1fab05775142eca0697ea115a6d9f70168a94642fad94d517a714f0c5d1bc872",
+      "bytes": 436874,
       "source": {
         "file": "world_100.geojson",
         "sha256": "20265dc221c92f070f88d0a2ab6459b6942a86c2b865524131c9a1f546e03e86",
@@ -35,9 +36,9 @@
       }
     },
     "200": {
-      "url": "/data/historical/200.56848ada4f317708.json",
-      "sha256": "56848ada4f317708d1601921b1e9787ccc06f5e09543faf976adfb0d2fbf650f",
-      "bytes": 603503,
+      "url": "/data/historical/200.43cba9c252bdb97b.json",
+      "sha256": "43cba9c252bdb97ba8a06dd8e441f73b2127b548f4e0b33e9c0b3720ff600d80",
+      "bytes": 394070,
       "source": {
         "file": "world_200.geojson",
         "sha256": "11f3ef1c24a6a43b69cbbd7eeec831b6c9610a539d5b028ae5898c7a5a9f7a4c",
@@ -51,9 +52,9 @@
       }
     },
     "300": {
-      "url": "/data/historical/300.800b5deb85fdd00f.json",
-      "sha256": "800b5deb85fdd00f77396758520d50fa9b4eb65e43492ed207a4054091449aeb",
-      "bytes": 624310,
+      "url": "/data/historical/300.3684273c033fa85e.json",
+      "sha256": "3684273c033fa85e4d6960ecbc578aeaa7d94f3fef8d03e7fe318e5e78c3fcd4",
+      "bytes": 411349,
       "source": {
         "file": "world_300.geojson",
         "sha256": "4ec1f9d170f1b92725da0a6043a201fdc56207cad74366d6817b9432306f1b1f",
@@ -67,9 +68,9 @@
       }
     },
     "400": {
-      "url": "/data/historical/400.7192c381b4ef58c6.json",
-      "sha256": "7192c381b4ef58c6bc3e284d6f8559df13284ea770adef489a1b0c80a5ecbf59",
-      "bytes": 624250,
+      "url": "/data/historical/400.f08a991eeb22fd7c.json",
+      "sha256": "f08a991eeb22fd7cdfde27be94aeb6dd2bfe366ae360f42b077fd5396713af4a",
+      "bytes": 409708,
       "source": {
         "file": "world_400.geojson",
         "sha256": "940cb6473f4e7f511d79f96b34aeecc1e44657e42a9e70538eb49291f24bf024",
@@ -83,9 +84,9 @@
       }
     },
     "500": {
-      "url": "/data/historical/500.088dcdcf9d268f7b.json",
-      "sha256": "088dcdcf9d268f7bc0373f2e8630d53ab0b8d461a6295596d0bad461c7f56db8",
-      "bytes": 727331,
+      "url": "/data/historical/500.110635ee39c6caef.json",
+      "sha256": "110635ee39c6caefff61a29749f2fefe5d3224616044dce94e20c34decfa0567",
+      "bytes": 486869,
       "source": {
         "file": "world_500.geojson",
         "sha256": "5b70765b35918dd6da38b6b775f2d27c047ed8f30d427486ee14d1d46354bd51",
@@ -99,9 +100,9 @@
       }
     },
     "600": {
-      "url": "/data/historical/600.f258f0e59539f67b.json",
-      "sha256": "f258f0e59539f67b9de4e97f7fc646a0dcd75270a72c2c4d6a2181f64659c437",
-      "bytes": 727633,
+      "url": "/data/historical/600.455670754093cd43.json",
+      "sha256": "455670754093cd43dc101a80aa8e863e95179769cb30e7b27cdcbb9256d67017",
+      "bytes": 491368,
       "source": {
         "file": "world_600.geojson",
         "sha256": "4995058c02023bfa7e3fd7674311c73772e5a967b43de1efe0dd4a7996dd86f5",
@@ -115,9 +116,9 @@
       }
     },
     "700": {
-      "url": "/data/historical/700.b8cd102673a35400.json",
-      "sha256": "b8cd102673a35400be7d925aaa8fe01d94ffe5e8e44f9d9c476f1ee66aed8bc1",
-      "bytes": 801611,
+      "url": "/data/historical/700.def308bfd834d7e2.json",
+      "sha256": "def308bfd834d7e250f67099143fefdd3493eb1797c447fea38453f0634b8e7b",
+      "bytes": 523881,
       "source": {
         "file": "world_700.geojson",
         "sha256": "31b42c6efc118c855db3c18f3b5cb4fba9d2f1b5112ded77c6ddc364037f08fe",
@@ -131,9 +132,9 @@
       }
     },
     "800": {
-      "url": "/data/historical/800.8085abd8f8807432.json",
-      "sha256": "8085abd8f880743252c6648d86ecd0bddb8f011ca884fb24ce8a77787ba91308",
-      "bytes": 869952,
+      "url": "/data/historical/800.1399df0391ba32a3.json",
+      "sha256": "1399df0391ba32a3b4c8898de9c4cf59a919429657ba2fdaee293d881a2e10c4",
+      "bytes": 558135,
       "source": {
         "file": "world_800.geojson",
         "sha256": "60dd804d688240b7ff77dd1d9b4f6a5f2310848d7b990ba19a630d1643b77af5",
@@ -147,9 +148,9 @@
       }
     },
     "900": {
-      "url": "/data/historical/900.b6cd6cc7eb3957ec.json",
-      "sha256": "b6cd6cc7eb3957eca0302a6aa2df7d48e7a68d9d5a70829631ad7301bd7b9d6e",
-      "bytes": 986395,
+      "url": "/data/historical/900.005fd985a022844a.json",
+      "sha256": "005fd985a022844ab7e54f9dd5cc6f772e0aa7b45444a822a22e75c0e2ed7d46",
+      "bytes": 635616,
       "source": {
         "file": "world_900.geojson",
         "sha256": "e315a86ee63be6e1781decf63a2f6ce4c005a195cf653b35062bb37a46ceb73c",
@@ -163,9 +164,9 @@
       }
     },
     "1000": {
-      "url": "/data/historical/1000.ac363956f4fd7b25.json",
-      "sha256": "ac363956f4fd7b251723b89062476d531ad750d28a8a7e7ad5594a10a9a24127",
-      "bytes": 872552,
+      "url": "/data/historical/1000.d44509c315e3c68a.json",
+      "sha256": "d44509c315e3c68ae5e8ac301f9254162e75308ef30017157a69a78773d30ed8",
+      "bytes": 624101,
       "source": {
         "file": "world_1000.geojson",
         "sha256": "b0dc4795658e505ccbd23a8dd5277c8115bcd844912a738c9111c41fd1535cd3",
@@ -179,9 +180,9 @@
       }
     },
     "1100": {
-      "url": "/data/historical/1100.e828c0ad5cbd85f0.json",
-      "sha256": "e828c0ad5cbd85f0829325a421ca912ef348c0a1b3e11841bfdbc4aa44e9c8cd",
-      "bytes": 927476,
+      "url": "/data/historical/1100.8fc1b1f3d9658b36.json",
+      "sha256": "8fc1b1f3d9658b366717621f30d8b642141984d01eac69098d3631f878c20a41",
+      "bytes": 616461,
       "source": {
         "file": "world_1100.geojson",
         "sha256": "0fca96ef7c2b5beb0ad26d514f0ab4c4921d4156b58dd8f757671cbd6e4e054a",
@@ -195,9 +196,9 @@
       }
     },
     "1200": {
-      "url": "/data/historical/1200.dcfb85b82bc1999b.json",
-      "sha256": "dcfb85b82bc1999b957e3aea76b4c2d9524eeefea67b59bc2ba6f60a1643bfb2",
-      "bytes": 952398,
+      "url": "/data/historical/1200.d2311a4bfd3cc2d8.json",
+      "sha256": "d2311a4bfd3cc2d8428943e402a0d1247f0b9286b51585b68e7d07721e6f5289",
+      "bytes": 633722,
       "source": {
         "file": "world_1200.geojson",
         "sha256": "83489587ee19a4eecf80565197511315441a804b8245cf0337b11b193d414beb",
@@ -211,9 +212,9 @@
       }
     },
     "1279": {
-      "url": "/data/historical/1279.05a9b672e9695071.json",
-      "sha256": "05a9b672e9695071f9a35d8cd3cc126fbcd8cdabfdc74b0e5dd821480153dfb6",
-      "bytes": 893842,
+      "url": "/data/historical/1279.c3f4345bd2f9e75f.json",
+      "sha256": "c3f4345bd2f9e75fc341aac728ee1c191432e625031220a3d2768d4bfaf16ffc",
+      "bytes": 594283,
       "source": {
         "file": "world_1279.geojson",
         "sha256": "bf5f4efce436448bb4627384e0a1a46890789356b654c4dedf55993ede603de9",
@@ -227,9 +228,9 @@
       }
     },
     "1300": {
-      "url": "/data/historical/1300.52c1b99f2fbe2573.json",
-      "sha256": "52c1b99f2fbe2573d1eb17f739944114f49506931bcc52034b1d567b6cb966cd",
-      "bytes": 888376,
+      "url": "/data/historical/1300.375609ae5706d7d4.json",
+      "sha256": "375609ae5706d7d45f26e64656a22086aaf9a99f812c620c2a41f91e75b3a49e",
+      "bytes": 591902,
       "source": {
         "file": "world_1300.geojson",
         "sha256": "ba66ea1ab75b5b31405a9e8668cbcd7bf054e658357163d0ead95ef2d0b1ecec",
@@ -243,9 +244,9 @@
       }
     },
     "1400": {
-      "url": "/data/historical/1400.5efbb630b8a3b830.json",
-      "sha256": "5efbb630b8a3b8305de8af0152dd4c1daab9ff214ad05fae6fdb8e87150d3d18",
-      "bytes": 968702,
+      "url": "/data/historical/1400.bb9c7dd5169b30c1.json",
+      "sha256": "bb9c7dd5169b30c169d59c76267e2cab20908445be138c5a4a18d8044ebe348e",
+      "bytes": 642941,
       "source": {
         "file": "world_1400.geojson",
         "sha256": "9349daa1afe05e4b73c56e31735bf8c13625bd35b7a23f17aa2f3a4bc672a20f",
@@ -259,9 +260,9 @@
       }
     },
     "1492": {
-      "url": "/data/historical/1492.f35830ae80fb2911.json",
-      "sha256": "f35830ae80fb2911c866a8f29e547f4ae8fd16a12d145acdfede5bd758b3a021",
-      "bytes": 3378139,
+      "url": "/data/historical/1492.554d2304737b9b46.json",
+      "sha256": "554d2304737b9b46aa4b951f53b87dc1f6711a60a58ac03ff896852dba32672a",
+      "bytes": 2775816,
       "source": {
         "file": "world_1492.geojson",
         "sha256": "b952a7804cc4ed6c14aaebcb78e2e087c34ee5b1ffa1b659325cdfb45a806af3",
@@ -275,9 +276,9 @@
       }
     },
     "1500": {
-      "url": "/data/historical/1500.f674d7a09a4bc342.json",
-      "sha256": "f674d7a09a4bc34229dcb0c4a3bb5a2eb904b3f6f5e231e00aca2278e82fc896",
-      "bytes": 1021596,
+      "url": "/data/historical/1500.f4c740c18488527a.json",
+      "sha256": "f4c740c18488527aad6dad6a2d8667315eed1d90c80e4d277f9bf888656c67cf",
+      "bytes": 656117,
       "source": {
         "file": "world_1500.geojson",
         "sha256": "e59ac978dc15844089ecd4ef9e10d8f07b059197aa50505d2759fb14c08bb9d0",
@@ -291,9 +292,9 @@
       }
     },
     "1530": {
-      "url": "/data/historical/1530.bac61cd63e0d71cc.json",
-      "sha256": "bac61cd63e0d71ccd1b6d0728695bfee5ebc35270fed7831b99ac028bf43b5b1",
-      "bytes": 1128393,
+      "url": "/data/historical/1530.f3d8c35ca849b0e3.json",
+      "sha256": "f3d8c35ca849b0e31915a47d5dbf0ed68a1c5cb2b1302ccb9d067e7cce59e08f",
+      "bytes": 742305,
       "source": {
         "file": "world_1530.geojson",
         "sha256": "c377bf8f034ed210af0eed07c608e58d4868e19f316a8e99fd115ed71e113a60",
@@ -307,9 +308,9 @@
       }
     },
     "1600": {
-      "url": "/data/historical/1600.d757f657d763d5b2.json",
-      "sha256": "d757f657d763d5b2ee2b21e05d9a06537c3a7013487b1b82f343e418b0aec1ed",
-      "bytes": 1583407,
+      "url": "/data/historical/1600.7eea44bbe41851bc.json",
+      "sha256": "7eea44bbe41851bc4cefdc23dc3b7169767d562bf54ebcd94074c22e27b93c90",
+      "bytes": 1165371,
       "source": {
         "file": "world_1600.geojson",
         "sha256": "b7861a585b36ee1b03521b169f782a6430c54359d055b9c120174c24596d6e54",
@@ -323,9 +324,9 @@
       }
     },
     "1650": {
-      "url": "/data/historical/1650.db50dc4b6d13f066.json",
-      "sha256": "db50dc4b6d13f06610e0cda7b6bda049ebdb71260e2616ea70fb4e4f1086ec1e",
-      "bytes": 1584447,
+      "url": "/data/historical/1650.b52d34ecd310e839.json",
+      "sha256": "b52d34ecd310e839480178881193d022c9adc9dd6a05432d1c5fad8d4f94ade3",
+      "bytes": 1150299,
       "source": {
         "file": "world_1650.geojson",
         "sha256": "89a02480ed0287cfa0be46fde05a52423d7f277291a300f27eb5b63b8762926e",
@@ -339,9 +340,9 @@
       }
     },
     "1700": {
-      "url": "/data/historical/1700.e421f35f6b875b6e.json",
-      "sha256": "e421f35f6b875b6edfd13d6decba4b34ed31ed6af31d98bb4aef99392ffde677",
-      "bytes": 1551917,
+      "url": "/data/historical/1700.44ded7afdeeb2c1c.json",
+      "sha256": "44ded7afdeeb2c1cb41c5246480ee2eec374701e18fc13d3d7aad7b86f30e091",
+      "bytes": 1130039,
       "source": {
         "file": "world_1700.geojson",
         "sha256": "aec58dce0cd6dc084299bce973ec115b65b96822ad27d9cbc39fd5baa7627ec0",
@@ -355,9 +356,9 @@
       }
     },
     "1715": {
-      "url": "/data/historical/1715.5c0d71df776f5b62.json",
-      "sha256": "5c0d71df776f5b62c09b5b1c5b38efa33085351fbde9624f2cc63c3841ed34b6",
-      "bytes": 1609299,
+      "url": "/data/historical/1715.86a8db020add700f.json",
+      "sha256": "86a8db020add700f9478787fd2678d5ebdacfb5abafa899890ca6de31155a0fb",
+      "bytes": 1160383,
       "source": {
         "file": "world_1715.geojson",
         "sha256": "837eac1956364a5f18e53255d4f9df10d7eb91dd6bec0678a7ff49dc38e68861",
@@ -371,9 +372,9 @@
       }
     },
     "1783": {
-      "url": "/data/historical/1783.e8df252b77da5b36.json",
-      "sha256": "e8df252b77da5b360070b80c90ea288d770dd4065ff212a3131fe6e3f0675d20",
-      "bytes": 1742951,
+      "url": "/data/historical/1783.b9b568180fa9e766.json",
+      "sha256": "b9b568180fa9e76656cace70e64744815c952f03f20b08fd0dd26409b171c131",
+      "bytes": 1243244,
       "source": {
         "file": "world_1783.geojson",
         "sha256": "ad4fafe9bdc4ddd690bd009ac92fb6c10a7f6658e7709b4478ab9e710ca37bc1",
@@ -387,9 +388,9 @@
       }
     },
     "1800": {
-      "url": "/data/historical/1800.40378699aa1e9a0d.json",
-      "sha256": "40378699aa1e9a0d062eb2698c9a2ba50e5ba4385fc8ea53bb087d3ea6708e80",
-      "bytes": 1722879,
+      "url": "/data/historical/1800.f7a8991288f04249.json",
+      "sha256": "f7a8991288f04249a4f215532f4f5a528ebede27c527a3c2a10172ed3f07b958",
+      "bytes": 1227976,
       "source": {
         "file": "world_1800.geojson",
         "sha256": "6360f3eb2773a8065848215d390566d2c32862c5b5d35c0ca736db4aeaf0723f",
@@ -403,9 +404,9 @@
       }
     },
     "1815": {
-      "url": "/data/historical/1815.43573018eb23c827.json",
-      "sha256": "43573018eb23c82721b74b4787f2bc1ab5aeed57c95aff68a2fc4a6b8b47069d",
-      "bytes": 2405112,
+      "url": "/data/historical/1815.1199dc9b04471668.json",
+      "sha256": "1199dc9b04471668f8183e6d89565b2127d0016d8af123074d9b7d05ac724bbd",
+      "bytes": 1495058,
       "source": {
         "file": "world_1815.geojson",
         "sha256": "62afcd6e3f1f598a05e42550a358083bbb75e63e122ebb5a4383f019632115e9",
@@ -419,9 +420,9 @@
       }
     },
     "1880": {
-      "url": "/data/historical/1880.11440538a59a9913.json",
-      "sha256": "11440538a59a9913303cba7ca75e4436a6f9dff808be67f64a92f0341ed401a1",
-      "bytes": 1339987,
+      "url": "/data/historical/1880.269743849ad12644.json",
+      "sha256": "269743849ad1264491d973c3b2137c5bea986128a1b42a2aea802fe3e9497454",
+      "bytes": 855416,
       "source": {
         "file": "world_1880.geojson",
         "sha256": "af5cbc211a19cb7cad1ed65dc7669658dbda8d92acf0b9c16e8dc0c57de3b06b",
@@ -435,9 +436,9 @@
       }
     },
     "1900": {
-      "url": "/data/historical/1900.6ba4b5ae34b291e6.json",
-      "sha256": "6ba4b5ae34b291e65c0cfb9de026e686741ab51a9d0a51e9fb2b8f940f1e8aec",
-      "bytes": 1359498,
+      "url": "/data/historical/1900.871bfdeea8ac2910.json",
+      "sha256": "871bfdeea8ac291052ddbad28fc6e15d3f903b60d829482223383528bc71e677",
+      "bytes": 881905,
       "source": {
         "file": "world_1900.geojson",
         "sha256": "bf39176daf7ac2a3ba374a58f98d3f3d07401fd265d353576952233f8e2f63aa",
@@ -451,9 +452,9 @@
       }
     },
     "1914": {
-      "url": "/data/historical/1914.17c2a4520c91e661.json",
-      "sha256": "17c2a4520c91e6618df60ae775be963d9af649fce092e1d478c0e3fac5ab401b",
-      "bytes": 1381222,
+      "url": "/data/historical/1914.6bfb33efd47722a6.json",
+      "sha256": "6bfb33efd47722a6bd80c2c555c96fff577d5f744d33fc909fecf9a2dd92f2e1",
+      "bytes": 867975,
       "source": {
         "file": "world_1914.geojson",
         "sha256": "3909ac0c6e089efbb35919e6929f9f8936ed7a92ff99334e7b361156ef1ffe68",
@@ -467,9 +468,9 @@
       }
     },
     "1920": {
-      "url": "/data/historical/1920.475ccfeea21e9e54.json",
-      "sha256": "475ccfeea21e9e54892f9918aff6806b28f183057050c11e87b4f8740c79cef4",
-      "bytes": 1547545,
+      "url": "/data/historical/1920.438e4f93973838e7.json",
+      "sha256": "438e4f93973838e7164d2dc40b1057fe314559400fd9b5825f34dbd19f66337a",
+      "bytes": 981702,
       "source": {
         "file": "world_1920.geojson",
         "sha256": "415d19849f57b41eeffdbcbab35e69520e91f9d431e7ebef8033c2718ed8e010",
@@ -483,9 +484,9 @@
       }
     },
     "1930": {
-      "url": "/data/historical/1930.a21c7e8003aa5c10.json",
-      "sha256": "a21c7e8003aa5c102005d5ac99f68b65c39f6d77804f1d53241b314401e4913e",
-      "bytes": 1374420,
+      "url": "/data/historical/1930.3dbc33bfd22f8ca7.json",
+      "sha256": "3dbc33bfd22f8ca7c0edc941733753d0cdade4949c0be19bfbdc0becf04e890c",
+      "bytes": 871218,
       "source": {
         "file": "world_1930.geojson",
         "sha256": "f5a62db4a21f563c5274f0ff884fe3b323039c60beed5352d7162f7f839a3275",
@@ -499,9 +500,9 @@
       }
     },
     "1938": {
-      "url": "/data/historical/1938.d8b9c53753f9c061.json",
-      "sha256": "d8b9c53753f9c061aa6d0097bdc62e1f64c4cef0b9716f86517bc3539044ff19",
-      "bytes": 1482911,
+      "url": "/data/historical/1938.4764c9e3620434c4.json",
+      "sha256": "4764c9e3620434c4891d16ac159f8b2a98305fac8d92c85d6a6e88fca0c875d4",
+      "bytes": 947548,
       "source": {
         "file": "world_1938.geojson",
         "sha256": "ba7689bec824144806049030be3d67132bff77562a71684ad892a4c808273870",
@@ -515,9 +516,9 @@
       }
     },
     "1945": {
-      "url": "/data/historical/1945.302c538787db2c72.json",
-      "sha256": "302c538787db2c72928a43800b095793f3d53625c66b130e21ef0ce2795a4856",
-      "bytes": 1444563,
+      "url": "/data/historical/1945.d8e19c8887639a43.json",
+      "sha256": "d8e19c8887639a4361b1c08fb19621bb2dd325bbf351e2336418a196178f18f8",
+      "bytes": 901974,
       "source": {
         "file": "world_1945.geojson",
         "sha256": "4fefbc8f613b700f86e8ff74ce09288b6698d22ff29f225a5ff1cc8137e7fb2e",
@@ -531,9 +532,9 @@
       }
     },
     "1960": {
-      "url": "/data/historical/1960.cf6e194813eb8fe7.json",
-      "sha256": "cf6e194813eb8fe776a3913b2dc3e3e9bf6c2402977d17bd7f0638d5336ce21c",
-      "bytes": 1401224,
+      "url": "/data/historical/1960.357e846d06f4dc6e.json",
+      "sha256": "357e846d06f4dc6e615938db4676337bd9a7235ac3d4edfd4a53982f72a12281",
+      "bytes": 866279,
       "source": {
         "file": "world_1960.geojson",
         "sha256": "e51fe415a22632b10c61eb136697ba8a045822e069e1256eea308952357955b6",
@@ -547,9 +548,9 @@
       }
     },
     "1994": {
-      "url": "/data/historical/1994.73cdff7e53a2cdf1.json",
-      "sha256": "73cdff7e53a2cdf150c7fb8d1c36c9b4c4f392b2e1a2a45d6362c86f0fd1163b",
-      "bytes": 1845282,
+      "url": "/data/historical/1994.4813dc7a2ca10018.json",
+      "sha256": "4813dc7a2ca100181f7b70b8c5ef171e17abafbf90145d8c0a5746925bdcc583",
+      "bytes": 1212202,
       "source": {
         "file": "world_1994.geojson",
         "sha256": "5aa74eb004e085a39faff7e39b4b20c4c1f0c78feabc9d87e0abd62daf09f2b1",
@@ -563,9 +564,9 @@
       }
     },
     "2000": {
-      "url": "/data/historical/2000.71a2dccd3a42dd02.json",
-      "sha256": "71a2dccd3a42dd027c69054c58acda8855f3f8d0eea1b923d9a23540b0312bc0",
-      "bytes": 1740436,
+      "url": "/data/historical/2000.d55671ce03d16005.json",
+      "sha256": "d55671ce03d16005cd870c7424db56da238e2e8ee57c2c8206a99fd317f1b4c8",
+      "bytes": 1106462,
       "source": {
         "file": "world_2000.geojson",
         "sha256": "c00d1952b51eb89724df883182f40fac7a938d85425ae63aa2019ac211856ea8",
@@ -579,9 +580,9 @@
       }
     },
     "2010": {
-      "url": "/data/historical/2010.2e53203397250f75.json",
-      "sha256": "2e53203397250f75c9ad9e34897730b06ab129fa3e25762e2af04878466b2681",
-      "bytes": 1740418,
+      "url": "/data/historical/2010.520664e4d35a87b5.json",
+      "sha256": "520664e4d35a87b59be1738ba3c8c2c47a60cec3dba8904bf4856dfe2999380c",
+      "bytes": 1106444,
       "source": {
         "file": "world_2010.geojson",
         "sha256": "a75e768634e7242ec69d461bf51961a7d92073d387eb55cc4feafccd824a0aa7",
@@ -595,9 +596,9 @@
       }
     },
     "-123000": {
-      "url": "/data/historical/bc123000.5dd7d6063228227e.json",
-      "sha256": "5dd7d6063228227eaf6d9142254a60a3e6b63efd60731a8403c43610f17a4add",
-      "bytes": 89596,
+      "url": "/data/historical/bc123000.ff25755dc218be30.json",
+      "sha256": "ff25755dc218be30147145b0109d85b64ba9ae5d4c74e1e251fa24461a380c3e",
+      "bytes": 46774,
       "source": {
         "file": "world_bc123000.geojson",
         "sha256": "e03a8a560db73e2e1431201bdb8f7f6105e4bffb6c89df90be45957e777d5a06",
@@ -611,9 +612,9 @@
       }
     },
     "-10000": {
-      "url": "/data/historical/bc10000.b9e6dcbc956c4832.json",
-      "sha256": "b9e6dcbc956c48323d10f5a034b883df45b28839aac0a3e45eac13841a7e0bd5",
-      "bytes": 103497,
+      "url": "/data/historical/bc10000.84b8b609fc6d90ca.json",
+      "sha256": "84b8b609fc6d90ca4c59e65434c0e03e262384091f737e7d0229086804ac2a70",
+      "bytes": 59958,
       "source": {
         "file": "world_bc10000.geojson",
         "sha256": "c17eeb497dd77d9a8cfac46329d8457b318d363c27d36403fda30e601a26a645",
@@ -627,9 +628,9 @@
       }
     },
     "-8000": {
-      "url": "/data/historical/bc8000.26bfdd06fbd70d92.json",
-      "sha256": "26bfdd06fbd70d92aecfe917dc3ef3accee45ed63406e7de8126c5374fb06d82",
-      "bytes": 119505,
+      "url": "/data/historical/bc8000.ca765ace7ba7f830.json",
+      "sha256": "ca765ace7ba7f8300fd53752774626672b58950d57a11fbc096991f8b0860298",
+      "bytes": 70121,
       "source": {
         "file": "world_bc8000.geojson",
         "sha256": "7ee29cdecfc61698187dfeb42df3f78fc5a4df1152488e4d5a9cbde2059c0be0",
@@ -643,9 +644,9 @@
       }
     },
     "-5000": {
-      "url": "/data/historical/bc5000.10bb3fd771c15c6d.json",
-      "sha256": "10bb3fd771c15c6d34fc390e59da401d9260b2b20b0aed38c25ee69beb39aeda",
-      "bytes": 731527,
+      "url": "/data/historical/bc5000.59d3a26338da4323.json",
+      "sha256": "59d3a26338da43234c6e2a9222815e26384bc07e403e6eba56429e4c20e47b18",
+      "bytes": 525436,
       "source": {
         "file": "world_bc5000.geojson",
         "sha256": "4ae8721545dd9236e0cfe414e83f9da28ec681f70d23d80c18407fa28cf1908c",
@@ -659,9 +660,9 @@
       }
     },
     "-4000": {
-      "url": "/data/historical/bc4000.6cbc70d4b1cbf132.json",
-      "sha256": "6cbc70d4b1cbf132d796232634e6f0e0b3258e7eb5f900a04038180fc3b08f55",
-      "bytes": 176829,
+      "url": "/data/historical/bc4000.73190a299d58e696.json",
+      "sha256": "73190a299d58e696cc68eed294e1b30d4259695631857e8a5bcc5f377e8ed162",
+      "bytes": 114043,
       "source": {
         "file": "world_bc4000.geojson",
         "sha256": "e3c4f1a6a255301e69edcb75b3e5fd8d0e52461967e54146bb9f1f57d4654173",
@@ -675,9 +676,9 @@
       }
     },
     "-3000": {
-      "url": "/data/historical/bc3000.224d0cb33314483a.json",
-      "sha256": "224d0cb33314483a5575943d47737cf9b328252555e8b79c7786a5e512fcd8d8",
-      "bytes": 198267,
+      "url": "/data/historical/bc3000.1e727b69b68fe4bb.json",
+      "sha256": "1e727b69b68fe4bbd6fc64b8174fdf7560fadbc40300fdf92dd602c83274bee8",
+      "bytes": 131484,
       "source": {
         "file": "world_bc3000.geojson",
         "sha256": "2cf107e2f0d4f9b5427b293f19b11fffe7c1134f52320df4f94b4889b978f033",
@@ -691,9 +692,9 @@
       }
     },
     "-2000": {
-      "url": "/data/historical/bc2000.6f3688a4ea2cfab5.json",
-      "sha256": "6f3688a4ea2cfab57f812b03880c450907964cfbccfaa6251c5457cc5ce62462",
-      "bytes": 615468,
+      "url": "/data/historical/bc2000.fa3f290c92103e86.json",
+      "sha256": "fa3f290c92103e86e01cd0bfb999a7b1751fba41bf9e585e674989bbc3edc3df",
+      "bytes": 381721,
       "source": {
         "file": "world_bc2000.geojson",
         "sha256": "ca78719de30fafc242f26a61535a9854553ff3544a86656ef6e62289b5d9751f",
@@ -707,9 +708,9 @@
       }
     },
     "-1500": {
-      "url": "/data/historical/bc1500.25a4810ef3938f91.json",
-      "sha256": "25a4810ef3938f91ea5590fec33921430bfb20b468d4ac119fdd1e4884e73e4d",
-      "bytes": 737208,
+      "url": "/data/historical/bc1500.01b86d51705c8cab.json",
+      "sha256": "01b86d51705c8caba006b8059c38db6a27ce7d66793030e85feac7ed119ee352",
+      "bytes": 451435,
       "source": {
         "file": "world_bc1500.geojson",
         "sha256": "8f82479089bbffd760df8093c4f2e8689d44a67fcb173adf6960fc8de70861aa",
@@ -723,9 +724,9 @@
       }
     },
     "-1000": {
-      "url": "/data/historical/bc1000.8e644474f9923c0c.json",
-      "sha256": "8e644474f9923c0c380442cfa9e0421d35cc2a0879f49dbea5099c298ef5d6be",
-      "bytes": 742574,
+      "url": "/data/historical/bc1000.5e558a92b7e0bd3b.json",
+      "sha256": "5e558a92b7e0bd3bb26459c1f5e9f1ca1a689c4be7368df4323257a057c12821",
+      "bytes": 456404,
       "source": {
         "file": "world_bc1000.geojson",
         "sha256": "c3ba4242712ee55c99669f3f0493def883b1424ee6b5666840a49b30b71bcecc",
@@ -739,9 +740,9 @@
       }
     },
     "-700": {
-      "url": "/data/historical/bc700.66a91dd8ffde1729.json",
-      "sha256": "66a91dd8ffde172939f30cbef19ef06e68068fccf1e06b9a5d36d0b125a11e03",
-      "bytes": 757054,
+      "url": "/data/historical/bc700.5c34cdba99875225.json",
+      "sha256": "5c34cdba99875225b296184891bc1cd7fb21a1cda3b93377e4e77bc1462379c3",
+      "bytes": 469340,
       "source": {
         "file": "world_bc700.geojson",
         "sha256": "377238d6e333d5aca61a7aa42c64f9712b7c0403fc8d7d3ae1c753a42ad676ca",
@@ -755,9 +756,9 @@
       }
     },
     "-500": {
-      "url": "/data/historical/bc500.941c096f07ed04b9.json",
-      "sha256": "941c096f07ed04b9000064cb2508eadaf100197a95a47c526a46b996228fc21e",
-      "bytes": 687966,
+      "url": "/data/historical/bc500.c67bbb56ca8e1d31.json",
+      "sha256": "c67bbb56ca8e1d31bcd76940270b807683cacde31a1bbb0e67a90597547b8c80",
+      "bytes": 437583,
       "source": {
         "file": "world_bc500.geojson",
         "sha256": "ebf257ef748c37906de08f8a2c5410c85b06957ac72c2f0e6a13eae67de12e57",
@@ -771,9 +772,9 @@
       }
     },
     "-400": {
-      "url": "/data/historical/bc400.c631c0bed424cc4b.json",
-      "sha256": "c631c0bed424cc4b7b798dfb3845edc7fb7da7f9996482bd4cd752720a49a147",
-      "bytes": 754564,
+      "url": "/data/historical/bc400.eba51a198b0bf2dc.json",
+      "sha256": "eba51a198b0bf2dc332ea62f4a33d4d5e22792acdfa9aad6c8cc01b89804c8d5",
+      "bytes": 477409,
       "source": {
         "file": "world_bc400.geojson",
         "sha256": "5c1eced870abf8514533cae5b6d2f8a4531f037f4c37a1d1443ab0660497ab42",
@@ -787,9 +788,9 @@
       }
     },
     "-323": {
-      "url": "/data/historical/bc323.eb4caf15cef6e517.json",
-      "sha256": "eb4caf15cef6e517fe8f4475cb8c9353a57158749893dc478e69b818125d6b71",
-      "bytes": 620774,
+      "url": "/data/historical/bc323.7ec25bb609e1046d.json",
+      "sha256": "7ec25bb609e1046d7baa9e93f9bfd7002df301b19d10bf3b345e97801e174fa2",
+      "bytes": 402392,
       "source": {
         "file": "world_bc323.geojson",
         "sha256": "03eadec707e29647de3c4e75391da9792fe08affb9d1a2dae2bfd9519a88a72d",
@@ -803,9 +804,9 @@
       }
     },
     "-300": {
-      "url": "/data/historical/bc300.6fd67e0341475938.json",
-      "sha256": "6fd67e03414759389beef0a6fe2eeb5bf183447c15079d3370ff07c488839c97",
-      "bytes": 633092,
+      "url": "/data/historical/bc300.9fbd1b047fa488e6.json",
+      "sha256": "9fbd1b047fa488e6c5559f5bd12e969dcc7e887179dbf3984920ff93c2e623e7",
+      "bytes": 411552,
       "source": {
         "file": "world_bc300.geojson",
         "sha256": "24cd984081f859e9af906a5b48097c7eb1ee83ef066f83e6d87854848d8bd4f2",
@@ -819,9 +820,9 @@
       }
     },
     "-200": {
-      "url": "/data/historical/bc200.a5ba2f0ce2e8283d.json",
-      "sha256": "a5ba2f0ce2e8283d1c4bcb9ba393d13b71cd9ad90b6dad58c3b59cf276a81a4c",
-      "bytes": 830145,
+      "url": "/data/historical/bc200.e4c5a3b554e7790a.json",
+      "sha256": "e4c5a3b554e7790ab2398a6ed43661791c1324e3baf699ad8180baffe74759cc",
+      "bytes": 530518,
       "source": {
         "file": "world_bc200.geojson",
         "sha256": "4fd73b9d463e6d31a54c5437fbc7a08d24dfeadcabd2a50ddbcd363abf8d82f8",
@@ -835,9 +836,9 @@
       }
     },
     "-100": {
-      "url": "/data/historical/bc100.cc56a65b8dc50924.json",
-      "sha256": "cc56a65b8dc5092479633ed094a1ae7cf55ba8e8e9a16c39d077103aba4c6497",
-      "bytes": 647521,
+      "url": "/data/historical/bc100.bde7018a039c75fc.json",
+      "sha256": "bde7018a039c75fc1862d3722a7f576a511a53f1bb2c0da475ab7d71f04952e5",
+      "bytes": 419535,
       "source": {
         "file": "world_bc100.geojson",
         "sha256": "710c05247c2e1bc99bf6ad334a939143a5451cfa7bb1c9087e18821eda67c9d0",
@@ -851,9 +852,9 @@
       }
     },
     "-1": {
-      "url": "/data/historical/bc1.12af3b8963c63bc1.json",
-      "sha256": "12af3b8963c63bc118c56be0f3a8d50ee511e694e49602134f1ab79c04d461a7",
-      "bytes": 651377,
+      "url": "/data/historical/bc1.3a941e540cb34c7d.json",
+      "sha256": "3a941e540cb34c7dd7f4378b9fa366b26151993d3ffc0813bd03e832e9c41055",
+      "bytes": 424758,
       "source": {
         "file": "world_bc1.geojson",
         "sha256": "0099bac4e9d74dce953c63802252d3021d7cc1ec54bc9ae2ba48e93c6c442e9a",

@@ -2,7 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const routeManifest = require('../data/historical-manifest.json');
 const assetManifest = require('../data/historical-assets.json');
-const { sha256, validatePayload } = require('./lib/historical-data');
+const {
+  countFallbackRings,
+  sha256,
+  validatePayload,
+} = require('./lib/historical-data');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -52,6 +56,7 @@ function main() {
   }
 
   let totalBytes = 0;
+  let fallbackRings = 0;
   for (const year of expectedYears) {
     const asset = assetManifest.assets[year];
     if (
@@ -80,10 +85,14 @@ function main() {
       fail(`${year} feature counts mismatch`);
     }
     totalBytes += content.byteLength;
+    fallbackRings += countFallbackRings(payload);
   }
 
+  if (fallbackRings !== assetManifest.roundingFallbackRings)
+    fail('rounding fallback ring count mismatch');
+
   console.log(
-    `Historical data is valid (${expectedYears.length} payloads, ${totalBytes} bytes)`,
+    `Historical data is valid (${expectedYears.length} payloads, ${totalBytes} bytes, ${fallbackRings} unrounded fallback rings)`,
   );
 }
 
