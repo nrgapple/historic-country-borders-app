@@ -84,7 +84,7 @@ Suggested tokens: `--font-text: 'Alegreya', 'Historic Borders Scripts', Georgia,
 
 ### Bytes
 
-Measured on build `4085cf4e0756`.
+Measured on build `4085cf4e0756`. The 2026-11-18 rebuild `cdf13ca70db8`, after the historical names were normalized to NFC and U+FFFD removed, publishes 7 stacks × 12 ranges (84 PBFs, 2,227,586 bytes raw; the `65280-65535` range is gone) and 52 WOFF2 files (817,640 bytes).
 
 | What                                                                     | Files | Bytes                                                     |
 | ------------------------------------------------------------------------ | ----: | --------------------------------------------------------- |
@@ -106,7 +106,7 @@ Per stack, the 13 ranges total 363–382 KB raw for the five Alegreya stacks and
 
 The build and the validator scan every `.json`/`.geojson` under `public/data/historical`, `public/data/years` and `public/basemap/labels`. In GeoJSON features they read the label properties `NAME`, `ABBREVN`, `SUBJECTO`, `PARTOF`, `name`, `n` and `p`. The slim remaster formats (T1's `n`/`p`, T2's basemap labels) are therefore covered as soon as they are published. C0 and C1 controls are never drawn and are ignored.
 
-**Observed on 2026-11-18:** 3,294 distinct names in 53 files use 218 codepoints in 13 glyph ranges: `0-255`, `256-511`, `512-767`, `768-1023`, `4864-5119`, `5120-5375`, `5376-5631`, `5632-5887`, `7680-7935`, `8192-8447`, `42752-43007`, `65280-65535`, `66560-66815`.
+**Observed on 2026-11-18:** 3,294 distinct names in 53 files use 218 codepoints in 13 glyph ranges: `0-255`, `256-511`, `512-767`, `768-1023`, `4864-5119`, `5120-5375`, `5376-5631`, `5632-5887`, `7680-7935`, `8192-8447`, `42752-43007`, `65280-65535`, `66560-66815`. After the name corrections and NFC normalization (rebuild `cdf13ca70db8`), 3,279 distinct names in 212 files (combined and split) use 216 codepoints in 12 ranges, without `65280-65535`, and 20 multi-codepoint clusters instead of 25. Latin has 129 codepoints, Common 28 and Inherited 6.
 
 | Script (Unicode `Script`)       | Codepoints | Example                                     | Drawn from                                       |
 | ------------------------------- | ---------: | ------------------------------------------- | ------------------------------------------------ |
@@ -120,10 +120,9 @@ The build and the validator scan every `.json`/`.geojson` under `public/data/his
 
 The plan expected Ethiopic, Canadian syllabics and Deseret. The data has **no Ethiopic and no Deseret**. The `66560-66815` range is **Osage** (U+104B0–U+104FF), and Cherokee is present.
 
-**Data observations for the historical-data track** (not fixed here):
+**Data observations for the historical-data track:**
 
-- `Arag�n` contains U+FFFD, a mis-decoded "Aragón" in the upstream data. It renders as the replacement character from Noto Sans.
-- Some names are in decomposed form (NFD): `ī`, `ō`, `à`, `ŝ` and `ë́` are written as a letter plus a combining mark. NFC normalization at refresh would turn most of them into single codepoints, which the PBFs serve. Only clusters with no precomposed form, such as `x̣` and `w̓`, would stay local.
+- Fixed on 2026-11-18: `Arag�n` and other U+FFFD, mojibake and lost-character names are corrected by reviewed overrides, and every published name is NFC, so `ī`, `ō`, `à` and `ŝ` are single codepoints served from PBFs (`docs/HISTORICAL_DATA.md` "Reviewed name overrides"). Atkinson Hyperlegible Next has no `ŝ` (U+015D), so the projector stacks draw it from Noto Sans. Clusters with no precomposed form, such as `x̣`, `w̓` and `ë́`, stay local.
 - Some names begin with spaces, and one is only spaces.
 
 **Range policy.** A range carries every glyph its primary font has, so a data refresh that keeps the same ranges reproduces the same files. From fallback fonts it carries only the published characters, so the syllabics ranges are about 4–10 KB instead of about 145 KB. Only ranges that names use are emitted, which bounds the file count at stacks × ranges.

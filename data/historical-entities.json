@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-18T02:04:08.797Z",
+  "generatedAt": "2026-11-18T09:08:42.791Z",
   "method": "Wikidata search and English Wikipedia titles, then type (P31/P279* to a polity class) and inception/dissolution checks; see docs/HISTORICAL_CONTEXT.md",
   "summary": {
-    "names": 3025,
-    "matched": 504,
+    "names": 3013,
+    "matched": 505,
     "ambiguous": 31,
-    "none": 2490,
-    "coverage": { "names": "16.7%", "occurrences": "27.9%", "area": "37.4%" }
+    "none": 2477,
+    "coverage": { "names": "16.8%", "occurrences": "28.0%", "area": "37.4%" }
   },
   "entities": {
     "'Amuwu": {
@@ -4371,23 +4371,16 @@
       "qid": null,
       "evidence": [
         "rejected Q105405 (Cherokee): instance of ethnic group",
-        "rejected Q595297 (Cherokee): not an instance of a state, polity, or historical country; lifespan 1873–? does not overlap the map years (1530…1715)"
+        "rejected Q595297 (Cherokee): not an instance of a state, polity, or historical country; lifespan 1873–? does not overlap the map years (1500…1715)"
       ],
-      "years": [1530, 1715],
-      "occurrences": 5
+      "years": [1500, 1715],
+      "occurrences": 6
     },
     "Cherokee (Oklahoma)": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
       "years": [1492, 1492],
-      "occurrences": 1
-    },
-    "Cherookee": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [1500, 1500],
       "occurrences": 1
     },
     "Chesapeake": {
@@ -4662,8 +4655,8 @@
         "rejected Q56188 (Chitimacha): instance of ethnic group",
         "rejected Q1294227 (Chitimacha): not an instance of a state, polity, or historical country"
       ],
-      "years": [1492, 1492],
-      "occurrences": 1
+      "years": [1492, 1715],
+      "occurrences": 6
     },
     "Chitonahua/Murunahua": {
       "status": "none",
@@ -4788,13 +4781,6 @@
       "evidence": ["rejected Q1076799 (Chowanoke): instance of ethnic group"],
       "years": [1492, 1492],
       "occurrences": 1
-    },
-    "Chtimacha": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [1530, 1715],
-      "occurrences": 5
     },
     "Chuds": {
       "status": "none",
@@ -4958,24 +4944,6 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "CochimÃ­": {
-      "status": "none",
-      "qid": null,
-      "evidence": [
-        "rejected Q3915551 (Cochimí): not an instance of a state, polity, or historical country"
-      ],
-      "years": [1600, 1600],
-      "occurrences": 1
-    },
-    "Cochimà": {
-      "status": "none",
-      "qid": null,
-      "evidence": [
-        "rejected Q3915551 (Cochimí): not an instance of a state, polity, or historical country"
-      ],
-      "years": [1530, 1530],
-      "occurrences": 1
-    },
     "Cochimí": {
       "status": "none",
       "qid": null,
@@ -4983,8 +4951,8 @@
         "rejected Q2661428 (Cochimí people): not an instance of a state, polity, or historical country",
         "rejected Q3915551 (Cochimí): not an instance of a state, polity, or historical country"
       ],
-      "years": [1492, 1492],
-      "occurrences": 1
+      "years": [1492, 1600],
+      "occurrences": 3
     },
     "Cochin": {
       "status": "none",
@@ -8629,7 +8597,7 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "Gwich'in Nành": {
+    "Gwich'in Nành": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
@@ -11757,6 +11725,19 @@
       "years": [1715, 1800],
       "occurrences": 3
     },
+    "Kingdom of Italy": {
+      "status": "matched",
+      "qid": "Q172579",
+      "label": "Kingdom of Italy",
+      "evidence": [
+        "English Wikipedia title",
+        "exact English label or alias",
+        "type: country, historical country, polity, state",
+        "lifespan 1861–1946 overlaps 1 of 1 map years"
+      ],
+      "years": [1914, 1914],
+      "occurrences": 1
+    },
     "Kingdom of Kapisa": {
       "status": "ambiguous",
       "qid": null,
@@ -11891,13 +11872,6 @@
       ],
       "years": [1783, 1815],
       "occurrences": 3
-    },
-    "Kingfom of Italy": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [1914, 1914],
-      "occurrences": 1
     },
     "Kinja": {
       "status": "none",
@@ -13537,13 +13511,6 @@
       "evidence": ["no candidate with this exact name or Wikipedia title"],
       "years": [1492, 1492],
       "occurrences": 1
-    },
-    "M?ori": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [1783, 1900],
-      "occurrences": 4
     },
     "Maan": {
       "status": "none",
@@ -15508,23 +15475,6 @@
       "years": [1530, 1600],
       "occurrences": 2
     },
-    "Monte Alb?n": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [600, 700],
-      "occurrences": 2
-    },
-    "Monte Albàn": {
-      "status": "none",
-      "qid": null,
-      "evidence": [
-        "rejected Q464899 (Monte Albán): not an instance of a state, polity, or historical country",
-        "rejected Q103958719 (Monte Albán): not an instance of a state, polity, or historical country"
-      ],
-      "years": [500, 500],
-      "occurrences": 1
-    },
     "Monte Albán": {
       "status": "none",
       "qid": null,
@@ -15532,15 +15482,8 @@
         "rejected Q464899 (Monte Albán): not an instance of a state, polity, or historical country",
         "rejected Q103958719 (Monte Albán): not an instance of a state, polity, or historical country"
       ],
-      "years": [-300, 400],
-      "occurrences": 8
-    },
-    "Monte Alb�n": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-323, -323],
-      "occurrences": 1
+      "years": [-323, 700],
+      "occurrences": 12
     },
     "Montenegro": {
       "status": "matched",
@@ -16022,6 +15965,16 @@
       "evidence": ["no candidate with this exact name or Wikipedia title"],
       "years": [1492, 1492],
       "occurrences": 1
+    },
+    "Māori": {
+      "status": "none",
+      "qid": null,
+      "evidence": [
+        "rejected Q397777 (Maori): instance of Wikimedia disambiguation page",
+        "rejected Q6122670 (Māori): instance of ethnic group"
+      ],
+      "years": [1783, 1900],
+      "occurrences": 4
     },
     "N. European Bronze Age cultures": {
       "status": "none",
@@ -19759,19 +19712,12 @@
       "years": [1400, 1400],
       "occurrences": 1
     },
-    "Prot-Altaic pastoralists": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-1500, -700],
-      "occurrences": 3
-    },
     "Proto-Altaic pastoralists": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-500, -400],
-      "occurrences": 2
+      "years": [-1500, -400],
+      "occurrences": 5
     },
     "Proto-Scythian culture": {
       "status": "none",
@@ -21432,10 +21378,10 @@
         "English Wikipedia title",
         "exact English label or alias",
         "type: country",
-        "lifespan 843–? overlaps 8 of 8 map years"
+        "lifespan 843–? overlaps 10 of 10 map years"
       ],
       "years": [1000, 1600],
-      "occurrences": 8
+      "occurrences": 10
     },
     "Scots": {
       "status": "none",
@@ -21452,16 +21398,6 @@
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
       "years": [1650, 1700],
-      "occurrences": 2
-    },
-    "Scottland": {
-      "status": "none",
-      "qid": null,
-      "evidence": [
-        "rejected Q92767062 (Scottland): instance of Wikimedia disambiguation page",
-        "rejected Q7438136 (Scottland): not an instance of a state, polity, or historical country"
-      ],
-      "years": [1492, 1500],
       "occurrences": 2
     },
     "Scythians": {
@@ -23149,7 +23085,7 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "S’ólh Téméxw (Stó:lō)": {
+    "S’ólh Téméxw (Stó:lō)": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
@@ -23575,16 +23511,6 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "Teotihuacàn": {
-      "status": "none",
-      "qid": null,
-      "evidence": [
-        "rejected Q172613 (Teotihuacan): not an instance of a state, polity, or historical country",
-        "rejected Q3844591 (Teotihuacan Municipality): not an instance of a state, polity, or historical country"
-      ],
-      "years": [500, 700],
-      "occurrences": 3
-    },
     "Teotihuacán": {
       "status": "none",
       "qid": null,
@@ -23592,15 +23518,8 @@
         "rejected Q172613 (Teotihuacan): not an instance of a state, polity, or historical country",
         "rejected Q3844591 (Teotihuacan Municipality): not an instance of a state, polity, or historical country"
       ],
-      "years": [-300, 400],
-      "occurrences": 8
-    },
-    "Teotihuac�n": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-323, -323],
-      "occurrences": 1
+      "years": [-323, 700],
+      "occurrences": 12
     },
     "Tepehua": {
       "status": "none",
@@ -24481,13 +24400,6 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "Tŝilhqot’in Nen": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [1492, 1492],
-      "occurrences": 1
-    },
     "Ts’uubaa-asatx": {
       "status": "none",
       "qid": null,
@@ -24801,7 +24713,7 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "Tāłtān Konelīne (Tahltan)": {
+    "Tāłtān Konelīne (Tahltan)": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
@@ -24809,6 +24721,13 @@
       "occurrences": 1
     },
     "Tłı̨chǫ Ndè": {
+      "status": "none",
+      "qid": null,
+      "evidence": ["no candidate with this exact name or Wikipedia title"],
+      "years": [1492, 1492],
+      "occurrences": 1
+    },
+    "Tŝilhqot’in Nen": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
@@ -28107,15 +28026,8 @@
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-500, -400],
-      "occurrences": 2
-    },
-    "Zhow states": {
-      "status": "none",
-      "qid": null,
-      "evidence": ["no candidate with this exact name or Wikipedia title"],
-      "years": [-323, -300],
-      "occurrences": 2
+      "years": [-500, -300],
+      "occurrences": 4
     },
     "Zimbabwe": {
       "status": "matched",
@@ -28445,7 +28357,7 @@
       "years": [1492, 1492],
       "occurrences": 1
     },
-    "ƛaʔuukʷiʔatḥ (Tla-o-qui-aht)": {
+    "ƛaʔuukʷiʔatḥ (Tla-o-qui-aht)": {
       "status": "none",
       "qid": null,
       "evidence": ["no candidate with this exact name or Wikipedia title"],

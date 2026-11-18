@@ -11,8 +11,9 @@
  *   bbox, label, ... }` for the finder, panel and prerendered lists.
  *
  * Everything here is a pure, deterministic function of the committed combined
- * payloads and `data/historical-place-classes.json`, so `yarn data:validate`
- * rebuilds the files offline and requires byte-for-byte equality.
+ * payloads, `data/historical-place-classes.json` and the overlord aliases in
+ * `data/historical-name-overrides.json`, so `yarn data:validate` rebuilds the
+ * files offline and requires byte-for-byte equality.
  * See docs/HISTORICAL_DATA.md "Split year files".
  */
 const {
@@ -23,6 +24,7 @@ const {
   roundPosition,
   sha256,
   sourceYear,
+  validateNameOverrides,
 } = require('./historical-data');
 
 const SPLIT_SCHEMA_VERSION = 1;
@@ -268,11 +270,72 @@ function validatePlaceClassesAgainstPayloads(payloads, byName) {
 }
 
 /**
+ * Resolves a SUBJECTO/PARTOF value to a territory name in this year: the
+ * value itself when it is a territory, else its reviewed overlord alias.
+ */
+function resolveOverlordName(value, byName, aliases) {
+  if (!value) return null;
+  if (byName.has(value)) return value;
+  const alias = aliases.get(value);
+  return alias && byName.has(alias) ? alias : null;
+}
+
+/**
+ * Overlords keep distinct washes so their dependencies' `oc` tints tell the
+ * empires apart (the United Kingdom and France share a legacy color in
+ * 1914). Overlords are ranked by dependency count, then largest-part area,
+ * then name. First, in rank order, each overlord keeps its own wash if no
+ * higher-ranked overlord already kept it. Then each displaced overlord, in
+ * rank order, takes the next wash upwards (mod 12) that no overlord holds.
+ * Only displaced overlords change, and they never displace another. With
+ * more than 12 overlords the rest keep their own wash. Returns the number
+ * re-washed.
+ */
+function separateOverlordWashes(territories, labels) {
+  const dependents = new Map();
+  territories.forEach((territory) => {
+    if (territory.overlord)
+      dependents.set(
+        territory.overlord,
+        (dependents.get(territory.overlord) || 0) + 1,
+      );
+  });
+  const area = (territory) => labels[territory.largest].properties.AREA;
+  const ranked = [...dependents.keys()].sort(
+    (a, b) =>
+      dependents.get(b) - dependents.get(a) ||
+      area(b) - area(a) ||
+      (a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
+  );
+  const taken = new Set();
+  const displaced = ranked.filter((territory) => {
+    if (taken.has(territory.c)) return true;
+    taken.add(territory.c);
+    return false;
+  });
+  let rewashed = 0;
+  displaced.forEach((territory) => {
+    for (let step = 1; step < ATLAS_WASH_COUNT; step += 1) {
+      const wash = (territory.c + step) % ATLAS_WASH_COUNT;
+      if (!taken.has(wash)) {
+        territory.c = wash;
+        territory.rewashed = true;
+        taken.add(wash);
+        rewashed += 1;
+        return;
+      }
+    }
+  });
+  return rewashed;
+}
+
+/**
  * Splits one combined payload. Territory ids are dense integers in order of
  * first appearance; every feature that shares a name shares its id, so
- * MapLibre feature-state selects a whole territory at once.
+ * MapLibre feature-state selects a whole territory at once. `aliases` maps
+ * this year's reviewed overlord aliases (from → territory name).
  */
-function buildSplitYear(year, payload, placeClasses) {
+function buildSplitYear(year, payload, placeClasses, aliases = new Map()) {
   const borders = payload.data.borders.features;
   const labels = payload.data.labels.features;
   if (borders.length !== labels.length)
@@ -318,13 +381,45 @@ function buildSplitYear(year, payload, placeClasses) {
     territory.c = washIndex(borders[territory.largest].properties.COLOR);
   });
 
-  territories.forEach((territory) => {
+  const findOverlord = (territory, withAliases) => {
     const properties = borders[territory.largest].properties;
-    const overlord = [properties.SUBJECTO, properties.PARTOF]
-      .map(cleanText)
-      .find((value) => value && value !== territory.name && byName.has(value));
-    if (overlord) territory.overlord = byName.get(overlord);
+    for (const value of [properties.SUBJECTO, properties.PARTOF].map(
+      cleanText,
+    )) {
+      const resolved = resolveOverlordName(
+        value,
+        byName,
+        withAliases ? aliases : new Map(),
+      );
+      if (resolved && resolved !== territory.name)
+        return { name: resolved, via: resolved === value ? null : value };
+    }
+    return null;
+  };
+  // An alias counts as used only when it changes a territory's overlord.
+  const aliasUse = new Set();
+  territories.forEach((territory) => {
+    const found = findOverlord(territory, true);
+    if (!found) return;
+    territory.overlord = byName.get(found.name);
+    if (found.via && findOverlord(territory, false)?.name !== found.name)
+      aliasUse.add(found.via);
   });
+  aliases.forEach((to, from) => {
+    if (byName.has(from))
+      throw new Error(
+        `${year}: overlord alias ${from} names a territory of that year`,
+      );
+    if (!byName.has(to))
+      throw new Error(
+        `${year}: overlord alias target ${to} is not a territory of that year`,
+      );
+    if (!aliasUse.has(from))
+      throw new Error(
+        `${year}: overlord alias ${from} resolves no dependency; remove it`,
+      );
+  });
+  const rewashedOverlords = separateOverlordWashes(territories, labels);
 
   const dependency = (territory) =>
     territory?.overlord
@@ -337,7 +432,10 @@ function buildSplitYear(year, payload, placeClasses) {
       type: 'Feature',
       ...(territory ? { id: territory.id } : {}),
       properties: {
-        c: washIndex(feature.properties.COLOR),
+        // A re-washed overlord is drawn entirely in its new wash.
+        c: territory?.rewashed
+          ? territory.c
+          : washIndex(feature.properties.COLOR),
         ...dependency(territory),
       },
       geometry: rewindGeometry(feature.geometry),
@@ -405,6 +503,7 @@ function buildSplitYear(year, payload, placeClasses) {
         feature.properties.NAME === undefined && featureTerritory[featureIndex],
     ).length,
     dependencies: territories.filter((territory) => territory.overlord).length,
+    rewashedOverlords,
     territoryLabels: territoryLabels.length,
     places: placeLabels.length,
     sites,
@@ -444,7 +543,11 @@ const isPosition = (position) =>
  * rebuild comparison: winding, ids, wash range, names, dependencies, place
  * kinds, bboxes and label points.
  */
-function validateSplitYear(year, { polygons, labels, index }) {
+function validateSplitYear(
+  year,
+  { polygons, labels, index },
+  aliases = new Map(),
+) {
   const context = `Split year ${year}`;
   if (index?.schemaVersion !== SPLIT_SCHEMA_VERSION || index.year !== year)
     fail(context, 'index has the wrong schema or year');
@@ -495,8 +598,12 @@ function validateSplitYear(year, { polygons, labels, index }) {
       )
         fail(where, 'has an invalid dependency');
       const overlord = territories[territory.ov].NAME;
-      if (overlord !== territory.SUBJECTO && overlord !== territory.PARTOF)
-        fail(where, 'names an overlord outside SUBJECTO and PARTOF');
+      if (
+        ![territory.SUBJECTO, territory.PARTOF].some(
+          (value) => value === overlord || aliases.get(value) === overlord,
+        )
+      )
+        fail(where, 'names an overlord outside SUBJECTO, PARTOF and aliases');
     } else if ('ov' in territory || 'oc' in territory) {
       fail(where, 'has overlord fields without dep');
     }
@@ -535,6 +642,15 @@ function validateSplitYear(year, { polygons, labels, index }) {
         `territory ${territory.id} has an overlord wash its overlord never uses`,
       );
   });
+  const overlordWash = new Map();
+  territories.forEach((territory) => {
+    if ('ov' in territory) overlordWash.set(territory.ov, territory.oc);
+  });
+  if (
+    overlordWash.size <= ATLAS_WASH_COUNT &&
+    new Set(overlordWash.values()).size !== overlordWash.size
+  )
+    fail(context, 'has two overlords sharing a wash');
 
   const labelled = new Set();
   labels.features.forEach((feature, featureIndex) => {
@@ -571,11 +687,23 @@ function validateSplitYear(year, { polygons, labels, index }) {
  * Builds every year's split files from the committed combined payloads.
  * `readPayload(asset)` returns the parsed payload and its bytes' hash.
  */
-function buildSplitAssets({ assets, readPayload, placeClassesText }) {
+function buildSplitAssets({
+  assets,
+  readPayload,
+  placeClassesText,
+  nameOverridesText,
+}) {
   const placeClasses = validatePlaceClasses(JSON.parse(placeClassesText));
+  const overlordAliases = nameOverridesText
+    ? validateNameOverrides(JSON.parse(nameOverridesText)).overlordAliases
+    : new Map();
   const years = Object.keys(assets)
     .map(Number)
     .sort((a, b) => a - b);
+  overlordAliases.forEach((_, year) => {
+    if (!years.includes(year))
+      throw new Error(`Overlord aliases name an unpublished year ${year}`);
+  });
   const payloads = new Map();
   years.forEach((year) =>
     payloads.set(year, readPayload(assets[String(year)])),
@@ -589,8 +717,9 @@ function buildSplitAssets({ assets, readPayload, placeClassesText }) {
   const manifestYears = {};
   years.forEach((year) => {
     const { payload, sha256: sourceSha } = payloads.get(year);
-    const split = buildSplitYear(year, payload, placeClasses);
-    validateSplitYear(year, split);
+    const aliases = overlordAliases.get(year) || new Map();
+    const split = buildSplitYear(year, payload, placeClasses, aliases);
+    validateSplitYear(year, split, aliases);
     const entry = {
       source: { url: assets[String(year)].url, sha256: sourceSha },
     };
@@ -617,6 +746,14 @@ function buildSplitAssets({ assets, readPayload, placeClassesText }) {
         file: 'data/historical-place-classes.json',
         sha256: sha256(placeClassesText),
       },
+      ...(nameOverridesText
+        ? {
+            nameOverrides: {
+              file: 'data/historical-name-overrides.json',
+              sha256: sha256(nameOverridesText),
+            },
+          }
+        : {}),
     },
     years: manifestYears,
   };
@@ -640,6 +777,10 @@ function buildSplitAssetsFromRoot(root) {
       path.join(root, 'data', 'historical-place-classes.json'),
       'utf8',
     ),
+    nameOverridesText: fs.readFileSync(
+      path.join(root, 'data', 'historical-name-overrides.json'),
+      'utf8',
+    ),
     readPayload: (asset) => {
       const content = fs.readFileSync(path.join(root, 'public', asset.url));
       return { payload: JSON.parse(content), sha256: sha256(content) };
@@ -658,7 +799,9 @@ module.exports = {
   buildSplitYear,
   isRfc7946Wound,
   placeKind,
+  resolveOverlordName,
   rewindGeometry,
+  separateOverlordWashes,
   ringSignedArea,
   splitFileName,
   territoryBbox,

@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const manifest = require('../data/historical-manifest.json');
 const {
+  applyPlaceNameOverrides,
   applyPlaceOverrides,
   buildPayload,
   countFallbackRings,
@@ -9,6 +10,7 @@ const {
   sourceYear,
   validateBorderSource,
   validatePayload,
+  validateNameOverrides,
   validatePlacesSource,
 } = require('./lib/historical-data');
 const { validatePlaceClassesAgainstPlaces } = require('./lib/historical-split');
@@ -21,6 +23,11 @@ const PLACE_OVERRIDES_PATH = path.join(
   ROOT,
   'data',
   'historical-place-overrides.json',
+);
+const NAME_OVERRIDES_PATH = path.join(
+  ROOT,
+  'data',
+  'historical-name-overrides.json',
 );
 const PLACE_CLASSES_PATH = path.join(
   ROOT,
@@ -89,6 +96,19 @@ async function main() {
   if (!Array.isArray(manifest.years) || manifest.years.length === 0) {
     throw new Error('Historical manifest has no years');
   }
+  // Reviewed name corrections: each must match exactly one source record, so
+  // an upstream fix or rename fails the refresh instead of silently changing
+  // the published map.
+  const nameOverridesText = fs.readFileSync(NAME_OVERRIDES_PATH, 'utf8');
+  const nameOverrides = validateNameOverrides(JSON.parse(nameOverridesText));
+  const unpublished = [
+    ...nameOverrides.borders.keys(),
+    ...nameOverrides.overlordAliases.keys(),
+  ].filter((year) => !manifest.years.includes(year));
+  if (unpublished.length)
+    throw new Error(
+      `Name overrides name unpublished years: ${unpublished.join(', ')}`,
+    );
 
   console.log(
     `Fetching pinned historical license and places at ${manifest.source.commit}...`,
@@ -107,9 +127,10 @@ async function main() {
     licenseSource.text,
   );
   validatePlacesSource(placesSource.value);
+  // Place renames come first; end dates and classes match corrected names.
   const overrideText = fs.readFileSync(PLACE_OVERRIDES_PATH, 'utf8');
   const places = applyPlaceOverrides(
-    placesSource.value,
+    applyPlaceNameOverrides(placesSource.value, nameOverrides),
     JSON.parse(overrideText),
   );
   // Reviewed archaeological-site classes must each match exactly one dated
@@ -126,7 +147,7 @@ async function main() {
     const borderSource = await fetchPinnedJson(fileName);
     validateBorderSource(borderSource.value, fileName);
     const payload = validatePayload(
-      buildPayload(year, borderSource.value, places),
+      buildPayload(year, borderSource.value, places, nameOverrides),
       fileName,
     );
     const fallbackRings = countFallbackRings(payload);
@@ -167,6 +188,10 @@ async function main() {
       placeOverrides: {
         file: 'data/historical-place-overrides.json',
         sha256: sha256(overrideText),
+      },
+      nameOverrides: {
+        file: 'data/historical-name-overrides.json',
+        sha256: sha256(nameOverridesText),
       },
       placeClasses: {
         file: 'data/historical-place-classes.json',

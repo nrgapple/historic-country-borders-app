@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Reviewed corrections to upstream border and place names, applied by yarn data:refresh:historical before publishing, so the combined payloads and the split files both carry them. Each border entry matches exactly one source record per listed year by its exact source values; each place entry matches exactly one source place. Only mis-decoded text and typos confirmed against the cited source (and upstream's own spelling in other years) are corrected; variant spellings are left alone. See docs/HISTORICAL_DATA.md \"Reviewed name overrides\".",
+  "reviewedAt": "2026-11-18",
+  "borders": [
+    {
+      "years": [1994, 2000, 2010],
+      "match": { "NAME": "" },
+      "set": {
+        "NAME": "Switzerland",
+        "ABBREVN": "Switzerland",
+        "SUBJECTO": "Switzerland",
+        "PARTOF": "Switzerland"
+      },
+      "source": "https://en.wikipedia.org/wiki/Switzerland",
+      "note": "The main Swiss polygon (about 40,661 km²) has every name field empty; upstream puts the name on a 0.001 km² sliver instead. Name the real polygon with the sliver's own values."
+    },
+    {
+      "years": [1994, 2000, 2010],
+      "match": { "NAME": "Switzerland" },
+      "drop": "sliver",
+      "source": "https://en.wikipedia.org/wiki/Switzerland",
+      "note": "0.001 km² sliver near 7.285° E, 45.91° N that carried the Swiss name. Dropped once the real polygon is named; the sliver rule allows only records under 1 km² whose name another record still publishes."
+    },
+    {
+      "years": [1914],
+      "match": { "NAME": "Kingfom of Italy" },
+      "set": { "NAME": "Kingdom of Italy" },
+      "source": "https://en.wikipedia.org/wiki/Kingdom_of_Italy",
+      "note": "Typo for Kingdom of Italy (1861–1946)."
+    },
+    {
+      "years": [-323],
+      "match": { "NAME": "Teotihuac\ufffdn" },
+      "set": {
+        "NAME": "Teotihuacán",
+        "ABBREVN": "Teotihuacán",
+        "SUBJECTO": "Teotihuacán",
+        "PARTOF": "Teotihuacán"
+      },
+      "source": "https://en.wikipedia.org/wiki/Teotihuacan",
+      "note": "á lost to U+FFFD; upstream spells it Teotihuacán in 300 BC–AD 400."
+    },
+    {
+      "years": [500, 600, 700],
+      "match": { "NAME": "Teotihuacàn" },
+      "set": {
+        "NAME": "Teotihuacán",
+        "ABBREVN": "Teotihuacán",
+        "SUBJECTO": "Teotihuacán",
+        "PARTOF": "Teotihuacán"
+      },
+      "source": "https://en.wikipedia.org/wiki/Teotihuacan",
+      "note": "Grave accent for the acute á (Spanish has no à here); upstream spells it Teotihuacán in 300 BC–AD 400."
+    },
+    {
+      "years": [-323],
+      "match": { "NAME": "Monte Alb\ufffdn" },
+      "set": {
+        "NAME": "Monte Albán",
+        "ABBREVN": "Monte Albán",
+        "SUBJECTO": "Monte Albán",
+        "PARTOF": "Monte Albán"
+      },
+      "source": "https://en.wikipedia.org/wiki/Monte_Alb%C3%A1n",
+      "note": "á lost to U+FFFD; upstream spells it Monte Albán in 300 BC–AD 400."
+    },
+    {
+      "years": [500],
+      "match": { "NAME": "Monte Albàn" },
+      "set": {
+        "NAME": "Monte Albán",
+        "ABBREVN": "Monte Albán",
+        "SUBJECTO": "Monte Albán",
+        "PARTOF": "Monte Albán"
+      },
+      "source": "https://en.wikipedia.org/wiki/Monte_Alb%C3%A1n",
+      "note": "Grave accent for the acute á."
+    },
+    {
+      "years": [600, 700],
+      "match": { "NAME": "Monte Alb?n" },
+      "set": {
+        "NAME": "Monte Albán",
+        "ABBREVN": "Monte Albán",
+        "SUBJECTO": "Monte Albán",
+        "PARTOF": "Monte Albán"
+      },
+      "source": "https://en.wikipedia.org/wiki/Monte_Alb%C3%A1n",
+      "note": "á lost to a \"?\" fallback."
+    },
+    {
+      "years": [1100],
+      "match": { "NAME": "Aragón", "PARTOF": "Arag\ufffdn" },
+      "set": { "PARTOF": "Aragón" },
+      "source": "https://en.wikipedia.org/wiki/Kingdom_of_Arag%C3%B3n",
+      "note": "PARTOF has ó lost to U+FFFD; the same record's NAME and SUBJECTO are Aragón."
+    },
+    {
+      "years": [1530],
+      "match": { "NAME": "Cochimà" },
+      "set": {
+        "NAME": "Cochimí",
+        "ABBREVN": "Cochimí",
+        "SUBJECTO": "Cochimí",
+        "PARTOF": "Cochimí"
+      },
+      "source": "https://en.wikipedia.org/wiki/Cochim%C3%AD",
+      "note": "UTF-8 í mis-decoded: NAME, ABBREVN and PARTOF read Cochimà and SUBJECTO reads CochimÃ\u00ad. Upstream spells it Cochimí in 1492."
+    },
+    {
+      "years": [1600],
+      "match": { "NAME": "CochimÃ\u00ad" },
+      "set": {
+        "NAME": "Cochimí",
+        "ABBREVN": "Cochimí",
+        "SUBJECTO": "Cochimí",
+        "PARTOF": "Cochimí"
+      },
+      "source": "https://en.wikipedia.org/wiki/Cochim%C3%AD",
+      "note": "UTF-8 í (C3 AD) read as Latin-1, giving Ã and a soft hyphen."
+    },
+    {
+      "years": [1783, 1800, 1880, 1900],
+      "match": { "NAME": "M?ori" },
+      "set": {
+        "NAME": "Māori",
+        "ABBREVN": "Māori",
+        "SUBJECTO": "Māori",
+        "PARTOF": "Māori"
+      },
+      "source": "https://en.wikipedia.org/wiki/M%C4%81ori_people",
+      "note": "ā lost to a \"?\" fallback. Restored as Māori; upstream's other years write Maori or Maoris and are left as they are."
+    },
+    {
+      "years": [1815],
+      "match": { "NAME": "Maori", "ABBREVN": "M?ori" },
+      "set": { "ABBREVN": "Māori" },
+      "source": "https://en.wikipedia.org/wiki/M%C4%81ori_people",
+      "note": "ABBREVN has ā lost to a \"?\" fallback; NAME is Maori and is left as it is."
+    },
+    {
+      "years": [1492, 1500],
+      "match": { "NAME": "Scottland" },
+      "set": {
+        "NAME": "Scotland",
+        "ABBREVN": "Scotland",
+        "SUBJECTO": "Scotland",
+        "PARTOF": "Scotland"
+      },
+      "source": "https://en.wikipedia.org/wiki/Kingdom_of_Scotland",
+      "note": "Typo; upstream spells it Scotland in 1000–1400 and 1530–1600."
+    },
+    {
+      "years": [1500],
+      "match": { "NAME": "Cherookee" },
+      "set": {
+        "NAME": "Cherokee",
+        "ABBREVN": "Cherokee",
+        "SUBJECTO": "Cherokee",
+        "PARTOF": "Cherokee"
+      },
+      "source": "https://en.wikipedia.org/wiki/Cherokee",
+      "note": "Typo; upstream spells it Cherokee in 1530–1715."
+    },
+    {
+      "years": [1530, 1600, 1650, 1700, 1715],
+      "match": { "NAME": "Chtimacha" },
+      "set": {
+        "NAME": "Chitimacha",
+        "ABBREVN": "Chitimacha",
+        "SUBJECTO": "Chitimacha",
+        "PARTOF": "Chitimacha"
+      },
+      "source": "https://en.wikipedia.org/wiki/Chitimacha",
+      "note": "Dropped letter; upstream spells it Chitimacha in 1492."
+    },
+    {
+      "years": [1715],
+      "match": { "NAME": "Dutch East Indies", "SUBJECTO": "Neterlands" },
+      "set": { "SUBJECTO": "Netherlands" },
+      "source": "https://en.wikipedia.org/wiki/Dutch_East_Indies",
+      "note": "Typo in SUBJECTO; the Netherlands is a 1715 territory, so the Dutch East Indies now link to it as a dependency."
+    },
+    {
+      "years": [-323, -300],
+      "match": { "NAME": "Zhow states" },
+      "set": {
+        "NAME": "Zhou states",
+        "ABBREVN": "Zhou states",
+        "SUBJECTO": "Zhou states",
+        "PARTOF": "Zhou states"
+      },
+      "source": "https://en.wikipedia.org/wiki/Zhou_dynasty",
+      "note": "Typo; upstream spells it Zhou states in 500–400 BC."
+    },
+    {
+      "years": [-1500],
+      "match": { "NAME": "Prot-Altaic pastoralists" },
+      "set": {
+        "NAME": "Proto-Altaic pastoralists",
+        "SUBJECTO": "Proto-Altaic pastoralists",
+        "PARTOF": "Proto-Altaic pastoralists"
+      },
+      "source": "https://en.wikipedia.org/wiki/Altaic_languages",
+      "note": "Dropped letter; upstream spells it Proto-Altaic pastoralists in 500–400 BC."
+    },
+    {
+      "years": [-1000, -700],
+      "match": { "NAME": "Prot-Altaic pastoralists" },
+      "set": {
+        "NAME": "Proto-Altaic pastoralists",
+        "ABBREVN": "Proto-Altaic pastoralists",
+        "SUBJECTO": "Proto-Altaic pastoralists",
+        "PARTOF": "Proto-Altaic pastoralists"
+      },
+      "source": "https://en.wikipedia.org/wiki/Altaic_languages",
+      "note": "Dropped letter; upstream spells it Proto-Altaic pastoralists in 500–400 BC."
+    },
+    {
+      "years": [-500],
+      "match": { "NAME": "Proto-Altaic pastoralists" },
+      "set": {
+        "SUBJECTO": "Proto-Altaic pastoralists",
+        "PARTOF": "Proto-Altaic pastoralists"
+      },
+      "source": "https://en.wikipedia.org/wiki/Altaic_languages",
+      "note": "SUBJECTO reads Prot-Altaic pastoralists and PARTOF the doubled Prot-Altaic Proto-Altaic pastoralists; both mean the record itself."
+    },
+    {
+      "years": [-400],
+      "match": { "NAME": "Proto-Altaic pastoralists" },
+      "set": {
+        "ABBREVN": "Proto-Altaic pastoralists",
+        "PARTOF": "Proto-Altaic pastoralists"
+      },
+      "source": "https://en.wikipedia.org/wiki/Altaic_languages",
+      "note": "Dropped letter in ABBREVN and PARTOF."
+    },
+    {
+      "years": [-400],
+      "match": { "NAME": "Donghu tribes" },
+      "set": {
+        "ABBREVN": "Proto-Altaic pastoralists",
+        "PARTOF": "Proto-Altaic pastoralists"
+      },
+      "source": "https://en.wikipedia.org/wiki/Donghu_people",
+      "note": "Dropped letter in ABBREVN and PARTOF; only the spelling is corrected, so the Donghu tribes now link to the Proto-Altaic pastoralists as upstream intends."
+    }
+  ],
+  "places": [
+    {
+      "match": { "name": "Ziz,  Palermo" },
+      "set": { "name": "Palermo" },
+      "source": "https://en.wikipedia.org/wiki/Palermo",
+      "note": "Raw \"<ancient name>,  <modern name>\" string. Ziz is the Phoenician name of the city founded in 734 BC; the map labels places by their modern name."
+    }
+  ],
+  "overlordAliases": [
+    {
+      "years": [1880, 1900, 1914, 1920],
+      "from": "United Kingdom",
+      "to": "United Kingdom of Great Britain and Ireland",
+      "source": "https://en.wikipedia.org/wiki/United_Kingdom_of_Great_Britain_and_Ireland",
+      "note": "British Raj and Hong Kong name the short form while the year's feature uses the state's 1801–1922 name."
+    },
+    {
+      "years": [1880],
+      "from": "Great Britain",
+      "to": "United Kingdom of Great Britain and Ireland",
+      "source": "https://en.wikipedia.org/wiki/United_Kingdom_of_Great_Britain_and_Ireland",
+      "note": "Gold Coast (GB) names Great Britain; the state was the United Kingdom of Great Britain and Ireland."
+    },
+    {
+      "years": [1938],
+      "from": "United Kingdom of Great Britain and Ireland",
+      "to": "United Kingdom",
+      "source": "https://en.wikipedia.org/wiki/United_Kingdom",
+      "note": "Three mandates and protectorates name the pre-1922 state; the 1938 feature for that state is United Kingdom."
+    },
+    {
+      "years": [1914],
+      "from": "Italy",
+      "to": "Kingdom of Italy",
+      "source": "https://en.wikipedia.org/wiki/Kingdom_of_Italy",
+      "note": "Eritrea, Libya and Italian Somaliland name Italy; the 1914 feature is the Kingdom of Italy."
+    },
+    {
+      "years": [1914],
+      "from": "Russia",
+      "to": "Russian Empire",
+      "source": "https://en.wikipedia.org/wiki/Russian_Empire",
+      "note": "Sakhalin (RU) names Russia; the 1914 feature is the Russian Empire (1721–1917)."
+    }
+  ]
+}

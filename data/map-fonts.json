@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "generatedBy": "scripts/build-map-fonts.js",
   "names": {
-    "files": 53,
-    "distinct": 3294,
-    "codePoints": 218,
-    "codePointsSha256": "ad02e61175dba3ee9aeb68124ceafd4a4457d58951c786e17ba39a38be64c68d",
-    "clusters": 25,
+    "files": 212,
+    "distinct": 3279,
+    "codePoints": 216,
+    "codePointsSha256": "3b8717c7defbd6255a1b8e9c687d44845dac340d02b3e0f5e36ac89a3047b8ac",
+    "clusters": 20,
     "ranges": [
       "0-255",
       "256-511",
@@ -19,13 +19,12 @@
       "7680-7935",
       "8192-8447",
       "42752-43007",
-      "65280-65535",
       "66560-66815"
     ],
     "scripts": [
       {
         "script": "Latin",
-        "codePoints": 127,
+        "codePoints": 129,
         "example": " Kelteminar culture"
       },
       {
@@ -35,8 +34,8 @@
       },
       {
         "script": "Common",
-        "codePoints": 30,
-        "example": "      "
+        "codePoints": 28,
+        "example": " Kelteminar culture"
       },
       {
         "script": "Osage",
@@ -45,7 +44,7 @@
       },
       {
         "script": "Inherited",
-        "codePoints": 8,
+        "codePoints": 6,
         "example": "Denendeh (Dënësųłinë́ Nëné)"
       },
       {
@@ -61,8 +60,8 @@
     ]
   },
   "glyphs": {
-    "buildId": "4085cf4e0756",
-    "url": "/glyphs/4085cf4e0756/{fontstack}/{range}.pbf",
+    "buildId": "cdf13ca70db8",
+    "url": "/glyphs/cdf13ca70db8/{fontstack}/{range}.pbf",
     "renderer": {
       "method": "Chromium canvas text + @mapbox/tiny-sdf",
       "chromium": "151.0.7922.34",
@@ -108,7 +107,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -177,20 +177,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-500-normal.9e6e7c6247.woff2",
+            "url": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -224,8 +224,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -321,11 +320,6 @@
             "glyphs": 3,
             "sha256": "cdf164c3f72d00e63ea0a9440de58b9bb3d2247e0de521885d2fe6ced87edeb2"
           },
-          "65280-65535": {
-            "bytes": 897,
-            "glyphs": 1,
-            "sha256": "9cea3e0d3eb190ea9679859ae40c2fe697ee876676b7905d331f15eeec2f805e"
-          },
           "66560-66815": {
             "bytes": 6197,
             "glyphs": 11,
@@ -367,7 +361,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -436,20 +431,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-700-normal.017ed874b4.woff2",
+            "url": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -483,8 +478,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -580,11 +574,6 @@
             "glyphs": 3,
             "sha256": "b493a296d2305ace90eb92dbeac842f18410a768b2f3ed788305347b8604df7b"
           },
-          "65280-65535": {
-            "bytes": 866,
-            "glyphs": 1,
-            "sha256": "ce3fe776f3677f09018738ebeaa0f9381bb4039f530869985f15675b2500a0d8"
-          },
           "66560-66815": {
             "bytes": 6195,
             "glyphs": 11,
@@ -626,7 +615,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -695,20 +685,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-500-italic.4b6a30ca7e.woff2",
+            "url": "/fonts/files/noto-sans-names-500-italic.5d80dac302.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -742,8 +732,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -839,11 +828,6 @@
             "glyphs": 3,
             "sha256": "3c6d768c1fb2f376e2caf193dbc4f4f74ecaa89e0fd7e7d982b2561982390c05"
           },
-          "65280-65535": {
-            "bytes": 901,
-            "glyphs": 1,
-            "sha256": "a6694de5b6afbd4bce506e76c04bb86c2969d21d13f0df60cc2e5362c809fc73"
-          },
           "66560-66815": {
             "bytes": 6201,
             "glyphs": 11,
@@ -885,7 +869,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -954,20 +939,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-400-italic.7af0484179.woff2",
+            "url": "/fonts/files/noto-sans-names-400-italic.fa80731f0b.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -1001,8 +986,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -1098,11 +1082,6 @@
             "glyphs": 3,
             "sha256": "87c695c7d2fae722c2f87fbdc010a7f8702f28529e42f27f8632211d68e24454"
           },
-          "65280-65535": {
-            "bytes": 894,
-            "glyphs": 1,
-            "sha256": "0f0ffccd141131a5f5fb42751f0de830999b88f45f823ef631659e219fa0d66d"
-          },
           "66560-66815": {
             "bytes": 6194,
             "glyphs": 11,
@@ -1144,7 +1123,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -1213,20 +1193,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-400-normal.47ee0691f4.woff2",
+            "url": "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -1260,8 +1240,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -1357,11 +1336,6 @@
             "glyphs": 3,
             "sha256": "ee047cae385ea880bb055c96bb6a901274697a9763e37a9ab8fabd56071a0c16"
           },
-          "65280-65535": {
-            "bytes": 895,
-            "glyphs": 1,
-            "sha256": "fe0d0eb1dc9aaf6ff4334849743de940e5a59330abd335167815c5910d6b263a"
-          },
           "66560-66815": {
             "bytes": 6195,
             "glyphs": 11,
@@ -1385,8 +1359,7 @@
           {
             "url": "/fonts/files/atkinson-hyperlegible-next-latin-500-normal.f5243b80fb.woff2",
             "unicode-range": [
-              "U+0000-00AC",
-              "U+00AE-00FF",
+              "U+0000-00FF",
               "U+0131",
               "U+0152-0153",
               "U+02C6",
@@ -1403,7 +1376,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -1412,7 +1386,8 @@
               "U+0100-0128",
               "U+012A-0130",
               "U+0132-014A",
-              "U+014E-0168",
+              "U+014E-015C",
+              "U+015E-0168",
               "U+016A-0199",
               "U+019C-01EA",
               "U+01EC-01EF",
@@ -1453,20 +1428,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-500-normal.9e6e7c6247.woff2",
+            "url": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -1500,8 +1475,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -1543,14 +1517,14 @@
         ],
         "ranges": {
           "0-255": {
-            "bytes": 81189,
-            "glyphs": 190,
-            "sha256": "944affff5deeacc56d610cdca40dc7a094416f5708fea6ae764cd92e42da02aa"
+            "bytes": 81174,
+            "glyphs": 189,
+            "sha256": "f5085debf20408e7376077664b9746396fd48c5f008962d3b2fe1a4f7c413506"
           },
           "256-511": {
-            "bytes": 52518,
-            "glyphs": 103,
-            "sha256": "12093d7c70e868c1a931b2e7ce67832a6bd7eacd658e30ba6c6b512fc7d9a4b5"
+            "bytes": 52953,
+            "glyphs": 104,
+            "sha256": "5b5ab95bf81f6f955539ca71dc3274ebc9478c2b3f17ed1a4ad22299f8a3f5ae"
           },
           "512-767": {
             "bytes": 9869,
@@ -1558,9 +1532,9 @@
             "sha256": "2d57ecdbb1b2b5471e640fe57d69c72e076ca24c02a84e4d2bf6af42ef37781e"
           },
           "768-1023": {
-            "bytes": 3174,
-            "glyphs": 12,
-            "sha256": "1dced0b7165874b06d9ffb89012b281e24c8388c79c246aa6ab56300f95e32ea"
+            "bytes": 3012,
+            "glyphs": 11,
+            "sha256": "4aea5a86ea905ec07ce6714364cd447f014bba820fde3f8b9c8f764af05def98"
           },
           "4864-5119": {
             "bytes": 3981,
@@ -1597,11 +1571,6 @@
             "glyphs": 1,
             "sha256": "e2c310d72d7543ab8eab82651c76acab38b3993b95ae73bb67c1c4a769478a95"
           },
-          "65280-65535": {
-            "bytes": 912,
-            "glyphs": 1,
-            "sha256": "0ca4cfd3525ef0106c02e81c506cd007d422eb4638d3be1d5558b2b5f8636711"
-          },
           "66560-66815": {
             "bytes": 6212,
             "glyphs": 11,
@@ -1625,8 +1594,7 @@
           {
             "url": "/fonts/files/atkinson-hyperlegible-next-latin-700-normal.0dbe07ed76.woff2",
             "unicode-range": [
-              "U+0000-00AC",
-              "U+00AE-00FF",
+              "U+0000-00FF",
               "U+0131",
               "U+0152-0153",
               "U+02C6",
@@ -1643,7 +1611,8 @@
               "U+2193",
               "U+2212",
               "U+2215",
-              "U+FEFF"
+              "U+FEFF",
+              "U+FFFD"
             ]
           },
           {
@@ -1652,7 +1621,8 @@
               "U+0100-0128",
               "U+012A-0130",
               "U+0132-014A",
-              "U+014E-0168",
+              "U+014E-015C",
+              "U+015E-0168",
               "U+016A-0199",
               "U+019C-01EA",
               "U+01EC-01EF",
@@ -1693,20 +1663,20 @@
             ]
           },
           {
-            "url": "/fonts/files/noto-sans-names-700-normal.017ed874b4.woff2",
+            "url": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
             "unicode-range": [
               "U+0057",
               "U+0061-0063",
               "U+0065",
-              "U+0067-0068",
+              "U+0067",
               "U+006C-006E",
               "U+0070-0071",
-              "U+0073-0074",
+              "U+0074",
               "U+0077-0079",
-              "U+00AD",
               "U+0129",
               "U+0131",
               "U+014B-014D",
+              "U+015D",
               "U+0169",
               "U+019A-019B",
               "U+01EB",
@@ -1740,8 +1710,7 @@
               "U+1EC7",
               "U+2027",
               "U+207F",
-              "U+A789",
-              "U+FFFD"
+              "U+A789"
             ]
           },
           {
@@ -1783,14 +1752,14 @@
         ],
         "ranges": {
           "0-255": {
-            "bytes": 84762,
-            "glyphs": 190,
-            "sha256": "34b0a6274fe5f107af6ab91d14182949cece06d2c317403265fd08f51da29747"
+            "bytes": 84747,
+            "glyphs": 189,
+            "sha256": "4c8195c492c98411fe687d7e7c48c7883cf326bee15d9dbea8382ccbf98a85e7"
           },
           "256-511": {
-            "bytes": 54874,
-            "glyphs": 103,
-            "sha256": "da18e5534a6a11e44f242568aac9ae4432d667094c8dc3064465171907ed5b0b"
+            "bytes": 55335,
+            "glyphs": 104,
+            "sha256": "ca0836bd8935e97c515c9b1fa04a0ae592fb09027a35879985eafaf5d62b8c67"
           },
           "512-767": {
             "bytes": 10538,
@@ -1798,9 +1767,9 @@
             "sha256": "b8bcbd77dac530924991e108e882c232083d3c95df055d0cbbb6e497df817390"
           },
           "768-1023": {
-            "bytes": 3388,
-            "glyphs": 12,
-            "sha256": "64b997bc7dae4b7e4b9e44da5629f39492e3924ef54222e2d231aba6d703c391"
+            "bytes": 3215,
+            "glyphs": 11,
+            "sha256": "d96e60d699db47382692d887587c06ea00328937df6a4616e354ced0ca8bb8e2"
           },
           "4864-5119": {
             "bytes": 4103,
@@ -1837,11 +1806,6 @@
             "glyphs": 1,
             "sha256": "c46eea12f7ddba95c294989f2131291b770f6a2902d1d5b96e6fa95a5d7dd24f"
           },
-          "65280-65535": {
-            "bytes": 881,
-            "glyphs": 1,
-            "sha256": "6a78a27c01375a708b265e08637ffac82931a0063428a027014bc3296e678bd8"
-          },
           "66560-66815": {
             "bytes": 6210,
             "glyphs": 11,
@@ -1855,18 +1819,18 @@
     "css": {
       "default": {
         "path": "/fonts/atlas.css",
-        "bytes": 15392,
-        "sha256": "1bf550ba773a8aee49dd25bbbb7fcf70780eaaa7bdaf38b43602d63c8808bd7c"
+        "bytes": 15420,
+        "sha256": "e21caccd9b43b212305d83bd0a0931b8a3299d30ac74f677700deee5fcbc2cc9"
       },
       "map": {
         "path": "/fonts/map-aliases.css",
-        "bytes": 16368,
-        "sha256": "0cd5bc7b59f4aeca23f02d99e1b64bfd510c40fedb349e17b7b45a72d34e2958"
+        "bytes": 16318,
+        "sha256": "843a0a4aa519d666c2d86e4d65e2fd8f4dd8e545f14c1b855a22ee2291a82799"
       },
       "projector": {
         "path": "/fonts/projector.css",
-        "bytes": 10493,
-        "sha256": "245ce847955b1171b7116e6fe2bbd9d17517cd6724060b474d4a495376d34b09"
+        "bytes": 10505,
+        "sha256": "09f58986362c29699b57e1779fbd9a9b0ab56b47a15e1e59c865fd91f0b3827b"
       }
     },
     "ui": {
@@ -1903,8 +1867,8 @@
         "/fonts/files/alegreya-sans-vietnamese-700-normal.960cf8c764.woff2",
         "/fonts/files/alegreya-sans-latin-ext-700-normal.8f289f338a.woff2",
         "/fonts/files/alegreya-sans-latin-700-normal.5acd19a588.woff2",
-        "/fonts/files/noto-sans-names-400-normal.47ee0691f4.woff2",
-        "/fonts/files/noto-sans-names-700-normal.017ed874b4.woff2",
+        "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
+        "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
         "/fonts/files/noto-sans-cherokee-cherokee-400-normal.5e2fbcc21f.woff2",
         "/fonts/files/noto-sans-canadian-aboriginal-canadian-aboriginal-400-normal.b126c74089.woff2",
         "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2"
@@ -1977,7 +1941,7 @@
         "subset": "latin",
         "weight": 400,
         "style": "italic",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 23156,
         "sha256": "9be8976a11463895bb4d590973a684c1c96616b7e40a03333151efa8c7210241"
       },
@@ -1989,7 +1953,7 @@
         "subset": "latin",
         "weight": 400,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 22884,
         "sha256": "7cbcf38a5ef682a8b9e2ef4a330b31a08b33bf1ae08e338267c0d1292479c68a"
       },
@@ -2001,7 +1965,7 @@
         "subset": "latin",
         "weight": 500,
         "style": "italic",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 24392,
         "sha256": "654e31dba1d4273655d9a97c36f3456a90c4dc77c070d8d78d7cadd0af9ed518"
       },
@@ -2013,7 +1977,7 @@
         "subset": "latin",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 24352,
         "sha256": "1c582501cee54f7137a80732266cbd3f0e9ef1f0e85d093228fb4f4db852df4e"
       },
@@ -2097,7 +2061,7 @@
         "subset": "latin",
         "weight": 500,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 23928,
         "sha256": "55b61d22cc7afd0bca94d17a84f0e92963b8f5216dbfbde56b2f6cf530c9b2dd"
       },
@@ -2109,7 +2073,7 @@
         "subset": "latin",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 23976,
         "sha256": "5acd19a588614d23e52b741a21dd8555178ab4932c3195c6d8fb4b296f84acae"
       },
@@ -2193,7 +2157,7 @@
         "subset": "latin",
         "weight": 500,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 30880,
         "sha256": "98b4a138b6117d621a122a7c8590aa945720e4953d926b921a61e0d3f96a02c9"
       },
@@ -2205,7 +2169,7 @@
         "subset": "latin",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 30660,
         "sha256": "988821cdcc03a1c0f7587143e4d921582595c5bcd803061863f7c3be7dd0d4b8"
       },
@@ -2313,7 +2277,7 @@
         "subset": "latin",
         "weight": 400,
         "style": "italic",
-        "unicodeRange": "U+0000-00AC,U+00AE-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 14152,
         "sha256": "59bc0e965694b9409ac2684c6c8d08994f4fee8a474bc63c4653714f8f441435"
       },
@@ -2325,7 +2289,7 @@
         "subset": "latin",
         "weight": 400,
         "style": "normal",
-        "unicodeRange": "U+0000-00AC,U+00AE-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 12096,
         "sha256": "5cb240a4d99ab7e6fc3a4d4e6d11d89789fdffe9c86a8384000d662c53283f6f"
       },
@@ -2337,7 +2301,7 @@
         "subset": "latin",
         "weight": 500,
         "style": "normal",
-        "unicodeRange": "U+0000-00AC,U+00AE-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 12620,
         "sha256": "f5243b80fbcabc6756a4f67a2843a581216ecb89019a789335b85c924f05702e"
       },
@@ -2349,7 +2313,7 @@
         "subset": "latin",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0000-00AC,U+00AE-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF",
+        "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-2026,U+2028-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
         "bytes": 12732,
         "sha256": "0dbe07ed7679407db9d90f747d5ca3bd1b2bb7ccbcbe41c8246cfc6d2c7bc3bc"
       },
@@ -2361,7 +2325,7 @@
         "subset": "latin-ext",
         "weight": 400,
         "style": "italic",
-        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
         "bytes": 7872,
         "sha256": "d78c26d0c18f8d0f81efde4aa48a05d8e4d01c696a2683c1d1bdb8471ed0e827"
       },
@@ -2373,7 +2337,7 @@
         "subset": "latin-ext",
         "weight": 400,
         "style": "normal",
-        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
         "bytes": 7376,
         "sha256": "0f9e442184b58992113a9b26c0b85c380410a60e5f8f3ddc03c54fe80f81bbe8"
       },
@@ -2385,7 +2349,7 @@
         "subset": "latin-ext",
         "weight": 500,
         "style": "normal",
-        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
         "bytes": 7548,
         "sha256": "0b3a72e74f915124c73048d3a6970463c9d2f14d3877ccb1f2cd0d7e33e0c5d6"
       },
@@ -2397,7 +2361,7 @@
         "subset": "latin-ext",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
+        "unicodeRange": "U+0100-0128,U+012A-0130,U+0132-014A,U+014E-015C,U+015E-0168,U+016A-0199,U+019C-01EA,U+01EC-01EF,U+01F1-023A,U+023C,U+023E-0240,U+0242-0258,U+025A,U+025C-0267,U+026A,U+026D-0288,U+028A-028B,U+028D-0293,U+0296-02AF,U+02B1-02B6,U+02B8-02BA,U+02BD-02BF,U+02C1-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E0C,U+1E0E-1E24,U+1E26-1E47,U+1E49-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A788,U+A78A-A7FF",
         "bytes": 7556,
         "sha256": "acd5d0771650ceddafa2beb172dc7ada45581f7641db03a70f4a13677ce799d1"
       },
@@ -2474,64 +2438,64 @@
         "sha256": "4e57b50c407833686c0b868f675c0f6edbba9259a07da9c82ea0f4f19cad85b0"
       },
       {
-        "path": "/fonts/files/noto-sans-names-400-italic.7af0484179.woff2",
+        "path": "/fonts/files/noto-sans-names-400-italic.fa80731f0b.woff2",
         "source": "https://github.com/google/fonts ofl/notosans/NotoSans-Italic[wdth,wght].ttf",
         "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
         "license": "/fonts/licenses/LICENSE-noto-sans.txt",
         "subset": "names",
         "weight": 400,
         "style": "italic",
-        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067-0068,U+006C-006E,U+0070-0071,U+0073-0074,U+0077-0079,U+00AD,U+0129,U+0131,U+014B-014D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789,U+FFFD",
-        "bytes": 8052,
-        "sha256": "7af0484179658c9842e450a70a3dc664aa54e718d611cbb379118adebb0ad0e2"
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7856,
+        "sha256": "fa80731f0b1014e225ef5abe004726f6df08c3b3bf2d73b480a7448a3dc9c5b6"
       },
       {
-        "path": "/fonts/files/noto-sans-names-400-normal.47ee0691f4.woff2",
+        "path": "/fonts/files/noto-sans-names-400-normal.4a6ec51aa5.woff2",
         "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
         "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
         "license": "/fonts/licenses/LICENSE-noto-sans.txt",
         "subset": "names",
         "weight": 400,
         "style": "normal",
-        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067-0068,U+006C-006E,U+0070-0071,U+0073-0074,U+0077-0079,U+00AD,U+0129,U+0131,U+014B-014D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789,U+FFFD",
-        "bytes": 7864,
-        "sha256": "47ee0691f47f4a40fd9a505b0885b2e46e6f7b8f77941b1b7c67e6e26224c5c7"
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7580,
+        "sha256": "4a6ec51aa557b07ab140ce32ed6b11a6d3e8895333b995e9ca97a3ec3bb8838d"
       },
       {
-        "path": "/fonts/files/noto-sans-names-500-italic.4b6a30ca7e.woff2",
+        "path": "/fonts/files/noto-sans-names-500-italic.5d80dac302.woff2",
         "source": "https://github.com/google/fonts ofl/notosans/NotoSans-Italic[wdth,wght].ttf",
         "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
         "license": "/fonts/licenses/LICENSE-noto-sans.txt",
         "subset": "names",
         "weight": 500,
         "style": "italic",
-        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067-0068,U+006C-006E,U+0070-0071,U+0073-0074,U+0077-0079,U+00AD,U+0129,U+0131,U+014B-014D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789,U+FFFD",
-        "bytes": 8236,
-        "sha256": "4b6a30ca7e785564aa0af1ab8fc4b053eaefbdb53dc3865a8a84a50c08ba7fa4"
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 8040,
+        "sha256": "5d80dac3023c48742ecc944e85dd8ddc4d9cf366ff47c7faf64aded52e40dbfa"
       },
       {
-        "path": "/fonts/files/noto-sans-names-500-normal.9e6e7c6247.woff2",
+        "path": "/fonts/files/noto-sans-names-500-normal.26ab62cc96.woff2",
         "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
         "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
         "license": "/fonts/licenses/LICENSE-noto-sans.txt",
         "subset": "names",
         "weight": 500,
         "style": "normal",
-        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067-0068,U+006C-006E,U+0070-0071,U+0073-0074,U+0077-0079,U+00AD,U+0129,U+0131,U+014B-014D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789,U+FFFD",
-        "bytes": 7924,
-        "sha256": "9e6e7c624713d54babd0c16eee971e67f26a2280fe2b3cf0139040cb22677309"
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7700,
+        "sha256": "26ab62cc96aa60ddddb0de16e388199e217fb1e1aacb4217739c1162d42b79d8"
       },
       {
-        "path": "/fonts/files/noto-sans-names-700-normal.017ed874b4.woff2",
+        "path": "/fonts/files/noto-sans-names-700-normal.2d6de1b50c.woff2",
         "source": "https://github.com/google/fonts ofl/notosans/NotoSans[wdth,wght].ttf",
         "version": "7af0d90b4d532ffa4b041937b560c6df4e7b1e95",
         "license": "/fonts/licenses/LICENSE-noto-sans.txt",
         "subset": "names",
         "weight": 700,
         "style": "normal",
-        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067-0068,U+006C-006E,U+0070-0071,U+0073-0074,U+0077-0079,U+00AD,U+0129,U+0131,U+014B-014D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789,U+FFFD",
-        "bytes": 8012,
-        "sha256": "017ed874b4a654e7359e3517aa57d6972fd006198e791efc9c5245c5a6369355"
+        "unicodeRange": "U+0057,U+0061-0063,U+0065,U+0067,U+006C-006E,U+0070-0071,U+0074,U+0077-0079,U+0129,U+0131,U+014B-014D,U+015D,U+0169,U+019A-019B,U+01EB,U+01F0,U+023B,U+023D,U+0241,U+0259,U+025B,U+0268-0269,U+026B-026C,U+0289,U+028C,U+0294-0295,U+02B0,U+02B7,U+02BB-02BC,U+02C0,U+0302,U+0313,U+0323,U+0328,U+0331,U+03B2,U+03B8,U+03CE,U+1E0D,U+1E25,U+1E48,U+1EA1,U+1EC7,U+2027,U+207F,U+A789",
+        "bytes": 7744,
+        "sha256": "2d6de1b50ccbd06bb4c3c27b12614d3ea2469a74f296a518224b9241c5647eb7"
       },
       {
         "path": "/fonts/files/noto-sans-osage-osage-400-normal.2876d99b2a.woff2",

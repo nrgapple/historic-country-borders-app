@@ -236,15 +236,283 @@ function cleanText(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
+/**
+ * Published text is Unicode NFC, so the browser and font subsetter see one
+ * spelling of each name (upstream stores a few 1492 names decomposed, for
+ * example "Gwich'in Nành" with a + U+0300).
+ */
+function publishText(value) {
+  return typeof value === 'string' ? value.normalize('NFC') : value;
+}
+
 // Upstream records carry many always-null keys (about 130 per place). They
 // add transfer and parse cost without information, so they are not published.
 // Blank strings ("" or only spaces) carry no information either.
 function compactProperties(properties) {
   return Object.fromEntries(
-    Object.entries(properties || {}).filter(
-      ([, value]) => value !== null && value !== undefined && !isBlank(value),
-    ),
+    Object.entries(properties || {})
+      .filter(
+        ([, value]) => value !== null && value !== undefined && !isBlank(value),
+      )
+      .map(([key, value]) => [key, publishText(value)]),
   );
+}
+
+// UTF-8 read as Latin-1 or Windows-1252: a lead byte Â–Å shown as a letter,
+// followed by a continuation byte shown as U+0080–U+00BF or a CP1252 symbol
+// ("CochimÃ­" for "Cochimí"), or the "â€" prefix of curly quotes and dashes.
+// A real Ã followed by a letter ("Ãwa", the Avá-Canoeiro self-name) is fine.
+const MOJIBAKE = /[Â-Å][\u0080-¿ŒœŠšŸŽžƒˆ˜–—‘-„†-•…‰‹›€™]|â€/;
+// A character lost to a "?" fallback inside a word ("M?ori"). A name that
+// is only "?" (an unknown people in 200 BC) is upstream's own notation.
+const LOST_CHARACTER = /\p{L}\?\p{L}/u;
+
+/**
+ * Text defects the refresh must never publish: non-NFC text and U+FFFD
+ * anywhere; for names, also mojibake and lost-character "?". Each published
+ * occurrence was fixed by a reviewed override (data/historical-name-overrides.json).
+ */
+function textDefect(value, { name = false } = {}) {
+  if (typeof value !== 'string') return null;
+  if (value.includes('�')) return 'contains U+FFFD';
+  if (value.normalize('NFC') !== value) return 'is not NFC';
+  if (name && MOJIBAKE.test(value)) return 'looks mis-decoded (mojibake)';
+  if (name && LOST_CHARACTER.test(value))
+    return 'has a character replaced by "?"';
+  return null;
+}
+
+const BORDER_NAME_FIELDS = ['NAME', 'ABBREVN', 'SUBJECTO', 'PARTOF'];
+const PLACE_NAME_FIELDS = ['name'];
+const NAME_OVERRIDES_SCHEMA_VERSION = 1;
+/** A record may be dropped only when it is a sliver below this area. */
+const SLIVER_MAX_KM2 = 1;
+
+function assertTextFields(properties, context) {
+  Object.entries(properties || {}).forEach(([key, value]) => {
+    const defect = textDefect(value, {
+      name: BORDER_NAME_FIELDS.includes(key) || PLACE_NAME_FIELDS.includes(key),
+    });
+    if (defect) throw new Error(`${context} ${key} ${defect}`);
+  });
+}
+
+const isCleanName = (value) =>
+  typeof value === 'string' &&
+  cleanText(value) === value &&
+  !textDefect(value, { name: true });
+
+/**
+ * Validates data/historical-name-overrides.json and indexes it:
+ *
+ * - `borders`: per-year record overrides. `match` selects exactly one source
+ *   border record by exact source values; `set` replaces name fields, or
+ *   `drop: "sliver"` removes a sub-km² record whose name another record of
+ *   that year publishes.
+ * - `places`: `match` selects exactly one source place; `set` renames it.
+ * - `overlordAliases`: in the listed years, a SUBJECTO/PARTOF value that is
+ *   not a territory resolves to the named territory for split dependencies.
+ *
+ * Every entry needs an https source and a review note.
+ */
+function validateNameOverrides(file) {
+  if (!file || file.schemaVersion !== NAME_OVERRIDES_SCHEMA_VERSION)
+    throw new Error('Name overrides have an unsupported schema');
+  ['borders', 'places', 'overlordAliases'].forEach((key) => {
+    if (!Array.isArray(file[key]))
+      throw new Error(`Name overrides have no ${key} list`);
+  });
+  const reviewed = (entry, context) => {
+    if (!entry || typeof entry !== 'object')
+      throw new Error(`${context} is invalid`);
+    if (
+      typeof entry.source !== 'string' ||
+      !entry.source.startsWith('https://')
+    )
+      throw new Error(`${context} needs an https source`);
+    if (typeof entry.note !== 'string' || !entry.note.trim())
+      throw new Error(`${context} needs a review note`);
+  };
+  const yearsOf = (entry, context) => {
+    if (
+      !Array.isArray(entry.years) ||
+      entry.years.length === 0 ||
+      !entry.years.every(Number.isInteger) ||
+      new Set(entry.years).size !== entry.years.length
+    )
+      throw new Error(`${context} needs distinct integer years`);
+    return entry.years;
+  };
+  const fieldsOf = (object, fields, context, what) => {
+    if (
+      !object ||
+      typeof object !== 'object' ||
+      Object.keys(object).length === 0 ||
+      Object.keys(object).some((key) => !fields.includes(key))
+    )
+      throw new Error(`${context} ${what} must use only ${fields.join(', ')}`);
+  };
+
+  const borders = new Map();
+  file.borders.forEach((entry, index) => {
+    const context = `Border name override ${index}`;
+    reviewed(entry, context);
+    fieldsOf(entry.match, BORDER_NAME_FIELDS, context, 'match');
+    Object.values(entry.match).forEach((value) => {
+      if (typeof value !== 'string')
+        throw new Error(`${context} match values must be strings`);
+    });
+    if ((entry.set === undefined) === (entry.drop === undefined))
+      throw new Error(`${context} needs exactly one of set and drop`);
+    if (entry.drop !== undefined && entry.drop !== 'sliver')
+      throw new Error(`${context} may only drop a "sliver"`);
+    if (entry.set !== undefined) {
+      fieldsOf(entry.set, BORDER_NAME_FIELDS, context, 'set');
+      Object.values(entry.set).forEach((value) => {
+        if (!isCleanName(value))
+          throw new Error(`${context} sets a blank or defective name`);
+      });
+    }
+    yearsOf(entry, context).forEach((year) => {
+      if (!borders.has(year)) borders.set(year, []);
+      borders.get(year).push({ ...entry, context });
+    });
+  });
+
+  const places = file.places.map((entry, index) => {
+    const context = `Place name override ${index}`;
+    reviewed(entry, context);
+    fieldsOf(entry.match, PLACE_NAME_FIELDS, context, 'match');
+    fieldsOf(entry.set, PLACE_NAME_FIELDS, context, 'set');
+    if (typeof entry.match.name !== 'string' || !isCleanName(entry.set.name))
+      throw new Error(`${context} is invalid`);
+    return { ...entry, context };
+  });
+
+  const overlordAliases = new Map();
+  file.overlordAliases.forEach((entry, index) => {
+    const context = `Overlord alias ${index}`;
+    reviewed(entry, context);
+    if (!isCleanName(entry.from) || !isCleanName(entry.to))
+      throw new Error(`${context} needs clean from and to names`);
+    if (entry.from === entry.to)
+      throw new Error(`${context} aliases a name to itself`);
+    yearsOf(entry, context).forEach((year) => {
+      if (!overlordAliases.has(year)) overlordAliases.set(year, new Map());
+      const aliases = overlordAliases.get(year);
+      if (aliases.has(entry.from))
+        throw new Error(`${context} repeats ${entry.from} in ${year}`);
+      aliases.set(entry.from, entry.to);
+    });
+  });
+
+  return { borders, places, overlordAliases };
+}
+
+const matchesRecord = (properties, match) =>
+  Object.entries(match).every(([key, value]) => properties?.[key] === value);
+
+const sameFields = (properties, set) =>
+  Object.entries(set).every(([key, value]) => properties?.[key] === value);
+
+/**
+ * Applies one year's reviewed border overrides to a validated source
+ * collection. Each entry must match exactly one source record by its exact
+ * source values, no record may be matched twice, a `set` must change
+ * something, and a dropped sliver must be under 1 km² with its name still
+ * published by another record. A renamed or fixed upstream record therefore
+ * fails the refresh instead of silently changing the published map.
+ */
+function applyBorderOverrides(year, collection, overrides) {
+  const entries = overrides?.borders.get(year) || [];
+  if (!entries.length) return collection;
+  const byFeature = new Map();
+  entries.forEach((entry) => {
+    const hits = [];
+    collection.features.forEach((feature, index) => {
+      if (matchesRecord(feature.properties, entry.match)) hits.push(index);
+    });
+    if (hits.length !== 1)
+      throw new Error(
+        `${entry.context} matches ${hits.length} records in ${year}; expected exactly one`,
+      );
+    if (byFeature.has(hits[0]))
+      throw new Error(
+        `${entry.context} and ${byFeature.get(hits[0]).context} match the same record in ${year}`,
+      );
+    const { properties } = collection.features[hits[0]];
+    if (entry.set && sameFields(properties, entry.set))
+      throw new Error(`${entry.context} changes nothing in ${year}`);
+    byFeature.set(hits[0], entry);
+  });
+
+  const features = [];
+  const dropped = [];
+  collection.features.forEach((feature, index) => {
+    const entry = byFeature.get(index);
+    if (entry?.drop) {
+      const km2 = area(feature) / 1e6;
+      if (!(km2 < SLIVER_MAX_KM2))
+        throw new Error(
+          `${entry.context} would drop ${km2.toFixed(1)} km² in ${year}; only slivers under ${SLIVER_MAX_KM2} km² may be dropped`,
+        );
+      dropped.push({ entry, name: cleanText(feature.properties.NAME) });
+      return;
+    }
+    features.push(
+      entry
+        ? { ...feature, properties: { ...feature.properties, ...entry.set } }
+        : feature,
+    );
+  });
+  dropped.forEach(({ entry, name }) => {
+    if (
+      !name ||
+      !features.some((feature) => cleanText(feature.properties?.NAME) === name)
+    )
+      throw new Error(
+        `${entry.context} drops ${name || 'an unnamed record'} in ${year}, but no other record publishes that name`,
+      );
+  });
+  return { ...collection, features };
+}
+
+/**
+ * Applies reviewed place renames. Each must match exactly one source place
+ * and change it.
+ */
+function applyPlaceNameOverrides(places, overrides) {
+  const entries = overrides?.places || [];
+  const byFeature = new Map();
+  entries.forEach((entry) => {
+    const hits = [];
+    places.features.forEach((feature, index) => {
+      if (matchesRecord(feature.properties, entry.match)) hits.push(index);
+    });
+    if (hits.length !== 1)
+      throw new Error(
+        `${entry.context} matches ${hits.length} places; expected exactly one`,
+      );
+    if (byFeature.has(hits[0]))
+      throw new Error(`${entry.context} matches an already renamed place`);
+    if (sameFields(places.features[hits[0]].properties, entry.set))
+      throw new Error(`${entry.context} changes nothing`);
+    byFeature.set(hits[0], entry);
+  });
+  return {
+    ...places,
+    features: places.features.map((feature, index) =>
+      byFeature.has(index)
+        ? {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              ...byFeature.get(index).set,
+            },
+          }
+        : feature,
+    ),
+  };
 }
 
 function processBorders(collection) {
@@ -262,11 +530,13 @@ function processBorders(collection) {
     .forEach((feature, index) => {
       const sourceName = feature.properties.NAME;
       // A NAME of only whitespace is a source defect on a real territory
-      // (for example Switzerland in 1994-2010). The border is kept so the map
-      // has no hole, but it is published without a NAME and its label point
-      // has no text; see docs/HISTORICAL_DATA.md "Blank names".
-      const name = cleanText(sourceName);
-      // Colors keep their historical inputs so published palettes are stable.
+      // (for example Netherlands in 1815). The border is kept so the map has
+      // no hole, but it is published without a NAME and its label point has
+      // no text; see docs/HISTORICAL_DATA.md "Blank names".
+      const name = cleanText(publishText(sourceName));
+      // Colors keep their historical inputs (untrimmed, as stored) so
+      // published palettes are stable. A reviewed override is part of that
+      // input, so a corrected record hashes like the same name elsewhere.
       const color = textbookColor(
         String(feature.properties.SUBJECTO || sourceName),
       );
@@ -395,8 +665,17 @@ function placesForYear(year, places) {
   };
 }
 
-function buildPayload(year, borders, places) {
-  return { data: processBorders(borders), places: placesForYear(year, places) };
+/**
+ * `nameOverrides` is the validated name-override index; its border entries
+ * for `year` are applied to the source before processing. Place renames are
+ * applied once to the whole places file (applyPlaceNameOverrides).
+ */
+function buildPayload(year, borders, places, nameOverrides) {
+  validateBorderSource(borders);
+  return {
+    data: processBorders(applyBorderOverrides(year, borders, nameOverrides)),
+    places: placesForYear(year, places),
+  };
 }
 
 function validatePayload(payload, context = 'Historical payload') {
@@ -413,6 +692,7 @@ function validatePayload(payload, context = 'Historical payload') {
   payload.data.borders.features.forEach((feature, index) => {
     const borderContext = `${context} border ${index}`;
     assertPublishedName(feature.properties?.NAME, borderContext);
+    assertTextFields(feature.properties, borderContext);
     if (
       payload.data.labels.features[index]?.properties?.NAME !==
       feature.properties?.NAME
@@ -450,6 +730,7 @@ function validatePayload(payload, context = 'Historical payload') {
     assertRoundedPoint(feature, `${context} place ${index}`);
     if (!cleanText(feature.properties?.name))
       throw new Error(`${context} place ${index} has a blank name`);
+    assertTextFields(feature.properties, `${context} place ${index}`);
   });
   return payload;
 }
@@ -467,9 +748,16 @@ function assertPublishedName(name, context) {
 
 module.exports = {
   ATLAS_COLORS,
+  BORDER_NAME_FIELDS,
   COORDINATE_PRECISION,
+  SLIVER_MAX_KM2,
+  applyBorderOverrides,
+  applyPlaceNameOverrides,
   assertPublishedName,
   cleanText,
+  publishText,
+  textDefect,
+  validateNameOverrides,
   polygonParts,
   roundPosition,
   applyPlaceOverrides,

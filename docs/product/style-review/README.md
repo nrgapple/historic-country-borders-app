@@ -38,7 +38,7 @@ Every producer name lives in `contract.ts`. The tests check it against the produ
 
 **T3, glyphs** (`docs/FONTS.md`, "Map fontstacks").
 
-- **Glyphs URL**: `/glyphs/4085cf4e0756/{fontstack}/{range}.pbf`, pinned as `GLYPHS_URL`. It isn't imported because the manifest's `glyphs` key is 31 kB of per-face data; a test enforces equality.
+- **Glyphs URL**: `/glyphs/cdf13ca70db8/{fontstack}/{range}.pbf`, pinned as `GLYPHS_URL`. It isn't imported because the manifest's `glyphs` key is 31 kB of per-face data; a test enforces equality.
 - **Fontstacks**: each is a single-element `text-font` array.
   - `Alegreya SC Medium` / `Alegreya SC Bold`: states, Bold above 250,000 km² and for the selection.
   - `Alegreya Medium Italic`: seas and oceans.
@@ -64,8 +64,8 @@ The spike's `yarn data` now copies these committed files (`scripts/build-data.mj
 Notes for T1, observed in the review screenshots:
 
 - **Dependency ids.** `setSelection()` finds a selection's dependencies in the loaded tiles (`ov` = selected id). Adding dependency ids to the year index would let the controller pass them through `setSelection(..., dependencyIds)`.
-- **British Raj.** In 1914 the British Raj is not marked as a dependency. Its source `SUBJECTO` is "United Kingdom", which is not a feature that year, so it is not tinted or emphasised when the United Kingdom is selected. The United Kingdom and France also share one source colour, so their colonies get the same smalt tint.
-- **Place names.** "Ziz, Palermo" still shows the source's raw place name.
+- **British Raj.** In 1914 the British Raj is not marked as a dependency. Its source `SUBJECTO` is "United Kingdom", which is not a feature that year, so it is not tinted or emphasised when the United Kingdom is selected. The United Kingdom and France also share one source colour, so their colonies get the same smalt tint. _Resolved in the data on 2026-11-18:_ a reviewed overlord alias links the British Raj and Hong Kong to the United Kingdom of Great Britain and Ireland, and overlords now get distinct washes (France moves to wash 11 in 1914). See `docs/HISTORICAL_DATA.md` "Overlord aliases" and "Overlord washes".
+- **Place names.** "Ziz, Palermo" still shows the source's raw place name. _Resolved in the data on 2026-11-18:_ it is published as "Palermo" (`data/historical-name-overrides.json`).
 
 ## What the style draws
 
