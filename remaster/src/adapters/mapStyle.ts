@@ -291,7 +291,8 @@ export function createStyle({ origin, settings: s, lowPower = false }: StyleOpti
       'source-layer': BASEMAP_LAYER.coast,
       // Toned down (§2.1): four below z3.5, two to z5, none from z5.
       maxzoom: i < 2 ? 5 : 3.5,
-      filter: ['>=', ['to-number', ['coalesce', ['get', COAST_LANDMASS_KM2], 1e9]], 5000],
+      // Small islands keep the coast stroke but get no ripples (§2.1).
+      filter: ['>=', ['to-number', ['get', COAST_LANDMASS_KM2], 0], 5000],
       paint: {
         'line-color': '#5F8A8C',
         'line-width': 0.6,
@@ -553,11 +554,11 @@ export function addRelief(map: MapLibreMap, origin: string) {
   map.addSource(SOURCE.relief, {
     type: 'image',
     url: `${origin}${RELIEF.url}`,
-    coordinates: [
-      [-180, RELIEF.north],
-      [180, RELIEF.north],
-      [180, RELIEF.south],
-      [-180, RELIEF.south],
+    coordinates: RELIEF.coordinates as [
+      [number, number],
+      [number, number],
+      [number, number],
+      [number, number],
     ],
   });
   map.addLayer(

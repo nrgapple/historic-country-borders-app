@@ -22,9 +22,9 @@ remaster-spike/
 remaster/dist/
 remaster/.astro/
 remaster/public/data/
-remaster/public/basemap-standin/
+remaster/public/tiles/
 remaster/public/glyphs-standin/
-remaster/public/relief-standin/
+remaster/public/basemap/
 remaster/public/shared/
 remaster/src/data/
 remaster/test-results/

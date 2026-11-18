@@ -351,7 +351,21 @@ body.atlas-page {
   font-size: 15px;
 }
 
-/* The atlas covers the list unless the map cannot be drawn. */
+/* While the atlas runs, the list sits just below the viewport: still in the
+   document for crawlers and screen readers, never under the fixed atlas or
+   the safe-area insets. It returns to the flow without WebGL (and without JS,
+   through the page's <noscript> style). */
+body.atlas-page .territories {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+:root[data-webgl='none'] body.atlas-page .territories {
+  position: static;
+}
+
 :root[data-webgl='none'] body.atlas-page {
   overflow: auto;
 }

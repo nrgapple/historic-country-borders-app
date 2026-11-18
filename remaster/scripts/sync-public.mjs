@@ -20,6 +20,15 @@ const SHARED = [
 for (const name of SHARED)
   fs.copyFileSync(path.join(REPO, 'public', name), path.join(APP, 'public', name));
 
+// T2: the committed basemap build (tiles, relief, globe land), by manifest path.
+const basemap = JSON.parse(fs.readFileSync(path.join(REPO, 'data/basemap-manifest.json'), 'utf8'));
+for (const dir of ['public/tiles', 'public/basemap'])
+  fs.rmSync(path.join(APP, dir), { recursive: true, force: true });
+for (const rel of [basemap.tiles.path, path.dirname(basemap.relief.path)])
+  fs.cpSync(path.join(REPO, rel), path.join(APP, rel), { recursive: true });
+fs.rmSync(path.join(APP, 'public/basemap-standin'), { recursive: true, force: true });
+fs.rmSync(path.join(APP, 'public/relief-standin'), { recursive: true, force: true });
+
 const FONTS = {
   alegreya: ['400-normal', '500-normal', '700-normal', '400-italic', '500-italic'],
   'alegreya-sc': ['500-normal', '700-normal'],
