@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<title>Modern Textbook · Historic Borders</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script src="data/historical-1492.js"></script>
+<script src="data/natural-earth.js"></script>
+<script src="data/land-110m.js"></script>
+<script src="data/relief-b.js"></script>
+<script src="data/glyphs-b.js"></script>
+<script src="shared/atlas.js"></script>
+<style>
+/* Self-hosted OFL fonts: Atkinson Hyperlegible Next (Braille Institute), Literata (TypeTogether). */
+@font-face { font-family: "Atkinson Next"; font-weight: 400; src: url(fonts/atkinson-hyperlegible-next-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Atkinson Next"; font-weight: 500; src: url(fonts/atkinson-hyperlegible-next-latin-500-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Atkinson Next"; font-weight: 700; src: url(fonts/atkinson-hyperlegible-next-latin-700-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Atkinson Next"; font-weight: 800; src: url(fonts/atkinson-hyperlegible-next-latin-800-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Literata"; font-weight: 400; src: url(fonts/literata-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Literata"; font-weight: 600; src: url(fonts/literata-latin-600-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Literata"; font-weight: 400; font-style: italic; src: url(fonts/literata-latin-400-italic.woff2) format("woff2"); font-display: swap; }
+
+:root {
+  --bg: #FFFFFF;
+  --surface: #F3F5F7;
+  --ink: #14202B;           /* 16.5:1 on white */
+  --ink-2: #47535F;         /* 7.9:1 on white */
+  --line: #D3DAE1;
+  --line-strong: #9AA6B2;
+  /* Era colours: solid chapter colours (white text ≥ 4.5:1) and light washes */
+  --era-prehistory: #8C5300;   --era-prehistory-wash: #F7EBD9;
+  --era-ancient: #B0362A;      --era-ancient-wash: #F8E3E0;
+  --era-medieval: #1B5CA6;     --era-medieval-wash: #E2ECF8;
+  --era-early-modern: #23743A; --era-early-modern-wash: #E0F1E4;
+  --era-modern: #94335F;       --era-modern-wash: #F6E3EC;
+  --accent: var(--era-medieval);
+  --accent-wash: var(--era-medieval-wash);
+  --focus: #F2A900;
+
+  --sans: "Atkinson Next", system-ui, sans-serif;
+  --serif: "Literata", Georgia, serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  color-scheme: only light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.5 var(--sans); -webkit-font-smoothing: antialiased; overflow: hidden; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+.app {
+  position: fixed; inset: 0; height: 100vh; height: 100dvh;
+  display: grid; grid-template-rows: auto 1fr;
+  padding-left: var(--safe-left); padding-right: var(--safe-right);
+}
+
+/* ---------------- Timeline ---------------- */
+.timeline {
+  position: relative; z-index: 10; background: var(--bg);
+  /* chapter strip: the era colour runs across the very top, under the status bar */
+  border-top: calc(var(--safe-top) + 6px) solid var(--accent);
+  padding: 10px 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.tl-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.brand__mark { width: 36px; height: 36px; flex: none; }
+.brand__name { font: 800 20px/1.1 var(--sans); letter-spacing: -.01em; }
+.brand__sub { display: block; font: 500 14px/1.2 var(--sans); color: var(--ink-2); }
+
+.stepper { display: flex; align-items: center; gap: 14px; }
+.step {
+  display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px 0 10px;
+  border: 2px solid var(--line); border-radius: 22px; background: var(--bg);
+  font: 700 16px/1 var(--sans); cursor: pointer;
+}
+.step--next { padding: 0 10px 0 14px; }
+.step svg { width: 18px; height: 18px; }
+.step:hover { border-color: var(--accent); color: var(--accent); }
+.year { border: 0; background: none; padding: 0; text-align: center; cursor: pointer; min-width: 200px; }
+.year__line { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+.year__value { font: 600 54px/1 var(--serif); letter-spacing: -.02em; }
+.year__suffix { font: 800 18px/1 var(--sans); color: var(--ink-2); }
+.year__caret { width: 16px; height: 16px; color: var(--ink-2); align-self: center; }
+.year__era { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; }
+.chip { display: inline-block; padding: 3px 10px; border-radius: 4px; background: var(--accent); color: #fff; font: 800 13px/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.year__range { font: 500 14px/1 var(--sans); color: var(--ink-2); }
+
+.tools { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.find { display: flex; align-items: center; gap: 8px; height: 44px; min-width: 230px; padding: 0 14px; border: 2px solid var(--line); border-radius: 22px; color: var(--ink-2); font: 500 16px/1 var(--sans); }
+.find svg { width: 18px; height: 18px; color: var(--ink); }
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 22px; background: none; cursor: pointer; }
+.icon-btn:hover { background: var(--surface); }
+.icon-btn svg { width: 21px; height: 21px; }
+
+.ruler { position: relative; margin-top: 12px; padding-bottom: 4px; user-select: none; }
+.tl-eras { display: flex; gap: 3px; height: 28px; }
+.tl-era { min-width: 0; display: flex; align-items: center; padding: 0 9px; border-radius: 5px 5px 0 0; overflow: hidden; white-space: nowrap; }
+.tl-era__label { font: 800 13px/1 var(--sans); letter-spacing: .07em; text-transform: uppercase; overflow: hidden; }
+.tl-era[data-era=prehistory] { background: var(--era-prehistory-wash); color: var(--era-prehistory); }
+.tl-era[data-era=ancient] { background: var(--era-ancient-wash); color: var(--era-ancient); }
+.tl-era[data-era=medieval] { background: var(--era-medieval-wash); color: var(--era-medieval); }
+.tl-era[data-era=early-modern] { background: var(--era-early-modern-wash); color: var(--era-early-modern); }
+.tl-era[data-era=modern] { background: var(--era-modern-wash); color: var(--era-modern); }
+.tl-era[data-active] { background: var(--accent); color: #fff; }
+
+.tl-track { position: relative; height: 12px; background: var(--surface); border-top: 3px solid var(--accent); cursor: pointer; }
+.tl-tick { position: absolute; top: 0; width: 2px; height: 7px; border-radius: 1px; transform: translateX(-50%); background: var(--line-strong); }
+.tl-tick[data-major] { height: 12px; background: var(--ink-2); }
+.tl-tick[data-era-start] { height: 12px; background: var(--ink); }
+.tl-thumb { position: absolute; top: -14px; width: 26px; height: 26px; transform: translateX(-50%); border-radius: 50%; background: #fff; border: 5px solid var(--accent); box-shadow: 0 1px 3px rgba(20, 32, 43, .35); z-index: 2; }
+.tl-labels { position: relative; height: 24px; margin-top: 6px; }
+.tl-label { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; font: 500 14px/1 var(--sans); color: var(--ink-2); }
+.tl-label[data-edge=start] { transform: translateX(-4px); }
+.tl-label[data-edge=end] { transform: translateX(calc(-100% + 4px)); }
+.tl-label[data-active] { color: var(--accent); font-weight: 800; }
+
+/* ---------------- Map ---------------- */
+.stage { position: relative; min-height: 0; background: #BCDDEB; }
+#map { position: absolute; inset: 0; }
+
+.mapkey {
+  position: absolute; left: 20px; bottom: 20px; z-index: 3; width: 268px;
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(20, 32, 43, .12), 0 6px 18px rgba(20, 32, 43, .12);
+  overflow: hidden;
+}
+.mapkey__top { display: grid; grid-template-columns: 92px 1fr; gap: 12px; align-items: center; padding: 12px 14px 10px; }
+.globe { width: 92px; height: 92px; }
+.mapkey__title { margin: 0; font: 800 13px/1.2 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.mapkey__where { margin: 2px 0 0; font: 400 15px/1.3 var(--serif); }
+.mapkey dl { margin: 0; padding: 8px 14px 10px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 28px 1fr; gap: 6px 8px; align-items: center; }
+.mapkey dt { display: grid; place-items: center; }
+.mapkey dd { margin: 0; font: 500 14px/1.25 var(--sans); }
+.sw-sel { width: 24px; height: 16px; border: 3px solid var(--accent); background: #F6B9A6 repeating-linear-gradient(135deg, rgba(27,92,166,.55) 0 2px, transparent 2px 6px); border-radius: 2px; }
+.sw-border { width: 24px; height: 5px; background: #9C7A12; box-shadow: 0 0 0 2px #fff; border-radius: 1px; }
+.mapkey__scale { padding: 8px 14px 12px; border-top: 1px solid var(--line); }
+.scalebar__bar { display: flex; height: 8px; border: 2px solid var(--ink); border-radius: 1px; }
+.scalebar__bar span { flex: 1; background: #fff; }
+.scalebar__bar span:first-child { background: var(--ink); }
+.scalebar__nums { display: flex; justify-content: space-between; margin-top: 3px; font: 500 13px/1 var(--sans); color: var(--ink); }
+.scale-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.north { display: grid; justify-items: center; font: 800 13px/1 var(--sans); }
+.north svg { width: 16px; height: 22px; }
+
+.zoom { position: absolute; right: 450px; bottom: 20px; z-index: 3; display: grid; background: #fff; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; box-shadow: 0 1px 2px rgba(20,32,43,.12); }
+.zoom button { width: 44px; height: 44px; border: 0; background: none; font: 700 22px/1 var(--sans); cursor: pointer; }
+.zoom button + button { border-top: 1px solid var(--line); }
+.credit { position: absolute; right: 504px; bottom: 20px; z-index: 3; margin: 0; padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,.9); font: 500 13px/1.3 var(--sans); color: var(--ink-2); max-width: 420px; }
+
+/* ---------------- Panel ---------------- */
+.panel {
+  position: absolute; z-index: 5; top: 0; right: 0; bottom: 0; width: 430px;
+  display: flex; flex-direction: column; background: var(--bg);
+  border-left: 1px solid var(--line);
+}
+.panel__header { position: relative; padding: 18px 24px 18px; background: var(--accent); color: #fff; }
+.eyebrow { margin: 0; font: 800 13px/1.2 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+.panel h2 { margin: 4px 0 0; font: 600 36px/1.08 var(--serif); letter-spacing: -.01em; }
+.panel__part { margin: 6px 0 0; font: 500 15px/1.3 var(--sans); }
+.close { position: absolute; top: 12px; right: 12px; color: #fff; }
+.close:hover { background: rgba(255,255,255,.14); }
+.panel__scroll { overflow: auto; padding: 18px 24px 16px; }
+
+.glance { background: var(--accent-wash); border-radius: 6px; padding: 12px 16px 14px; }
+.glance__title { margin: 0 0 8px; font: 800 13px/1.2 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.glance dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.glance dt { font: 700 13px/1.2 var(--sans); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+.glance dd { margin: 2px 0 0; font: 600 18px/1.25 var(--serif); }
+.glance dd small { display: block; font: 500 14px/1.3 var(--sans); color: var(--ink-2); }
+.glance__source { margin: 8px 0 0; font: 500 13px/1.3 var(--sans); color: var(--ink-2); }
+
+.h3 { margin: 22px 0 8px; font: 800 15px/1.2 var(--sans); letter-spacing: .02em; }
+.h3 span { font-weight: 500; color: var(--ink-2); }
+
+.lifespan { position: relative; height: 58px; margin: 4px 4px 0; }
+.lifespan__axis { position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--line); }
+.lifespan__bar { position: absolute; top: 18px; height: 10px; border-radius: 5px; background: var(--accent-wash); border: 2px solid var(--accent); }
+.lifespan__now { position: absolute; top: 10px; width: 4px; height: 24px; margin-left: -2px; border-radius: 2px; background: var(--accent); }
+.lifespan__tick { position: absolute; top: 38px; transform: translateX(-50%); font: 600 13px/1 var(--sans); color: var(--ink-2); white-space: nowrap; }
+.lifespan__tick b { color: var(--accent); font-weight: 800; }
+.events { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.events td { padding: 7px 0; border-top: 1px solid var(--line); vertical-align: baseline; font: 400 16px/1.35 var(--sans); }
+.events td:first-child { width: 62px; font: 800 16px/1.35 var(--sans); }
+.events tr[data-now] td { color: var(--accent); font-weight: 800; }
+
+.extract { margin: 0; font: 400 17px/1.6 var(--serif); }
+.extract::first-letter { float: left; font: 800 58px/.82 var(--sans); color: var(--accent); padding: 5px 8px 0 0; }
+.source { margin: 10px 0 0; font: 500 14px/1.4 var(--sans); color: var(--ink-2); }
+.source a { color: var(--accent); font-weight: 700; }
+
+.panel__foot { display: flex; gap: 10px; padding: 12px 24px calc(12px + var(--safe-bottom)); border-top: 1px solid var(--line); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 18px; border-radius: 23px; border: 2px solid var(--accent); background: #fff; color: var(--accent); font: 800 15px/1 var(--sans); cursor: pointer; }
+.btn svg { width: 18px; height: 18px; }
+.btn--primary { background: var(--accent); color: #fff; }
+.sheet-handle { display: none; }
+
+@media (max-width: 699px) {
+  body { font-size: 16px; }
+  .timeline { padding: 8px 12px 0; border-top-width: calc(var(--safe-top) + 4px); }
+  .tl-head { grid-template-columns: auto 1fr auto; gap: 6px; }
+  .brand__name, .brand__sub, .find, .tools .icon-btn:not(.keep) { display: none; }
+  .brand__mark { width: 32px; height: 32px; }
+  .stepper { gap: 6px; justify-content: center; }
+  .step { width: 44px; padding: 0; justify-content: center; }
+  .step .step__label { display: none; }
+  .year { min-width: 0; }
+  .year__value { font-size: 40px; }
+  .year__suffix { font-size: 15px; }
+  .chip { font-size: 12px; padding: 2px 8px; }
+  .year__range { display: none; }
+  .ruler { margin-top: 8px; }
+  .tl-eras { height: 24px; gap: 2px; }
+  .tl-era { padding: 0 5px; }
+  .tl-era__label { font-size: 11px; letter-spacing: .03em; }
+  .tl-label { font-size: 13px; }
+
+  .mapkey { left: 10px; top: 10px; bottom: auto; width: auto; }
+  .mapkey__top, .mapkey dl { display: none; }
+  .mapkey__scale { border-top: 0; padding: 8px 10px; }
+  .zoom, .credit { display: none; }
+
+  .panel { top: auto; left: 0; right: 0; width: auto; max-height: 47%; border-left: 0; border-radius: 14px 14px 0 0; box-shadow: 0 -4px 20px rgba(20,32,43,.18); overflow: hidden; }
+  .sheet-handle { display: block; position: absolute; top: 6px; left: 50%; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px; background: rgba(255,255,255,.6); z-index: 2; }
+  .panel__header { padding: 18px 18px 14px; }
+  .panel h2 { font-size: 28px; }
+  .panel__part { display: none; }
+  .panel__scroll { padding: 14px 18px 10px; }
+  .panel__foot { padding: 10px 18px calc(10px + var(--safe-bottom)); }
+  .panel__foot .btn { flex: 1; padding: 0 10px; }
+  .wide { display: none; }
+}
+
+.sim-device { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+.sim-device__island { position: absolute; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 20px; background: #000; }
+.sim-device__home { position: absolute; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #111; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="timeline" aria-label="Timeline">
+    <div class="tl-head">
+      <a class="brand" href="#" aria-label="Historic Borders">
+        <svg class="brand__mark" viewBox="0 0 36 36" aria-hidden="true">
+          <rect width="36" height="36" rx="8" fill="#14202B"/>
+          <path d="M8 25l6-12 5 8 3-4 6 8z" fill="#fff"/><circle cx="25" cy="11" r="3" fill="#F2A900"/>
+        </svg>
+        <span><span class="brand__name">Historic Borders</span><span class="brand__sub">World history atlas</span></span>
+      </a>
+      <div class="stepper">
+        <button class="step" type="button" aria-label="Previous year: 1400 AD"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4L6 9l5 5"/></svg><span class="step__label">1400</span></button>
+        <button class="year" type="button" aria-label="Choose a year. Current year 1492 AD">
+          <span class="year__line"><span class="year__value">1492</span><span class="year__suffix">AD</span><svg class="year__caret" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6l4 4 4-4"/></svg></span>
+          <span class="year__era"><span class="chip">Medieval</span><span class="year__range">500 – 1499</span></span>
+        </button>
+        <button class="step step--next" type="button" aria-label="Next year: 1500 AD"><span class="step__label">1500</span><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 5-5 5"/></svg></button>
+      </div>
+      <div class="tools">
+        <div class="find" role="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg>Find a place in 1492</div>
+        <button class="icon-btn keep" type="button" aria-label="Find a place"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Map settings"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 6h9M15 6h2M3 14h3M9 14h8"/><circle cx="13.5" cy="6" r="1.8"/><circle cx="7.5" cy="14" r="1.8"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Present to class"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2.5" y="3.5" width="15" height="10" rx="1"/><path d="M10 13.5v3M6.5 17h7"/></svg></button>
+        <button class="icon-btn keep" type="button" aria-label="About this map"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.2"/></svg></button>
+      </div>
+    </div>
+    <div class="ruler">
+      <div class="tl-eras" aria-hidden="true"></div>
+      <div class="tl-track" role="slider" tabindex="0" aria-label="Map year" aria-valuemin="0" aria-valuemax="52" aria-valuenow="32" aria-valuetext="1492 AD"></div>
+      <div class="tl-labels" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div id="map" role="region" aria-label="Map of the world in 1492"></div>
+
+    <section class="mapkey" aria-label="Map key">
+      <div class="mapkey__top">
+        <canvas class="globe" width="184" height="184" aria-label="Locator globe showing Europe and the Middle East"></canvas>
+        <div><p class="mapkey__title">Map key</p><p class="mapkey__where">Europe, North Africa and Southwest Asia, 1492</p></div>
+      </div>
+      <dl>
+        <dt><span class="sw-sel"></span></dt><dd>Selected territory</dd>
+        <dt><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2l2.9 6.5 7.1.6-5.4 4.7 1.6 7L12 17.1 5.8 20.8l1.6-7L2 9.1l7.1-.6z" fill="#1B5CA6" stroke="#fff" stroke-width="1.5"/></svg></dt><dd>Capital of selected territory</dd>
+        <dt><svg width="12" height="12"><circle cx="6" cy="6" r="4" fill="#14202B" stroke="#fff" stroke-width="1.5"/></svg></dt><dd>City</dd>
+        <dt><span class="sw-border"></span></dt><dd>Border (approximate)</dd>
+      </dl>
+      <div class="mapkey__scale">
+        <div class="scale-row">
+          <div class="scalebar"><div class="scalebar__bar"><span></span><span></span></div><div class="scalebar__nums"></div></div>
+          <div class="north" aria-label="North is up"><svg viewBox="0 0 16 22"><path d="M8 0l7 21-7-5-7 5z" fill="#14202B"/></svg>N</div>
+        </div>
+      </div>
+    </section>
+    <p class="credit">Borders are reconstructions; many were approximate or contested. Borders: Historical Basemaps (GPL-3.0). Natural Earth.</p>
+    <div class="zoom"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button></div>
+
+    <aside class="panel" aria-labelledby="panel-title">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <header class="panel__header">
+        <p class="eyebrow">Territory in 1492</p>
+        <h2 id="panel-title">Ottoman Empire</h2>
+        <p class="panel__part">Includes the Crimean Khanate as a vassal</p>
+        <button class="icon-btn close" type="button" aria-label="Close details for Ottoman Empire"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+      </header>
+      <div class="panel__scroll">
+        <section class="glance" aria-label="At a glance">
+          <p class="glance__title">At a glance</p>
+          <dl>
+            <div><dt>Capital</dt><dd>Constantinople<small>today Istanbul</small></dd></div>
+            <div><dt>Ruler in 1492</dt><dd>Bayezid II<small>Sultan, 1481–1512</small></dd></div>
+            <div><dt>Existed</dt><dd>1299–1922<small>623 years</small></dd></div>
+            <div><dt>Borders</dt><dd>Approximate<small>source precision</small></dd></div>
+          </dl>
+        </section>
+        <p class="glance__source">Facts: Wikidata (CC0) · Border precision: Historical Basemaps</p>
+
+        <h3 class="h3">Key dates</h3>
+        <div class="lifespan" aria-label="The empire lasted from 1299 to 1922; this map shows 1492">
+          <div class="lifespan__axis"></div>
+          <div class="lifespan__bar" style="left:0%;width:100%"></div>
+          <div class="lifespan__now" style="left:31%"></div>
+          <span class="lifespan__tick" style="left:0%;transform:none">1299</span>
+          <span class="lifespan__tick" style="left:31%"><b>1492 · this map</b></span>
+          <span class="lifespan__tick" style="left:100%;transform:translateX(-100%)">1922</span>
+        </div>
+        <table class="events">
+          <tr><td>1299</td><td>Osman I founds the dynasty in Anatolia</td></tr>
+          <tr><td>1453</td><td>Mehmed II takes Constantinople</td></tr>
+          <tr data-now><td>1492</td><td>This map</td></tr>
+          <tr><td>1517</td><td>Selim I defeats the Mamluk Sultanate</td></tr>
+          <tr><td>1529</td><td>First siege of Vienna</td></tr>
+          <tr><td>1922</td><td>The sultanate is abolished</td></tr>
+        </table>
+
+        <h3 class="h3">Empire overview <span>· from Wikipedia</span></h3>
+        <p class="extract">The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century. It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire. The Ottomans ended the Byzantine Empire with the conquest of Constantinople in 1453 under Mehmed II.</p>
+        <p class="source"><a href="https://en.wikipedia.org/wiki/Ottoman_Empire">Read more on Wikipedia</a> · Text CC BY-SA 4.0</p>
+      </div>
+      <div class="panel__foot">
+        <button class="btn btn--primary" type="button"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.5 10.5l3-3M5.5 8.5L4 10a2.8 2.8 0 004 4l1.5-1.5M12.5 9.5L14 8a2.8 2.8 0 00-4-4L8.5 5.5"/></svg><span>Copy<span class="wide"> lesson</span> link</span></button>
+        <button class="btn" type="button">Compare 1400</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+HB.applySafeAreaSimulation();
+
+/* Bright textbook pastels; each border is the same hue, darker. */
+const PALETTE = [
+  { fill: '#F6B9A6', edge: '#B4553A' }, // coral
+  { fill: '#B4DDA4', edge: '#4E8A3A' }, // leaf
+  { fill: '#F5D77E', edge: '#9C7A12' }, // sunflower
+  { fill: '#C8BCEB', edge: '#6A58A8' }, // iris
+  { fill: '#9FD7D3', edge: '#2F8580' }, // aqua
+  { fill: '#F3B3C8', edge: '#B2486D' }, // pink
+  { fill: '#E9CBA1', edge: '#9A6E33' }, // sand
+  { fill: '#D2E79A', edge: '#7A9330' }, // lime
+  { fill: '#F8C590', edge: '#B86A1E' }, // apricot
+  { fill: '#B3CBEF', edge: '#4C6FA8' }, // cornflower
+  { fill: '#E3BFE3', edge: '#93529A' }, // orchid
+  { fill: '#CFE3C4', edge: '#5F8A50' }, // sage
+];
+const INK = '#14202B';
+const LAND = '#F4F1EA';
+const WATER = '#BCDDEB';
+const WATER_INK = '#1A5675'; // 5.4:1 on WATER
+const ACCENT = '#1B5CA6';
+const SELECTED = 'Ottoman Empire';
+
+const style = {
+  version: 8,
+  glyphs: 'local://glyphs/{fontstack}/{range}.pbf',
+  sources: {
+    ocean: { type: 'geojson', data: HB_NE.ocean },
+    coast: { type: 'geojson', data: HB_NE.coast },
+    lakes: { type: 'geojson', data: HB_NE.lakes },
+    rivers: { type: 'geojson', data: HB_NE.rivers },
+    marine: { type: 'geojson', data: HB.marine() },
+    graticule: { type: 'geojson', data: HB.graticule(10) },
+    relief: { type: 'image', url: 'local://relief.webp', coordinates: HB.reliefCoordinates() },
+    borders: { type: 'geojson', data: HB_1492.borders },
+    labels: { type: 'geojson', data: HB_1492.labels },
+    places: { type: 'geojson', data: HB_1492.places },
+  },
+  layers: [
+    { id: 'land', type: 'background', paint: { 'background-color': LAND } },
+    { id: 'territory-fill', type: 'fill', source: 'borders',
+      paint: { 'fill-color': HB.colorMatch(PALETTE, 'fill', '#E4E0D6'), 'fill-opacity': 0.92 } },
+    // Selection: diagonal hatching in the era colour over the territory's own tint.
+    { id: 'selected-hatch', type: 'fill', source: 'borders', filter: ['==', ['get', 'NAME'], SELECTED], paint: { 'fill-pattern': 'hatch' } },
+    { id: 'relief', type: 'raster', source: 'relief', paint: { 'raster-opacity': 0.75, 'raster-fade-duration': 0 } },
+    { id: 'border-casing', type: 'line', source: 'borders', layout: { 'line-join': 'round' },
+      paint: { 'line-color': '#FFFFFF', 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.6, 6, 3.4] } },
+    { id: 'territory-border', type: 'line', source: 'borders', layout: { 'line-join': 'round' },
+      paint: { 'line-color': ['case', ['==', ['get', 'NAME'], SELECTED], ACCENT, HB.colorMatch(PALETTE, 'edge', '#8E877A')], 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 0.7, 6, 1.4] } },
+    { id: 'selected-line', type: 'line', source: 'borders', filter: ['==', ['get', 'NAME'], SELECTED], layout: { 'line-join': 'round' },
+      paint: { 'line-color': ACCENT, 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 2.2, 6, 4] } },
+    { id: 'ocean', type: 'fill', source: 'ocean', paint: { 'fill-color': WATER } },
+    // Shallow-water shelf: a lighter band hugging the coast, like textbook bathymetry tints.
+    { id: 'shelf', type: 'line', source: 'coast', paint: { 'line-color': '#D2EAF3', 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 5, 6, 14], 'line-offset': ['interpolate', ['linear'], ['zoom'], 2, 2.5, 6, 7], 'line-blur': 2 } },
+    { id: 'graticule', type: 'line', source: 'graticule', paint: { 'line-color': '#FFFFFF', 'line-width': ['match', ['get', 'kind'], 'equator', 1.6, 0.9], 'line-opacity': 0.75 } },
+    { id: 'coast', type: 'line', source: 'coast', paint: { 'line-color': '#5E93AB', 'line-width': 1 } },
+    { id: 'lakes', type: 'fill', source: 'lakes', paint: { 'fill-color': WATER } },
+    { id: 'lake-shore', type: 'line', source: 'lakes', paint: { 'line-color': '#5E93AB', 'line-width': 0.8 } },
+    { id: 'rivers', type: 'line', source: 'rivers', filter: ['<=', ['get', 'rank'], 6], layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#4C9BC2', 'line-width': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'rank'], [1, 2], 1.1, 0.6], 6, ['match', ['get', 'rank'], [1, 2], 2.4, 1.3]] } },
+    { id: 'river-labels', type: 'symbol', source: 'rivers', minzoom: 3.2, filter: ['all', ['<=', ['get', 'rank'], 2], ['has', 'name']],
+      layout: { 'symbol-placement': 'line', 'text-field': ['get', 'name'], 'text-font': ['Literata Italic'], 'text-size': 14, 'symbol-spacing': 500, 'text-max-angle': 30, 'text-offset': [0, -0.6] },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': 'rgba(255,255,255,.9)', 'text-halo-width': 1.6 } },
+    { id: 'sea-labels', type: 'symbol', source: 'marine', filter: ['<=', ['get', 'rank'], 3],
+      layout: { 'text-field': ['get', 'name'], 'text-font': ['Literata Medium Italic'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'kind'], 'ocean', 16, 13], 5, ['match', ['get', 'kind'], 'ocean', 22, 18]],
+        'text-letter-spacing': 0.04, 'text-max-width': 7 },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': 'rgba(188, 221, 235, .9)', 'text-halo-width': 1.2 } },
+    { id: 'places', type: 'symbol', source: 'places', filter: HB.placeFilter, minzoom: 2.5,
+      layout: { 'icon-image': ['match', HB.placeKind, 'ruin', 'm-ruin', 'm-city'], 'text-field': HB.placeName,
+        'text-font': ['Atkinson Next Medium'], 'text-size': 14,
+        'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.7, 'text-justify': 'auto' },
+      paint: { 'text-color': INK, 'text-halo-color': '#fff', 'text-halo-width': 1.8 } },
+    { id: 'selected-capital', type: 'symbol', source: 'places', filter: ['==', ['get', 'name'], 'Constantinople'],
+      layout: { 'icon-image': 'm-capital', 'text-field': ['get', 'name'], 'text-font': ['Atkinson Next Bold'], 'text-size': 15,
+        'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.9, 'icon-allow-overlap': true },
+      paint: { 'text-color': INK, 'text-halo-color': '#fff', 'text-halo-width': 2 } },
+    { id: 'state-labels', type: 'symbol', source: 'labels', filter: ['>', ['get', 'AREA'], 18000],
+      layout: {
+        'text-field': ['upcase', ['get', 'NAME']],
+        'text-font': ['step', ['get', 'AREA'], ['literal', ['Atkinson Next Bold']], 250000, ['literal', ['Atkinson Next ExtraBold']]],
+        'text-size': HB.areaSize([11, 12.5, 15, 18], { special: { name: SELECTED, sizes: [16, 24] } }),
+        'text-letter-spacing': ['step', ['get', 'AREA'], 0.03, 200000, 0.07, 1000000, 0.12],
+        'text-max-width': 8, 'text-line-height': 1.1,
+        'symbol-sort-key': ['match', ['get', 'NAME'], SELECTED, -1e12, ['-', 0, ['get', 'AREA']]],
+        'text-padding': 4,
+      },
+      paint: { 'text-color': ['match', ['get', 'NAME'], SELECTED, ACCENT, INK], 'text-halo-color': 'rgba(255,255,255,.95)', 'text-halo-width': 2 } },
+
+  ],
+};
+
+HB.beforeMap = (m) => {
+  HB.addMarkers(m, { ink: INK, paper: '#FFFFFF', accent: ACCENT, capital: 'star' });
+  m.addImage('hatch', HB.hatch(ACCENT, 0.55), { pixelRatio: 2 });
+};
+HB.renderRuler(document.querySelector('.ruler'), 1492, {
+  charPx: 7.2, padPx: 16,
+  eraLabel: (span, px) => {
+    const c = HB.isPhone() ? 7.6 : 9.4;
+    return span.era.label.length * c + 18 <= px ? span.era.label : span.era.short.length * c + 10 <= px ? span.era.short : '';
+  },
+});
+
+HB.createMap({
+  container: 'map',
+  style,
+  view: () => HB.isPhone()
+    ? { bounds: [[20, 35], [44, 45]], padding: { top: 64, bottom: document.querySelector('.panel').offsetHeight + 6, left: 12, right: 12 } }
+    : { bounds: [[-14, 28], [56, 58]], padding: { top: 20, bottom: 20, left: 300, right: 450 } },
+  onReady: (m) => {
+    const update = () => { drawScale(m); drawGlobe(m); };
+    m.on('moveend', update);
+    update();
+  },
+});
+
+function drawScale(m) {
+  const { km, px } = HB.scaleFor(m, HB.isPhone() ? 110 : 170);
+  document.querySelector('.scalebar__bar').style.width = `${px}px`;
+  const nums = document.querySelector('.scalebar__nums');
+  nums.style.width = `${px + 4}px`;
+  nums.innerHTML = `<span>0</span><span>${km.toLocaleString('en-US')} km</span>`;
+}
+
+/* Locator globe: orthographic projection of Natural Earth 1:110m land, with the view outlined. */
+function drawGlobe(m) {
+  const canvas = document.querySelector('.globe');
+  if (!canvas || !canvas.offsetParent) return;
+  const g = canvas.getContext('2d');
+  const s = canvas.width, r = s / 2 - 4, c = s / 2;
+  const center = m.getCenter();
+  const lon0 = (center.lng * Math.PI) / 180, lat0 = (Math.max(-60, Math.min(60, center.lat)) * Math.PI) / 180;
+  const proj = ([lon, lat]) => {
+    const l = (lon * Math.PI) / 180, p = (lat * Math.PI) / 180;
+    const cosc = Math.sin(lat0) * Math.sin(p) + Math.cos(lat0) * Math.cos(p) * Math.cos(l - lon0);
+    return [c + r * Math.cos(p) * Math.sin(l - lon0), c - r * (Math.cos(lat0) * Math.sin(p) - Math.sin(lat0) * Math.cos(p) * Math.cos(l - lon0)), cosc >= 0];
+  };
+  g.clearRect(0, 0, s, s);
+  g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.fillStyle = WATER; g.fill();
+  g.save(); g.clip();
+  g.fillStyle = '#E9E3D3'; g.strokeStyle = '#5E93AB'; g.lineWidth = 1;
+  HB_LAND110.forEach((ring) => {
+    g.beginPath();
+    let visible = false;
+    ring.forEach((pt, i) => {
+      const [x, y, v] = proj(pt);
+      if (v) visible = true;
+      // Clamp the far side to the limb so polygons stay closed.
+      const [px, py] = v ? [x, y] : [c + ((x - c) / Math.hypot(x - c, y - c || 1)) * r, c + ((y - c) / Math.hypot(x - c, y - c || 1)) * r];
+      i ? g.lineTo(px, py) : g.moveTo(px, py);
+    });
+    if (visible) { g.fill(); g.stroke(); }
+  });
+  // Current view, traced along its edges.
+  const b = m.getBounds();
+  const edge = [];
+  for (let t = 0; t <= 1; t += 0.1) edge.push([b.getWest() + t * (b.getEast() - b.getWest()), b.getNorth()]);
+  for (let t = 0; t <= 1; t += 0.1) edge.push([b.getEast(), b.getNorth() - t * (b.getNorth() - b.getSouth())]);
+  for (let t = 0; t <= 1; t += 0.1) edge.push([b.getEast() - t * (b.getEast() - b.getWest()), b.getSouth()]);
+  for (let t = 0; t <= 1; t += 0.1) edge.push([b.getWest(), b.getSouth() + t * (b.getNorth() - b.getSouth())]);
+  g.beginPath(); edge.forEach((pt, i) => { const [x, y] = proj(pt); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+  g.closePath(); g.fillStyle = 'rgba(27, 92, 166, .18)'; g.fill(); g.lineWidth = 4; g.strokeStyle = ACCENT; g.stroke();
+  g.restore();
+  g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+}
+</script>
+</body>
+</html>

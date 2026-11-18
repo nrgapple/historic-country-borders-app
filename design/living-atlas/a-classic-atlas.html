@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1E9D6">
+<title>Classic Atlas · Historic Borders</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+<script src="data/historical-1492.js"></script>
+<script src="data/natural-earth.js"></script>
+<script src="data/relief-a.js"></script>
+<script src="data/glyphs-a.js"></script>
+<script src="shared/atlas.js"></script>
+<style>
+/* Self-hosted OFL fonts: Alegreya, Alegreya SC, Alegreya Sans (Huerta Tipográfica). */
+@font-face { font-family: "Alegreya"; font-weight: 400; src: url(fonts/alegreya-latin-400-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya"; font-weight: 700; src: url(fonts/alegreya-latin-700-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya"; font-weight: 400; font-style: italic; src: url(fonts/alegreya-latin-400-italic.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya"; font-weight: 500; font-style: italic; src: url(fonts/alegreya-latin-500-italic.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya SC"; font-weight: 500; src: url(fonts/alegreya-sc-latin-500-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya SC"; font-weight: 700; src: url(fonts/alegreya-sc-latin-700-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; font-weight: 500; src: url(fonts/alegreya-sans-latin-500-normal.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "Alegreya Sans"; font-weight: 700; src: url(fonts/alegreya-sans-latin-700-normal.woff2) format("woff2"); font-display: swap; }
+
+:root {
+  /* Paper and ink */
+  --paper: #F1E9D6;          /* timeline + panel ground */
+  --paper-2: #E8DDC4;        /* recessed paper, fact box */
+  --sheet: #FBF6EA;          /* page sheet behind panel text */
+  --ink: #2A2017;            /* 13.2:1 on --paper */
+  --ink-2: #554536;          /* 7.6:1 on --paper */
+  --rule: #2A2017;
+  --hair: rgba(42, 32, 23, 0.28);
+  /* Era tints (watercolour wash + engraved ink of the same pigment) */
+  --era-prehistory: #8A5A1E;  --era-prehistory-wash: #E7D3AE;
+  --era-ancient: #9A4024;     --era-ancient-wash: #EBC9B5;
+  --era-medieval: #8B2A2A;    --era-medieval-wash: #E6C2BC;
+  --era-early-modern: #2F6455;--era-early-modern-wash: #C6DACF;
+  --era-modern: #2C4B73;      --era-modern-wash: #C7D3E2;
+  /* The UI accent is the current era's pigment: 1492 is Medieval. */
+  --accent: var(--era-medieval);        /* 7.1:1 on --paper */
+  --accent-wash: var(--era-medieval-wash);
+  --focus: #1F4FB5;
+
+  --serif: "Alegreya", "Iowan Old Style", Georgia, serif;
+  --sc: "Alegreya SC", "Alegreya", Georgia, serif;
+  --sans: "Alegreya Sans", system-ui, sans-serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  color-scheme: only light;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.5 var(--serif);
+  font-variant-numeric: oldstyle-nums;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Shell: dvh so Safari's toolbars never cover the bottom of the layout. */
+.app {
+  position: fixed; inset: 0;
+  height: 100vh; height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/* Paper grain: one static SVG noise tile, multiplied, never animated. */
+.grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 30;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+  opacity: .22;
+}
+
+/* ---------------- Timeline ---------------- */
+.timeline {
+  position: relative; z-index: 10;
+  padding: calc(var(--safe-top) + 10px) 24px 0;
+  background: var(--paper);
+  border-bottom: 3px double var(--rule);
+}
+.tl-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand__mark { width: 34px; height: 34px; flex: none; }
+.brand__name { font: 700 21px/1 var(--sc); letter-spacing: .06em; }
+.brand__sub { display: block; font: italic 400 14px/1.2 var(--serif); color: var(--ink-2); letter-spacing: 0; margin-top: 3px; }
+
+.stepper { display: flex; align-items: center; gap: 8px; }
+.step {
+  display: inline-flex; align-items: center; gap: 4px;
+  min-width: 84px; height: 44px; padding: 0 10px;
+  background: transparent; border: 1px solid var(--hair); border-radius: 2px;
+  font: 500 17px/1 var(--serif); color: var(--ink); cursor: pointer;
+}
+.step--next { justify-content: flex-end; }
+.step svg { width: 16px; height: 16px; }
+.step:hover { background: var(--paper-2); }
+.year {
+  position: relative; text-align: center; min-width: 190px; padding: 0 8px;
+  border: 0; background: none; cursor: pointer;
+}
+.year__value { font: 700 52px/0.95 var(--serif); font-variant-numeric: lining-nums; letter-spacing: -.01em; }
+.year__suffix { font: 700 20px/1 var(--sc); letter-spacing: .08em; margin-left: 6px; vertical-align: 6px; }
+.year__era { display: block; font: 700 15px/1.2 var(--sc); letter-spacing: .14em; color: var(--accent); margin-top: 4px; }
+.year__era span { color: var(--ink-2); font: italic 400 15px/1 var(--serif); letter-spacing: 0; margin-left: 4px; }
+
+.tools { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+.find {
+  display: flex; align-items: center; gap: 8px; height: 42px; padding: 0 12px; min-width: 210px;
+  border: 1px solid var(--hair); background: var(--sheet); border-radius: 2px;
+  font: italic 400 16px/1 var(--serif); color: var(--ink-2);
+}
+.find svg { width: 17px; height: 17px; color: var(--ink); }
+.icon-btn {
+  width: 42px; height: 42px; display: grid; place-items: center;
+  border: 1px solid transparent; background: none; border-radius: 2px; cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--hair); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+/* Ruler: era washes above an engraved scale-bar track */
+.ruler { position: relative; margin-top: 12px; padding-bottom: 6px; user-select: none; }
+.tl-eras { display: flex; height: 26px; gap: 0; border: 1px solid var(--rule); border-bottom: 0; }
+.tl-era {
+  position: relative; min-width: 0; display: flex; align-items: center; padding: 0 8px;
+  border-left: 1px solid var(--rule); overflow: hidden; white-space: nowrap;
+}
+.tl-era:first-child { border-left: 0; }
+.tl-era__label { font: 700 14px/1 var(--sc); letter-spacing: .1em; overflow: hidden; text-overflow: clip; }
+.tl-era[data-era=prehistory] { background: var(--era-prehistory-wash); color: var(--era-prehistory); }
+.tl-era[data-era=ancient] { background: var(--era-ancient-wash); color: var(--era-ancient); }
+.tl-era[data-era=medieval] { background: var(--era-medieval-wash); color: var(--era-medieval); }
+.tl-era[data-era=early-modern] { background: var(--era-early-modern-wash); color: var(--era-early-modern); }
+.tl-era[data-era=modern] { background: var(--era-modern-wash); color: var(--era-modern); }
+.tl-era[data-era] .tl-era__label { color: var(--ink); opacity: 1; }
+.tl-era[data-active] { box-shadow: inset 0 -4px 0 var(--accent); }
+.tl-era[data-active] .tl-era__label { color: var(--accent); }
+
+.tl-track {
+  position: relative; height: 16px; cursor: pointer;
+  border: 1px solid var(--rule);
+  /* alternating ladder, like the degree border of an engraved map */
+  background: repeating-linear-gradient(90deg, var(--sheet) 0 calc(100% / 53), var(--ink) calc(100% / 53) calc(200% / 53));
+}
+.tl-tick { position: absolute; top: 100%; width: 1px; height: 5px; background: var(--ink); transform: translateX(-50%); }
+.tl-tick[data-major] { height: 9px; }
+.tl-thumb {
+  position: absolute; top: -9px; width: 2px; height: 34px; background: var(--accent);
+  transform: translateX(-50%); z-index: 2;
+}
+.tl-thumb::before {
+  content: ""; position: absolute; left: 50%; top: -6px; width: 14px; height: 14px;
+  background: var(--accent); border: 2px solid var(--sheet); transform: translateX(-50%) rotate(45deg);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.tl-labels { position: relative; height: 26px; margin-top: 10px; }
+.tl-label {
+  position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap;
+  font: 500 15px/1 var(--serif); color: var(--ink); font-variant-numeric: oldstyle-nums;
+}
+.tl-label[data-edge=start] { transform: translateX(-4px); }
+.tl-label[data-edge=end] { transform: translateX(calc(-100% + 4px)); }
+.tl-label[data-active] { font-weight: 700; color: var(--accent); }
+
+/* ---------------- Map ---------------- */
+.stage { position: relative; min-height: 0; }
+.frame { position: absolute; inset: 14px; border: 1px solid var(--rule); background: #BFD2D0; }
+.frame::before { content: ""; position: absolute; inset: -6px; border: 2px solid var(--rule); pointer-events: none; }
+#map { position: absolute; inset: 0; }
+.neatline { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: visible; }
+
+.cartouche {
+  position: absolute; left: 34px; bottom: 74px; z-index: 3;
+  width: 238px; padding: 12px 16px 12px;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  outline: 1px solid var(--rule); outline-offset: 3px;
+  text-align: center;
+}
+.cartouche__kicker { font: 700 13px/1 var(--sc); letter-spacing: .22em; color: var(--ink-2); }
+.cartouche__title { font: 700 27px/1.05 var(--sc); letter-spacing: .04em; margin: 6px 0 2px; }
+.cartouche__sub { font: italic 400 15px/1.3 var(--serif); color: var(--ink-2); margin: 0; }
+.cartouche__rule { height: 7px; margin: 10px 0 10px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.cartouche__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.scalebar { text-align: left; }
+.scalebar__bar { display: flex; height: 7px; border: 1px solid var(--ink); }
+.scalebar__bar span { flex: 1; background: var(--sheet); }
+.scalebar__bar span:nth-child(odd) { background: var(--ink); }
+.scalebar__nums { position: relative; height: 18px; font: 500 13px/18px var(--serif); font-variant-numeric: lining-nums; }
+.scalebar__nums span { position: absolute; transform: translateX(-50%); }
+.scalebar__nums span:first-child { transform: none; }
+.scalebar__caption { font: italic 400 13px/1 var(--serif); color: var(--ink-2); }
+.north { width: 40px; height: 54px; flex: none; }
+.cartouche__note { margin: 10px 0 0; font: italic 400 13px/1.35 var(--serif); color: var(--ink-2); }
+
+.credit {
+  position: absolute; left: 34px; bottom: 30px; z-index: 3; margin: 0; max-width: calc(100% - 520px);
+  padding: 4px 8px; background: rgba(251, 246, 234, .92); border: 1px solid var(--hair);
+  font: italic 400 13px/1.35 var(--serif); color: var(--ink-2);
+}
+.zoom { position: absolute; right: 460px; bottom: 30px; z-index: 3; display: grid; border: 1px solid var(--rule); background: var(--sheet); }
+.zoom button { width: 40px; height: 40px; border: 0; background: none; font: 500 22px/1 var(--serif); cursor: pointer; }
+.zoom button + button { border-top: 1px solid var(--hair); }
+
+/* ---------------- Place panel ---------------- */
+.panel {
+  position: absolute; z-index: 5; top: 14px; right: 14px; bottom: 14px;
+  width: 420px; display: flex; flex-direction: column;
+  background: var(--sheet);
+  border-left: 1px solid var(--rule);
+  box-shadow: -10px 0 24px -16px rgba(42, 32, 23, .5);
+}
+.panel__scroll { overflow: auto; padding: 22px 26px 18px; }
+.panel__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.eyebrow { margin: 0; font: 700 14px/1.2 var(--sc); letter-spacing: .14em; color: var(--accent); }
+.panel h2 { margin: 4px 0 0; font: 700 38px/1.05 var(--serif); letter-spacing: -.005em; }
+.panel__part { margin: 6px 0 0; font: italic 400 16px/1.3 var(--serif); color: var(--ink-2); }
+.close { flex: none; }
+
+.factbox {
+  margin: 18px 0 0; padding: 4px 14px 8px;
+  background: var(--paper-2);
+  border-top: 3px double var(--rule); border-bottom: 3px double var(--rule);
+}
+.factbox__title { margin: 8px 0 2px; font: 700 13px/1 var(--sc); letter-spacing: .2em; color: var(--ink-2); }
+.factbox dl { margin: 0; }
+.factbox div { display: grid; grid-template-columns: 118px 1fr; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--hair); }
+.factbox div:last-child { border-bottom: 0; }
+.factbox dt { font: 700 14px/1.45 var(--sc); letter-spacing: .06em; color: var(--ink-2); }
+.factbox dd { margin: 0; font: 400 17px/1.35 var(--serif); }
+.factbox dd small { display: block; font: italic 400 14px/1.3 var(--serif); color: var(--ink-2); }
+.factbox .approx { display: inline-flex; align-items: center; gap: 6px; }
+.factbox .approx svg { width: 26px; height: 8px; }
+.factbox__source { margin: 6px 0 0; font: italic 400 13px/1.3 var(--serif); color: var(--ink-2); }
+
+.section-label { margin: 22px 0 6px; font: 700 14px/1.2 var(--sc); letter-spacing: .14em; color: var(--ink-2); display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ""; flex: 1; border-top: 1px solid var(--hair); }
+
+.extract { margin: 0; font: 400 17px/1.55 var(--serif); hyphens: auto; }
+.extract::first-letter {
+  float: left; font: 700 62px/0.8 var(--serif); color: var(--accent);
+  padding: 6px 8px 0 0; font-variant-numeric: lining-nums;
+}
+.source { margin: 10px 0 0; font: 400 14px/1.4 var(--serif); color: var(--ink-2); }
+.source a { color: var(--accent); font-weight: 700; }
+
+.keydates { list-style: none; margin: 0; padding: 0; position: relative; }
+.keydates::before { content: ""; position: absolute; left: 49px; top: 8px; bottom: 8px; border-left: 1px solid var(--rule); }
+.keydates li { display: grid; grid-template-columns: 42px 16px 1fr; gap: 6px; align-items: baseline; padding: 4px 0; }
+.keydates b { font: 700 16px/1.3 var(--serif); text-align: right; }
+.keydates i { width: 9px; height: 9px; border-radius: 50%; background: var(--sheet); border: 1.5px solid var(--ink); justify-self: center; position: relative; top: 1px; }
+.keydates span { font: 400 16px/1.35 var(--serif); }
+.keydates li[data-now] b, .keydates li[data-now] span { color: var(--accent); font-weight: 700; }
+.keydates li[data-now] i { background: var(--accent); border-color: var(--accent); transform: rotate(45deg); border-radius: 0; }
+
+.panel__foot { display: flex; gap: 8px; padding: 12px 26px calc(12px + var(--safe-bottom)); border-top: 1px solid var(--hair); background: var(--sheet); }
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 2px; font: 700 15px/1 var(--sc); letter-spacing: .08em; cursor: pointer; }
+.btn svg { width: 16px; height: 16px; }
+.btn--primary { background: var(--accent); border-color: var(--accent); color: #FBF6EA; }
+.sheet-handle { display: none; }
+
+/* ---------------- Phone ---------------- */
+@media (max-width: 699px) {
+  body { font-size: 16px; }
+  .timeline { padding: calc(var(--safe-top) + 6px) 12px 0; }
+  .tl-head { grid-template-columns: auto 1fr auto; gap: 8px; }
+  .brand__name, .brand__sub { display: none; }
+  .brand__mark { width: 30px; height: 30px; }
+  .find { display: none; }
+  .tools .icon-btn:not(.icon-btn--keep) { display: none; }
+  .stepper { justify-content: center; gap: 4px; }
+  .step { min-width: 0; width: 44px; padding: 0; justify-content: center; }
+  .step .step__label { display: none; }
+  .year { min-width: 0; }
+  .year__value { font-size: 40px; }
+  .year__suffix { font-size: 16px; vertical-align: 4px; }
+  .year__era { font-size: 13px; }
+  .year__era span { display: none; }
+  .ruler { margin-top: 8px; }
+  .tl-eras { height: 22px; }
+  .tl-era { padding: 0 4px; }
+  .tl-era__label { font-size: 12px; letter-spacing: .04em; }
+  .tl-labels { height: 22px; margin-top: 8px; }
+  .tl-label { font-size: 14px; }
+
+  .frame { inset: 8px; }
+  .frame::before { inset: -4px; border-width: 1px; }
+  .zoom, .credit { display: none; }
+  .cartouche { left: 16px; top: 16px; bottom: auto; width: auto; padding: 8px 10px; outline-offset: 2px; text-align: left; }
+  .cartouche__kicker, .cartouche__title, .cartouche__sub, .cartouche__rule, .cartouche__note { display: none; }
+  .north { width: 26px; height: 36px; }
+
+  /* Bottom sheet sits inside the dvh shell; its last line clears the home indicator. */
+  .panel {
+    top: auto; left: 0; right: 0; bottom: 0; width: auto; max-height: 46%;
+    border-left: 0; border-top: 3px double var(--rule);
+    box-shadow: 0 -10px 24px -16px rgba(42, 32, 23, .5);
+  }
+  .sheet-handle { display: block; width: 44px; height: 5px; border-radius: 3px; background: var(--hair); margin: 8px auto 0; }
+  .panel__scroll { padding: 8px 18px 10px; }
+  .panel h2 { font-size: 30px; }
+  .factbox { margin-top: 12px; }
+  .factbox div { grid-template-columns: 96px 1fr; padding: 6px 0; }
+  .panel__foot { padding: 10px 18px calc(10px + var(--safe-bottom)); }
+  .panel__foot .btn { flex: 1; justify-content: center; padding: 0 8px; font-size: 14px; }
+  .btn .wide { display: none; }
+  .neatline { display: none; }
+  .frame::before { display: none; }
+}
+
+/* Safe-area simulation for screenshots only (?safe=59,34). */
+.sim-device { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+.sim-device__island { position: absolute; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 20px; background: #000; }
+.sim-device__home { position: absolute; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #111; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="timeline" aria-label="Timeline">
+    <div class="tl-head">
+      <a class="brand" href="#" aria-label="Historic Borders">
+        <svg class="brand__mark" viewBox="0 0 34 34" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="17" cy="17" r="15"/><circle cx="17" cy="17" r="11.5" stroke-width=".8"/>
+          <path d="M17 2v30M2 17h30" stroke-width=".8"/><path d="M5.6 9.5C10 12 24 12 28.4 9.5M5.6 24.5C10 22 24 22 28.4 24.5" stroke-width=".8"/>
+          <path d="M17 6l2.4 11L17 28l-2.4-11z" fill="currentColor" stroke="none"/>
+        </svg>
+        <span><span class="brand__name">Historic Borders</span><span class="brand__sub">An atlas of the world through time</span></span>
+      </a>
+      <div class="stepper">
+        <button class="step" type="button" aria-label="Previous year: 1400 AD">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 3L5 8l5 5"/></svg><span class="step__label">1400</span>
+        </button>
+        <button class="year" type="button" aria-label="Choose a year. Current year 1492 AD">
+          <span class="year__value">1492</span><span class="year__suffix">ad</span>
+          <span class="year__era">Medieval <span>500 – 1499</span></span>
+        </button>
+        <button class="step step--next" type="button" aria-label="Next year: 1500 AD">
+          <span class="step__label">1500</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+        </button>
+      </div>
+      <div class="tools">
+        <div class="find" role="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg>Find a place in 1492</div>
+        <button class="icon-btn icon-btn--keep" type="button" aria-label="Find a place"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4.5 4.5"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Map settings"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h9M15 6h2M3 14h3M9 14h8"/><circle cx="13.5" cy="6" r="1.8"/><circle cx="7.5" cy="14" r="1.8"/></svg></button>
+        <button class="icon-btn" type="button" aria-label="Present to class"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="3.5" width="15" height="10"/><path d="M10 13.5v3M6.5 17h7"/></svg></button>
+        <button class="icon-btn icon-btn--keep" type="button" aria-label="About this map"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.2"/></svg></button>
+      </div>
+    </div>
+    <div class="ruler">
+      <div class="tl-eras" aria-hidden="true"></div>
+      <div class="tl-track" role="slider" tabindex="0" aria-label="Map year" aria-valuemin="0" aria-valuemax="52" aria-valuenow="32" aria-valuetext="1492 AD"></div>
+      <div class="tl-labels" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="frame">
+      <div id="map" role="region" aria-label="Map of the world in 1492"></div>
+      <svg class="neatline" aria-hidden="true"></svg>
+    </div>
+
+    <div class="cartouche">
+      <div class="cartouche__kicker">The World in</div>
+      <div class="cartouche__title">1492</div>
+      <p class="cartouche__sub">Political divisions at the end of the Medieval era</p>
+      <div class="cartouche__rule"></div>
+      <div class="cartouche__foot">
+        <div class="scalebar">
+          <div class="scalebar__bar"><span></span><span></span><span></span><span></span></div>
+          <div class="scalebar__nums"></div>
+          <div class="scalebar__caption">Kilometres at 40° N</div>
+        </div>
+        <svg class="north" viewBox="0 0 40 54" aria-label="North is up">
+          <path d="M20 4l8 30-8-6-8 6z" fill="#2A2017"/><path d="M20 4l8 30-8-6z" fill="#FBF6EA" stroke="#2A2017" stroke-width="1"/>
+          <text x="20" y="50" text-anchor="middle" font-family="Alegreya SC" font-weight="700" font-size="15" fill="#2A2017">n</text>
+        </svg>
+      </div>
+    </div>
+
+    <p class="credit">Borders are reconstructions and many were approximate or contested. Borders: Historical Basemaps (GPL-3.0) · Relief, coasts, rivers: Natural Earth</p>
+    <div class="zoom"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button></div>
+
+    <aside class="panel" aria-labelledby="panel-title">
+      <span class="sheet-handle" aria-hidden="true"></span>
+      <div class="panel__scroll">
+        <div class="panel__head">
+          <div>
+            <p class="eyebrow">Territory · Map of 1492</p>
+            <h2 id="panel-title">Ottoman Empire</h2>
+            <p class="panel__part">Includes the Crimean Khanate as a vassal</p>
+          </div>
+          <button class="icon-btn close" type="button" aria-label="Close details for Ottoman Empire"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+        </div>
+
+        <section class="factbox" aria-label="Facts">
+          <p class="factbox__title">In 1492</p>
+          <dl>
+            <div><dt>Capital</dt><dd>Constantinople<small>today Istanbul</small></dd></div>
+            <div><dt>Ruler</dt><dd>Bayezid II<small>Sultan, reigned 1481–1512</small></dd></div>
+            <div><dt>Existed</dt><dd>1299–1922</dd></div>
+            <div><dt>Borders</dt><dd class="approx"><svg viewBox="0 0 26 8" aria-hidden="true"><path d="M1 4h24" stroke="#2A2017" stroke-width="1.6" stroke-dasharray="4 3"/></svg>Approximate</dd></div>
+          </dl>
+        </section>
+        <p class="factbox__source">Facts from Wikidata (CC0). Border precision from Historical Basemaps.</p>
+
+        <h3 class="section-label">Empire overview · Wikipedia</h3>
+        <p class="extract">The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century. It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire. The Ottomans ended the Byzantine Empire with the conquest of Constantinople in 1453 under Mehmed II.</p>
+        <p class="source"><a href="https://en.wikipedia.org/wiki/Ottoman_Empire">Read more on Wikipedia ↗</a> · Text CC BY-SA 4.0</p>
+
+        <h3 class="section-label">Key dates</h3>
+        <ol class="keydates">
+          <li><b>1299</b><i></i><span>Osman I founds the dynasty in Anatolia</span></li>
+          <li><b>1453</b><i></i><span>Mehmed II takes Constantinople</span></li>
+          <li data-now><b>1492</b><i></i><span>This map</span></li>
+          <li><b>1517</b><i></i><span>Selim I defeats the Mamluk Sultanate</span></li>
+          <li><b>1529</b><i></i><span>First siege of Vienna</span></li>
+          <li><b>1922</b><i></i><span>The sultanate is abolished</span></li>
+        </ol>
+      </div>
+      <div class="panel__foot">
+        <button class="btn btn--primary" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6.5 9.5l3-3M5 7.5L3.5 9a2.5 2.5 0 003.5 3.5L8.5 11M11 8.5L12.5 7A2.5 2.5 0 009 3.5L7.5 5"/></svg><span>Copy<span class="wide"> lesson</span> link</span></button>
+        <button class="btn" type="button">Compare 1400</button>
+      </div>
+    </aside>
+  </main>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<script>
+HB.applySafeAreaSimulation();
+
+/* Hand-tinted watercolour washes, each with a darker edge of the same pigment. */
+const PALETTE = [
+  { fill: '#E3B9A0', edge: '#A2573A' }, // madder
+  { fill: '#BFD3B2', edge: '#5E7F4C' }, // sap green
+  { fill: '#E8CF95', edge: '#A07A27' }, // gamboge
+  { fill: '#C9C0DC', edge: '#6E5E95' }, // lilac
+  { fill: '#B5CFD3', edge: '#4E7D86' }, // verditer
+  { fill: '#E6BFC6', edge: '#A05866' }, // rose
+  { fill: '#D7C7A4', edge: '#86714A' }, // umber
+  { fill: '#C4D7A6', edge: '#6F8B3D' }, // olive
+  { fill: '#EBC79F', edge: '#AE7135' }, // orange ochre
+  { fill: '#BBC7DE', edge: '#55688F' }, // smalt
+  { fill: '#DCC9D9', edge: '#866083' }, // mauve
+  { fill: '#D9DBA8', edge: '#868A3C' }, // straw green
+];
+const INK = '#2A2017';
+const LAND = '#F1E8D0';
+const ACCENT = '#8B2A2A';
+const SELECTED = 'Ottoman Empire';
+const WATER = '#BFD2D0';
+const WATER_INK = '#2F5960'; // 4.9:1 on WATER for italic sea names
+
+const style = {
+  version: 8,
+  glyphs: 'local://glyphs/{fontstack}/{range}.pbf',
+  sources: {
+    ocean: { type: 'geojson', data: HB_NE.ocean },
+    coast: { type: 'geojson', data: HB_NE.coast },
+    lakes: { type: 'geojson', data: HB_NE.lakes },
+    rivers: { type: 'geojson', data: HB_NE.rivers },
+    marine: { type: 'geojson', data: HB.marine() },
+    graticule: { type: 'geojson', data: HB.graticule(10) },
+    relief: { type: 'image', url: 'local://relief.webp', coordinates: HB.reliefCoordinates() },
+    borders: { type: 'geojson', data: HB_1492.borders },
+    labels: { type: 'geojson', data: HB_1492.labels },
+    places: { type: 'geojson', data: HB_1492.places },
+  },
+  layers: [
+    { id: 'land', type: 'background', paint: { 'background-color': LAND } },
+    { id: 'territory-fill', type: 'fill', source: 'borders',
+      paint: { 'fill-color': ['case', ['==', ['get', 'NAME'], SELECTED], '#E4ADA0', HB.colorMatch(PALETTE, 'fill', '#E2D8C0')], 'fill-opacity': ['case', ['==', ['get', 'NAME'], SELECTED], 0.92, 0.62] } },
+    { id: 'relief', type: 'raster', source: 'relief', paint: { 'raster-opacity': 0.9, 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+    // Hand-coloured edge band: a soft stroke inside each border, same pigment, darker.
+    { id: 'territory-band', type: 'line', source: 'borders', layout: { 'line-join': 'round' },
+      paint: { 'line-color': HB.colorMatch(PALETTE, 'edge', '#9C8B66'), 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 3, 6, 9],
+        'line-offset': ['interpolate', ['linear'], ['zoom'], 2, -1.5, 6, -4.5], 'line-opacity': 0.5, 'line-blur': 1.5 } },
+    { id: 'selected-band', type: 'line', source: 'borders', filter: ['==', ['get', 'NAME'], SELECTED], layout: { 'line-join': 'round' },
+      paint: { 'line-color': ACCENT, 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 5, 6, 12], 'line-offset': ['interpolate', ['linear'], ['zoom'], 2, -2.5, 6, -6], 'line-opacity': 0.38 } },
+    { id: 'territory-border', type: 'line', source: 'borders', layout: { 'line-join': 'round' },
+      paint: { 'line-color': INK, 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 0.5, 6, 1.1], 'line-opacity': 0.72 } },
+    { id: 'selected-line', type: 'line', source: 'borders', filter: ['==', ['get', 'NAME'], SELECTED], layout: { 'line-join': 'round' },
+      paint: { 'line-color': ACCENT, 'line-width': ['interpolate', ['linear'], ['zoom'], 2, 1.6, 6, 3] } },
+    // Water is painted over the territories: source polygons overrun coastlines.
+    { id: 'ocean', type: 'fill', source: 'ocean', paint: { 'fill-color': WATER, 'fill-antialias': true } },
+    // Engraved waterlines: concentric coastal strokes fading seaward.
+    ...[2.5, 5.5, 9.5, 14.5].map((offset, i) => ({
+      id: `waterline-${i}`, type: 'line', source: 'coast',
+      paint: { 'line-color': '#5F8A8C', 'line-width': 0.6, 'line-offset': offset, 'line-opacity': 0.62 - i * 0.13 },
+    })),
+    { id: 'graticule', type: 'line', source: 'graticule', paint: { 'line-color': '#3F5F61', 'line-width': ['match', ['get', 'kind'], 'equator', 1, 0.5], 'line-opacity': 0.4 } },
+    { id: 'coast', type: 'line', source: 'coast', paint: { 'line-color': '#3F5F61', 'line-width': 0.9 } },
+    { id: 'lakes', type: 'fill', source: 'lakes', paint: { 'fill-color': WATER } },
+    { id: 'lake-shore', type: 'line', source: 'lakes', paint: { 'line-color': '#3F5F61', 'line-width': 0.6 } },
+    { id: 'rivers', type: 'line', source: 'rivers', filter: ['<=', ['get', 'rank'], 6], layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#4F8187', 'line-width': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'rank'], [1, 2], 0.9, 0.5], 6, ['match', ['get', 'rank'], [1, 2], 2, 1.2]] } },
+    { id: 'river-labels', type: 'symbol', source: 'rivers', minzoom: 3.2, filter: ['all', ['<=', ['get', 'rank'], 2], ['has', 'name']],
+      layout: { 'symbol-placement': 'line', 'text-field': ['get', 'name'], 'text-font': ['Alegreya Italic'], 'text-size': 14, 'text-letter-spacing': 0.1, 'symbol-spacing': 500, 'text-max-angle': 30, 'text-offset': [0, -0.6] },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': 'rgba(241, 232, 208, 0.9)', 'text-halo-width': 1.6 } },
+    { id: 'sea-labels', type: 'symbol', source: 'marine', filter: ['<=', ['get', 'rank'], 3],
+      layout: {
+        'text-field': ['case', ['==', ['get', 'kind'], 'ocean'], ['upcase', ['get', 'name']], ['get', 'name']],
+        'text-font': ['Alegreya Medium Italic'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 2, ['match', ['get', 'kind'], 'ocean', 15, 13], 5, ['match', ['get', 'kind'], 'ocean', 22, 18]],
+        'text-letter-spacing': ['match', ['get', 'kind'], 'ocean', 0.35, 0.16],
+        'text-max-width': 7, 'text-line-height': 1.25,
+      },
+      paint: { 'text-color': WATER_INK, 'text-halo-color': WATER, 'text-halo-width': 1.2 } },
+    { id: 'places', type: 'symbol', source: 'places', filter: HB.placeFilter, minzoom: 2.5,
+      layout: {
+        'icon-image': ['match', HB.placeKind, 'capital', 'm-capital', 'ruin', 'm-ruin', 'm-city'],
+        'text-field': HB.placeName,
+        'text-font': ['match', HB.placeKind, 'ruin', ['literal', ['Alegreya Italic']], ['literal', ['Alegreya Regular']]],
+        'text-size': ['match', HB.placeKind, 'capital', 16, 14],
+        'text-variable-anchor': ['left', 'right', 'top', 'bottom'], 'text-radial-offset': 0.75, 'text-justify': 'auto',
+        'symbol-sort-key': ['match', HB.placeKind, 'capital', 0, 1],
+      },
+      paint: { 'text-color': INK, 'text-halo-color': 'rgba(247, 240, 222, 0.95)', 'text-halo-width': 1.6 } },
+    // The selected territory's capital: placed after state names, before other cities.
+    { id: 'selected-capital', type: 'symbol', source: 'places', filter: ['==', ['get', 'name'], 'Constantinople'],
+      layout: { 'icon-image': 'm-capital', 'text-field': ['get', 'name'], 'text-font': ['Alegreya Regular'], 'text-size': 16,
+        'text-variable-anchor': ['top', 'bottom', 'left', 'right'], 'text-radial-offset': 0.8, 'icon-allow-overlap': true },
+      paint: { 'text-color': INK, 'text-halo-color': 'rgba(247, 240, 222, 0.95)', 'text-halo-width': 1.8 } },
+    { id: 'state-labels', type: 'symbol', source: 'labels', filter: ['>', ['get', 'AREA'], 18000],
+      layout: {
+        'text-field': ['get', 'NAME'],
+        'text-font': ['match', ['get', 'NAME'], SELECTED, ['literal', ['Alegreya SC Bold']], ['step', ['get', 'AREA'], ['literal', ['Alegreya SC Medium']], 250000, ['literal', ['Alegreya SC Bold']]]],
+        'text-size': HB.areaSize([12, 14, 17, 21], { special: { name: SELECTED, sizes: [18, 28] } }),
+        'text-letter-spacing': ['step', ['get', 'AREA'], 0.04, 200000, 0.1, 1000000, 0.18],
+        'text-max-width': 8, 'text-line-height': 1.1,
+        'symbol-sort-key': ['match', ['get', 'NAME'], SELECTED, -1e12, ['-', 0, ['get', 'AREA']]],
+        'text-padding': 4,
+      },
+      paint: { 'text-color': ['match', ['get', 'NAME'], SELECTED, '#6E1F1F', INK], 'text-halo-color': 'rgba(247, 240, 222, 0.92)', 'text-halo-width': 1.8, 'text-halo-blur': 0.4 } },
+
+  ],
+};
+
+HB.beforeMap = (m) => HB.addMarkers(m, { ink: INK, paper: '#FBF6EA', accent: ACCENT });
+HB.renderRuler(document.querySelector('.ruler'), 1492, {
+  charPx: 7.4, padPx: 16,
+  eraLabel: (span, px) => {
+    const c = HB.isPhone() ? 8.4 : 9.6;
+    return span.era.label.length * c + 14 <= px ? span.era.label : span.era.short.length * c + 8 <= px ? span.era.short : '';
+  },
+});
+
+const map = HB.createMap({
+  container: 'map',
+  style,
+  view: () => HB.isPhone()
+    ? { bounds: [[20, 35], [44, 45]], padding: { top: 70, bottom: document.querySelector('.panel').offsetHeight + 6, left: 12, right: 12 } }
+    : { bounds: [[-33, 28], [54, 58]], padding: { top: 24, bottom: 40, left: 24, right: 450 } },
+  onReady: (m) => {
+    m.on('render', () => { drawNeatline(m); drawScale(m); });
+    drawNeatline(m); drawScale(m);
+  },
+});
+
+/* Degree ladder along the map edge: alternating segments every 5°, labelled every 10°. */
+function drawNeatline(m) {
+  const svg = document.querySelector('.neatline');
+  const el = m.getContainer();
+  const w = el.clientWidth, h = el.clientHeight;
+  const b = m.getBounds();
+  const phone = HB.isPhone();
+  let out = '';
+  const ladder = 5;
+  const seg = (x1, y1, x2, y2, fill) => `<rect x="${Math.min(x1, x2)}" y="${Math.min(y1, y2)}" width="${Math.abs(x2 - x1) || ladder}" height="${Math.abs(y2 - y1) || ladder}" fill="${fill}"/>`;
+  // top/bottom: meridians
+  for (let lon = Math.floor(b.getWest() / 5) * 5; lon <= b.getEast(); lon += 5) {
+    const x1 = m.project([lon, b.getNorth()]).x, x2 = m.project([lon + 5, b.getNorth()]).x;
+    const odd = ((lon / 5) % 2 + 2) % 2 === 1;
+    out += seg(x1, 0, x2, ladder, odd ? INK : '#FBF6EA') + seg(x1, h - ladder, x2, h, odd ? INK : '#FBF6EA');
+    if (lon % 10 === 0 && x1 > 30 && x1 < w - 30 && !phone) {
+      const t = `${Math.abs(lon)}°${lon < 0 ? 'W' : lon > 0 ? 'E' : ''}`;
+      out += `<text x="${x1}" y="${ladder + 14}" text-anchor="middle" font-family="Alegreya" font-size="13" font-weight="500" fill="${INK}" paint-order="stroke" stroke="#BFD2D0" stroke-width="3">${t}</text>`;
+    }
+  }
+  for (let lat = Math.floor(b.getSouth() / 5) * 5; lat <= b.getNorth(); lat += 5) {
+    const y1 = m.project([b.getWest(), lat]).y, y2 = m.project([b.getWest(), lat + 5]).y;
+    const odd = ((lat / 5) % 2 + 2) % 2 === 1;
+    out += seg(0, y1, ladder, y2, odd ? INK : '#FBF6EA') + seg(w - ladder, y1, w, y2, odd ? INK : '#FBF6EA');
+    if (lat % 10 === 0 && y1 > 30 && y1 < h - 30 && !phone) {
+      out += `<text x="${ladder + 4}" y="${y1 + 4}" font-family="Alegreya" font-size="13" font-weight="500" fill="${INK}" paint-order="stroke" stroke="#BFD2D0" stroke-width="3">${Math.abs(lat)}°${lat < 0 ? 'S' : 'N'}</text>`;
+    }
+  }
+  out += `<rect x="0.5" y="0.5" width="${w - 1}" height="${h - 1}" fill="none" stroke="${INK}"/><rect x="${ladder}" y="${ladder}" width="${w - 2 * ladder}" height="${h - 2 * ladder}" fill="none" stroke="${INK}" stroke-width=".6"/>`;
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.innerHTML = out;
+}
+
+function drawScale(m) {
+  const max = HB.isPhone() ? 120 : 200;
+  const { km, px } = HB.scaleFor(m, max);
+  document.querySelector('.scalebar__bar').style.width = `${px}px`;
+  const nums = document.querySelector('.scalebar__nums');
+  nums.style.width = `${px}px`;
+  nums.innerHTML = `<span style="left:0">0</span><span style="left:50%">${km / 2}</span><span style="left:100%">${km.toLocaleString('en-US')}</span>`;
+  document.querySelector('.scalebar__caption').textContent = HB.isPhone() ? 'km' : `Kilometres at ${Math.round(m.getCenter().lat)}° N`;
+}
+</script>
+</body>
+</html>
