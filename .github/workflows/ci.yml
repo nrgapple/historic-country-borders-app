@@ -66,3 +66,33 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  layout:
+    # Safe-area (iPhone insets), responsive widths and forced-dark suites from
+    # playwright.layout.config.ts. Kept separate so the main validate job stays fast.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_MAPBOX_TOKEN: test-token
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn playwright install --with-deps chromium webkit
+      - run: yarn test:layout
+      - name: Upload layout-test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
