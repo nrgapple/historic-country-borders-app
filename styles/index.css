@@ -37,6 +37,20 @@
   --topbar-max: 1200px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
+  /* iPhone notch, Dynamic Island, home indicator and landscape sides
+     (REMASTER_PLAN §2.2). The --test-inset-* hooks let WebKit layout tests
+     simulate insets; nothing sets them in production. */
+  --safe-top: max(env(safe-area-inset-top, 0px), var(--test-inset-top, 0px));
+  --safe-right: max(
+    env(safe-area-inset-right, 0px),
+    var(--test-inset-right, 0px)
+  );
+  --safe-bottom: max(
+    env(safe-area-inset-bottom, 0px),
+    var(--test-inset-bottom, 0px)
+  );
+  --safe-left: max(env(safe-area-inset-left, 0px), var(--test-inset-left, 0px));
+
   /* The palette is designed for paper-white; stop browsers auto-darkening it. */
   color-scheme: only light;
 }
@@ -149,9 +163,9 @@ button {
 
 .topbar {
   position: absolute;
-  top: max(var(--gutter), env(safe-area-inset-top));
-  left: var(--gutter);
-  right: var(--gutter);
+  top: max(var(--gutter), var(--safe-top));
+  left: max(var(--gutter), var(--safe-left));
+  right: max(var(--gutter), var(--safe-right));
   margin-inline: auto;
   max-width: var(--topbar-max);
   background: var(--surface);
@@ -259,8 +273,8 @@ button {
 
 .restore-controls {
   position: absolute;
-  top: max(var(--gutter), env(safe-area-inset-top));
-  right: var(--gutter);
+  top: max(var(--gutter), var(--safe-top));
+  right: max(var(--gutter), var(--safe-right));
   z-index: 10;
 }
 
@@ -613,8 +627,8 @@ button {
 
 .place-panel {
   position: absolute;
-  left: var(--gutter);
-  bottom: 40px;
+  left: max(var(--gutter), var(--safe-left));
+  bottom: max(40px, var(--safe-bottom));
   width: min(380px, calc(100% - 2 * var(--gutter)));
   max-height: calc(100% - 230px);
   display: flex;
@@ -1194,7 +1208,8 @@ kbd {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 40px 20px;
+  padding: max(40px, var(--safe-top)) max(20px, var(--safe-right))
+    max(40px, var(--safe-bottom)) max(20px, var(--safe-left));
 }
 
 .landing__inner {
@@ -1287,6 +1302,29 @@ kbd {
   color: var(--ink-2);
 }
 
+/* Keep zoom buttons, the logo and attribution clear of the home indicator
+   and landscape notches. The ancestor raises specificity above mapbox-gl.css,
+   which loads later. */
+.mapboxgl-map .mapboxgl-ctrl-top-left,
+.mapboxgl-map .mapboxgl-ctrl-bottom-left {
+  left: var(--safe-left);
+}
+
+.mapboxgl-map .mapboxgl-ctrl-top-right,
+.mapboxgl-map .mapboxgl-ctrl-bottom-right {
+  right: var(--safe-right);
+}
+
+.mapboxgl-map .mapboxgl-ctrl-top-left,
+.mapboxgl-map .mapboxgl-ctrl-top-right {
+  top: var(--safe-top);
+}
+
+.mapboxgl-map .mapboxgl-ctrl-bottom-left,
+.mapboxgl-map .mapboxgl-ctrl-bottom-right {
+  bottom: var(--safe-bottom);
+}
+
 /* -------------------------------------------------------------------------
    Responsive
    ------------------------------------------------------------------------- */
@@ -1367,9 +1405,9 @@ kbd {
   }
 
   .place-panel {
-    left: var(--gutter);
-    right: var(--gutter);
-    bottom: max(var(--gutter), env(safe-area-inset-bottom));
+    left: max(var(--gutter), var(--safe-left));
+    right: max(var(--gutter), var(--safe-right));
+    bottom: max(var(--gutter), var(--safe-bottom));
     width: auto;
     max-height: 52dvh;
     border-radius: 16px;
@@ -1382,9 +1420,9 @@ kbd {
   .dialog--panel {
     position: fixed;
     top: auto;
-    bottom: var(--gutter);
-    left: var(--gutter);
-    right: var(--gutter);
+    bottom: max(var(--gutter), var(--safe-bottom));
+    left: max(var(--gutter), var(--safe-left));
+    right: max(var(--gutter), var(--safe-right));
     width: auto;
     max-height: 70dvh;
   }
@@ -1397,7 +1435,24 @@ kbd {
   }
 
   .place-panel {
-    max-height: calc(100% - 150px);
+    max-height: calc(100% - 180px);
+    /* The header alone can exceed that height in phone landscape; scroll the
+       whole panel so nothing spills past it into the home indicator. */
+    overflow-y: auto;
+  }
+}
+
+/* Phone landscape: short but wide. Keep the header on one row (brand, year,
+   tools) so it doesn't eat the height the map and place panel need. */
+@media (max-height: 520px) and (min-width: 641px) {
+  .timeline__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'lead step trail';
+    padding: 4px 6px 0 10px;
+  }
+
+  .timeline__current-value {
+    font-size: 1.75rem;
   }
 }
 
@@ -1658,6 +1713,26 @@ kbd {
   }
 }
 
+/* Responsive fixes found by e2e/layout/responsive.spec.ts (November 2026).
+   In the single-row header (PA map) the tools keep their width, so a long
+   compact title ellipsizes instead of squeezing the search button under
+   Map settings at 390 px. On phones the expanded search field matches the
+   36 px toolbar row, so it stays out of the year below it. */
+.topbar__row > .topbar__tools {
+  flex: none;
+}
+
+.brand__compact-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .place-finder[data-expanded] .place-finder__input {
+    height: 36px;
+  }
+}
+
 /* Copy link, in the details panel header. */
 .copy-link {
   margin-top: 10px;
@@ -1712,9 +1787,12 @@ kbd {
 /* Projector (focus) mode: a large static date and the selected place. */
 .projector-caption {
   position: absolute;
-  top: max(var(--gutter), env(safe-area-inset-top));
-  left: var(--gutter);
-  max-width: calc(100% - 2 * var(--gutter) - 56px);
+  top: max(var(--gutter), var(--safe-top));
+  left: max(var(--gutter), var(--safe-left));
+  max-width: calc(
+    100% - max(var(--gutter), var(--safe-left)) -
+      max(var(--gutter), var(--safe-right)) - 56px
+  );
   padding: 10px 20px 12px;
   background: rgba(255, 253, 248, 0.94);
   border: 1px solid var(--line);
@@ -1776,8 +1854,8 @@ kbd {
 
 .changes-summary {
   position: absolute;
-  left: var(--gutter);
-  bottom: 40px;
+  left: max(var(--gutter), var(--safe-left));
+  bottom: max(40px, var(--safe-bottom));
   width: min(340px, calc(100% - 2 * var(--gutter)));
   max-height: calc(100% - 230px);
   /* <details> does not lay its content out as a flex child, so the whole
@@ -1855,7 +1933,7 @@ kbd {
 
 @media (max-width: 640px) {
   .changes-summary {
-    bottom: max(var(--gutter), env(safe-area-inset-bottom));
+    bottom: max(var(--gutter), var(--safe-bottom));
     max-height: 52dvh;
   }
 }

@@ -744,7 +744,7 @@ describe('reviewed name overrides', () => {
       'Palermo',
       'Rome',
     ]);
-    expect(places.features[0].properties.name).toBe('Ziz,  Palermo');
+    expect((places as any).features[0].properties.name).toBe('Ziz,  Palermo');
     expect(() =>
       applyPlaceNameOverrides(
         renamed,
