@@ -122,11 +122,13 @@
     position: static;
   }
 
+  /* The open field covers only the tools column, never the year. */
   .place-finder[data-expanded] .place-finder__field {
     position: absolute;
-    top: calc(var(--safe-top) + 6px);
-    left: 12px;
+    top: calc(var(--safe-top) + 4px);
+    left: auto;
     right: 12px;
+    width: min(360px, 26%);
     z-index: 21;
     gap: 4px;
     padding: 2px;
@@ -137,7 +139,7 @@
     flex: 1;
     width: auto;
     min-width: 0;
-    height: 44px;
+    height: 40px;
   }
 
   .place-finder[data-expanded] .place-finder__close {
@@ -146,11 +148,22 @@
 
   .place-finder[data-expanded] .place-finder__list,
   .place-finder[data-expanded] .place-finder__empty {
-    top: calc(var(--safe-top) + 56px);
-    left: 12px;
+    top: calc(var(--safe-top) + 52px);
+    left: auto;
     right: 12px;
-    width: auto;
+    width: min(360px, 26%);
     max-width: none;
+  }
+}
+
+/* Two-row header: the first row holds only the brand and tools, so the open
+   field spans it; the year sits in the second row. */
+@media (max-width: 860px) {
+  .place-finder[data-expanded] .place-finder__field,
+  .place-finder[data-expanded] .place-finder__list,
+  .place-finder[data-expanded] .place-finder__empty {
+    left: 12px;
+    width: auto;
   }
 }
 

@@ -236,9 +236,13 @@ describe('ruler labels', () => {
     const all = historicalManifest.years;
     const selected = all.indexOf(1492);
     [320, 768, 1200].forEach((width) => {
-      expect(chooseLabelledTicks(all, width, selected).has(selected)).toBe(true);
+      expect(chooseLabelledTicks(all, width, selected).has(selected)).toBe(
+        true,
+      );
     });
     // Without a selection the choice is unchanged.
-    expect(chooseLabelledTicks(all, 1200, -1)).toEqual(chooseLabelledTicks(all, 1200));
+    expect(chooseLabelledTicks(all, 1200, -1)).toEqual(
+      chooseLabelledTicks(all, 1200),
+    );
   });
 });

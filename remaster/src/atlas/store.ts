@@ -1,7 +1,12 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import historicalManifest from '@repo/data/historical-manifest.json';
 import { trackEvent } from '../lib/analytics';
-import { parsePlace, writeMapView, writePlace, type MapView } from '../lib/mapView';
+import {
+  parsePlace,
+  writeMapView,
+  writePlace,
+  type MapView,
+} from '../lib/mapView';
 import { eraOf, yearPath } from '../lib/years';
 import {
   DEFAULT_SETTINGS,
@@ -36,7 +41,8 @@ export const YEARS: readonly number[] = historicalManifest.years;
 
 export type Overlay = 'settings' | 'about' | 'feedback' | null;
 export type DataStatus = 'loading' | 'ready' | 'error';
-export type YearChangeMethod = 'step' | 'track' | 'keyboard' | 'select' | 'history';
+export type YearChangeMethod =
+  'step' | 'track' | 'keyboard' | 'select' | 'history';
 /** [west, south, east, north] in degrees; east may exceed 180 across the antimeridian. */
 export type Bbox = [number, number, number, number];
 

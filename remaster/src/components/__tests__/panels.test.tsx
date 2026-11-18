@@ -13,7 +13,11 @@ import FeedbackDialog from '../FeedbackDialog';
 import AboutDialog from '../AboutDialog';
 import MapStatus from '../MapStatus';
 import Toolbar, { Brand } from '../Toolbar';
-import { panelFacts, territoryFacts, territorySubtitle } from '../../atlas/facts';
+import {
+  panelFacts,
+  territoryFacts,
+  territorySubtitle,
+} from '../../atlas/facts';
 import { useChrome, useSettings, type Overlay } from '../../atlas/hooks';
 import { __resetStore } from '../../atlas/store';
 import { __resetWikiCache } from '../../hooks/useWiki';
@@ -106,7 +110,12 @@ describe('PlacePanel', () => {
 });
 
 describe('place facts', () => {
-  const territory = (fields: object) => ({ id: 0, NAME: 'x', bbox: [0, 0, 1, 1] as [number, number, number, number], ...fields });
+  const territory = (fields: object) => ({
+    id: 0,
+    NAME: 'x',
+    bbox: [0, 0, 1, 1] as [number, number, number, number],
+    ...fields,
+  });
 
   // Direction A: the relation becomes the italic subtitle; the fact box holds
   // the "In <year>" facts with border precision as "Borders".
@@ -119,28 +128,41 @@ describe('place facts', () => {
     });
     expect(territorySubtitle(crimea)).toBe('Part of Ottoman Empire');
     expect(territoryFacts(crimea)).toEqual([
-      { label: 'Borders', value: 'Approximate', kind: 'borders', source: 'Historical Basemaps' },
+      {
+        label: 'Borders',
+        value: 'Approximate',
+        kind: 'borders',
+        source: 'Historical Basemaps',
+      },
     ]);
     const france = territory({ NAME: 'France', PARTOF: 'France' });
     expect(territorySubtitle(france)).toBeUndefined();
     expect(territoryFacts(france)).toEqual([]);
-    expect(territorySubtitle(territory({ NAME: 'Wallachia', SUBJECTO: 'Ottoman Empire' }))).toBe(
-      'Subject to Ottoman Empire',
-    );
+    expect(
+      territorySubtitle(
+        territory({ NAME: 'Wallachia', SUBJECTO: 'Ottoman Empire' }),
+      ),
+    ).toBe('Subject to Ottoman Empire');
   });
 
   it('orders the fact box as Capital, Ruler, Existed, Borders', () => {
     const context = {
       schemaVersion: 1 as const,
       year: 1492,
-      source: { name: 'Wikidata', license: 'CC0-1.0', retrievedAt: '2026-11-17' },
+      source: {
+        name: 'Wikidata',
+        license: 'CC0-1.0',
+        retrievedAt: '2026-11-17',
+      },
       changes: null,
       places: {
         'Ottoman Empire': {
           qid: 'Q12560',
           existed: { start: 1299, end: 1922 },
           capital: [{ qid: 'Q16869', label: 'Constantinople' }],
-          headOfState: [{ qid: 'Q1', label: 'Bayezid II', start: 1481, end: 1512 }],
+          headOfState: [
+            { qid: 'Q1', label: 'Bayezid II', start: 1481, end: 1512 },
+          ],
         },
       },
     };
@@ -149,7 +171,12 @@ describe('place facts', () => {
       context,
       'Ottoman Empire',
     );
-    expect(facts.map((f) => f.label)).toEqual(['Capital', 'Ruler', 'Existed', 'Borders']);
+    expect(facts.map((f) => f.label)).toEqual([
+      'Capital',
+      'Ruler',
+      'Existed',
+      'Borders',
+    ]);
     expect(facts[1].value).toBe('Bayezid II (1481–1512 AD)');
   });
 });
@@ -317,9 +344,7 @@ describe('FeedbackDialog', () => {
 });
 
 describe('AboutDialog', () => {
-  const openAbout = (
-    props: Partial<ComponentProps<typeof AboutDialog>>,
-  ) =>
+  const openAbout = (props: Partial<ComponentProps<typeof AboutDialog>>) =>
     render(
       withProviders(
         <>

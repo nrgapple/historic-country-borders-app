@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import LifespanBar from '../LifespanBar';
-import { lifespanLayout, toAstronomical, yearsBetween } from '../../lib/lifespan';
+import {
+  lifespanLayout,
+  toAstronomical,
+  yearsBetween,
+} from '../../lib/lifespan';
 
 describe('lifespanLayout', () => {
   it('is hidden when the lifespan is unknown or half known', () => {
@@ -60,15 +64,17 @@ describe('lifespanLayout', () => {
   });
 
   it('centres the marker for a single-year span', () => {
-    expect(lifespanLayout({ start: 1500, end: 1500 }, 1500)!.marker.position).toBe(
-      0.5,
-    );
+    expect(
+      lifespanLayout({ start: 1500, end: 1500 }, 1500)!.marker.position,
+    ).toBe(0.5);
   });
 });
 
 describe('LifespanBar', () => {
   it('renders nothing when the lifespan is unknown', () => {
-    const { container } = render(<LifespanBar existed={undefined} year={1492} />);
+    const { container } = render(
+      <LifespanBar existed={undefined} year={1492} />,
+    );
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -90,7 +96,9 @@ describe('LifespanBar', () => {
     expect(
       (document.querySelector('.lifespan__marker') as HTMLElement).style.left,
     ).toBe('30.98%');
-    expect(screen.getByText(/Existed 1299 to c\. 1922\. This map, 1492 AD/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Existed 1299 to c\. 1922\. This map, 1492 AD/),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Wikidata' })).toHaveAttribute(
       'href',
       'https://www.wikidata.org/wiki/Q12560',

@@ -31,7 +31,9 @@ const square = {
 const fixtures = {
   polygons: () => ({
     type: 'FeatureCollection',
-    features: [{ type: 'Feature', id: 0, properties: { c: 1 }, geometry: square }],
+    features: [
+      { type: 'Feature', id: 0, properties: { c: 1 }, geometry: square },
+    ],
   }),
   labels: () => ({
     type: 'FeatureCollection',
@@ -48,7 +50,13 @@ const fixtures = {
     schemaVersion: 1,
     year,
     territories: [
-      { id: 0, NAME: 'Fixture Country', BORDERPRECISION: 1, bbox: [0, 0, 1, 1], label: [0.5, 0.5] },
+      {
+        id: 0,
+        NAME: 'Fixture Country',
+        BORDERPRECISION: 1,
+        bbox: [0, 0, 1, 1],
+        label: [0.5, 0.5],
+      },
     ],
   }),
   capitals: () => ({
@@ -65,7 +73,11 @@ const fixtures = {
   context: (year: number) => ({
     schemaVersion: 1,
     year,
-    source: { name: 'Wikidata', license: 'CC0-1.0', retrievedAt: '2026-11-17T00:00:00.000Z' },
+    source: {
+      name: 'Wikidata',
+      license: 'CC0-1.0',
+      retrievedAt: '2026-11-17T00:00:00.000Z',
+    },
     places: {
       'Fixture Country': {
         qid: 'Q1',
@@ -85,15 +97,20 @@ const fixtures = {
 test.beforeEach(async ({ page }) => {
   await page.route('**/data/historical/*.json', (route) => {
     const url = route.request().url();
-    if (url.includes('.polygons.')) return route.fulfill({ json: fixtures.polygons() });
-    if (url.includes('.labels.')) return route.fulfill({ json: fixtures.labels() });
-    if (url.includes('.index.')) return route.fulfill({ json: fixtures.index(yearOf(url)) });
+    if (url.includes('.polygons.'))
+      return route.fulfill({ json: fixtures.polygons() });
+    if (url.includes('.labels.'))
+      return route.fulfill({ json: fixtures.labels() });
+    if (url.includes('.index.'))
+      return route.fulfill({ json: fixtures.index(yearOf(url)) });
     return route.continue();
   });
   await page.route('**/data/context/*.json', (route) => {
     const url = route.request().url();
     return route.fulfill({
-      json: url.includes('.capitals.') ? fixtures.capitals() : fixtures.context(yearOf(url)),
+      json: url.includes('.capitals.')
+        ? fixtures.capitals()
+        : fixtures.context(yearOf(url)),
     });
   });
   // The historical map makes no third-party requests; Wikipedia (on
@@ -103,21 +120,35 @@ test.beforeEach(async ({ page }) => {
 
 const expectReadyMap = async (map: Locator) => {
   await expect(map).toBeVisible();
-  await expect(map).toHaveAttribute('data-data-state', 'ready', { timeout: 30_000 });
+  await expect(map).toHaveAttribute('data-data-state', 'ready', {
+    timeout: 30_000,
+  });
   await expect(map).toHaveAttribute('data-feature-count', '1');
 
   // Without WebGL 2 (some CI browsers, locked-down school devices) the app
   // must explain itself and offer the prerendered list instead.
-  const hasWebGL2 = await map.page().evaluate(() => Boolean(document.createElement('canvas').getContext('webgl2')));
+  const hasWebGL2 = await map
+    .page()
+    .evaluate(() =>
+      Boolean(document.createElement('canvas').getContext('webgl2')),
+    );
   if (!hasWebGL2) {
-    await expect(map.getByRole('alert').filter({ hasText: 'can’t draw the interactive map' })).toBeVisible();
-    await expect(map.page().getByRole('heading', { name: /^Territories on the/ })).toBeAttached();
+    await expect(
+      map
+        .getByRole('alert')
+        .filter({ hasText: 'can’t draw the interactive map' }),
+    ).toBeVisible();
+    await expect(
+      map.page().getByRole('heading', { name: /^Territories on the/ }),
+    ).toBeAttached();
     test.skip(true, 'No WebGL 2 here; the fallback message was verified.');
   }
 
   await expect(map.locator('.maplibregl-canvas')).toBeVisible();
   // The year's layers (and therefore clicks) are ready once the data has drawn.
-  await expect(map.locator('.map-canvas[data-loaded]')).toBeAttached({ timeout: 30_000 });
+  await expect(map.locator('.map-canvas[data-loaded]')).toBeAttached({
+    timeout: 30_000,
+  });
 };
 
 const mapOf = (page: Page) => page.getByTestId('map-container');
@@ -128,30 +159,42 @@ test('root resolves to an available historical year', async ({ page }) => {
   await expectReadyMap(mapOf(page));
 });
 
-test('historical deep links load static AD and BC border data without an API route', async ({ page }) => {
+test('historical deep links load static AD and BC border data without an API route', async ({
+  page,
+}) => {
   const apiRequests: string[] = [];
   page.on('request', (request) => {
-    if (new URL(request.url()).pathname.startsWith('/api/')) apiRequests.push(request.url());
+    if (new URL(request.url()).pathname.startsWith('/api/'))
+      apiRequests.push(request.url());
   });
 
   await page.goto('/year/1994');
   await expect(page).toHaveURL(/\/year\/1994$/);
   await expectReadyMap(mapOf(page));
-  await expect(page.getByRole('button', { name: 'Map settings' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Map settings' }),
+  ).toBeVisible();
 
   await page.goto('/year/-100');
   await expect(page).toHaveURL(/\/year\/-100$/);
   await expectReadyMap(mapOf(page));
-  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute('aria-valuetext', '100 BC');
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '100 BC',
+  );
   expect(apiRequests).toEqual([]);
 });
 
-test('the timeline moves through time and keeps the shared map position', async ({ page }) => {
+test('the timeline moves through time and keeps the shared map position', async ({
+  page,
+}) => {
   await page.goto('/year/1492?lng=10.0000&lat=45.0000&zoom=4.00');
   await expectReadyMap(mapOf(page));
 
   await page.getByRole('button', { name: 'Next year: 1500 AD' }).click();
-  await expect(page).toHaveURL(/\/year\/1500\?lng=10\.0000&lat=45\.0000&zoom=4\.00$/);
+  await expect(page).toHaveURL(
+    /\/year\/1500\?lng=10\.0000&lat=45\.0000&zoom=4\.00$/,
+  );
   await expect(page).toHaveTitle(/World borders in 1500 AD/);
   await expectReadyMap(mapOf(page));
 
@@ -162,26 +205,41 @@ test('the timeline moves through time and keeps the shared map position', async 
   // Back and Forward step through the years visited.
   await page.goBack();
   await expect(page).toHaveURL(/\/year\/1500\?/);
-  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute('aria-valuetext', '1500 AD');
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '1500 AD',
+  );
   await page.goForward();
-  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute('aria-valuetext', '1492 AD');
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '1492 AD',
+  );
 });
 
-test('a student can pick a year by name or by its printed label', async ({ page }) => {
+test('a student can pick a year by name or by its printed label', async ({
+  page,
+}) => {
   await page.goto('/year/1492?lng=10.0000&lat=45.0000&zoom=4.00');
   await expectReadyMap(mapOf(page));
 
-  await page.getByRole('combobox', { name: 'Choose a year' }).selectOption({ label: '1815 AD' });
+  await page
+    .getByRole('combobox', { name: 'Choose a year' })
+    .selectOption({ label: '1815 AD' });
   await expect(page).toHaveURL(/\/year\/1815\?lng=10\.0000/);
   await expectReadyMap(mapOf(page));
 
   // The printed ruler labels are click targets, not just the ticks.
   await page.locator('.timeline__labels').getByText('2010').click();
   await expect(page).toHaveURL(/\/year\/2010\?/);
-  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute('aria-valuetext', '2010 AD');
+  await expect(page.getByRole('slider', { name: 'Map year' })).toHaveAttribute(
+    'aria-valuetext',
+    '2010 AD',
+  );
 });
 
-test('selecting a territory shows its gazetteer page with a safe Wikipedia fallback', async ({ page }) => {
+test('selecting a territory shows its gazetteer page with a safe Wikipedia fallback', async ({
+  page,
+}) => {
   await page.goto('/year/1994?lng=0.5000&lat=0.5000&zoom=7.00');
   const map = mapOf(page);
   await expectReadyMap(map);
@@ -190,17 +248,24 @@ test('selecting a territory shows its gazetteer page with a safe Wikipedia fallb
   await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2);
 
   const panel = page.getByRole('complementary');
-  await expect(panel.getByRole('heading', { name: 'Fixture Country' })).toBeVisible();
+  await expect(
+    panel.getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
   // Wikipedia is blocked in tests, so the panel must degrade gracefully.
-  await expect(panel.getByText('Wikipedia is unavailable right now.')).toBeVisible();
+  await expect(
+    panel.getByText('Wikipedia is unavailable right now.'),
+  ).toBeVisible();
   // Year-specific facts come from the static context file and link to Wikidata.
-  await expect(panel.getByRole('link', { name: 'Fixture City' })).toHaveAttribute(
-    'href',
-    'https://www.wikidata.org/wiki/Q1#P36',
-  );
+  await expect(
+    panel.getByRole('link', { name: 'Fixture City' }),
+  ).toHaveAttribute('href', 'https://www.wikidata.org/wiki/Q1#P36');
   await expect(panel.getByText('1900–2000 AD')).toBeVisible();
-  await expect(panel.getByText('Facts from Wikidata (CC0) and Historical Basemaps (GPL-3.0).')).toBeVisible();
+  await expect(
+    panel.getByText(
+      'Facts from Wikidata (CC0) and Historical Basemaps (GPL-3.0).',
+    ),
+  ).toBeVisible();
   // Key dates: the lifespan bar marks this map's year.
   await expect(panel.getByRole('heading', { name: 'Key dates' })).toBeVisible();
   await expect(panel.getByText('This map', { exact: true })).toBeVisible();
@@ -210,7 +275,9 @@ test('selecting a territory shows its gazetteer page with a safe Wikipedia fallb
   await expect(page).not.toHaveURL(/place=/);
 });
 
-test('a teacher finds a territory by name and shares the selection', async ({ page }) => {
+test('a teacher finds a territory by name and shares the selection', async ({
+  page,
+}) => {
   await page.goto('/year/1994');
   const map = mapOf(page);
   await expectReadyMap(map);
@@ -220,24 +287,34 @@ test('a teacher finds a territory by name and shares the selection', async ({ pa
   await page.getByRole('option', { name: 'Fixture Country' }).click();
 
   const panel = page.getByRole('complementary');
-  await expect(panel.getByRole('heading', { name: 'Fixture Country' })).toBeVisible();
+  await expect(
+    panel.getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
   await expect(panel.getByRole('button', { name: 'Copy link' })).toBeVisible();
 
   await page.reload();
   await expectReadyMap(map);
-  await expect(page.getByRole('complementary').getByRole('heading', { name: 'Fixture Country' })).toBeVisible();
+  await expect(
+    page
+      .getByRole('complementary')
+      .getByRole('heading', { name: 'Fixture Country' }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/[?&]place=Fixture\+Country/);
 });
 
-test('a shared place that does not exist in the year is dropped from the link', async ({ page }) => {
+test('a shared place that does not exist in the year is dropped from the link', async ({
+  page,
+}) => {
   await page.goto('/year/1994?place=Atlantis');
   await expectReadyMap(mapOf(page));
   await expect(page).not.toHaveURL(/place=/);
   await expect(page.getByRole('complementary')).toBeHidden();
 });
 
-test('the year summary lists what changed and opens from the keyboard', async ({ page }) => {
+test('the year summary lists what changed and opens from the keyboard', async ({
+  page,
+}) => {
   await page.goto('/year/1994');
   await expectReadyMap(mapOf(page));
 
@@ -246,14 +323,19 @@ test('the year summary lists what changed and opens from the keyboard', async ({
   await expect(page.getByText('Former Fixture')).toBeHidden();
   await toggle.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: /Gone from the map/ })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Gone from the map/ }),
+  ).toBeVisible();
   await expect(page.getByText('Former Fixture')).toBeVisible();
 });
 
-test('projector text loads Atkinson only when chosen, applies everywhere and persists', async ({ page }) => {
+test('projector text loads Atkinson only when chosen, applies everywhere and persists', async ({
+  page,
+}) => {
   const atkinson: string[] = [];
   page.on('request', (request) => {
-    if (/atkinson/i.test(decodeURIComponent(request.url()))) atkinson.push(request.url());
+    if (/atkinson/i.test(decodeURIComponent(request.url())))
+      atkinson.push(request.url());
   });
   await page.goto('/year/1994?lng=0.5&lat=0.5&zoom=5');
   await expectReadyMap(mapOf(page));
@@ -266,14 +348,20 @@ test('projector text loads Atkinson only when chosen, applies everywhere and per
     .poll(() => page.evaluate(() => getComputedStyle(document.body).fontFamily))
     .toContain('Atkinson Hyperlegible Next');
   // Map labels switch to the Atkinson glyph stacks.
-  await expect.poll(() => atkinson.some((url) => url.includes('/glyphs'))).toBe(true);
-  await expect.poll(() => atkinson.some((url) => url.endsWith('.woff2'))).toBe(true);
+  await expect
+    .poll(() => atkinson.some((url) => url.includes('/glyphs')))
+    .toBe(true);
+  await expect
+    .poll(() => atkinson.some((url) => url.endsWith('.woff2')))
+    .toBe(true);
 
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-text', 'projector');
 });
 
-test('focus mode keeps the year and place on screen for a projector', async ({ page }) => {
+test('focus mode keeps the year and place on screen for a projector', async ({
+  page,
+}) => {
   await page.goto('/year/1994?place=Fixture%20Country');
   await expectReadyMap(mapOf(page));
   await page.getByRole('button', { name: 'Present to class' }).click();
@@ -288,12 +376,21 @@ test('focus mode keeps the year and place on screen for a projector', async ({ p
 test('unknown years use the useful static 404', async ({ page }) => {
   const response = await page.goto('/year/9999');
   expect(response?.status()).toBe(404);
-  await expect(page.getByRole('heading', { name: 'That map is not available' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open a random year' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'See the world in 1914' })).toHaveAttribute('href', '/year/1914');
+  await expect(
+    page.getByRole('heading', { name: 'That map is not available' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Open a random year' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'See the world in 1914' }),
+  ).toHaveAttribute('href', '/year/1914');
 });
 
-test('static preview fails feedback safely without an application server', async ({ page, request }) => {
+test('static preview fails feedback safely without an application server', async ({
+  page,
+  request,
+}) => {
   const response = await request.post('/api/feedback', {
     data: { rate: 'nice', visitorId: 'fixture-visitor' },
   });
@@ -305,17 +402,26 @@ test('static preview fails feedback safely without an application server', async
   await page.goto('/year/1994');
   await page.getByRole('button', { name: 'Feedback' }).click();
   const dialog = page.getByRole('dialog', { name: 'Send feedback' });
-  const submit = dialog.getByRole('button', { name: 'Send feedback', exact: true });
+  const submit = dialog.getByRole('button', {
+    name: 'Send feedback',
+    exact: true,
+  });
   await expect(submit).toBeDisabled();
   // A message alone is enough; the rating is optional.
-  await dialog.getByLabel('What did you notice on this map?').fill('A border looks wrong');
+  await dialog
+    .getByLabel('What did you notice on this map?')
+    .fill('A border looks wrong');
   // The fingerprint (abuse control) is generated locally once the dialog opens.
   await expect(submit).toBeEnabled();
   await submit.click();
-  await expect(dialog.getByRole('alert')).toContainText('Feedback is unavailable in local static preview');
+  await expect(dialog.getByRole('alert')).toContainText(
+    'Feedback is unavailable in local static preview',
+  );
 });
 
-test('pages are static, light-only and safe-area ready', async ({ request }) => {
+test('pages are static, light-only and safe-area ready', async ({
+  request,
+}) => {
   for (const path of ['/', '/year/1492', '/year/-500', '/year/9999']) {
     const html = await (await request.get(path)).text();
     expect(html).toContain('viewport-fit=cover');
@@ -324,5 +430,7 @@ test('pages are static, light-only and safe-area ready', async ({ request }) => 
   const sitemap = await (await request.get('/sitemap.xml')).text();
   expect(sitemap).toContain('<loc>https://historicborders.app/year/1492</loc>');
   expect(sitemap.match(/<url>/g)).toHaveLength(55);
-  expect(await (await request.get('/robots.txt')).text()).toContain('Sitemap: https://historicborders.app/sitemap.xml');
+  expect(await (await request.get('/robots.txt')).text()).toContain(
+    'Sitemap: https://historicborders.app/sitemap.xml',
+  );
 });

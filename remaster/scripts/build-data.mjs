@@ -16,21 +16,32 @@ import { APP, REPO, readJson, writeFile } from './lib.mjs';
 
 const split = readJson(path.join(REPO, 'data/historical-split-assets.json'));
 const capitals = readJson(path.join(REPO, 'data/historical-capitals.json'));
-const manifestSource = readJson(path.join(REPO, 'data/historical-manifest.json'));
-const contextManifest = readJson(path.join(REPO, 'data/historical-context.json'));
+const manifestSource = readJson(
+  path.join(REPO, 'data/historical-manifest.json'),
+);
+const contextManifest = readJson(
+  path.join(REPO, 'data/historical-context.json'),
+);
 
 const years = manifestSource.years;
 const missing = years.filter((year) => !split.years[String(year)]);
-if (missing.length) throw new Error(`No split files for ${missing.join(', ')}: run yarn data:build:historical-split`);
+if (missing.length)
+  throw new Error(
+    `No split files for ${missing.join(', ')}: run yarn data:build:historical-split`,
+  );
 
 const out = path.join(APP, 'public/data/historical');
 fs.rmSync(out, { recursive: true, force: true });
 // The stand-in's former output directory, if an older checkout left it.
-fs.rmSync(path.join(APP, 'public/data/years'), { recursive: true, force: true });
+fs.rmSync(path.join(APP, 'public/data/years'), {
+  recursive: true,
+  force: true,
+});
 
 const copy = (url) => {
   const source = path.join(REPO, 'public', url);
-  if (!fs.existsSync(source)) throw new Error(`Missing ${url}: the split manifest and public/ disagree`);
+  if (!fs.existsSync(source))
+    throw new Error(`Missing ${url}: the split manifest and public/ disagree`);
   writeFile(path.join(APP, 'public', url), fs.readFileSync(source));
 };
 
@@ -54,11 +65,21 @@ fs.copyFileSync(
 // Wikidata context and capital points are already static, hashed and validated.
 const contextOut = path.join(APP, 'public/data/context');
 fs.rmSync(contextOut, { recursive: true, force: true });
-fs.cpSync(path.join(REPO, 'public/data/context'), contextOut, { recursive: true });
+fs.cpSync(path.join(REPO, 'public/data/context'), contextOut, {
+  recursive: true,
+});
 
-writeFile(path.join(APP, 'src/data/years.json'), JSON.stringify({ years, files }));
+writeFile(
+  path.join(APP, 'src/data/years.json'),
+  JSON.stringify({ years, files }),
+);
 writeFile(
   path.join(APP, 'src/data/sources.json'),
-  JSON.stringify({ historical: manifestSource.source, context: contextManifest.source ?? null }),
+  JSON.stringify({
+    historical: manifestSource.source,
+    context: contextManifest.source ?? null,
+  }),
 );
-console.log(`data: ${years.length} years of T1 split files -> ${path.relative(APP, out)}`);
+console.log(
+  `data: ${years.length} years of T1 split files -> ${path.relative(APP, out)}`,
+);

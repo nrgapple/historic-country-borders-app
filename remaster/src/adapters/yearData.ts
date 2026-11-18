@@ -44,7 +44,9 @@ export const yearFiles = (year: number): YearFiles | undefined =>
   files[String(year)];
 
 const absolute = (path: string) =>
-  typeof window === 'undefined' ? path : new URL(path, window.location.href).href;
+  typeof window === 'undefined'
+    ? path
+    : new URL(path, window.location.href).href;
 
 /** Absolute URLs, because MapLibre's worker resolves them. */
 export const mapUrl = (year: number) => absolute(files[String(year)].map);
@@ -118,7 +120,10 @@ export const yearIndexes = createResource<YearIndex>(
     const year = Number(key);
     const file = files[key];
     if (!file) throw new Error(`No map is published for ${year}.`);
-    return validateYearIndex(await fetchJson<unknown>(file.index, signal), year);
+    return validateYearIndex(
+      await fetchJson<unknown>(file.index, signal),
+      year,
+    );
   },
   { maxEntries: 4 },
 );

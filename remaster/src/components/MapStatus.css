@@ -242,6 +242,12 @@
   .projector-caption__title {
     font-size: 30px;
   }
+
+  /* Below the restore and projector-text buttons, never under them. */
+  .projector-caption {
+    top: calc(var(--frame-inset) + var(--safe-top) + 64px);
+    max-width: calc(100% - 2 * var(--frame-inset) - 24px);
+  }
 }
 
 @media (max-height: 520px) {

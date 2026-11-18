@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { __resetStore, actions, getState, parseYearPath, subscribe } from './store';
+import {
+  __resetStore,
+  actions,
+  getState,
+  parseYearPath,
+  subscribe,
+} from './store';
 import { STORAGE_KEY } from './settings';
 
 const go = (url: string) => window.history.replaceState(null, '', url);

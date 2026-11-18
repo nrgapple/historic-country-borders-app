@@ -11,11 +11,7 @@
  */
 
 export type EraId =
-  | 'prehistory'
-  | 'ancient'
-  | 'medieval'
-  | 'early-modern'
-  | 'modern';
+  'prehistory' | 'ancient' | 'medieval' | 'early-modern' | 'modern';
 
 export interface EraTint {
   /** Engraved ink of the era pigment: UI accent, active ruler label. */
@@ -83,7 +79,11 @@ export const WASHES = [
   { name: 'mauve', fill: '#DCC9D9', edge: '#866083' },
   { name: 'straw green', fill: '#D9DBA8', edge: '#868A3C' },
 ] as const;
-export const FALLBACK_WASH = { name: 'unknown', fill: '#E2D8C0', edge: '#9C8B66' };
+export const FALLBACK_WASH = {
+  name: 'unknown',
+  fill: '#E2D8C0',
+  edge: '#9C8B66',
+};
 
 /**
  * UI font stacks (T3, docs/FONTS.md "Web fonts"). "Historic Borders Scripts"
@@ -91,9 +91,11 @@ export const FALLBACK_WASH = { name: 'unknown', fill: '#E2D8C0', edge: '#9C8B66'
  */
 export const FONT = {
   serif: '"Alegreya", "Historic Borders Scripts", Georgia, serif',
-  smallCaps: '"Alegreya SC", "Alegreya", "Historic Borders Scripts", Georgia, serif',
+  smallCaps:
+    '"Alegreya SC", "Alegreya", "Historic Borders Scripts", Georgia, serif',
   /** "Projector text" setting: replaces both stacks above. */
-  projector: '"Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif',
+  projector:
+    '"Atkinson Hyperlegible Next", "Historic Borders Scripts", system-ui, sans-serif',
 } as const;
 
 /** Layout constants shared by CSS and camera padding. */

@@ -9,22 +9,65 @@ import { chromium } from '@playwright/test';
 import { APP } from './lib.mjs';
 
 const base = process.argv[2] || 'http://127.0.0.1:4410';
-const out = path.resolve(process.argv[3] || path.join(APP, '../docs/product/remaster-shots'));
+const out = path.resolve(
+  process.argv[3] || path.join(APP, '../docs/product/remaster-shots'),
+);
 const only = process.env.ONLY ? new RegExp(process.env.ONLY) : null;
 fs.mkdirSync(out, { recursive: true });
 
 const OTTOMAN = 'place=Ottoman%20Empire';
 const SHOTS = [
   // The mock's desktop camera: Europe to the Caspian, the panel on the right.
-  { name: '1492-ottoman-1440x900', url: `/year/1492?lng=29.5&lat=44.5&zoom=2.95&${OTTOMAN}`, width: 1440, height: 900 },
-  { name: '1492-ottoman-1024x768', url: `/year/1492?lng=32&lat=43&zoom=2.9&${OTTOMAN}`, width: 1024, height: 768, touch: true },
+  {
+    name: '1492-ottoman-1440x900',
+    url: `/year/1492?lng=29.5&lat=44.5&zoom=2.95&${OTTOMAN}`,
+    width: 1440,
+    height: 900,
+  },
+  {
+    name: '1492-ottoman-1024x768',
+    url: `/year/1492?lng=32&lat=43&zoom=2.9&${OTTOMAN}`,
+    width: 1024,
+    height: 768,
+    touch: true,
+  },
   // Phones frame the selection above the bottom sheet (no camera in the link).
-  { name: '1492-ottoman-390x844', url: `/year/1492?${OTTOMAN}`, width: 390, height: 844, touch: true },
-  { name: '1914-1440x900', url: '/year/1914?lng=15&lat=47&zoom=3.2', width: 1440, height: 900 },
-  { name: '1914-1024x768', url: '/year/1914?lng=15&lat=47&zoom=2.9', width: 1024, height: 768, touch: true },
-  { name: '1914-390x844', url: '/year/1914?lng=18&lat=46&zoom=2.6', width: 390, height: 844, touch: true },
+  {
+    name: '1492-ottoman-390x844',
+    url: `/year/1492?${OTTOMAN}`,
+    width: 390,
+    height: 844,
+    touch: true,
+  },
+  {
+    name: '1914-1440x900',
+    url: '/year/1914?lng=15&lat=47&zoom=3.2',
+    width: 1440,
+    height: 900,
+  },
+  {
+    name: '1914-1024x768',
+    url: '/year/1914?lng=15&lat=47&zoom=2.9',
+    width: 1024,
+    height: 768,
+    touch: true,
+  },
+  {
+    name: '1914-390x844',
+    url: '/year/1914?lng=18&lat=46&zoom=2.6',
+    width: 390,
+    height: 844,
+    touch: true,
+  },
   // iPhone 15 Pro with simulated insets (Chromium CDP), like the design's phone-safe shot.
-  { name: '1492-ottoman-iphone-insets-393x852', url: `/year/1492?${OTTOMAN}`, width: 393, height: 852, touch: true, insets: { top: 59, bottom: 34 } },
+  {
+    name: '1492-ottoman-iphone-insets-393x852',
+    url: `/year/1492?${OTTOMAN}`,
+    width: 393,
+    height: 852,
+    touch: true,
+    insets: { top: 59, bottom: 34 },
+  },
 ];
 
 const browser = await chromium.launch({ channel: 'chromium' });
@@ -58,11 +101,19 @@ for (const shot of SHOTS) {
   if (shot.insets) {
     const cdp = await context.newCDPSession(page);
     await cdp.send('Emulation.setSafeAreaInsetsOverride', {
-      insets: { top: shot.insets.top, bottom: shot.insets.bottom, left: 0, right: 0 },
+      insets: {
+        top: shot.insets.top,
+        bottom: shot.insets.bottom,
+        left: 0,
+        right: 0,
+      },
     });
   }
   await page.goto(`${base}${shot.url}`);
-  await page.waitForSelector('[data-testid="map-container"][data-data-state="ready"]', { timeout: 60_000 });
+  await page.waitForSelector(
+    '[data-testid="map-container"][data-data-state="ready"]',
+    { timeout: 60_000 },
+  );
   // Let labels place, relief load and the camera settle.
   await page.evaluate(
     () =>

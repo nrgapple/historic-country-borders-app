@@ -47,7 +47,9 @@ export const STRUCTURED_DATA = {
 };
 
 /** The sitemap, identical in shape to scripts/generate-sitemap.js. */
-export const sitemapXml = (paths: Array<{ path: string; priority: string }>) => {
+export const sitemapXml = (
+  paths: Array<{ path: string; priority: string }>,
+) => {
   const lastModified = historicalManifest.source.commitDate;
   const entries = paths
     .map(

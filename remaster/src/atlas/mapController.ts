@@ -34,7 +34,14 @@ import {
 } from '../adapters/yearData';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding, paddingOffset } from '../lib/places';
-import { actions, getState, subscribe, YEARS, type AtlasState, type Bbox } from './store';
+import {
+  actions,
+  getState,
+  subscribe,
+  YEARS,
+  type AtlasState,
+  type Bbox,
+} from './store';
 
 setWorkerUrl(workerUrl);
 
@@ -57,7 +64,8 @@ export function mountMap(container: HTMLElement): MapHandle {
   const initial = getState();
   const view = parseMapView(window.location.search);
   // A shared place with no camera in the link is framed once it is known.
-  let frameSharedPlace = Boolean(initial.place) && !hasMapView(window.location.search);
+  let frameSharedPlace =
+    Boolean(initial.place) && !hasMapView(window.location.search);
   // The camera is written to the URL only when it changes, so a resize (or a
   // plain deep link) never adds a camera the visitor did not choose.
   let lastView = `${view.longitude.toFixed(4)},${view.latitude.toFixed(4)},${view.zoom.toFixed(2)}`;
@@ -88,14 +96,25 @@ export function mountMap(container: HTMLElement): MapHandle {
   // and the paper grain over the map frame, dropped in low power.
   const cleanups: Array<() => void> = [];
   const frame = container.parentElement ?? container;
-  const neatline = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const neatline = document.createElementNS(
+    'http://www.w3.org/2000/svg',
+    'svg',
+  );
   neatline.setAttribute('class', 'neatline');
   neatline.setAttribute('aria-hidden', 'true');
   frame.append(neatline);
   cleanups.push(() => neatline.remove());
-  const phone = () => window.matchMedia?.('(max-width: 699px)').matches ?? false;
-  cleanups.push(attachNeatline(map, neatline, () => phone() || (lowPower && LOW_POWER_SIMPLE_NEATLINE)));
-  if (!(lowPower && LOW_POWER_DROPS_GRAIN)) cleanups.push(attachPaperGrain(frame));
+  const phone = () =>
+    window.matchMedia?.('(max-width: 699px)').matches ?? false;
+  cleanups.push(
+    attachNeatline(
+      map,
+      neatline,
+      () => phone() || (lowPower && LOW_POWER_SIMPLE_NEATLINE),
+    ),
+  );
+  if (!(lowPower && LOW_POWER_DROPS_GRAIN))
+    cleanups.push(attachPaperGrain(frame));
   container.dataset.lowPower = String(lowPower);
   // The credit strip and About carry the same sources: start the compact
   // attribution closed (MapLibre opens it on load) so it does not cover the
@@ -115,13 +134,16 @@ export function mountMap(container: HTMLElement): MapHandle {
   const setYearData = (year: number) => {
     const borders = map.getSource(SOURCE.borders) as GeoJSONSource | undefined;
     const labels = map.getSource(SOURCE.labels) as GeoJSONSource | undefined;
-    const capitalPoints = map.getSource(SOURCE.capitals) as GeoJSONSource | undefined;
+    const capitalPoints = map.getSource(SOURCE.capitals) as
+      GeoJSONSource | undefined;
     if (!borders || !labels) return;
     container.removeAttribute('data-loaded');
     map.removeFeatureState({ source: SOURCE.borders });
     void borders.setData(mapUrl(year));
     void labels.setData(labelsUrl(year));
-    void capitalPoints?.setData(capitalsUrl(year) ?? { type: 'FeatureCollection', features: [] });
+    void capitalPoints?.setData(
+      capitalsUrl(year) ?? { type: 'FeatureCollection', features: [] },
+    );
     dataRequested = true;
     // The index may already be here: re-apply the selection to the new data.
     if (index?.year === year) applySelection();
@@ -134,8 +156,14 @@ export function mountMap(container: HTMLElement): MapHandle {
     fetch(url, { credentials: 'same-origin' })
       .then((response) => response.arrayBuffer())
       .catch(() => undefined);
-  const styleLoaded = new Promise<void>((resolve) => map.once('style.load', () => resolve()));
-  void Promise.all([warm(mapUrl(initial.year)), warm(labelsUrl(initial.year)), styleLoaded]).then(() => {
+  const styleLoaded = new Promise<void>((resolve) =>
+    map.once('style.load', () => resolve()),
+  );
+  void Promise.all([
+    warm(mapUrl(initial.year)),
+    warm(labelsUrl(initial.year)),
+    styleLoaded,
+  ]).then(() => {
     if (!destroyed) setYearData(loadedYear);
   });
 
@@ -146,7 +174,11 @@ export function mountMap(container: HTMLElement): MapHandle {
       id: id ?? null,
       name: id === undefined ? null : place,
       dependencyIds:
-        id === undefined ? [] : (index?.territories ?? []).filter((t) => t.dep && t.ov === id).map((t) => t.id),
+        id === undefined
+          ? []
+          : (index?.territories ?? [])
+              .filter((t) => t.dep && t.ov === id)
+              .map((t) => t.id),
     };
   };
 
@@ -161,7 +193,10 @@ export function mountMap(container: HTMLElement): MapHandle {
   };
 
   const fit = (bounds: Bbox) => {
-    const padding = focusPadding({ width: container.clientWidth, height: container.clientHeight });
+    const padding = focusPadding({
+      width: container.clientWidth,
+      height: container.clientHeight,
+    });
     const camera = map.cameraForBounds(
       [
         [bounds[0], bounds[1]],
@@ -172,7 +207,11 @@ export function mountMap(container: HTMLElement): MapHandle {
     if (!camera) return;
     // Move with `offset` rather than `padding`: padding stays on the camera
     // and would skew the centre written to shared links.
-    map.easeTo({ ...camera, offset: paddingOffset(padding), duration: prefersReducedMotion() ? 0 : 900 });
+    map.easeTo({
+      ...camera,
+      offset: paddingOffset(padding),
+      duration: prefersReducedMotion() ? 0 : 900,
+    });
   };
 
   const loadIndex = (year: number) => {
@@ -184,7 +223,8 @@ export function mountMap(container: HTMLElement): MapHandle {
         const place = getState().place;
         // A shared or carried-over place survives only if it exists this year.
         if (place && !names.has(place)) actions.select(null);
-        else if (place && frameSharedPlace) fit(framingBounds(loaded.territories[names.get(place)!].bbox));
+        else if (place && frameSharedPlace)
+          fit(framingBounds(loaded.territories[names.get(place)!].bbox));
         frameSharedPlace = false;
         applySelection();
       },
@@ -196,13 +236,19 @@ export function mountMap(container: HTMLElement): MapHandle {
   loadIndex(initial.year);
 
   map.on('click', (event: MapMouseEvent) => {
-    const hit = map.queryRenderedFeatures(event.point, { layers: INTERACTIVE_LAYERS })[0];
+    const hit = map.queryRenderedFeatures(event.point, {
+      layers: INTERACTIVE_LAYERS,
+    })[0];
     const id = typeof hit?.id === 'number' ? hit.id : undefined;
     const name = id !== undefined ? index?.territories[id]?.NAME : undefined;
     actions.select(name ?? null, { track: Boolean(name) });
   });
   for (const layer of INTERACTIVE_LAYERS) {
-    map.on('mouseenter', layer, () => (map.getCanvas().style.cursor = 'pointer'));
+    map.on(
+      'mouseenter',
+      layer,
+      () => (map.getCanvas().style.cursor = 'pointer'),
+    );
     map.on('mouseleave', layer, () => (map.getCanvas().style.cursor = ''));
   }
   map.on('moveend', () => {
@@ -210,7 +256,11 @@ export function mountMap(container: HTMLElement): MapHandle {
     const key = `${center.lng.toFixed(4)},${center.lat.toFixed(4)},${map.getZoom().toFixed(2)}`;
     if (key === lastView) return;
     lastView = key;
-    actions.writeView({ longitude: center.lng, latitude: center.lat, zoom: map.getZoom() });
+    actions.writeView({
+      longitude: center.lng,
+      latitude: center.lat,
+      zoom: map.getZoom(),
+    });
   });
   map.once('idle', () => addRelief(map, origin, getState().settings, lowPower));
   map.on('idle', () => {
@@ -221,19 +271,29 @@ export function mountMap(container: HTMLElement): MapHandle {
     actions.setStatus('ready');
     performance.mark(`borders-idle:${loadedYear}`);
     const i = YEARS.indexOf(loadedYear);
-    const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1200));
-    idle(() => prefetchYears([YEARS[i - 1], YEARS[i + 1]].filter((y) => y !== undefined)));
+    const idle =
+      window.requestIdleCallback ??
+      ((cb: () => void) => window.setTimeout(cb, 1200));
+    idle(() =>
+      prefetchYears(
+        [YEARS[i - 1], YEARS[i + 1]].filter((y) => y !== undefined),
+      ),
+    );
   });
   map.on('error', (event) => {
     const sourceId = (event as { sourceId?: string }).sourceId;
-    if (sourceId === SOURCE.borders || sourceId === SOURCE.labels) actions.setStatus('error');
+    if (sourceId === SOURCE.borders || sourceId === SOURCE.labels)
+      actions.setStatus('error');
     // A listener replaces MapLibre's own logging; keep other errors visible.
     else console.error(event.error);
   });
 
   // The map fills a container whose size changes with the panel, focus mode
   // and Safari's toolbars; MapLibre only tracks window resizes on its own.
-  const resizer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => map.resize());
+  const resizer =
+    typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(() => map.resize());
   resizer?.observe(container);
 
   let last: AtlasState = initial;

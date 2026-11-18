@@ -77,7 +77,10 @@ export default function PlacePanel({
   }, [onClose]);
 
   return (
-    <aside className="place-panel paper-grain" aria-labelledby="place-panel-title">
+    <aside
+      className="place-panel paper-grain"
+      aria-labelledby="place-panel-title"
+    >
       <span className="place-panel__handle" aria-hidden="true" />
       <div className="place-panel__scroll">
         <header className="place-panel__header">
@@ -114,20 +117,21 @@ export default function PlacePanel({
                 <div key={fact.label} className="place-panel__fact">
                   <dt>{fact.label}</dt>
                   <dd>
-                    {fact.kind === 'borders' && fact.value === 'Approximate' && (
-                      <svg
-                        className="place-panel__approx"
-                        viewBox="0 0 26 8"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M1 4h24"
-                          stroke="currentColor"
-                          strokeWidth="1.6"
-                          strokeDasharray="4 3"
-                        />
-                      </svg>
-                    )}
+                    {fact.kind === 'borders' &&
+                      fact.value === 'Approximate' && (
+                        <svg
+                          className="place-panel__approx"
+                          viewBox="0 0 26 8"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1 4h24"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeDasharray="4 3"
+                          />
+                        </svg>
+                      )}
                     {fact.href ? (
                       <a
                         href={fact.href}

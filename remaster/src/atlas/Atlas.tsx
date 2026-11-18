@@ -11,7 +11,11 @@ import PlaceFinder from '../components/PlaceFinder';
 import ProjectorCaption from '../components/ProjectorCaption';
 import LifespanBar from '../components/LifespanBar';
 import MapKeySlot from '../components/MapKeySlot';
-import { framingBounds, useYearIndex, type Territory } from '../adapters/yearData';
+import {
+  framingBounds,
+  useYearIndex,
+  type Territory,
+} from '../adapters/yearData';
 import { useYearContext } from '../hooks/useYearContext';
 import { wikidataUrl } from '../lib/yearContext';
 import type { PlaceOption } from '../lib/places';
@@ -23,12 +27,22 @@ import type { MapHandle } from './mapController';
 
 // Start fetching MapLibre (its own chunk) as soon as the island's module
 // runs, in parallel with hydration, instead of after the first effect.
-const mapModule = typeof window === 'undefined' ? null : import('./mapController');
+const mapModule =
+  typeof window === 'undefined' ? null : import('./mapController');
 
 const SHORTCUTS = [
-  { keys: ['←', '→'], action: 'Previous or next year (when the map is not focused)' },
-  { keys: ['Home', 'End'], action: 'First or last year (when the timeline is focused)' },
-  { keys: ['←', '↑', '→', '↓'], action: 'Pan the map (when the map is focused)' },
+  {
+    keys: ['←', '→'],
+    action: 'Previous or next year (when the map is not focused)',
+  },
+  {
+    keys: ['Home', 'End'],
+    action: 'First or last year (when the timeline is focused)',
+  },
+  {
+    keys: ['←', '↑', '→', '↓'],
+    action: 'Pan the map (when the map is focused)',
+  },
   { keys: ['Esc'], action: 'Close the details panel' },
 ];
 
@@ -78,10 +92,14 @@ function AtlasApp() {
 
   const territories = index.value?.territories;
   const territory = territories?.find((t) => t.NAME === place);
-  const options = useMemo(() => (territories ? territories.map(territoryOption) : []), [territories]);
+  const options = useMemo(
+    () => (territories ? territories.map(territoryOption) : []),
+    [territories],
+  );
 
   const setYear = useCallback(
-    (next: number, method: TimelineChangeMethod) => actions.setYear(next, method),
+    (next: number, method: TimelineChangeMethod) =>
+      actions.setYear(next, method),
     [],
   );
   const handleFind = useCallback(
@@ -130,7 +148,9 @@ function AtlasApp() {
         data-testid="map-container"
         data-data-state={status === 'error' ? 'unavailable' : status}
         data-feature-count={status === 'ready' ? (territories?.length ?? 0) : 0}
-        data-panel-open={(!focusMode && Boolean(place && territory)) || undefined}
+        data-panel-open={
+          (!focusMode && Boolean(place && territory)) || undefined
+        }
       >
         <div className="frame">
           <MapView yearLabel={yearLabel} />
@@ -159,13 +179,18 @@ function AtlasApp() {
 
         {focusMode && (
           <>
-            <ProjectorCaption title={yearLabel} place={territory ? place ?? undefined : undefined} />
+            <ProjectorCaption
+              title={yearLabel}
+              place={territory ? (place ?? undefined) : undefined}
+            />
             <div className="focus-tools">
               {!projectorText && (
                 <button
                   type="button"
                   className="button"
-                  onClick={() => actions.updateSettings({ projectorText: true })}
+                  onClick={() =>
+                    actions.updateSettings({ projectorText: true })
+                  }
                 >
                   Use projector text
                 </button>
@@ -192,7 +217,9 @@ function AtlasApp() {
           </PlacePanel>
         )}
 
-        {!focusMode && !place && <ChangesSummary context={yearContext.value} year={year} />}
+        {!focusMode && !place && (
+          <ChangesSummary context={yearContext.value} year={year} />
+        )}
       </main>
 
       <FeedbackDialog />
@@ -202,36 +229,63 @@ function AtlasApp() {
           <>
             <p>
               Borders come from the{' '}
-              <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noreferrer">
+              <a
+                href="https://github.com/aourednik/historical-basemaps"
+                target="_blank"
+                rel="noreferrer"
+              >
                 historical-basemaps
               </a>{' '}
               project (snapshot of{' '}
-              {sourceDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })},{' '}
-              <a href={sources.historical.licenseUrl} target="_blank" rel="noreferrer">
+              {sourceDate.toLocaleDateString('en-US', {
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'UTC',
+              })}
+              ,{' '}
+              <a
+                href={sources.historical.licenseUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
                 GPL-3.0
               </a>
               ). {sources.historical.provenanceNote}
             </p>
             <p>
-              Each map is a snapshot around one year. Borders are reconstructions: most are approximate, some were
-              contested, and many peoples had no fixed borders at all.{' '}
-              <a href="https://github.com/aourednik/historical-basemaps/issues" target="_blank" rel="noreferrer">
+              Each map is a snapshot around one year. Borders are
+              reconstructions: most are approximate, some were contested, and
+              many peoples had no fixed borders at all.{' '}
+              <a
+                href="https://github.com/aourednik/historical-basemaps/issues"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Report a border error to the map data project
               </a>
               .
             </p>
             <p>
               Coastlines, lakes, rivers and relief come from{' '}
-              <a href="https://www.naturalearthdata.com/" target="_blank" rel="noreferrer">
+              <a
+                href="https://www.naturalearthdata.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Natural Earth
               </a>{' '}
-              (public domain); every map file is served from this site. Summaries from Wikipedia (CC BY-SA 4.0).
-              Capitals, rulers, and dates from{' '}
-              <a href="https://www.wikidata.org/" target="_blank" rel="noreferrer">
+              (public domain); every map file is served from this site.
+              Summaries from Wikipedia (CC BY-SA 4.0). Capitals, rulers, and
+              dates from{' '}
+              <a
+                href="https://www.wikidata.org/"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Wikidata
               </a>{' '}
-              (CC0), matched to these maps by name and reviewed; most peoples and cultures on early maps have no
-              such facts.
+              (CC0), matched to these maps by name and reviewed; most peoples
+              and cultures on early maps have no such facts.
             </p>
           </>
         }
@@ -255,7 +309,8 @@ function MapView({ yearLabel }: { yearLabel: string }) {
           return;
         }
         handle = mountMap(ref.current);
-        (window as unknown as { __atlasMap?: MapHandle['map'] }).__atlasMap = handle.map;
+        (window as unknown as { __atlasMap?: MapHandle['map'] }).__atlasMap =
+          handle.map;
       })
       .catch(() => actions.setWebgl(false));
     return () => {
@@ -273,14 +328,22 @@ function MapView({ yearLabel }: { yearLabel: string }) {
     return (
       <div className="map-canvas map-canvas--unavailable" role="alert">
         <p>
-          <strong>This device can’t draw the interactive map.</strong> It needs WebGL 2, which is turned off or
-          unsupported here.
+          <strong>This device can’t draw the interactive map.</strong> It needs
+          WebGL 2, which is turned off or unsupported here.
         </p>
         <p>
-          The timeline and the <a href="#territories">list of territories on this map</a> still work.
+          The timeline and the{' '}
+          <a href="#territories">list of territories on this map</a> still work.
         </p>
       </div>
     );
   }
-  return <div ref={ref} className="map-canvas" role="region" aria-label={`Map of the world in ${yearLabel}`} />;
+  return (
+    <div
+      ref={ref}
+      className="map-canvas"
+      role="region"
+      aria-label={`Map of the world in ${yearLabel}`}
+    />
+  );
 }

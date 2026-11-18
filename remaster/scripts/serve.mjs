@@ -29,20 +29,42 @@ const TYPES = {
   '.pbf': 'application/x-protobuf',
   '.woff2': 'font/woff2',
 };
-const COMPRESS = new Set(['.html', '.js', '.mjs', '.css', '.json', '.geojson', '.svg', '.txt', '.xml', '.pbf']);
+const COMPRESS = new Set([
+  '.html',
+  '.js',
+  '.mjs',
+  '.css',
+  '.json',
+  '.geojson',
+  '.svg',
+  '.txt',
+  '.xml',
+  '.pbf',
+]);
 const IMMUTABLE = /^\/(_astro|data\/years|data\/context)\//;
 const brCache = new Map();
 
 const resolve = (pathname) => {
   let clean;
   try {
-    clean = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, '');
+    clean = path
+      .normalize(decodeURIComponent(pathname))
+      .replace(/^(\.\.[/\\])+/, '');
   } catch {
     return null;
   }
-  for (const candidate of [clean, `${clean}.html`, path.join(clean, 'index.html')]) {
+  for (const candidate of [
+    clean,
+    `${clean}.html`,
+    path.join(clean, 'index.html'),
+  ]) {
     const file = path.join(root, candidate);
-    if (file.startsWith(root) && fs.existsSync(file) && fs.statSync(file).isFile()) return file;
+    if (
+      file.startsWith(root) &&
+      fs.existsSync(file) &&
+      fs.statSync(file).isFile()
+    )
+      return file;
   }
   return null;
 };
@@ -51,8 +73,15 @@ http
   .createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
     if (url.pathname === '/api/feedback') {
-      res.writeHead(503, { 'content-type': 'application/json', 'cache-control': 'no-store' });
-      res.end(JSON.stringify({ message: 'Feedback is unavailable in local static preview' }));
+      res.writeHead(503, {
+        'content-type': 'application/json',
+        'cache-control': 'no-store',
+      });
+      res.end(
+        JSON.stringify({
+          message: 'Feedback is unavailable in local static preview',
+        }),
+      );
       return;
     }
     let file = resolve(url.pathname);
@@ -75,12 +104,17 @@ http
       'x-content-type-options': 'nosniff',
     };
     let body = fs.readFileSync(file);
-    if (COMPRESS.has(ext) && /\bbr\b/.test(req.headers['accept-encoding'] || '')) {
+    if (
+      COMPRESS.has(ext) &&
+      /\bbr\b/.test(req.headers['accept-encoding'] || '')
+    ) {
       // Keyed by mtime so a rebuild is served without restarting.
       const key = `${file}:${fs.statSync(file).mtimeMs}`;
       let compressed = brCache.get(key);
       if (!compressed) {
-        compressed = zlib.brotliCompressSync(body, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 } });
+        compressed = zlib.brotliCompressSync(body, {
+          params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5 },
+        });
         brCache.set(key, compressed);
       }
       body = compressed;
@@ -90,4 +124,6 @@ http
     res.writeHead(status, headers);
     res.end(req.method === 'HEAD' ? undefined : body);
   })
-  .listen(port, '127.0.0.1', () => console.log(`Remaster preview: http://127.0.0.1:${port}`));
+  .listen(port, '127.0.0.1', () =>
+    console.log(`Remaster preview: http://127.0.0.1:${port}`),
+  );

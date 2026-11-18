@@ -74,29 +74,45 @@ export const styleOptions = (
     },
     projectorText: settings.projectorText,
     lowPower,
-    selected: sel && sel.id !== null && sel.name ? { id: sel.id, name: sel.name } : null,
+    selected:
+      sel && sel.id !== null && sel.name
+        ? { id: sel.id, name: sel.name }
+        : null,
   });
 
 /**
  * The full style. Year sources start empty; the controller hands MapLibre the
  * year's URLs once the preloaded downloads finish.
  */
-export const createStyle = ({ origin, settings, lowPower }: StyleOptions): StyleSpecification =>
+export const createStyle = ({
+  origin,
+  settings,
+  lowPower,
+}: StyleOptions): StyleSpecification =>
   classicAtlasStyle(origin, {}, styleOptions(settings, lowPower));
 
 /**
  * Applies settings and the selection to a live map: paint and layout only,
  * and feature-state for the borders, so the year's sources are never re-tiled.
  */
-export function applyDynamic(map: MapLibreMap, settings: Settings, sel: SelectionStyle, lowPower: boolean) {
+export function applyDynamic(
+  map: MapLibreMap,
+  settings: Settings,
+  sel: SelectionStyle,
+  lowPower: boolean,
+) {
   if (!map.getLayer(LAYER.stateLabels)) return;
   const options = styleOptions(settings, lowPower, sel);
   setSelection(map, options.selected, options, sel.dependencyIds);
 }
 
 /** Relief loads after the first paint so it never delays the borders. */
-export const addRelief = (map: MapLibreMap, origin: string, settings: Settings, lowPower: boolean) =>
-  classicAddRelief(map, origin, styleOptions(settings, lowPower));
+export const addRelief = (
+  map: MapLibreMap,
+  origin: string,
+  settings: Settings,
+  lowPower: boolean,
+) => classicAddRelief(map, origin, styleOptions(settings, lowPower));
 
 /** Registers the city, capital, ruins and hatch images (idempotent). */
 export const addMarkers = (map: MapLibreMap) => addMarkerImages(map);
@@ -109,7 +125,9 @@ export const resolveLowPower = (search: string) => {
   const forced = new URLSearchParams(search).get('lowPower');
   if (forced === '1' || forced === '0') return forced === '1';
   try {
-    return detectLowPower(document.createElement('canvas').getContext('webgl2'));
+    return detectLowPower(
+      document.createElement('canvas').getContext('webgl2'),
+    );
   } catch {
     return detectLowPower();
   }

@@ -37,3 +37,4 @@ remaster/playwright-report/
 
 # Static design reference mockups (Direction A spec), not app code.
 design/
+remaster/src/styles/tokens.css

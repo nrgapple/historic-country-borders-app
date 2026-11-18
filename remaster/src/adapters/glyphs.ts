@@ -25,12 +25,22 @@ export const FONTSTACK = {
 } as const;
 
 /** UI and map-alias CSS (docs/FONTS.md): default on every page, map on map pages, projector on demand. */
-export const FONT_CSS = fonts.css as { default: string; map: string; projector: string };
+export const FONT_CSS = fonts.css as {
+  default: string;
+  map: string;
+  projector: string;
+};
 
 /** Each family's OFL license file, for the About dialog. */
-export const FONT_LICENSES = fonts.licenses as Array<{ font: string; href: string }>;
+export const FONT_LICENSES = fonts.licenses as Array<{
+  font: string;
+  href: string;
+}>;
 
 if (import.meta.env.DEV) {
-  const missing = Object.values(FONTSTACK).filter((s) => !fonts.fontstacks.includes(s));
-  if (missing.length) console.warn(`Fontstacks not published by T3: ${missing.join(', ')}`);
+  const missing = Object.values(FONTSTACK).filter(
+    (s) => !fonts.fontstacks.includes(s),
+  );
+  if (missing.length)
+    console.warn(`Fontstacks not published by T3: ${missing.join(', ')}`);
 }

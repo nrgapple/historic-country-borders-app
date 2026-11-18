@@ -6,7 +6,8 @@
   z-index: 5;
   top: var(--frame-inset);
   right: var(--frame-inset);
-  bottom: var(--frame-inset);
+  /* Plan §2.2 rule 3: the panel ends above the home indicator. */
+  bottom: max(var(--frame-inset), var(--safe-bottom));
   width: min(var(--panel-width), calc(100% - 2 * var(--frame-inset)));
   display: flex;
   flex-direction: column;
@@ -172,8 +173,7 @@
 .place-panel__foot {
   display: flex;
   gap: 8px;
-  padding: 12px 26px
-    calc(12px + max(0px, var(--safe-bottom) - var(--frame-inset)));
+  padding: 12px 26px;
   border-top: 1px solid var(--hair);
   background: var(--sheet);
 }
@@ -311,7 +311,8 @@
     top: auto;
     left: 0;
     right: 0;
-    bottom: 0;
+    /* Plan §2.2 rule 3: a bottom sheet keeps clear of the home indicator. */
+    bottom: max(var(--frame-inset), var(--safe-bottom));
     width: auto;
     max-height: 47%;
     border-left: 0;
@@ -347,7 +348,7 @@
   }
 
   .place-panel__foot {
-    padding: 10px 18px calc(10px + var(--safe-bottom));
+    padding: 10px 18px;
   }
 
   .place-panel__foot .button {
@@ -358,6 +359,21 @@
 @media (max-height: 520px) and (max-width: 699px) {
   .place-panel {
     max-height: calc(100% - 24px);
+  }
+}
+
+/* Very short screens (a phone in landscape with Safari's toolbars): the
+   button row scrolls with the page instead of being pinned, so it never
+   squeezes into the bottom inset. */
+@media (max-height: 360px) {
+  .place-panel {
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .place-panel__scroll {
+    flex: none;
+    overflow: visible;
   }
 }
 

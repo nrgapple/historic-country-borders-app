@@ -96,6 +96,9 @@
 }
 
 .timeline__current-value {
+  /* inline-block: an inline span's box is the font's full content area, which
+     overhangs the header's first row; this keeps it to the line height. */
+  display: inline-block;
   font: 700 52px/0.95 var(--font-serif);
   font-variant-numeric: lining-nums;
   letter-spacing: -0.01em;
@@ -334,7 +337,7 @@
     grid-template-areas:
       'lead trail'
       'step step';
-    row-gap: 4px;
+    row-gap: 6px;
   }
 
   .timeline__leading {

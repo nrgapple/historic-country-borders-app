@@ -75,8 +75,8 @@ export default function Toolbar() {
       <button
         type="button"
         className="icon-button"
-        aria-label="Present to class"
-        title="Present to class: hide the controls"
+        aria-label="Present to class: hide controls"
+        title="Present to class: hide controls"
         onClick={toggleFocusMode}
       >
         <Icon name="present" />

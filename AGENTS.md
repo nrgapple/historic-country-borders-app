@@ -56,6 +56,10 @@ Use `yarn type-check`, `yarn test`, `yarn build`, and `yarn test:e2e` for narrow
 - Test loading, success, empty, malformed, timeout, and unavailable states for external data.
 - Browser tests should use semantic locators and verify user-visible outcomes, not implementation details.
 
+## Remaster app
+
+The Astro 7 remaster lives in `remaster/` (a nohoisted Yarn workspace of this `package.json`, one `yarn.lock`). Read `remaster/AGENTS.md` and `remaster/README.md` before working there. It is not deployed: production stays the Next.js app and `out/` until the P4 cutover. Use `yarn remaster:build`, `yarn remaster:preview`, `yarn remaster:test` and `yarn remaster:test:e2e`.
+
 ## Relay execution
 
 Long-running upgrade work is organized as milestone Relays under `.pi-web/relays/` in this order:

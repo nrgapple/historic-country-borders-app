@@ -130,6 +130,7 @@ The tiles carry five layers:
 - **PMTiles.** It needs Range requests, which Workers Static Assets does not honor.
 
 **Unverified until P0:** whether Workers Static Assets compresses `application/x-protobuf`. See `docs/BASEMAP.md`.
+
 ### Self-hosted OFL fonts and prebuilt map glyphs (remaster, 2026-11)
 
 Observed: the remaster's Classic-atlas design (plan §2.1) uses Alegreya, Alegreya SC and Alegreya Sans, and offers Atkinson Hyperlegible Next as projector text. Published names also use Canadian syllabics, Cherokee, Osage, IPA letters and combining marks. MapLibre 6.19 draws a glyph locally with TinySDF at 3.29 ms per glyph under 4× CPU, against 0.09 ms to decode it from a prebuilt PBF (`remaster-spike/results/glyph-raster.json`). Wrangler sends `.pbf` without a Content-Type.

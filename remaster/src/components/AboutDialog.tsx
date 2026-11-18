@@ -51,10 +51,10 @@ export default function AboutDialog({
         <p>
           Map labels and text use Alegreya, Alegreya SC and Alegreya Sans by
           Huerta Tipográfica, and Atkinson Hyperlegible Next by the Braille
-          Institute (for projector text). Names in Cherokee, Canadian
-          Aboriginal syllabics, Osage and some phonetic letters use Noto Sans
-          fonts by the Noto Project Authors. All fonts are used under the SIL
-          Open Font License 1.1.
+          Institute (for projector text). Names in Cherokee, Canadian Aboriginal
+          syllabics, Osage and some phonetic letters use Noto Sans fonts by the
+          Noto Project Authors. All fonts are used under the SIL Open Font
+          License 1.1.
         </p>
         <p className="about__licenses">
           Licenses:{' '}
@@ -96,9 +96,7 @@ export default function AboutDialog({
             <a href="/">Random year</a>
           </li>
           <li>
-            <a href="/pa/school-districts">
-              Pennsylvania school districts map
-            </a>
+            <a href="/pa/school-districts">Pennsylvania school districts map</a>
           </li>
           <li>
             <a href={REPOSITORY_URL} target="_blank" rel="noreferrer">

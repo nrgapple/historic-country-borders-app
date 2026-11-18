@@ -11,7 +11,12 @@
  *   `landmass_km2` drives the waterline rule.
  * - Relief is one Web Mercator WebP, added after the first paint.
  */
-import { attribution, globe, relief, tiles } from '@repo/data/basemap-manifest.json';
+import {
+  attribution,
+  globe,
+  relief,
+  tiles,
+} from '@repo/data/basemap-manifest.json';
 
 export const BASEMAP_TILES = tiles.url;
 export const BASEMAP_MAXZOOM = tiles.maxzoom;

@@ -177,6 +177,21 @@ body.atlas-page {
   max-width: calc(100% - var(--panel-width) - 120px);
 }
 
+/* Squeezed beside the panel or on short screens the strip would wrap into a
+   tall column; the panel, About and the attribution control carry the same
+   sources and uncertainty note there. */
+@media (max-width: 1100px) {
+  .stage[data-panel-open] .credit {
+    display: none;
+  }
+}
+
+@media (max-height: 520px) {
+  .credit {
+    display: none;
+  }
+}
+
 /* MapLibre controls in A's frame language, clear of the panel and insets. */
 .maplibregl-ctrl-bottom-right,
 .maplibregl-ctrl-bottom-left {

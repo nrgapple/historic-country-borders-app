@@ -1,4 +1,10 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
+import {
+  useEffect,
+  useId,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from 'react';
 import Dialog from './Dialog';
 import { useChrome } from '../atlas/hooks';
 import { useFingerPrint } from '../hooks/useFingerPrint';

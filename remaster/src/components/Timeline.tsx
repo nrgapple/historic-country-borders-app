@@ -351,7 +351,9 @@ export default function Timeline({
             <span className="timeline__current-display" aria-hidden="true">
               {parts && (
                 <>
-                  <span className="timeline__current-value" data-year-heading>{parts.value}</span>
+                  <span className="timeline__current-value" data-year-heading>
+                    {parts.value}
+                  </span>
                   <span className="timeline__current-suffix">
                     {parts.suffix}
                     <Icon name="chevronDown" size={14} />
