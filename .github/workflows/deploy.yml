@@ -60,4 +60,11 @@ jobs:
       - name: Static production smoke test
         env:
           BASE_URL: ${{ vars.PRODUCTION_URL || 'https://historic-borders.champtoday.workers.dev' }}
-        run: yarn smoke:production
+        # New assets can take a few seconds to reach every Cloudflare edge.
+        run: |
+          for attempt in 1 2 3 4; do
+            yarn smoke:production && exit 0
+            echo "Smoke attempt $attempt failed; retrying in 15 s"
+            sleep 15
+          done
+          exit 1
