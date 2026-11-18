@@ -5,7 +5,7 @@
  * of a stylesheet (or an HTML file's inline <style>), resolving `var()`
  * references. Token pairs are then checked with `contrastRatio`, compositing
  * translucent colours over their backdrop first. The same helpers check
- * today's `styles/index.css` and Direction A's tokens; the remaster's token
+ * Direction A's tokens (design/living-atlas); the remaster's token
  * file only needs a new pair list.
  */
 

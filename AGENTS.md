@@ -8,7 +8,7 @@ Historic Borders helps people explore how political borders changed over time. I
 
 - Production must remain viable on a free tier.
 - Public pages and map data must be static-first. Do not add request-time compute to ordinary page or crawler traffic.
-- Do not add generative-AI features. Gemini and the existing AI comparison functionality are being removed.
+- Do not add generative-AI features. Gemini and the AI comparison functionality were removed.
 - Keep secrets server-side. A variable prefixed with `NEXT_PUBLIC_` is public and must never contain a secret.
 - Preserve data attribution, provenance, vintage, and uncertainty notices.
 - Treat upstream map data as untrusted input: validate schemas and geometry before publishing it.
@@ -27,8 +27,8 @@ Historic Borders helps people explore how political borders changed over time. I
 2. Add or update tests before considering the change complete.
 3. Run the narrowest relevant tests while iterating.
 4. Run `yarn validate` before merge.
-5. For map-data changes, also run `yarn data:validate` once introduced.
-6. For critical journeys, run `yarn test:e2e` once introduced.
+5. For map-data changes, also run `yarn data:validate`.
+6. For critical journeys, run `yarn remaster:test:e2e`; for layout changes, `yarn test:layout`.
 7. Update product/architecture decisions when behavior or constraints change.
 
 The complete local quality gate is:
@@ -37,7 +37,7 @@ The complete local quality gate is:
 yarn validate
 ```
 
-Use `yarn type-check`, `yarn test`, `yarn build`, and `yarn test:e2e` for narrower checks. Known baseline gaps are recorded in `docs/product/SCORECARD.md`; do not hide them by weakening checks.
+`yarn quality` is the same gate without the browser journeys. Use `yarn checks` (format, root type-check, script/Worker tests, data validation), `yarn remaster:test`, `yarn remaster:build`, `yarn remaster:test:e2e`, `yarn cloudflare:check` and `yarn size:check` for narrower checks. Known baseline gaps are recorded in `docs/product/SCORECARD.md`; do not hide them by weakening checks.
 
 ## Architecture rules
 
@@ -51,14 +51,14 @@ Use `yarn type-check`, `yarn test`, `yarn build`, and `yarn test:e2e` for narrow
 ## Testing rules
 
 - Unit and integration tests must not require production secrets or live third-party APIs.
-- Use fixtures/request interception for GitHub, Wikipedia, PASDA, Mapbox, Airtable, and Discord behavior in CI.
+- Use fixtures/request interception for GitHub, Wikipedia, Wikidata, PASDA, PIAA, Airtable, and Discord behavior in CI.
 - Scheduled smoke tests may check live upstreams, but they must not gate ordinary pull requests.
 - Test loading, success, empty, malformed, timeout, and unavailable states for external data.
 - Browser tests should use semantic locators and verify user-visible outcomes, not implementation details.
 
 ## Remaster app
 
-The Astro 7 remaster lives in `remaster/` (a nohoisted Yarn workspace of this `package.json`, one `yarn.lock`). Read `remaster/AGENTS.md` and `remaster/README.md` before working there. It is production: `wrangler.toml` serves `remaster/dist/` (P4 cutover, 2026-11-18). The root Next.js app is legacy and no longer deployed. Use `yarn remaster:build`, `yarn remaster:preview`, `yarn remaster:test` and `yarn remaster:test:e2e`.
+The Astro 7 remaster lives in `remaster/` (a nohoisted Yarn workspace of this `package.json`, one `yarn.lock`). Read `remaster/AGENTS.md` and `remaster/README.md` before working there. It is production and the only app: `wrangler.toml` serves `remaster/dist/` (P4 cutover, 2026-11-18). The legacy Next.js app was removed the same day; it remains in the git history. Use `yarn remaster:build`, `yarn remaster:preview`, `yarn remaster:test` and `yarn remaster:test:e2e`.
 
 ## Relay execution
 

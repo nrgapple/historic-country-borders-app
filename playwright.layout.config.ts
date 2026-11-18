@@ -3,17 +3,16 @@ import type { Insets } from './e2e/layout/support';
 
 /**
  * Layout acceptance suites (REMASTER_PLAN §9.4–9.6): safe areas, responsive
- * widths and forced dark mode. Kept apart from playwright.config.ts so
- * `yarn test:e2e` stays fast.
+ * widths and forced dark mode, against the production build (remaster/dist).
  *
- *   yarn test:layout                                   # today's app on :3000
- *   BASE_URL=http://127.0.0.1:4400 yarn test:layout    # the spike or remaster
+ *   yarn test:layout                                   # serves remaster/dist on :4410
+ *   BASE_URL=http://127.0.0.1:4412 yarn test:layout    # an already running server
  *   yarn test:layout --project='safe-area:*'           # one suite
  *
- * Without BASE_URL the config serves the static export in out/ (run
- * `yarn build` first). With BASE_URL nothing is started.
+ * Without BASE_URL the config serves remaster/dist (run `yarn remaster:build`
+ * first). With BASE_URL nothing is started.
  */
-const baseURL = process.env.BASE_URL || 'http://127.0.0.1:3000';
+const baseURL = process.env.BASE_URL || 'http://127.0.0.1:4410';
 
 // Simulated safe-area insets in CSS px. iPhone values follow Apple's
 // published safe areas; Pixel 7 assumes Chrome's edge-to-edge mode with a
@@ -138,7 +137,7 @@ export default defineConfig<{ insets: Insets }>({
   webServer: process.env.BASE_URL
     ? undefined
     : {
-        command: 'yarn start -p 3000',
+        command: 'node remaster/scripts/serve.mjs remaster/dist 4410',
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

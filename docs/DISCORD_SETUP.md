@@ -11,35 +11,25 @@ The feedback system in this application sends user feedback to a Discord channel
 5. Choose the channel where you want feedback to appear
 6. Copy the **Webhook URL**
 
-## 2. Configure Environment Variables
+## 2. Store the webhook as a Worker secret
 
-Create a `.env.local` file in the root of your project (it will be gitignored):
-
-```bash
-DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
-```
-
-Replace `YOUR_WEBHOOK_ID` and `YOUR_WEBHOOK_TOKEN` with the values from your Discord webhook URL.
-
-## 3. Restart Your Development Server
-
-After adding the environment variable, restart your development server:
+The feedback endpoint is the `/api/feedback` Worker (`worker/index.ts`). Store the URL as a secret on that Worker, never in the static build or a `PUBLIC_` variable:
 
 ```bash
-yarn dev
+yarn wrangler secret put DISCORD_WEBHOOK_URL
 ```
+
+See `docs/FEEDBACK_SETUP.md` for the other destinations and the rate limit.
 
 ## Testing
 
-You can test the feedback system by:
+The Worker's tests use stubbed destinations and need no real webhook:
 
-1. Running the feedback tests:
+```bash
+yarn test tests/feedback-function.test.ts
+```
 
-   ```bash
-   yarn test feedback.test.ts
-   ```
-
-2. Using the feedback widget in the application UI
+Then submit feedback from the deployed site's feedback dialog.
 
 ## Troubleshooting
 
@@ -49,6 +39,6 @@ You can test the feedback system by:
 
 ## Security Note
 
-- Never commit your `.env.local` file to version control
+- Never commit the webhook URL or put it in `.env.example`
 - The webhook URL contains sensitive tokens that should be kept private
 - Consider using different webhooks for development and production environments

@@ -1,20 +1,20 @@
+'use strict';
+
+// Performance and build-size budgets for the production build (remaster/dist).
+// Run after `yarn remaster:build`. Every file in the build counts against the
+// Cloudflare Free plan's per-version file limit; the per-year data, glyph and
+// font budgets keep first loads small on school networks.
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 const { checkDeployableFiles } = require('./lib/deploy-files');
 
 const ROOT = path.join(__dirname, '..');
-const chunksDirectory = path.join(ROOT, '.next/static/chunks');
+const DIST = path.join(ROOT, 'remaster/dist');
 const budgets = {
-  totalJavaScript: 2100 * 1024,
-  largestJavaScriptChunk: 1550 * 1024,
-  initialRouteJavaScript: 400 * 1024,
-  // Combined per-year payloads (production until the remaster cutover).
-  historicalDataTotal: 32 * 1024 * 1024,
-  historicalDataLargest: 2600 * 1024,
-  // Split per-year files for the remaster, measured at Brotli quality 5,
-  // close to what Cloudflare's on-the-fly compression sends. 1492 is the
-  // outlier (~698 KiB polygons); the median year is far smaller.
+  // Split per-year files, measured at Brotli quality 5, close to what
+  // Cloudflare's on-the-fly compression sends. 1492 is the outlier
+  // (~698 KiB polygons); the median year is far smaller.
   splitDataTotal: 32 * 1024 * 1024,
   splitPolygonsLargestBrotli: 800 * 1024,
   splitLabelsLargestBrotli: 64 * 1024,
@@ -25,8 +25,6 @@ const budgets = {
   contextDataTotal: 2 * 1024 * 1024,
   contextDataLargest: 96 * 1024,
   capitalsDataLargest: 48 * 1024,
-  schoolDataRaw: 12000 * 1024,
-  schoolDataBrotli: 1850 * 1024,
   // Self-hosted fonts and map glyphs (docs/FONTS.md). Glyph PBFs are fetched
   // per visible range, so the per-file limit matters more than the total.
   glyphFiles: 160,
@@ -40,96 +38,15 @@ const budgets = {
   textbookLatinFonts: 72 * 1024,
 };
 
-/**
- * The Astro remaster's deployable tree (REMASTER_PLAN §5, §9.2 P5): every
- * file in remaster/dist counts against the same 16,000-file gate and 25 MiB
- * per-file limit, including T2's basemap, T8's PA street basemap and the
- * district tiles. Returns summary lines and pushes errors.
- */
-function checkRemaster(errorList) {
-  const dist = path.join(ROOT, 'remaster/dist');
-  if (!fs.existsSync(dist)) {
-    errorList.push('Missing remaster/dist. Run `yarn remaster:build` first.');
-    return [];
-  }
-  const result = checkDeployableFiles(dist);
-  errorList.push(...result.errors.map((e) => `remaster/dist: ${e}`));
-  const count = (rel) => {
-    const dir = path.join(dist, rel);
-    return fs.existsSync(dir) ? walk(dir).length : 0;
-  };
-  return [
-    `- Remaster deployable files in remaster/dist/: ${result.count} / ${result.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(result.largest.bytes)} ${result.largest.file}`,
-    `  - T2 basemap ${count('tiles/basemap') + count('basemap')}, T8 PA street basemap ${count('tiles/pa')}, PA district tiles ${count('tiles/pa-districts')}, glyphs ${count('glyphs')}, fonts ${count('fonts')}, year data ${count('data/historical') + count('data/context')}`,
-  ];
-}
-
 const walk = (directory) =>
-  fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    const entryPath = path.join(directory, entry.name);
-    return entry.isDirectory() ? walk(entryPath) : [entryPath];
-  });
+  fs.existsSync(directory)
+    ? fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+        const entryPath = path.join(directory, entry.name);
+        return entry.isDirectory() ? walk(entryPath) : [entryPath];
+      })
+    : [];
 const bytes = (file) => fs.statSync(file).size;
 const formatKiB = (value) => `${(value / 1024).toFixed(1)} KiB`;
-const errors = [];
-const enforce = (label, actual, limit) => {
-  if (actual > limit)
-    errors.push(`${label}: ${formatKiB(actual)} exceeds ${formatKiB(limit)}`);
-};
-
-if (process.argv.includes('--remaster')) {
-  const remasterErrors = [];
-  const lines = checkRemaster(remasterErrors);
-  console.log(lines.join('\n'));
-  if (process.env.GITHUB_STEP_SUMMARY)
-    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join('\n')}\n`);
-  if (remasterErrors.length) {
-    console.error(
-      `\nRemaster budget failures:\n${remasterErrors.map((e) => `- ${e}`).join('\n')}`,
-    );
-    process.exitCode = 1;
-  }
-  return;
-}
-
-if (!fs.existsSync(chunksDirectory)) {
-  console.error('Missing .next build output. Run `yarn build` first.');
-  process.exit(1);
-}
-
-const javascriptFiles = walk(chunksDirectory)
-  .filter((file) => file.endsWith('.js'))
-  .map((file) => ({ file: path.relative(ROOT, file), bytes: bytes(file) }))
-  .sort((a, b) => b.bytes - a.bytes);
-const totalJavaScript = javascriptFiles.reduce(
-  (total, file) => total + file.bytes,
-  0,
-);
-const largestJavaScript = javascriptFiles[0]?.bytes || 0;
-
-enforce('Total JavaScript', totalJavaScript, budgets.totalJavaScript);
-enforce(
-  'Largest JavaScript chunk',
-  largestJavaScript,
-  budgets.largestJavaScriptChunk,
-);
-
-const buildManifest = require('../.next/build-manifest.json');
-const routeSizes = ['/year/[year]', '/pa/school-districts'].map((route) => {
-  const routeFiles = [
-    ...new Set([
-      ...(buildManifest.pages['/_app'] || []),
-      ...(buildManifest.pages[route] || []),
-    ]),
-  ].filter((file) => file.endsWith('.js'));
-  const size = routeFiles.reduce(
-    (total, file) => total + bytes(path.join(ROOT, '.next', file)),
-    0,
-  );
-  enforce(`${route} initial JavaScript`, size, budgets.initialRouteJavaScript);
-  return { route, size };
-});
-
 const brotli5 = (file) =>
   zlib.brotliCompressSync(fs.readFileSync(file), {
     params: {
@@ -137,39 +54,40 @@ const brotli5 = (file) =>
       [zlib.constants.BROTLI_PARAM_SIZE_HINT]: bytes(file),
     },
   }).length;
-const historicalDirectoryFiles = walk(path.join(ROOT, 'out/data/historical'));
-const historicalFiles = historicalDirectoryFiles.filter((file) =>
-  /^[a-z0-9]+\.[a-f0-9]{16}\.json$/.test(path.basename(file)),
-);
-const historicalSizes = historicalFiles.map(bytes);
-const historicalTotal = historicalSizes.reduce(
-  (total, size) => total + size,
-  0,
-);
-const historicalLargest = Math.max(0, ...historicalSizes);
-enforce('Historical data total', historicalTotal, budgets.historicalDataTotal);
-enforce(
-  'Largest historical payload',
-  historicalLargest,
-  budgets.historicalDataLargest,
-);
+const errors = [];
+const enforce = (label, actual, limit) => {
+  if (actual > limit)
+    errors.push(`${label}: ${formatKiB(actual)} exceeds ${formatKiB(limit)}`);
+};
 
-const splitKinds = ['polygons', 'labels', 'index'];
-const split = Object.fromEntries(splitKinds.map((kind) => [kind, []]));
-historicalDirectoryFiles.forEach((file) => {
+if (!fs.existsSync(DIST)) {
+  console.error('Missing remaster/dist. Run `yarn remaster:build` first.');
+  process.exit(1);
+}
+
+// Every file wrangler uploads, including the T2 basemap, T8's PA street
+// basemap and the district tiles.
+const deployable = checkDeployableFiles(DIST);
+errors.push(...deployable.errors.map((e) => `remaster/dist: ${e}`));
+const count = (rel) => walk(path.join(DIST, rel)).length;
+
+const split = { polygons: [], labels: [], index: [] };
+walk(path.join(DIST, 'data/historical')).forEach((file) => {
   const match = path
     .basename(file)
     .match(/^[a-z0-9]+\.(polygons|labels|index)\.[a-f0-9]{16}\.json$/);
   if (match) split[match[1]].push({ raw: bytes(file), brotli: brotli5(file) });
 });
-splitKinds.forEach((kind) => {
-  if (split[kind].length !== historicalFiles.length)
+const years = split.polygons.length;
+if (!years) errors.push('Split year data: no files in data/historical');
+['labels', 'index'].forEach((kind) => {
+  if (split[kind].length !== years)
     errors.push(
-      `Split ${kind}: ${split[kind].length} files for ${historicalFiles.length} years`,
+      `Split ${kind}: ${split[kind].length} files for ${years} years`,
     );
 });
-const splitTotal = splitKinds
-  .flatMap((kind) => split[kind])
+const splitTotal = Object.values(split)
+  .flat()
   .reduce((total, file) => total + file.raw, 0);
 const largestBrotli = (kind) =>
   Math.max(0, ...split[kind].map((file) => file.brotli));
@@ -197,45 +115,28 @@ if (polygonYearsOver300 > budgets.splitPolygonYearsOver300KiB)
     `Split polygons: ${polygonYearsOver300} years exceed 300 KiB Brotli-5 (limit ${budgets.splitPolygonYearsOver300KiB}); see REMASTER_PLAN.md §6`,
   );
 
-const contextDirectoryFiles = walk(path.join(ROOT, 'out/data/context'));
+const contextFiles = walk(path.join(DIST, 'data/context')).filter((file) =>
+  file.endsWith('.json'),
+);
 const isCapitals = (file) => /\.capitals\.[a-f0-9]{16}\.json$/.test(file);
-const contextSizes = contextDirectoryFiles
-  .filter((file) => file.endsWith('.json') && !isCapitals(file))
-  .map(bytes);
+const contextSizes = contextFiles.filter((f) => !isCapitals(f)).map(bytes);
 const contextTotal = contextSizes.reduce((total, size) => total + size, 0);
 const contextLargest = Math.max(0, ...contextSizes);
-if (!contextSizes.length)
-  errors.push('Context data: no files in out/data/context');
+if (!contextSizes.length) errors.push('Context data: no files in data/context');
 enforce('Context data total', contextTotal, budgets.contextDataTotal);
 enforce('Largest context file', contextLargest, budgets.contextDataLargest);
-const capitalsSizes = contextDirectoryFiles.filter(isCapitals).map(bytes);
-if (capitalsSizes.length !== historicalFiles.length)
-  errors.push(
-    `Capitals: ${capitalsSizes.length} files for ${historicalFiles.length} years`,
-  );
+const capitalsSizes = contextFiles.filter(isCapitals).map(bytes);
+if (capitalsSizes.length !== years)
+  errors.push(`Capitals: ${capitalsSizes.length} files for ${years} years`);
 const capitalsLargest = Math.max(0, ...capitalsSizes);
 enforce('Largest capitals file', capitalsLargest, budgets.capitalsDataLargest);
 
-// Every file wrangler uploads counts against the Free plan's per-version
-// limit. DEPLOY_DIR lets the remaster point this at dist/.
-const deployDirectory = path.join(ROOT, process.env.DEPLOY_DIR || 'out');
-const deployable = checkDeployableFiles(deployDirectory);
-errors.push(...deployable.errors);
-
-const schoolDataPath = path.join(ROOT, 'out/data/pa-school-districts.json');
-const schoolRaw = bytes(schoolDataPath);
-const schoolBrotli = zlib.brotliCompressSync(
-  fs.readFileSync(schoolDataPath),
-).length;
-enforce('School payload raw', schoolRaw, budgets.schoolDataRaw);
-enforce('School payload Brotli', schoolBrotli, budgets.schoolDataBrotli);
-
-const glyphSizes = walk(path.join(ROOT, 'out/glyphs'))
+const glyphSizes = walk(path.join(DIST, 'glyphs'))
   .filter((file) => file.endsWith('.pbf'))
   .map(bytes);
 const glyphTotal = glyphSizes.reduce((total, size) => total + size, 0);
 const glyphLargest = Math.max(0, ...glyphSizes);
-if (!glyphSizes.length) errors.push('Glyphs: no PBFs in out/glyphs');
+if (!glyphSizes.length) errors.push('Glyphs: no PBFs in glyphs/');
 if (glyphSizes.length > budgets.glyphFiles)
   errors.push(
     `Glyph files: ${glyphSizes.length} exceeds ${budgets.glyphFiles}`,
@@ -243,7 +144,7 @@ if (glyphSizes.length > budgets.glyphFiles)
 enforce('Glyph PBF total', glyphTotal, budgets.glyphTotal);
 enforce('Largest glyph PBF', glyphLargest, budgets.glyphLargest);
 
-const fontSizes = walk(path.join(ROOT, 'out/fonts/files'))
+const fontSizes = walk(path.join(DIST, 'fonts/files'))
   .filter((file) => file.endsWith('.woff2'))
   .map(bytes);
 const fontTotal = fontSizes.reduce((total, size) => total + size, 0);
@@ -255,7 +156,7 @@ const fontManifest = require('../data/map-fonts.json');
 const latinFontBytes = (group) =>
   fontManifest.fonts.ui[group]
     .filter((file) => /-latin-\d/.test(file))
-    .reduce((total, file) => total + bytes(path.join(ROOT, 'out', file)), 0);
+    .reduce((total, file) => total + bytes(path.join(DIST, file)), 0);
 const defaultLatinFonts = latinFontBytes('default');
 const projectorLatinFonts = latinFontBytes('projector');
 const textbookLatinFonts = latinFontBytes('textbook');
@@ -271,40 +172,19 @@ enforce(
   budgets.textbookLatinFonts,
 );
 
-// The remaster is gated whenever it has been built (P5 adds the PA trees).
-const remasterLines = fs.existsSync(path.join(ROOT, 'remaster/dist'))
-  ? checkRemaster(errors)
-  : [
-      '- Remaster: not built (run `yarn remaster:build`, then `yarn size:check --remaster`)',
-    ];
-
 const summary = [
   '## Performance and build-size budgets',
   '',
-  `- JavaScript chunks: ${formatKiB(totalJavaScript)} / ${formatKiB(budgets.totalJavaScript)}`,
-  `- Largest JavaScript chunk: ${formatKiB(largestJavaScript)} / ${formatKiB(budgets.largestJavaScriptChunk)}`,
-  ...routeSizes.map(
-    ({ route, size }) =>
-      `- ${route} initial JavaScript: ${formatKiB(size)} / ${formatKiB(budgets.initialRouteJavaScript)}`,
-  ),
-  `- Historical data: ${formatKiB(historicalTotal)} total / ${formatKiB(budgets.historicalDataTotal)}; ${formatKiB(historicalLargest)} largest / ${formatKiB(budgets.historicalDataLargest)}`,
-  `- Split historical data: ${formatKiB(splitTotal)} total / ${formatKiB(budgets.splitDataTotal)}; Brotli-5 largest polygons ${formatKiB(largestBrotli('polygons'))} / ${formatKiB(budgets.splitPolygonsLargestBrotli)}, labels ${formatKiB(largestBrotli('labels'))} / ${formatKiB(budgets.splitLabelsLargestBrotli)}, index ${formatKiB(largestBrotli('index'))} / ${formatKiB(budgets.splitIndexLargestBrotli)}; ${polygonYearsOver300} polygon years over 300 KiB / ${budgets.splitPolygonYearsOver300KiB}`,
+  `- Deployable files in remaster/dist/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
+  `  - T2 basemap ${count('tiles/basemap') + count('basemap')}, T8 PA street basemap ${count('tiles/pa')}, PA district tiles ${count('tiles/pa-districts')}, glyphs ${count('glyphs')}, fonts ${count('fonts')}, year data ${count('data/historical') + count('data/context')}`,
+  `- Split historical data (${years} years): ${formatKiB(splitTotal)} total / ${formatKiB(budgets.splitDataTotal)}; Brotli-5 largest polygons ${formatKiB(largestBrotli('polygons'))} / ${formatKiB(budgets.splitPolygonsLargestBrotli)}, labels ${formatKiB(largestBrotli('labels'))} / ${formatKiB(budgets.splitLabelsLargestBrotli)}, index ${formatKiB(largestBrotli('index'))} / ${formatKiB(budgets.splitIndexLargestBrotli)}; ${polygonYearsOver300} polygon years over 300 KiB / ${budgets.splitPolygonYearsOver300KiB}`,
   `- Capitals: ${formatKiB(capitalsLargest)} largest / ${formatKiB(budgets.capitalsDataLargest)}`,
   `- Context data: ${formatKiB(contextTotal)} total / ${formatKiB(budgets.contextDataTotal)}; ${formatKiB(contextLargest)} largest / ${formatKiB(budgets.contextDataLargest)}`,
-  `- School data: ${formatKiB(schoolRaw)} raw / ${formatKiB(budgets.schoolDataRaw)}; ${formatKiB(schoolBrotli)} Brotli / ${formatKiB(budgets.schoolDataBrotli)}`,
-  `- Deployable files in ${path.relative(ROOT, deployDirectory)}/: ${deployable.count} / ${deployable.maxFiles} (Cloudflare Free limit 20,000); largest ${formatKiB(deployable.largest.bytes)} ${deployable.largest.file}`,
   `- Glyph PBFs: ${glyphSizes.length} files / ${budgets.glyphFiles}; ${formatKiB(glyphTotal)} total / ${formatKiB(budgets.glyphTotal)}; ${formatKiB(glyphLargest)} largest / ${formatKiB(budgets.glyphLargest)}`,
-  ...remasterLines,
   `- WOFF2 fonts: ${fontSizes.length} files / ${budgets.fontFiles}; ${formatKiB(fontTotal)} total / ${formatKiB(budgets.fontTotal)}; Latin UI ${formatKiB(defaultLatinFonts)} default / ${formatKiB(budgets.defaultLatinFonts)}, ${formatKiB(projectorLatinFonts)} projector / ${formatKiB(budgets.projectorLatinFonts)}, ${formatKiB(textbookLatinFonts)} textbook / ${formatKiB(budgets.textbookLatinFonts)}`,
 ];
 
 console.log(summary.slice(2).join('\n'));
-console.log('\nLargest chunks:');
-javascriptFiles
-  .slice(0, 5)
-  .forEach(({ file, bytes: size }) =>
-    console.log(`- ${formatKiB(size)} ${file}`),
-  );
 if (process.env.GITHUB_STEP_SUMMARY)
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summary.join('\n')}\n`);
 if (errors.length) {

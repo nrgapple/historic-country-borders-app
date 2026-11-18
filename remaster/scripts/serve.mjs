@@ -4,8 +4,8 @@
 //   with status 404 (not_found_handling = "404-page").
 // - Brotli (quality 5, cached per file) for text types, like on-the-fly CDN
 //   compression; Range is ignored (always 200 and the whole file).
-// - /api/feedback answers 503, as scripts/static-server.js does for the
-//   current app: the Worker route is not part of the static preview.
+// - /api/feedback answers 503: the Worker route is not part of the static
+//   preview.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';

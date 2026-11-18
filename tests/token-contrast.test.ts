@@ -85,47 +85,6 @@ describe('contrast helpers', () => {
   });
 });
 
-describe("today's tokens (styles/index.css)", () => {
-  const tokens = readTokens(read('styles/index.css'));
-  const backgrounds = [
-    'paper',
-    'surface',
-    'surface-2',
-    'danger-soft',
-    'warning-soft',
-    'accent-soft over surface',
-  ];
-
-  it('meets WCAG AA for every text token on every background token', () => {
-    expectAA(
-      tokens,
-      [
-        ...allPairs(
-          ['ink', 'ink-2', 'ink-3', 'accent', 'accent-ink'],
-          backgrounds,
-        ),
-        // Primary button and the ruler's hover label.
-        { foreground: 'surface', background: 'ink' },
-      ],
-      // Observed 2026-11-17: --ink-3 (#8c857a) is used for small text
-      // (placeholders, "optional", fact sources, change counts) at
-      // 3.07–3.59:1. Recorded in docs/product/SCORECARD.md.
-      backgrounds.map((background) => `ink-3 on ${background}`),
-    );
-  });
-
-  it('meets 3:1 for focus rings, the accent and ruler ticks', () => {
-    expectAA(
-      tokens,
-      allPairs(
-        ['focus', 'accent', 'ink-3'],
-        ['paper', 'surface', 'surface-2'],
-        AA_LARGE_OR_GRAPHIC,
-      ),
-    );
-  });
-});
-
 describe('Direction A tokens (design/living-atlas/a-classic-atlas.html)', () => {
   // Until the remaster's token file exists, the Direction A mock is the
   // source of truth. Point this at the token file when T5 adds it.

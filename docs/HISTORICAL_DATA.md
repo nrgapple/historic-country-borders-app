@@ -39,7 +39,7 @@ Offline validation rejects any published border ring that is not already in this
 12. writes source/output SHA-256 hashes, byte counts, feature/anomaly/fallback counts, and asset URLs to `data/historical-assets.json`; and
 13. derives the split year files and `data/historical-split-assets.json` from those payloads (see Split year files), then removes every file in `public/data/historical/` that no manifest references.
 
-`yarn data:validate:historical` is offline. It verifies the source pin, complete year set, immutable names, every committed byte/hash/count, geometry, names (including the text checks in step 10), the override file's structure and recorded hash, and browser payload contract. It then **rebuilds every split file offline** from the committed payloads, place classes and overlord aliases and requires byte-for-byte equality with the committed files and manifest, and fails on any unreferenced file in `public/data/historical/`. Normal `yarn build` only copies these committed files; it never contacts GitHub.
+`yarn data:validate:historical` is offline. It verifies the source pin, complete year set, immutable names, every committed byte/hash/count, geometry, names (including the text checks in step 10), the override file's structure and recorded hash, and browser payload contract. It then **rebuilds every split file offline** from the committed payloads, place classes and overlord aliases and requires byte-for-byte equality with the committed files and manifest, and fails on any unreferenced file in `public/data/historical/`. Normal `yarn remaster:build` only copies these committed files; it never contacts GitHub.
 
 ## Blank names
 

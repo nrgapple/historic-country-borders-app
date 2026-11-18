@@ -32,13 +32,11 @@ jobs:
           # this repository, never user input. Remove once a fix ships.
           allow-ghsas: GHSA-fc5q-39xc-vjpf
 
-  validate:
+  checks:
+    # Formatting, type-check and unit tests for the data scripts and the
+    # feedback Worker, plus validation of every committed data artifact.
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    env:
-      NEXT_TELEMETRY_DISABLED: '1'
-      # A non-secret placeholder is sufficient because E2E intercepts Mapbox.
-      NEXT_PUBLIC_MAPBOX_TOKEN: test-token
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,76 +45,7 @@ jobs:
           cache: yarn
       - run: corepack enable
       - run: yarn install --frozen-lockfile
-      - run: yarn quality
-      - name: Upload coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          if-no-files-found: ignore
-          retention-days: 7
-      - run: yarn playwright install --with-deps chromium firefox webkit
-      - run: yarn test:e2e:run
-      - name: Upload browser-test artifacts
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          if-no-files-found: ignore
-          retention-days: 7
-
-  layout:
-    # Safe-area (iPhone insets), responsive widths and forced-dark suites from
-    # playwright.layout.config.ts, run against the production remaster build.
-    # A report, not a deploy gate: the deploy job does not wait for it.
-    # The map renders in software on CI runners (~13 s a test), so the 351
-    # tests are split across six parallel shards (Actions minutes are free
-    # for this public repository).
-    name: layout (${{ matrix.shard }}/6)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4, 5, 6]
-    env:
-      ASTRO_TELEMETRY_DISABLED: '1'
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - run: corepack enable
-      - run: yarn install --frozen-lockfile
-      - run: yarn remaster:build
-      - run: yarn playwright install --with-deps chromium webkit
-      - name: Serve the remaster build
-        run: |
-          node remaster/scripts/serve.mjs remaster/dist 4410 > serve.log 2>&1 &
-          for attempt in $(seq 1 30); do
-            curl -sf http://127.0.0.1:4410/ > /dev/null && exit 0
-            sleep 1
-          done
-          cat serve.log
-          exit 1
-      - run: yarn test:layout --shard=${{ matrix.shard }}/6
-        env:
-          BASE_URL: http://127.0.0.1:4410
-      - name: Upload layout-test artifacts
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: layout-report-${{ matrix.shard }}
-          path: |
-            playwright-report/
-            test-results/
-          if-no-files-found: ignore
-          retention-days: 7
+      - run: yarn checks
 
   remaster:
     # The production app (Astro + MapLibre, remaster/). Its tested build is
@@ -137,6 +66,8 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn remaster:build
       - run: node scripts/validate-remaster-dist.js
+      - run: yarn cloudflare:check
+      - run: yarn size:check
       - name: Keep the build for the deploy job
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
@@ -149,9 +80,11 @@ jobs:
       - run: yarn remaster:type-check
       - run: yarn remaster:test
       # The remaster pins its own Playwright; `yarn --cwd remaster playwright`
-      # resolves the root app's older one and installs the wrong browsers.
+      # resolves the root's older one and installs the wrong browsers.
+      # apt has hung this step for 20+ minutes on GitHub runners.
       - run: ./node_modules/.bin/playwright install --with-deps chromium firefox webkit
         working-directory: remaster
+        timeout-minutes: 8
       - run: yarn remaster:test:e2e
       - name: Upload remaster browser-test artifacts
         if: failure()
@@ -166,9 +99,8 @@ jobs:
 
   deploy:
     # Production: ships the remaster job's tested build as soon as it passes.
-    # It does not wait for `validate` (the legacy Next.js app's quality and
-    # browser tests, which still run and report): the legacy app is not
-    # deployed, and its browser install once hung for 20+ minutes and held a
+    # It does not wait for `checks` (reported separately) and the layout
+    # suites run in their own workflow (layout.yml), so neither can hold a
     # release. Rebuilding here would add minutes for nothing.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [remaster]

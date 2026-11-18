@@ -2,13 +2,13 @@
 
 ## Architecture and free-tier boundary
 
-The Next.js app exports portable files to `out/`. Cloudflare **Workers Static Assets** serves all HTML, JavaScript, crawler files, and map data directly from the asset layer. Static asset requests are free and unlimited and do not invoke Worker code.
+The Astro app prerenders portable files to `remaster/dist/`. Cloudflare **Workers Static Assets** serves all HTML, JavaScript, crawler files, and map data directly from the asset layer. Static asset requests are free and unlimited and do not invoke Worker code.
 
 `wrangler.toml` is the authoritative routing boundary:
 
 ```toml
 [assets]
-directory = "./out"
+directory = "./remaster/dist"
 run_worker_first = ["/api/feedback"]
 not_found_handling = "404-page"
 ```
@@ -35,13 +35,13 @@ Use Node 22 and Yarn Classic:
 ```bash
 nvm use
 yarn install --frozen-lockfile
-yarn build
-yarn static:validate
+yarn remaster:build
+yarn remaster:dist:validate
 yarn cloudflare:check
-yarn preview -p 3000
+yarn remaster:preview
 ```
 
-Verify `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, and `/year/9999`. The unknown year must return the useful static 404. Local static preview deliberately returns a bounded 503 at `/api/feedback`; this proves the site remains useful when dynamic feedback is unavailable. `yarn test:e2e` automates these journeys across Chromium, Firefox, and WebKit.
+Verify `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, and `/year/9999`. The unknown year must return the useful static 404. Local static preview deliberately returns a bounded 503 at `/api/feedback`; this proves the site remains useful when dynamic feedback is unavailable. `yarn remaster:test:e2e` automates these journeys across Chromium, Firefox, and WebKit.
 
 `yarn cloudflare:check` performs a complete Wrangler dry-run, including the Worker, static assets, exact route, Durable Object binding, and migration.
 
@@ -50,8 +50,8 @@ Verify `/`, `/year/1994`, `/year/-100`, `/pa/school-districts`, and `/year/9999`
 Account authentication and secret changes require the owner; never paste credentials into chat or commit them.
 
 1. Confirm the Cloudflare account is on Free with no paid Workers subscription or add-on.
-2. Build with Node 22 and the public `NEXT_PUBLIC_MAPBOX_TOKEN` and optional `NEXT_PUBLIC_GA_FOUR`. Never run a `data:refresh*` command during deployment.
-3. Run `yarn build`, `yarn static:validate`, `yarn cloudflare:check`, then `yarn cloudflare:deploy`.
+2. Build with Node 22 and the optional public `PUBLIC_GA_FOUR`. Never run a `data:refresh*` command during deployment.
+3. Run `yarn remaster:build`, `yarn remaster:dist:validate`, `yarn cloudflare:check`, then `yarn cloudflare:deploy`.
 4. Configure at least one destination using `wrangler secret put`: `DISCORD_WEBHOOK_URL`, or `AIRTABLE_PERSONAL_ACCESS_TOKEN` plus `AIRTABLE_BASE_ID`; `AIRTABLE_TABLE_NAME` defaults to `Feedback`.
 5. Do not transfer obsolete Gemini, Redis, GitHub, or public webhook credentials.
 
@@ -97,7 +97,7 @@ M3 evidence on 2026-09-03:
 
 ## Custom-domain plan (M4 only)
 
-The authoritative account/DNS/DNSSEC procedure, go/no-go checks, exact validation commands, rollback thresholds, Free-plan checks, and post-launch review are in `docs/M4_LAUNCH_RUNBOOK.md`. DNS access remains owner-only. The current Vercel apex returns 402 and is not a viable DNS rollback target unless the owner first re-enables and smoke-tests it. `_redirects` intentionally contains no broad or host-level rewrite.
+The authoritative account/DNS/DNSSEC procedure, go/no-go checks, exact validation commands, rollback thresholds, Free-plan checks, and post-launch review are in `docs/M4_LAUNCH_RUNBOOK.md`. DNS access remains owner-only. The current Vercel apex returns 402 and is not a viable DNS rollback target unless the owner first re-enables and smoke-tests it. The build ships no `_redirects`, so there is no broad or host-level rewrite.
 
 ## Rollback
 
@@ -109,12 +109,13 @@ During M4, prefer a Cloudflare Worker-version rollback while leaving the custom 
 
 Builds and deploys run in GitHub Actions; local `wrangler deploy` is only a fallback.
 
-- `CI` (`.github/workflows/ci.yml`) runs `yarn quality` and the three-browser journeys on every pull request and on `main`.
-- `Preview` (`.github/workflows/preview.yml`) builds each same-repository pull request with the real public Mapbox token. It deploys the result to a separate, static-only Worker, `historic-borders-preview` (`wrangler.preview.toml`): no feedback endpoint, no Durable Object, no production routes. The newest pull request build replaces the previous preview. The workflow comments the preview URL on the pull request. Cloudflare does not generate per-version preview URLs for Workers that use Durable Objects, which is why previews use a separate Worker.
-- `Deploy` (`.github/workflows/deploy.yml`) runs after `CI` succeeds for a push to `main`, or by manual dispatch. It builds, validates the static export, runs `wrangler deploy`, and smoke-tests `vars.PRODUCTION_URL`, which defaults to the Worker hostname until the custom domain is live.
+- `CI` (`.github/workflows/ci.yml`) runs on every pull request and on `main`: `checks` (format, type-check, script/Worker tests, data validation) and `remaster` (build, dist validation, `cloudflare:check`, `size:check`, type-check, unit tests, three-browser journeys). On `main`, its `deploy` job ships the `remaster` job's tested build as soon as that job passes.
+- `Layout` (`.github/workflows/layout.yml`) runs the safe-area, width and forced-dark suites in six shards. It is a report, not a deploy gate, and lives in its own workflow so a stuck run is cancelled by the next push instead of delaying the next deploy.
+- `Preview` (`.github/workflows/preview.yml`) builds each same-repository pull request. It deploys the result to a separate, static-only Worker, `historic-borders-preview` (`wrangler.preview.toml`): no feedback endpoint, no Durable Object, no production routes. The newest pull request build replaces the previous preview. The workflow comments the preview URL on the pull request. Cloudflare does not generate per-version preview URLs for Workers that use Durable Objects, which is why previews use a separate Worker.
+- `Deploy` (`.github/workflows/deploy.yml`) is a manual, rebuild-from-source redeploy of `main`. It builds, validates the build, runs `wrangler deploy`, and smoke-tests `vars.PRODUCTION_URL`.
 
-Repository secrets: `CLOUDFLARE_API_TOKEN` (the "Edit Cloudflare Workers" template, scoped to this account), `CLOUDFLARE_ACCOUNT_ID`, and `NEXT_PUBLIC_MAPBOX_TOKEN` (public and URL-restricted). Optional repository variables: `PRODUCTION_URL` and `NEXT_PUBLIC_GA_FOUR`.
+Repository secrets: `CLOUDFLARE_API_TOKEN` (the "Edit Cloudflare Workers" template, scoped to this account) and `CLOUDFLARE_ACCOUNT_ID`. Optional repository variables: `PRODUCTION_URL` and `NEXT_PUBLIC_GA_FOUR` (the GA4 ID; the workflows pass it to the build as `PUBLIC_GA_FOUR`, and the variable keeps its historical name). The `NEXT_PUBLIC_MAPBOX_TOKEN` secret is no longer used.
 
-Mapbox URL restrictions must allow the production hosts and the preview host, `https://historic-borders-preview.champtoday.workers.dev`. Otherwise previews render no basemap.
+The app makes no Mapbox requests; the old public Mapbox token can be revoked.
 
 Rollback: use Workers & Pages → `historic-borders` → Deployments to route traffic back to the previous version. Then revert the commit on `main` so the next deploy does not reintroduce the problem.

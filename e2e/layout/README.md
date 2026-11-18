@@ -6,20 +6,20 @@ These Playwright suites implement the acceptance checks in `docs/product/REMASTE
 - `responsive.spec.ts` covers §9.5, widths from 390 to 1440 px.
 - `forced-dark.spec.ts` covers §9.6, forced dark mode and a dark preference.
 
-They use their own config, `playwright.layout.config.ts`, so `yarn test:e2e` stays fast.
+They use their own config, `playwright.layout.config.ts`, apart from the app's journeys (`yarn remaster:test:e2e`).
 
 ## Running
 
 ```bash
-yarn build && yarn test:layout                      # today's app; the config serves out/ on :3000
-BASE_URL=http://127.0.0.1:4400 yarn test:layout     # the spike or the remaster; nothing is started
-LAYOUT_THEME=textbook BASE_URL=… yarn test:layout   # every page in one remaster map style (classic|textbook)
+yarn remaster:build && yarn test:layout             # the config serves remaster/dist on :4410
+BASE_URL=http://127.0.0.1:4412 yarn test:layout     # an already running server; nothing is started
+LAYOUT_THEME=textbook BASE_URL=… yarn test:layout   # every page in one map style (classic|textbook)
 yarn test:layout --project='safe-area:*'            # one suite (or 'responsive:*', 'forced-dark:*')
 ```
 
-Build today's app with `NEXT_PUBLIC_MAPBOX_TOKEN=test-token`. The suites intercept every third-party request:
+The suites intercept every third-party request:
 
-- Mapbox gets an empty style, so no token is used and no metered loads happen.
+- Mapbox (which the app no longer uses) would get an empty style, so no metered loads can happen.
 - Wikipedia gets a fixed summary.
 - Every other off-origin request is aborted.
 
@@ -46,7 +46,7 @@ The insets are simulated differently in each engine:
 
 - **Chromium** sets real `env()` values through CDP's `Emulation.setSafeAreaInsetsOverride`.
 - **WebKit** cannot inject `env()`. The page reads `--test-inset-*` custom properties through `max(env(...), var(--test-inset-*, 0px))`.
-  - Today's app does this through the `--safe-*` tokens in `styles/index.css`. The spike does it through `--inset-*`.
+  - The app does this through its `--safe-*` tokens.
   - For an app without the hook, the suite rewrites `env(safe-area-inset-*)` in served CSS and HTML to the same expression. The served files are rewritten only in the test.
 
 Devices render at 1× scale. Layout is in CSS px, and a 3× WebGL map is slow in software rendering.

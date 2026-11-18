@@ -37,7 +37,7 @@ yarn data:validate:pa-basemap  # offline; also part of yarn data:validate
 - The cache is `PA_BASEMAP_CACHE_DIR` (default `.cache/pa-basemap/<build date>/`, gitignored): decompressed MVTs, and an empty `.none` marker for tiles the archive does not have.
 - The refresh aborts if the archive's etag differs from the pin, or if any Range response is short or changes etag mid-run.
 - It writes the new tree to `<tree>.tmp` and swaps it in only when complete, then removes older recipe builds.
-- `yarn build`, `yarn remaster:build`, tests and validation never touch the network. `yarn remaster:build` copies the committed tree into `remaster/dist/tiles/pa/<build>/`.
+- `yarn remaster:build`, tests and validation never touch the network. `yarn remaster:build` copies the committed tree into `remaster/dist/tiles/pa/<build>/`.
 
 ## Max zoom: z12 with z14 streets, by measurement
 
@@ -55,7 +55,7 @@ Protomaps names residential streets only from z14. At z12 and z13 its tiles carr
 
 **Decision: z0–12 with z14 streets, trimmed.**
 
-- **Files.** 3,864 instead of 13,109. With T2's 1,368 files, the district tiles and everything else, the remaster deploys 6,570 files against the 16,000 gate (`yarn size:check --remaster`). Any z13 tree would have used most of the remaining headroom; native z14 alone exceeds Cloudflare's 20,000-file limit.
+- **Files.** 3,864 instead of 13,109. With T2's 1,368 files, the district tiles and everything else, the remaster deploys 6,570 files against the 16,000 gate (`yarn size:check`). Any z13 tree would have used most of the remaining headroom; native z14 alone exceeds Cloudflare's 20,000-file limit.
 - **Detail.** A z12 tile at extent 4096 is a 1.9 m grid at 41° N, and the street geometry is z14's, simplified to 2 grid units. MapLibre overzooms z12 to the page's max zoom 15, where one grid unit is one pixel.
 - **Bytes.** The published tree is smaller than any z13 option. Streets are most of it: z12 is 24.3 MiB, and 15.9 MiB of that is residential streets. "Trimmed" means water polygons under 1,024 tile units² (ponds a few pixels across) are dropped ring by ring, and streets are simplified at 2 units instead of 1.
 - **The plan's estimate** (§5: "about 10k files at z13") was the state only. The tree also needs z0–12 around it, and a bounding box rather than the state outline at z13 would be 17,658 files.
@@ -110,7 +110,7 @@ The page's style module is `remaster/src/pa/paStyle.ts`. It uses Direction A's t
 
 ## Budgets
 
-These are enforced by `yarn data:validate:pa-basemap` (`BUDGETS` in `scripts/lib/pa-basemap.js`) and by `yarn size:check --remaster`:
+These are enforced by `yarn data:validate:pa-basemap` (`BUDGETS` in `scripts/lib/pa-basemap.js`) and by `yarn size:check`:
 
 | Budget                    |   Limit |                   Current |
 | ------------------------- | ------: | ------------------------: |

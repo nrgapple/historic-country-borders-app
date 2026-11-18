@@ -1,70 +1,12 @@
-/// <reference types="vitest" />
 import { defineConfig } from 'vitest/config';
 
+// Node tests for the data scripts (scripts/), the feedback Worker (worker/)
+// and the production smoke check. The remaster has its own Vitest config:
+// yarn remaster:test.
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./test/setup.ts'],
-    css: true,
-    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: [
-      '**/node_modules/**',
-      '**/e2e/**',
-      // The remaster has its own Vitest (React 19) config: yarn remaster:test.
-      'remaster/**',
-      // The spike has its own package.json and tests (cd remaster-spike && yarn test).
-      'remaster-spike/**',
-      // Real-browser component tests run in vitest.browser.config.ts.
-      '**/*.browser.test.*',
-      '**/dist/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
-    ],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      include: [
-        'components/**/*.{ts,tsx}',
-        'contexts/**/*.{ts,tsx}',
-        'lib/**/*.{ts,tsx}',
-        'hooks/**/*.{ts,tsx}',
-        'util/**/*.{ts,tsx}',
-        'utils/**/*.{ts,tsx}',
-        'pages/**/*.{ts,tsx}',
-        'types/**/*.{ts,tsx}',
-        'config/**/*.{ts,tsx}',
-      ],
-      exclude: [
-        'coverage/**',
-        'dist/**',
-        '.next/**',
-        '**/node_modules/**',
-        '**/test/**',
-        '**/__tests__/**',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/.*rc.*',
-        'next.config.*',
-        'next-env.d.ts',
-        'global.d.ts',
-        'pages/_app.tsx',
-        'pages/_document.tsx',
-        'pages/api/**',
-      ],
-      // Baseline floors prevent regressions. Raise these as legacy code is removed
-      // or covered; do not lower them to make CI pass.
-      thresholds: {
-        branches: 79,
-        functions: 64,
-        lines: 44,
-        statements: 44,
-      },
-    },
-  },
-  resolve: {
-    alias: {
-      '@': new URL('./', import.meta.url).pathname,
-    },
+    environment: 'node',
+    include: ['tests/**/*.test.ts'],
   },
 });

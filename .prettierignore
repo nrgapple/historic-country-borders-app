@@ -1,9 +1,6 @@
-.next/
 coverage/
 node_modules/
-out/
 playwright-report/
-public/sitemap.xml
 public/data/pa-school-districts.json
 public/data/historical/
 public/data/context/

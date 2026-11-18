@@ -56,7 +56,7 @@ Validate committed data without network access:
 yarn data:validate
 ```
 
-Normal `yarn build` never runs the refresh command and does not contact PASDA.
+Normal `yarn remaster:build` never runs the refresh command and does not contact PASDA.
 
 ## Required source properties
 
@@ -76,7 +76,7 @@ Unit/integration tests cover fixture normalization, Polygon/MultiPolygon labels,
 
 ## Remaster data format (P5)
 
-The Astro remaster (`remaster/`, not deployed until the cutover) draws the same 500 districts from the same committed artifact, in a different shape. Production's Next.js page above is unchanged.
+The Astro app (`remaster/`, production since 2026-11-18) draws the 500 districts from the committed artifact in a different shape. The Next.js page described above was removed with the legacy app.
 
 **Measured** with `yarn data:measure:pa-districts` (2026-11-18). JSON.parse is timed in Node on the development Mac, best of 3. "State view" is the Brotli-5 bytes of the tiles that cover Pennsylvania at the zoom that frames it: about z7 on a 1440 × 900 desktop and about z5 on a 390 px phone.
 

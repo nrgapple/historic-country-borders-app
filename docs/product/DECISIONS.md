@@ -160,7 +160,15 @@ Observed: the owner asked for the remaster to replace production directly, with 
 
 Decision: `wrangler.toml` and `wrangler.preview.toml` serve `remaster/dist/`. Deploy and Preview build it with `yarn remaster:build` and check it with `scripts/validate-remaster-dist.js` (required pages, Cloudflare Free file limits). The production smoke test reads the remaster's split 1994 polygons and hashed PA district index. The Mapbox token is no longer used or required. The `/api/feedback` Worker and its Durable Object are unchanged. The plan's temporary legacy PA asset directory was not needed because the PA page was remastered first.
 
-Rollback: revert the cutover commit on `main`; Deploy rebuilds and redeploys the Next.js export.
+Rollback: revert the cutover commit on `main`; Deploy rebuilds and redeploys the Next.js export. (After the legacy app's removal below, that also requires reverting the removal.)
+
+### Legacy Next.js app removed (2026-11-18)
+
+Observed: since the P4 cutover the root Next.js app was never built or deployed, yet CI still ran its quality gate and three-browser journeys, and that job's browser install hung CI for 20+ minutes.
+
+Decision: delete the Next.js app (pages, components, hooks, contexts, styles, Next-only `lib/`, `config/`, `util/`, `next.config.js`), its unit and Playwright tests and configs, the legacy-only scripts (`validate-static-export.js`, `static-server.js`, `generate-sitemap.js`, `measure-map-performance.js`), the legacy `public/sitemap.xml` and `public/_redirects`, ESLint (its only config was `eslint-config-next`) and every root dependency used only by that app (Next, React 18, Mapbox GL, react-map-gl, Testing Library, jsdom, coverage). `yarn size:check` now measures `remaster/dist` only. CI keeps a `checks` job (format, type-check, script/Worker tests, data validation) and moves `cloudflare:check` and `size:check` into the `remaster` job; the deploy job still needs only `remaster`. The layout suites move to their own `Layout` workflow with cancel-in-progress concurrency and job/step timeouts, so a stuck run can no longer delay a later push's deploy. Data refresh and validation scripts, `e2e/layout/`, `worker/`, provenance and attribution are unchanged.
+
+Rollback: the app is in git history before this change; it was already not deployed.
 
 ## Deferred
 

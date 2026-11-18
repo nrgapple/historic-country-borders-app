@@ -1,0 +1,68 @@
+name: Layout
+
+# Safe-area (iPhone insets), responsive widths and forced-dark suites from
+# playwright.layout.config.ts, run against the production remaster build.
+# A report, not a deploy gate. It lives apart from CI on purpose: CI runs on
+# main queue per ref and never cancel, so a stuck layout shard there would
+# delay the next push's deploy. Here every new push to the same ref cancels
+# the run in progress.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: layout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  layout:
+    # The map renders in software on CI runners (~13 s a test), so the 351
+    # tests are split across six parallel shards (Actions minutes are free
+    # for this public repository).
+    name: layout (${{ matrix.shard }}/6)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - run: yarn remaster:build
+      # apt has hung this step for 20+ minutes on GitHub runners.
+      - run: yarn playwright install --with-deps chromium webkit
+        timeout-minutes: 8
+      - name: Serve the remaster build
+        run: |
+          node remaster/scripts/serve.mjs remaster/dist 4410 > serve.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4410/ > /dev/null && exit 0
+            sleep 1
+          done
+          cat serve.log
+          exit 1
+      - run: yarn test:layout --shard=${{ matrix.shard }}/6
+        env:
+          BASE_URL: http://127.0.0.1:4410
+      - name: Upload layout-test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-report-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7

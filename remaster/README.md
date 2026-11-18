@@ -2,7 +2,7 @@
 
 The historical atlas rebuilt as static Astro 7 pages with one React 19 island and MapLibre GL JS 6, in the owner-approved Direction A, "Classic atlas", with Direction B, "Modern textbook", as a second map style (Settings → Map style; the Pennsylvania map's default). See [`docs/product/REMASTER_PLAN.md`](../docs/product/REMASTER_PLAN.md) and [`design/living-atlas/README.md`](../design/living-atlas/README.md).
 
-**In production** since the P4 cutover (2026-11-18). This app builds into `remaster/dist/`, which `wrangler.toml` serves with the existing `/api/feedback` Worker. CI's `deploy` job ships the `remaster` job's tested build (artifact `remaster-dist`) as soon as that job and `validate` pass, then runs the production smoke test; the layout suite runs against the same build as a report and does not gate the deploy. The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back by reverting the cutover commit on `main`.
+**In production** since the P4 cutover (2026-11-18). This app builds into `remaster/dist/`, which `wrangler.toml` serves with the existing `/api/feedback` Worker. CI's `deploy` job ships the `remaster` job's tested build (artifact `remaster-dist`) as soon as that job passes, then runs the production smoke test. The `checks` job and the layout suites (their own `Layout` workflow) report without gating the deploy. The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back by reverting the cutover commit on `main`.
 
 ## Commands
 
@@ -27,7 +27,7 @@ BASE_URL=http://127.0.0.1:4410 yarn test:layout
 node remaster/scripts/shoot.mjs
 ```
 
-`remaster/` is a Yarn workspace with `nohoist`, so its React 19, Astro, MapLibre and Vitest 5 never collide with the Next app's React 18 and Vitest 3. Root `tsc`, ESLint and Vitest exclude `remaster/`; root Prettier formats it.
+`remaster/` is a Yarn workspace with `nohoist`, so its Vite 8 and Vitest 5 stay apart from the root's Vitest 3 data-script tests. Root `tsc` and Vitest exclude `remaster/`; root Prettier formats it.
 
 ## Architecture
 
@@ -37,7 +37,7 @@ node remaster/scripts/shoot.mjs
 | `src/pages/index.astro`                                  | Inline random-year redirect plus a crawlable list of all years                                                                                     |
 | `src/pages/pa/school-districts.astro`                    | Prerendered PA page: the PA island and a crawlable list of all 500 districts by county (also the no-JS / no-WebGL fallback)                        |
 | `src/pa/*`                                               | PA island (`SchoolDistrictsAtlas.tsx`), its MapLibre controller and `pa-tiles://` protocol (`paMap.ts`), style (`paStyle.ts`) and district helpers |
-| `src/pages/404.astro`, `sitemap.xml.ts`, `robots.txt.ts` | Static 404, sitemap (same shape as `scripts/generate-sitemap.js`), robots from the repository's `public/robots.txt`                                |
+| `src/pages/404.astro`, `sitemap.xml.ts`, `robots.txt.ts` | Static 404, sitemap, robots from the repository's `public/robots.txt`                                                                              |
 | `src/atlas/store.ts`                                     | The single store and URL contract (below)                                                                                                          |
 | `src/atlas/mapController.ts`                             | Imperative MapLibre controller; subscribes to the store, so camera moves never re-render React                                                     |
 | `src/atlas/Atlas.tsx`                                    | The island: header, map stage, panel, dialogs                                                                                                      |
@@ -103,5 +103,5 @@ Notes:
 
 ## Left for later milestones
 
-- **PA school districts (P5).** Ported: `/pa/school-districts` is an Astro page over the same store and chrome, with T8's street basemap and a district tile tree (docs/PA_BASEMAP.md, docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"). The PA page uses T7's map key with a "Commonwealth of Pennsylvania" plate. Its "Colour districts by" setting (`src/pa/colourBy.ts`: football class, PIAA district or enrollment, shared as `?colour=`) passes the key a legend through `MapKeySlot`'s `legend` prop; see docs/PA_SCHOOL_DISTRICTS.md "High-school sports". A legend for the default washes, streets and county lines is still to do. Check budgets with `yarn size:check --remaster`.
+- **PA school districts (P5).** Ported: `/pa/school-districts` is an Astro page over the same store and chrome, with T8's street basemap and a district tile tree (docs/PA_BASEMAP.md, docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"). The PA page uses T7's map key with a "Commonwealth of Pennsylvania" plate. Its "Colour districts by" setting (`src/pa/colourBy.ts`: football class, PIAA district or enrollment, shared as `?colour=`) passes the key a legend through `MapKeySlot`'s `legend` prop; see docs/PA_SCHOOL_DISTRICTS.md "High-school sports". A legend for the default washes, streets and county lines is still to do. Check budgets with `yarn size:check`.
 - **React Compiler.** Not enabled yet; the ported components keep their hand-written memo hooks.

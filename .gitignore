@@ -11,10 +11,6 @@
 /test-results/
 /blob-report/
 
-# next.js
-/.next/
-/out/
-
 # production
 /build
 
@@ -35,7 +31,6 @@ yarn-error.log*
 .env.production.local
 
 # deployment state
-.vercel
 .wrangler/
 tsconfig.tsbuildinfo
 .env*.local

@@ -46,7 +46,7 @@ export const STRUCTURED_DATA = {
   inLanguage: SEO_CONFIG.language,
 };
 
-/** The sitemap, identical in shape to scripts/generate-sitemap.js. */
+/** The sitemap: every year page and the PA page. */
 export const sitemapXml = (
   paths: Array<{ path: string; priority: string }>,
 ) => {

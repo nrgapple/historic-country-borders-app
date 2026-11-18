@@ -19,7 +19,7 @@ Configure at least one destination using Cloudflare Worker **Secrets** (`wrangle
 | `AIRTABLE_BASE_ID`               | Airtable destination base                             |
 | `AIRTABLE_TABLE_NAME`            | Optional table name; defaults to `Feedback`           |
 
-Never prefix these with `NEXT_PUBLIC_`, put them in `.env.example`, commit them, or share them in chat. The public Mapbox and GA variables are unrelated build-time browser configuration.
+Never prefix these with `PUBLIC_`, put them in `.env.example`, commit them, or share them in chat. The public GA variable is unrelated build-time browser configuration.
 
 ## Discord
 
@@ -49,4 +49,4 @@ yarn test tests/feedback-function.test.ts
 yarn cloudflare:check
 ```
 
-Local `yarn preview` intentionally returns a safe 503 because static preview has no Worker secrets. Account setup, preview submission, rate-limit/quota verification, and rollback steps are in `docs/CLOUDFLARE_DEPLOYMENT.md`.
+Local `yarn remaster:preview` intentionally returns a safe 503 because static preview has no Worker secrets. Account setup, preview submission, rate-limit/quota verification, and rollback steps are in `docs/CLOUDFLARE_DEPLOYMENT.md`.

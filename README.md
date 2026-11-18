@@ -9,8 +9,9 @@ Historical and administrative boundaries are third-party data and may be approxi
 ## Requirements
 
 - Node.js 22 (see `.nvmrc`)
-- Yarn Classic 1.22.22
-- A public Mapbox token for map rendering
+- Yarn Classic 1.22.22 (one root `yarn.lock`; never npm or pnpm)
+
+No map token is needed: maps are MapLibre GL JS over self-hosted vector tiles, fonts and glyphs.
 
 ## Local setup
 
@@ -19,53 +20,51 @@ git clone https://github.com/nrgapple/historic-country-borders-app.git
 cd historic-country-borders-app
 nvm use
 yarn install --frozen-lockfile
-cp .env.example .env.local
-yarn dev
+yarn remaster:dev
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:4321>. The app lives in `remaster/` (Astro 7, one React 19 island); see [remaster/README.md](remaster/README.md).
 
 ### Environment variables
 
-| Variable                   | Exposure | Purpose                                 |
-| -------------------------- | -------- | --------------------------------------- |
-| `NEXT_PUBLIC_MAPBOX_TOKEN` | Browser  | Public, URL-restricted Mapbox map token |
-| `NEXT_PUBLIC_GA_FOUR`      | Browser  | Optional GA4 measurement ID             |
+| Variable         | Exposure | Purpose                     |
+| ---------------- | -------- | --------------------------- |
+| `PUBLIC_GA_FOUR` | Browser  | Optional GA4 measurement ID |
 
-Feedback secrets are configured only on the isolated Cloudflare Worker, not exposed to the Next.js build. Never place a secret in a variable prefixed with `NEXT_PUBLIC_`. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
+Feedback secrets are configured only on the isolated Cloudflare Worker, never in the static build. A variable prefixed with `PUBLIC_` is baked into the browser bundle and must never contain a secret. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
 
 ## Validation
 
 ```bash
-yarn validate                 # complete local quality gate
-yarn type-check               # TypeScript
-yarn test                     # unit/integration tests
-yarn test:e2e                 # production build plus browser journeys
+yarn validate                 # complete local quality gate (quality + browser journeys)
+yarn quality                  # everything except the browser journeys
+yarn checks                   # format, root type-check, script/Worker tests, data validation
+yarn remaster:build           # production build -> remaster/dist
+yarn remaster:test            # app unit tests
+yarn remaster:test:e2e        # browser journeys against remaster/dist
+yarn test:layout              # safe-area, width and forced-dark suites (e2e/layout)
+yarn cloudflare:check         # Wrangler dry-run of the production Worker and assets
+yarn size:check               # file-count and payload budgets for remaster/dist
 yarn data:validate            # validate all committed map data offline
-yarn data:refresh             # explicitly refresh both pinned upstream datasets
-yarn data:refresh:historical  # explicitly refresh pinned historical artifacts
-yarn data:refresh:schools     # explicitly refresh pinned PASDA artifact
+yarn data:refresh             # explicitly refresh pinned upstream datasets
 yarn data:reconcile:context   # explicitly map territory names to Wikidata items
 yarn data:refresh:context     # explicitly refresh per-year Wikidata facts
-yarn static:validate          # verify static routes/assets and dynamic isolation
-yarn preview                  # serve out/ with deep-link and 404 behavior
-yarn format:check && yarn lint
 ```
 
 Tests use fixtures and do not require production credentials or live third-party APIs.
 
 ## Architecture and data
 
-The application exports static HTML and committed map assets for Cloudflare Workers Static Assets. Normal pages and map assets invoke no Worker code; only the exactly routed, bounded feedback Worker path is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
+The app prerenders static HTML and ships committed, content-hashed map assets on Cloudflare Workers Static Assets. Normal pages and map assets invoke no Worker code; only the exactly routed, bounded `/api/feedback` Worker path is dynamic. Wikipedia uses direct browser CORS access. Data refreshes are explicit and reviewable rather than occurring during builds or ordinary traffic.
 
 - Historical map data: [source, pin, validation, and uncertainty](docs/HISTORICAL_DATA.md)
 - Year facts and "What changed": [Wikidata reconciliation and publication](docs/HISTORICAL_CONTEXT.md)
 - Country descriptions: [Wikipedia](https://www.wikipedia.org/)
 - Pennsylvania districts: PASDA (source, vintage, and limitations are documented in [docs/PA_SCHOOL_DISTRICTS.md](docs/PA_SCHOOL_DISTRICTS.md))
-- Maps: [Mapbox](https://www.mapbox.com/) GL JS; historical maps use a minimal physical basemap without modern borders (`lib/basemap.ts`)
-- Product audit and design rationale: [docs/product/REVAMP_AUDIT.md](docs/product/REVAMP_AUDIT.md)
+- Maps: [MapLibre GL JS](https://maplibre.org/) over a self-hosted Natural Earth basemap without modern borders ([docs/BASEMAP.md](docs/BASEMAP.md)) and a self-hosted Pennsylvania street basemap ([docs/PA_BASEMAP.md](docs/PA_BASEMAP.md)); fonts and glyphs in [docs/FONTS.md](docs/FONTS.md)
+- Product audit and design rationale: [docs/product/REVAMP_AUDIT.md](docs/product/REVAMP_AUDIT.md), [docs/product/REMASTER_PLAN.md](docs/product/REMASTER_PLAN.md)
 
-See [PRODUCT.md](PRODUCT.md), [docs/UPGRADE_HARNESS_PLAN.md](docs/UPGRADE_HARNESS_PLAN.md), and [docs/product/DECISIONS.md](docs/product/DECISIONS.md) for product and architecture constraints.
+See [PRODUCT.md](PRODUCT.md), [docs/UPGRADE_HARNESS_PLAN.md](docs/UPGRADE_HARNESS_PLAN.md), and [docs/product/DECISIONS.md](docs/product/DECISIONS.md) for product and architecture constraints. The original Next.js app was removed on 2026-11-18; it remains in the git history.
 
 ## Contributing
 

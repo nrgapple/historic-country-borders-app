@@ -1,6 +1,6 @@
 # Fonts and map glyphs
 
-Status: built and validated for the remaster (track T3, 2026-11-18). The current Next.js app does not load these files yet. The Astro shell (T5) and the Classic-atlas style (T6) consume them.
+Status: built and validated for the remaster (track T3, 2026-11-18). The app's Astro shell (T5) and the Classic-atlas style (T6) consume them.
 
 All type is self-hosted under the SIL Open Font License 1.1. The map makes no font or glyph request to a third party.
 

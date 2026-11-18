@@ -4,9 +4,9 @@ Status: M4 account-independent controls prepared; production cutover pending own
 
 ## Static requests
 
-The Next.js app uses `output: 'export'`. HTML for `/`, all 53 enumerated `/year/<year>` routes, `/pa/school-districts`, and the useful 404 is generated at build time. Historical content-hashed payloads and the PA school payload are immutable/local build inputs. Build and ordinary traffic make no GitHub or PASDA requests.
+The Astro app is fully prerendered (`remaster/dist/`). HTML for `/`, all 53 enumerated `/year/<year>` routes, `/pa/school-districts`, and the useful 404 is generated at build time. Historical content-hashed payloads and the PA district tiles are immutable/local build inputs. Build and ordinary traffic make no GitHub or PASDA requests.
 
-Workers Static Assets uses asset-first delivery. `wrangler.toml` sets `run_worker_first = ["/api/feedback"]`, `not_found_handling = "404-page"`, and `serve_directly` is confirmed in the deployed version. Thus page HTML, Next assets, map data, sitemap, robots, and unknown routes do not execute Worker code. The enforced inventory is one public dynamic route, one internal Durable Object binding, zero Next API routes, and zero Pages Functions; `yarn static:validate` fails if the public route broadens or an alternate application runtime appears.
+Workers Static Assets uses asset-first delivery. `wrangler.toml` sets `run_worker_first = ["/api/feedback"]`, `not_found_handling = "404-page"`, and `serve_directly` is confirmed in the deployed version. Thus page HTML, scripts, map data, sitemap, robots, and unknown routes do not execute Worker code. The enforced inventory is one public dynamic route, one internal Durable Object binding, and zero Pages Functions; `yarn remaster:dist:validate` (`scripts/validate-remaster-dist.js`) fails if the Worker-first route broadens.
 
 ## Approved dynamic operation
 
