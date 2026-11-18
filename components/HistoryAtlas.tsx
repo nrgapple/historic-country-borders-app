@@ -314,7 +314,16 @@ export default function HistoryAtlas({
               </p>
               <p>
                 Basemap © Mapbox © OpenStreetMap. Summaries from Wikipedia (CC
-                BY-SA 4.0).
+                BY-SA 4.0). Capitals, rulers, and dates from{' '}
+                <a
+                  href="https://www.wikidata.org/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikidata
+                </a>{' '}
+                (CC0), matched to these maps by name and reviewed; most peoples
+                and cultures on early maps have no such facts.
               </p>
             </>
           }
