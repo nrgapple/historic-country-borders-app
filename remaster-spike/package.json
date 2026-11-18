@@ -7,12 +7,13 @@
     "node": ">=22.23.4 <23"
   },
   "scripts": {
-    "data": "node scripts/build-data.mjs && node scripts/build-basemap.mjs && node scripts/build-glyphs.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/copy-map-assets.mjs",
     "data:formats": "node --expose-gc scripts/measure-formats.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "node scripts/serve.mjs dist 4400",
-    "measure": "node scripts/measure.mjs"
+    "measure": "node scripts/measure.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/react": "7.1.9",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@mapbox/vector-tile": "2.0.4",
     "@maplibre/geojson-vt": "7.0.1",
+    "@maplibre/maplibre-gl-style-spec": "26.8.0",
     "@maplibre/vt-pbf": "4.3.3",
     "@playwright/test": "1.65.1",
     "@types/react": "19.3.0",
@@ -35,6 +37,7 @@
     "pbf": "4.0.1",
     "topojson-client": "3.1.0",
     "topojson-server": "3.0.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
   }
 }

@@ -20,7 +20,7 @@ const last = formatYearLong(manifest.years[manifest.years.length - 1]);
 const title = `World borders in ${formatYearLong(year)} · Historic Borders`;
 const description = `Interactive map of political borders around ${formatYearLong(year)}: ${names.length} territories as reconstructed by the historical-basemaps project. Move through ${manifest.years.length} snapshots from ${first} to ${last}.`;
 ---
-<Base title={title} description={description} path={`/year/${year}`} preload={[{ href: files.map, as: 'fetch', type: 'application/geo+json' }, { href: files.labels, as: 'fetch', type: 'application/geo+json' }, { href: files.index, as: 'fetch', type: 'application/json' }]}>
+<Base mapPage title={title} description={description} path={`/year/${year}`} preload={[{ href: files.map, as: 'fetch', type: 'application/geo+json' }, { href: files.labels, as: 'fetch', type: 'application/geo+json' }, { href: files.index, as: 'fetch', type: 'application/json' }]}>
   <Atlas client:load initialYear={year} />
   <section class="crawl" id="territories" aria-labelledby="territories-title">
     <h2 id="territories-title">Territories on the {formatYearLong(year)} map</h2>
