@@ -1,0 +1,8568 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "publisher": "Pennsylvania Interscholastic Athletic Association (PIAA)",
+    "url": "https://www.piaa.org/schools/classifications/default.aspx",
+    "directoryUrl": "https://www.piaa.org/schools/directory/default.aspx",
+    "season": "2026-27 and 2027-28",
+    "classificationSeason": "26/27",
+    "enrollmentDate": "October 2025",
+    "enrollmentBasis": "PIAA classification enrollment: students in grades 9–11 reported by each member school (boys for football).",
+    "retrievedAt": "2026-11-18T14:10:53.258Z",
+    "terms": "Facts (classification, PIAA district, enrollment) from PIAA’s public classification and school-directory pages. The site states “Copyright © PIAA. All Rights Reserved.” and publishes no terms of use; robots.txt allows /schools/. Only factual fields are stored, with attribution and a link to the source; no contacts are stored."
+  },
+  "coverage": {
+    "pasdaDistricts": 500,
+    "districtsWithSchools": 495,
+    "districtsWithPiaaDistrict": 495,
+    "districtsWithFootball": 452,
+    "multiSchoolDistricts": 23,
+    "publicSchoolsMatched": 571,
+    "matchedBy": {
+      "exact": 509,
+      "loose": 55,
+      "override": 7
+    },
+    "nonPublicSchoolsSkipped": 187,
+    "excluded": [
+      {
+        "id": 11216,
+        "name": "Columbia Montour Area Vo Tech",
+        "schoolDistrict": "Vo-Tech"
+      },
+      {
+        "id": 11174,
+        "name": "York County School of Technology",
+        "schoolDistrict": "Vocational Technical School"
+      }
+    ],
+    "unmatched": []
+  },
+  "districts": {
+    "Abington": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1936,
+      "boys": 962,
+      "schools": [
+        {
+          "id": 10979,
+          "name": "Abington Senior High School",
+          "football": "6A",
+          "total": 1936,
+          "boys": 962
+        }
+      ]
+    },
+    "Abington Heights": {
+      "piaa": 2,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 870,
+      "boys": 454,
+      "schools": [
+        {
+          "id": 11046,
+          "name": "Abington Heights High School",
+          "football": "5A",
+          "total": 870,
+          "boys": 454
+        }
+      ]
+    },
+    "Albert Gallatin Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 715,
+      "boys": 361,
+      "schools": [
+        {
+          "id": 11283,
+          "name": "Albert Gallatin High School",
+          "football": "4A",
+          "total": 715,
+          "boys": 361
+        }
+      ]
+    },
+    "Aliquippa": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 311,
+      "boys": 158,
+      "schools": [
+        {
+          "id": 11284,
+          "name": "Aliquippa Senior High School",
+          "football": "3A",
+          "total": 311,
+          "boys": 158
+        }
+      ]
+    },
+    "Allegheny Valley": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 231,
+      "boys": 133,
+      "schools": [
+        {
+          "id": 11285,
+          "name": "Springdale High School",
+          "football": "1A",
+          "total": 231,
+          "boys": 133
+        }
+      ]
+    },
+    "Allegheny-Clarion Valley": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 133,
+      "boys": 76,
+      "schools": [
+        {
+          "id": 11411,
+          "name": "Allegheny Clarion Valley High School",
+          "football": null,
+          "total": 133,
+          "boys": 76
+        }
+      ]
+    },
+    "Allentown City": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 3683,
+      "boys": 1987,
+      "schools": [
+        {
+          "id": 11489,
+          "name": "Louis E Dieruff High School",
+          "football": "6A",
+          "total": 1300,
+          "boys": 703
+        },
+        {
+          "id": 11487,
+          "name": "William Allen High School",
+          "football": "6A",
+          "total": 2383,
+          "boys": 1284
+        }
+      ]
+    },
+    "Altoona Area": {
+      "piaa": 6,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1729,
+      "boys": 899,
+      "schools": [
+        {
+          "id": 11238,
+          "name": "Altoona Area High School",
+          "football": "6A",
+          "total": 1729,
+          "boys": 899
+        }
+      ]
+    },
+    "Ambridge Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 496,
+      "boys": 219,
+      "schools": [
+        {
+          "id": 11286,
+          "name": "Ambridge Area High School",
+          "football": "3A",
+          "total": 496,
+          "boys": 219
+        }
+      ]
+    },
+    "Annville-Cleona": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 405,
+      "boys": 211,
+      "schools": [
+        {
+          "id": 11084,
+          "name": "Annville-Cleona High School",
+          "football": "3A",
+          "coop": true,
+          "total": 405,
+          "boys": 211
+        }
+      ]
+    },
+    "Antietam": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 331,
+      "boys": 183,
+      "schools": [
+        {
+          "id": 11085,
+          "name": "Antietam High School",
+          "football": null,
+          "total": 331,
+          "boys": 183
+        }
+      ]
+    },
+    "Apollo-Ridge": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 316,
+      "boys": 189,
+      "schools": [
+        {
+          "id": 11287,
+          "name": "Apollo Ridge High School",
+          "football": "2A",
+          "total": 316,
+          "boys": 189
+        }
+      ]
+    },
+    "Armstrong": {
+      "piaa": 6,
+      "piaaAll": [6, 7],
+      "football": "5A",
+      "footballSchools": 2,
+      "enrollment": 1252,
+      "boys": 618,
+      "schools": [
+        {
+          "id": 13559,
+          "name": "Armstrong Senior High School",
+          "football": "5A",
+          "total": 927,
+          "boys": 452
+        },
+        {
+          "id": 11288,
+          "name": "West Shamokin Jr-Sr High School",
+          "football": "2A",
+          "coop": true,
+          "total": 325,
+          "boys": 166
+        }
+      ]
+    },
+    "Athens Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 496,
+      "boys": 254,
+      "schools": [
+        {
+          "id": 11176,
+          "name": "Athens Area High School",
+          "football": "3A",
+          "total": 496,
+          "boys": 254
+        }
+      ]
+    },
+    "Austin Area": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 42,
+      "boys": 20,
+      "schools": [
+        {
+          "id": 11412,
+          "name": "Austin Area High School",
+          "football": null,
+          "total": 42,
+          "boys": 20
+        }
+      ]
+    },
+    "Avella Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 125,
+      "boys": 61,
+      "schools": [
+        {
+          "id": 11292,
+          "name": "Avella Area High School",
+          "football": "1A",
+          "total": 125,
+          "boys": 61
+        }
+      ]
+    },
+    "Avon Grove": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1427,
+      "boys": 738,
+      "schools": [
+        {
+          "id": 10981,
+          "name": "Avon Grove High School",
+          "football": "6A",
+          "total": 1427,
+          "boys": 738
+        }
+      ]
+    },
+    "Avonworth": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 440,
+      "boys": 236,
+      "schools": [
+        {
+          "id": 11293,
+          "name": "Avonworth High School",
+          "football": "3A",
+          "total": 440,
+          "boys": 236
+        }
+      ]
+    },
+    "Bald Eagle Area": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 396,
+      "boys": 198,
+      "schools": [
+        {
+          "id": 11239,
+          "name": "Bald Eagle Area High School",
+          "football": "2A",
+          "total": 396,
+          "boys": 198
+        }
+      ]
+    },
+    "Baldwin-Whitehall": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1057,
+      "boys": 532,
+      "schools": [
+        {
+          "id": 11295,
+          "name": "Baldwin High School",
+          "football": "5A",
+          "total": 1057,
+          "boys": 532
+        }
+      ]
+    },
+    "Bangor Area": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 728,
+      "boys": 366,
+      "schools": [
+        {
+          "id": 11490,
+          "name": "Bangor Area High School",
+          "football": "4A",
+          "total": 728,
+          "boys": 366
+        }
+      ]
+    },
+    "Beaver Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 514,
+      "boys": 272,
+      "schools": [
+        {
+          "id": 11296,
+          "name": "Beaver Area High School",
+          "football": "3A",
+          "total": 514,
+          "boys": 272
+        }
+      ]
+    },
+    "Bedford Area": {
+      "piaa": 5,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 449,
+      "boys": 232,
+      "schools": [
+        {
+          "id": 11218,
+          "name": "Bedford High School",
+          "football": "3A",
+          "total": 449,
+          "boys": 232
+        }
+      ]
+    },
+    "Belle Vernon Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 568,
+      "boys": 276,
+      "schools": [
+        {
+          "id": 11297,
+          "name": "Belle Vernon Area High School",
+          "football": "3A",
+          "total": 568,
+          "boys": 276
+        }
+      ]
+    },
+    "Bellefonte Area": {
+      "piaa": 6,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 651,
+      "boys": 338,
+      "schools": [
+        {
+          "id": 11240,
+          "name": "Bellefonte Area High School",
+          "football": "4A",
+          "total": 651,
+          "boys": 338
+        }
+      ]
+    },
+    "Bellwood-Antis": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 313,
+      "boys": 163,
+      "schools": [
+        {
+          "id": 11241,
+          "name": "Bellwood Antis High School",
+          "football": "2A",
+          "total": 313,
+          "boys": 163
+        }
+      ]
+    },
+    "Bensalem Township": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1865,
+      "boys": 966,
+      "schools": [
+        {
+          "id": 10982,
+          "name": "Bensalem High School",
+          "football": "6A",
+          "total": 1865,
+          "boys": 966
+        }
+      ]
+    },
+    "Benton Area": {
+      "piaa": 4,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 180,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11177,
+          "name": "Benton Area High School",
+          "football": null,
+          "total": 180,
+          "boys": 101
+        }
+      ]
+    },
+    "Bentworth": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 283,
+      "boys": 139,
+      "schools": [
+        {
+          "id": 11298,
+          "name": "Bentworth High School",
+          "football": "1A",
+          "total": 283,
+          "boys": 139
+        }
+      ]
+    },
+    "Berlin Brothersvalley": {
+      "piaa": 5,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 184,
+      "boys": 91,
+      "schools": [
+        {
+          "id": 11220,
+          "name": "Berlin Brothersvalley High School",
+          "football": "2A",
+          "coop": true,
+          "total": 184,
+          "boys": 91
+        }
+      ]
+    },
+    "Bermudian Springs": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 459,
+      "boys": 226,
+      "schools": [
+        {
+          "id": 11086,
+          "name": "Bermudian Springs High School",
+          "football": "3A",
+          "total": 459,
+          "boys": 226
+        }
+      ]
+    },
+    "Berwick Area": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 690,
+      "boys": 349,
+      "schools": [
+        {
+          "id": 11047,
+          "name": "Berwick Area High School",
+          "football": "4A",
+          "total": 690,
+          "boys": 349
+        }
+      ]
+    },
+    "Bethel Park": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 978,
+      "boys": 482,
+      "schools": [
+        {
+          "id": 11299,
+          "name": "Bethel Park High School",
+          "football": "5A",
+          "total": 978,
+          "boys": 482
+        }
+      ]
+    },
+    "Bethlehem Area": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 3236,
+      "boys": 1701,
+      "schools": [
+        {
+          "id": 11491,
+          "name": "Freedom High School",
+          "football": "6A",
+          "total": 1353,
+          "boys": 690
+        },
+        {
+          "id": 11492,
+          "name": "Liberty High School",
+          "football": "6A",
+          "total": 1883,
+          "boys": 1011
+        }
+      ]
+    },
+    "Bethlehem-Center": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 236,
+      "boys": 129,
+      "schools": [
+        {
+          "id": 11300,
+          "name": "Bethlehem Center High School",
+          "football": "1A",
+          "total": 236,
+          "boys": 129
+        }
+      ]
+    },
+    "Big Beaver Falls Area": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 367,
+      "boys": 195,
+      "schools": [
+        {
+          "id": 11301,
+          "name": "Beaver Falls High School",
+          "football": "2A",
+          "total": 367,
+          "boys": 195
+        }
+      ]
+    },
+    "Big Spring": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 608,
+      "boys": 316,
+      "schools": [
+        {
+          "id": 11087,
+          "name": "Big Spring High School",
+          "football": "4A",
+          "total": 608,
+          "boys": 316
+        }
+      ]
+    },
+    "Blackhawk": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 558,
+      "boys": 293,
+      "schools": [
+        {
+          "id": 11302,
+          "name": "Blackhawk High School",
+          "football": "4A",
+          "total": 558,
+          "boys": 293
+        }
+      ]
+    },
+    "Blacklick Valley": {
+      "piaa": 6,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 130,
+      "boys": 74,
+      "schools": [
+        {
+          "id": 11242,
+          "name": "Blacklick Valley High School",
+          "football": null,
+          "total": 130,
+          "boys": 74
+        }
+      ]
+    },
+    "Blairsville-Saltsburg": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 340,
+      "boys": 184,
+      "schools": [
+        {
+          "id": 11243,
+          "name": "River Valley High School",
+          "football": "2A",
+          "total": 340,
+          "boys": 184
+        }
+      ]
+    },
+    "Bloomsburg Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 334,
+      "boys": 179,
+      "schools": [
+        {
+          "id": 11178,
+          "name": "Bloomsburg High School",
+          "football": "2A",
+          "total": 334,
+          "boys": 179
+        }
+      ]
+    },
+    "Blue Mountain": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 688,
+      "boys": 376,
+      "schools": [
+        {
+          "id": 11493,
+          "name": "Blue Mountain High School",
+          "football": "4A",
+          "total": 688,
+          "boys": 376
+        }
+      ]
+    },
+    "Blue Ridge": {
+      "piaa": 2,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 249,
+      "boys": 126,
+      "schools": [
+        {
+          "id": 11048,
+          "name": "Blue Ridge High School",
+          "football": null,
+          "total": 249,
+          "boys": 126
+        }
+      ]
+    },
+    "Boyertown Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1751,
+      "boys": 900,
+      "schools": [
+        {
+          "id": 10980,
+          "name": "Boyertown Area Senior High School",
+          "football": "6A",
+          "total": 1751,
+          "boys": 900
+        }
+      ]
+    },
+    "Bradford Area": {
+      "piaa": 9,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 612,
+      "boys": 316,
+      "schools": [
+        {
+          "id": 11413,
+          "name": "Bradford Area High School",
+          "football": "4A",
+          "total": 612,
+          "boys": 316
+        }
+      ]
+    },
+    "Brandywine Heights Area": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 381,
+      "boys": 208,
+      "schools": [
+        {
+          "id": 11088,
+          "name": "Brandywine Heights High School",
+          "football": null,
+          "total": 381,
+          "boys": 208
+        }
+      ]
+    },
+    "Brentwood Borough": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 275,
+      "boys": 138,
+      "schools": [
+        {
+          "id": 11303,
+          "name": "Brentwood High School",
+          "football": "1A",
+          "total": 275,
+          "boys": 138
+        }
+      ]
+    },
+    "Bristol Borough": {
+      "piaa": 1,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 289,
+      "boys": 159,
+      "schools": [
+        {
+          "id": 10983,
+          "name": "Bristol High School",
+          "football": "2A",
+          "total": 289,
+          "boys": 159
+        }
+      ]
+    },
+    "Bristol Township": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1441,
+      "boys": 758,
+      "schools": [
+        {
+          "id": 10984,
+          "name": "Harry S Truman High School",
+          "football": "6A",
+          "total": 1441,
+          "boys": 758
+        }
+      ]
+    },
+    "Brockway Area": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 226,
+      "boys": 105,
+      "schools": [
+        {
+          "id": 11414,
+          "name": "Brockway Area High School",
+          "football": "1A",
+          "coop": true,
+          "total": 226,
+          "boys": 105
+        }
+      ]
+    },
+    "Brookville Area": {
+      "piaa": 9,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 338,
+      "boys": 193,
+      "schools": [
+        {
+          "id": 11415,
+          "name": "Brookville Area High School",
+          "football": "3A",
+          "coop": true,
+          "total": 338,
+          "boys": 193
+        }
+      ]
+    },
+    "Brownsville Area": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 349,
+      "boys": 187,
+      "schools": [
+        {
+          "id": 11304,
+          "name": "Brownsville Area High School",
+          "football": "2A",
+          "total": 349,
+          "boys": 187
+        }
+      ]
+    },
+    "Burgettstown Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 247,
+      "boys": 122,
+      "schools": [
+        {
+          "id": 11305,
+          "name": "Burgettstown Area High School",
+          "football": "1A",
+          "total": 247,
+          "boys": 122
+        }
+      ]
+    },
+    "Burrell": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 469,
+      "boys": 247,
+      "schools": [
+        {
+          "id": 11306,
+          "name": "Burrell High School",
+          "football": "3A",
+          "total": 469,
+          "boys": 247
+        }
+      ]
+    },
+    "Butler Area": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1572,
+      "boys": 809,
+      "schools": [
+        {
+          "id": 11307,
+          "name": "Butler Area High School",
+          "football": "6A",
+          "total": 1572,
+          "boys": 809
+        }
+      ]
+    },
+    "California Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 224,
+      "boys": 122,
+      "schools": [
+        {
+          "id": 11308,
+          "name": "California Area High School",
+          "football": "1A",
+          "total": 224,
+          "boys": 122
+        }
+      ]
+    },
+    "Cambria Heights": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 304,
+      "boys": 152,
+      "schools": [
+        {
+          "id": 11245,
+          "name": "Cambria Heights High School",
+          "football": "3A",
+          "total": 304,
+          "boys": 152
+        }
+      ]
+    },
+    "Cameron County": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 118,
+      "boys": 54,
+      "schools": [
+        {
+          "id": 11416,
+          "name": "Cameron County High School",
+          "football": "1A",
+          "total": 118,
+          "boys": 54
+        }
+      ]
+    },
+    "Camp Hill": {
+      "piaa": 3,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 296,
+      "boys": 144,
+      "schools": [
+        {
+          "id": 11089,
+          "name": "Camp Hill High School",
+          "football": "2A",
+          "coop": true,
+          "total": 296,
+          "boys": 144
+        }
+      ]
+    },
+    "Canon-McMillan": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1302,
+      "boys": 644,
+      "schools": [
+        {
+          "id": 11309,
+          "name": "Canon McMillan High School",
+          "football": "6A",
+          "total": 1302,
+          "boys": 644
+        }
+      ]
+    },
+    "Canton Area": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 206,
+      "boys": 107,
+      "schools": [
+        {
+          "id": 11179,
+          "name": "Canton Area High School",
+          "football": "1A",
+          "total": 206,
+          "boys": 107
+        }
+      ]
+    },
+    "Carbondale Area": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 445,
+      "boys": 234,
+      "schools": [
+        {
+          "id": 11049,
+          "name": "Carbondale Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 445,
+          "boys": 234
+        }
+      ]
+    },
+    "Carlisle Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1330,
+      "boys": 677,
+      "schools": [
+        {
+          "id": 11090,
+          "name": "Carlisle High School",
+          "football": "6A",
+          "total": 1330,
+          "boys": 677
+        }
+      ]
+    },
+    "Carlynton": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 318,
+      "boys": 151,
+      "schools": [
+        {
+          "id": 11310,
+          "name": "Carlynton High School",
+          "football": "2A",
+          "total": 318,
+          "boys": 151
+        }
+      ]
+    },
+    "Carmichaels Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 212,
+      "boys": 96,
+      "schools": [
+        {
+          "id": 11311,
+          "name": "Carmichaels Area High School",
+          "football": "1A",
+          "total": 212,
+          "boys": 96
+        }
+      ]
+    },
+    "Catasauqua Area": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 384,
+      "boys": 199,
+      "schools": [
+        {
+          "id": 11494,
+          "name": "Catasauqua High School",
+          "football": "2A",
+          "total": 384,
+          "boys": 199
+        }
+      ]
+    },
+    "Centennial": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1256,
+      "boys": 621,
+      "schools": [
+        {
+          "id": 10985,
+          "name": "William Tennent High School",
+          "football": "6A",
+          "total": 1256,
+          "boys": 621
+        }
+      ]
+    },
+    "Central Bucks": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 3,
+      "enrollment": 4721,
+      "boys": 2366,
+      "schools": [
+        {
+          "id": 10986,
+          "name": "Central Bucks High School East",
+          "football": "6A",
+          "total": 1543,
+          "boys": 791
+        },
+        {
+          "id": 10988,
+          "name": "Central Bucks South High School",
+          "football": "6A",
+          "total": 1701,
+          "boys": 855
+        },
+        {
+          "id": 10987,
+          "name": "Central Bucks West High School",
+          "football": "6A",
+          "total": 1477,
+          "boys": 720
+        }
+      ]
+    },
+    "Central Cambria": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 383,
+      "boys": 195,
+      "schools": [
+        {
+          "id": 11246,
+          "name": "Central Cambria High School",
+          "football": "3A",
+          "coop": true,
+          "total": 383,
+          "boys": 195
+        }
+      ]
+    },
+    "Central Columbia": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 456,
+      "boys": 217,
+      "schools": [
+        {
+          "id": 11180,
+          "name": "Central Columbia High School",
+          "football": "3A",
+          "total": 456,
+          "boys": 217
+        }
+      ]
+    },
+    "Central Dauphin": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 2610,
+      "boys": 1383,
+      "schools": [
+        {
+          "id": 11092,
+          "name": "Central Dauphin East High School",
+          "football": "6A",
+          "total": 1112,
+          "boys": 583
+        },
+        {
+          "id": 11091,
+          "name": "Central Dauphin High School",
+          "football": "6A",
+          "total": 1498,
+          "boys": 800
+        }
+      ]
+    },
+    "Central Fulton": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 254,
+      "boys": 129,
+      "schools": [
+        {
+          "id": 11221,
+          "name": "McConnellsburg High School",
+          "football": null,
+          "total": 254,
+          "boys": 129
+        }
+      ]
+    },
+    "Central Greene": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 393,
+      "boys": 201,
+      "schools": [
+        {
+          "id": 11313,
+          "name": "Waynesburg Central Senior High School",
+          "football": "3A",
+          "total": 393,
+          "boys": 201
+        }
+      ]
+    },
+    "Central Valley": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 554,
+      "boys": 285,
+      "schools": [
+        {
+          "id": 11312,
+          "name": "Central Valley High School",
+          "football": "4A",
+          "total": 554,
+          "boys": 285
+        }
+      ]
+    },
+    "Central York": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1377,
+      "boys": 752,
+      "schools": [
+        {
+          "id": 11093,
+          "name": "Central York High School",
+          "football": "6A",
+          "total": 1377,
+          "boys": 752
+        }
+      ]
+    },
+    "Chambersburg Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2558,
+      "boys": 1323,
+      "schools": [
+        {
+          "id": 11094,
+          "name": "Chambersburg Area High School",
+          "football": "6A",
+          "total": 2558,
+          "boys": 1323
+        }
+      ]
+    },
+    "Charleroi": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 358,
+      "boys": 180,
+      "schools": [
+        {
+          "id": 11314,
+          "name": "Charleroi Area High School",
+          "football": "2A",
+          "total": 358,
+          "boys": 180
+        }
+      ]
+    },
+    "Chartiers Valley": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 770,
+      "boys": 400,
+      "schools": [
+        {
+          "id": 11316,
+          "name": "Chartiers Valley High School",
+          "football": "4A",
+          "total": 770,
+          "boys": 400
+        }
+      ]
+    },
+    "Chartiers-Houston": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 298,
+      "boys": 142,
+      "schools": [
+        {
+          "id": 11315,
+          "name": "Chartiers Houston High School",
+          "football": "2A",
+          "total": 298,
+          "boys": 142
+        }
+      ]
+    },
+    "Cheltenham Township": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1118,
+      "boys": 554,
+      "schools": [
+        {
+          "id": 10989,
+          "name": "Cheltenham High School",
+          "football": "5A",
+          "total": 1118,
+          "boys": 554
+        }
+      ]
+    },
+    "Chester-Upland": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1121,
+      "boys": 552,
+      "schools": [
+        {
+          "id": 10990,
+          "name": "Chester High School",
+          "football": "5A",
+          "total": 1121,
+          "boys": 552
+        }
+      ]
+    },
+    "Chestnut Ridge": {
+      "piaa": 5,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 303,
+      "boys": 153,
+      "schools": [
+        {
+          "id": 11222,
+          "name": "Chestnut Ridge High School",
+          "football": "2A",
+          "coop": true,
+          "total": 303,
+          "boys": 153
+        }
+      ]
+    },
+    "Chichester": {
+      "piaa": 1,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 800,
+      "boys": 411,
+      "schools": [
+        {
+          "id": 10991,
+          "name": "Chichester High School",
+          "football": "4A",
+          "total": 800,
+          "boys": 411
+        }
+      ]
+    },
+    "Clairton City": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 201,
+      "boys": 102,
+      "schools": [
+        {
+          "id": 11317,
+          "name": "Clairton High School",
+          "football": "1A",
+          "total": 201,
+          "boys": 102
+        }
+      ]
+    },
+    "Clarion Area": {
+      "piaa": 9,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 195,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11417,
+          "name": "Clarion Area Senior High School",
+          "football": "2A",
+          "coop": true,
+          "total": 195,
+          "boys": 101
+        }
+      ]
+    },
+    "Clarion-Limestone Area": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 190,
+      "boys": 93,
+      "schools": [
+        {
+          "id": 11418,
+          "name": "Clarion Limestone High School",
+          "football": null,
+          "total": 190,
+          "boys": 93
+        }
+      ]
+    },
+    "Claysburg-Kimmel": {
+      "piaa": 6,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 197,
+      "boys": 95,
+      "schools": [
+        {
+          "id": 11247,
+          "name": "Claysburg Kimmel High School",
+          "football": "4A",
+          "total": 197,
+          "boys": 95
+        }
+      ]
+    },
+    "Clearfield Area": {
+      "piaa": 9,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 567,
+      "boys": 306,
+      "schools": [
+        {
+          "id": 11419,
+          "name": "Clearfield Area Senior High School",
+          "football": "4A",
+          "total": 567,
+          "boys": 306
+        }
+      ]
+    },
+    "Coatesville Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2379,
+      "boys": 1277,
+      "schools": [
+        {
+          "id": 10992,
+          "name": "Coatesville Area High School",
+          "football": "6A",
+          "total": 2379,
+          "boys": 1277
+        }
+      ]
+    },
+    "Cocalico": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 849,
+      "boys": 462,
+      "schools": [
+        {
+          "id": 11095,
+          "name": "Cocalico High School",
+          "football": "5A",
+          "total": 849,
+          "boys": 462
+        }
+      ]
+    },
+    "Colonial": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1237,
+      "boys": 614,
+      "schools": [
+        {
+          "id": 10993,
+          "name": "Plymouth Whitemarsh High School",
+          "football": "6A",
+          "total": 1237,
+          "boys": 614
+        }
+      ]
+    },
+    "Columbia Borough": {
+      "piaa": 3,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 346,
+      "boys": 199,
+      "schools": [
+        {
+          "id": 11096,
+          "name": "Columbia High School",
+          "football": "2A",
+          "total": 346,
+          "boys": 199
+        }
+      ]
+    },
+    "Commodore Perry": {
+      "piaa": 10,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 109,
+      "boys": 63,
+      "schools": [
+        {
+          "id": 11444,
+          "name": "Commodore Perry High School",
+          "football": null,
+          "total": 109,
+          "boys": 63
+        }
+      ]
+    },
+    "Conemaugh Township Area": {
+      "piaa": 5,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 191,
+      "boys": 94,
+      "schools": [
+        {
+          "id": 11223,
+          "name": "Conemaugh Township Area High School",
+          "football": "1A",
+          "coop": true,
+          "total": 191,
+          "boys": 94
+        }
+      ]
+    },
+    "Conemaugh Valley": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 136,
+      "boys": 64,
+      "schools": [
+        {
+          "id": 11248,
+          "name": "Conemaugh Valley High School",
+          "football": "1A",
+          "coop": true,
+          "total": 136,
+          "boys": 64
+        }
+      ]
+    },
+    "Conestoga Valley": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1059,
+      "boys": 531,
+      "schools": [
+        {
+          "id": 11097,
+          "name": "Conestoga Valley High School",
+          "football": "5A",
+          "total": 1059,
+          "boys": 531
+        }
+      ]
+    },
+    "Conewago Valley": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 936,
+      "boys": 479,
+      "schools": [
+        {
+          "id": 11098,
+          "name": "New Oxford High School",
+          "football": "5A",
+          "total": 936,
+          "boys": 479
+        }
+      ]
+    },
+    "Conneaut": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 472,
+      "boys": 247,
+      "schools": [
+        {
+          "id": 13507,
+          "name": "Conneaut Area Senior High School",
+          "football": "3A",
+          "total": 472,
+          "boys": 247
+        }
+      ]
+    },
+    "Connellsville Area": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1038,
+      "boys": 570,
+      "schools": [
+        {
+          "id": 11318,
+          "name": "Connellsville Area Senior High School",
+          "football": "5A",
+          "total": 1038,
+          "boys": 570
+        }
+      ]
+    },
+    "Conrad Weiser Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 703,
+      "boys": 362,
+      "schools": [
+        {
+          "id": 11099,
+          "name": "Conrad Weiser High School",
+          "football": "4A",
+          "total": 703,
+          "boys": 362
+        }
+      ]
+    },
+    "Cornell": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 118,
+      "boys": 63,
+      "schools": [
+        {
+          "id": 11319,
+          "name": "Cornell High School",
+          "football": "1A",
+          "coop": true,
+          "total": 118,
+          "boys": 63
+        }
+      ]
+    },
+    "Cornwall-Lebanon": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1434,
+      "boys": 714,
+      "schools": [
+        {
+          "id": 11100,
+          "name": "Cedar Crest High School",
+          "football": "6A",
+          "total": 1434,
+          "boys": 714
+        }
+      ]
+    },
+    "Corry Area": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 481,
+      "boys": 239,
+      "schools": [
+        {
+          "id": 11448,
+          "name": "Corry Area High School",
+          "football": "3A",
+          "total": 481,
+          "boys": 239
+        }
+      ]
+    },
+    "Coudersport Area": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 172,
+      "boys": 94,
+      "schools": [
+        {
+          "id": 11420,
+          "name": "Coudersport High School",
+          "football": "1A",
+          "coop": true,
+          "total": 172,
+          "boys": 94
+        }
+      ]
+    },
+    "Council Rock": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 2673,
+      "boys": 1352,
+      "schools": [
+        {
+          "id": 11045,
+          "name": "Council Rock High School South",
+          "football": "6A",
+          "total": 1423,
+          "boys": 716
+        },
+        {
+          "id": 10994,
+          "name": "Council Rock North High School",
+          "football": "6A",
+          "total": 1250,
+          "boys": 636
+        }
+      ]
+    },
+    "Cranberry Area": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 337,
+      "boys": 184,
+      "schools": [
+        {
+          "id": 11439,
+          "name": "Cranberry Area High School",
+          "football": null,
+          "total": 337,
+          "boys": 184
+        }
+      ]
+    },
+    "Crawford Central": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 2,
+      "enrollment": 765,
+      "boys": 389,
+      "schools": [
+        {
+          "id": 11449,
+          "name": "Cochranton Area High School",
+          "football": "1A",
+          "total": 180,
+          "boys": 90
+        },
+        {
+          "id": 11450,
+          "name": "Meadville Area High School",
+          "football": "4A",
+          "total": 585,
+          "boys": 299
+        }
+      ]
+    },
+    "Crestwood": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 717,
+      "boys": 379,
+      "schools": [
+        {
+          "id": 11050,
+          "name": "Crestwood High School",
+          "football": "4A",
+          "total": 717,
+          "boys": 379
+        }
+      ]
+    },
+    "Cumberland Valley": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2516,
+      "boys": 1270,
+      "schools": [
+        {
+          "id": 11101,
+          "name": "Cumberland Valley High School",
+          "football": "6A",
+          "total": 2516,
+          "boys": 1270
+        }
+      ]
+    },
+    "Curwensville Area": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 203,
+      "boys": 105,
+      "schools": [
+        {
+          "id": 11421,
+          "name": "Curwensville Area Senior High School",
+          "football": "1A",
+          "total": 203,
+          "boys": 105
+        }
+      ]
+    },
+    "Dallas": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 635,
+      "boys": 315,
+      "schools": [
+        {
+          "id": 11051,
+          "name": "Dallas High School",
+          "football": "4A",
+          "total": 635,
+          "boys": 315
+        }
+      ]
+    },
+    "Dallastown Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1706,
+      "boys": 921,
+      "schools": [
+        {
+          "id": 11102,
+          "name": "Dallastown Area High School",
+          "football": "6A",
+          "total": 1706,
+          "boys": 921
+        }
+      ]
+    },
+    "Daniel Boone Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 794,
+      "boys": 400,
+      "schools": [
+        {
+          "id": 11103,
+          "name": "Daniel Boone High School",
+          "football": "4A",
+          "total": 794,
+          "boys": 400
+        }
+      ]
+    },
+    "Danville Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 522,
+      "boys": 245,
+      "schools": [
+        {
+          "id": 11181,
+          "name": "Danville Area High School",
+          "football": "3A",
+          "total": 522,
+          "boys": 245
+        }
+      ]
+    },
+    "Deer Lakes": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 437,
+      "boys": 235,
+      "schools": [
+        {
+          "id": 11320,
+          "name": "Deer Lakes High School",
+          "football": "3A",
+          "total": 437,
+          "boys": 235
+        }
+      ]
+    },
+    "Delaware Valley": {
+      "piaa": 2,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1087,
+      "boys": 555,
+      "schools": [
+        {
+          "id": 11052,
+          "name": "Delaware Valley High School",
+          "football": "5A",
+          "total": 1087,
+          "boys": 555
+        }
+      ]
+    },
+    "Derry Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 454,
+      "boys": 243,
+      "schools": [
+        {
+          "id": 11321,
+          "name": "Derry Area High School",
+          "football": "3A",
+          "total": 454,
+          "boys": 243
+        }
+      ]
+    },
+    "Derry Township": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 843,
+      "boys": 431,
+      "schools": [
+        {
+          "id": 11104,
+          "name": "Hershey High School",
+          "football": "5A",
+          "total": 843,
+          "boys": 431
+        }
+      ]
+    },
+    "Donegal": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 772,
+      "boys": 393,
+      "schools": [
+        {
+          "id": 11105,
+          "name": "Donegal High School",
+          "football": "4A",
+          "total": 772,
+          "boys": 393
+        }
+      ]
+    },
+    "Dover Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 960,
+      "boys": 502,
+      "schools": [
+        {
+          "id": 11106,
+          "name": "Dover Area High School",
+          "football": "5A",
+          "total": 960,
+          "boys": 502
+        }
+      ]
+    },
+    "Downingtown Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 3499,
+      "boys": 1769,
+      "schools": [
+        {
+          "id": 10996,
+          "name": "Downingtown East High School",
+          "football": "6A",
+          "total": 1716,
+          "boys": 892
+        },
+        {
+          "id": 10995,
+          "name": "Downingtown West High School",
+          "football": "6A",
+          "total": 1783,
+          "boys": 877
+        }
+      ]
+    },
+    "Dubois Area": {
+      "piaa": 9,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 872,
+      "boys": 459,
+      "schools": [
+        {
+          "id": 11422,
+          "name": "DuBois Area High School",
+          "football": "5A",
+          "total": 872,
+          "boys": 459
+        }
+      ]
+    },
+    "Dunmore": {
+      "piaa": 2,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 319,
+      "boys": 167,
+      "schools": [
+        {
+          "id": 11053,
+          "name": "Dunmore High School",
+          "football": "2A",
+          "total": 319,
+          "boys": 167
+        }
+      ]
+    },
+    "East Allegheny": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 410,
+      "boys": 195,
+      "schools": [
+        {
+          "id": 11323,
+          "name": "East Allegheny High School",
+          "football": "2A",
+          "total": 410,
+          "boys": 195
+        }
+      ]
+    },
+    "East Lycoming": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 354,
+      "boys": 184,
+      "schools": [
+        {
+          "id": 11182,
+          "name": "Hughesville High School",
+          "football": "2A",
+          "total": 354,
+          "boys": 184
+        }
+      ]
+    },
+    "East Penn": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2221,
+      "boys": 1137,
+      "schools": [
+        {
+          "id": 11496,
+          "name": "Emmaus High School",
+          "football": "6A",
+          "total": 2221,
+          "boys": 1137
+        }
+      ]
+    },
+    "East Pennsboro Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 685,
+      "boys": 357,
+      "schools": [
+        {
+          "id": 11107,
+          "name": "East Pennsboro Area High School",
+          "football": "4A",
+          "total": 685,
+          "boys": 357
+        }
+      ]
+    },
+    "East Stroudsburg Area": {
+      "piaa": 11,
+      "football": "5A",
+      "footballSchools": 2,
+      "enrollment": 1849,
+      "boys": 953,
+      "schools": [
+        {
+          "id": 11488,
+          "name": "East Stroudsburg Area High School - North",
+          "football": "4A",
+          "total": 728,
+          "boys": 397
+        },
+        {
+          "id": 11497,
+          "name": "East Stroudsburg Area South High School",
+          "football": "5A",
+          "total": 1121,
+          "boys": 556
+        }
+      ]
+    },
+    "Eastern Lancaster County": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 834,
+      "boys": 418,
+      "schools": [
+        {
+          "id": 11108,
+          "name": "Garden Spot High School",
+          "football": "5A",
+          "total": 834,
+          "boys": 418
+        }
+      ]
+    },
+    "Eastern Lebanon County": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 728,
+      "boys": 394,
+      "schools": [
+        {
+          "id": 11109,
+          "name": "Eastern Lebanon County High School",
+          "football": "4A",
+          "total": 728,
+          "boys": 394
+        }
+      ]
+    },
+    "Eastern York": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 568,
+      "boys": 299,
+      "schools": [
+        {
+          "id": 11110,
+          "name": "Eastern York High School",
+          "football": "4A",
+          "total": 568,
+          "boys": 299
+        }
+      ]
+    },
+    "Easton Area": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2112,
+      "boys": 1116,
+      "schools": [
+        {
+          "id": 11495,
+          "name": "Easton Area High School",
+          "football": "6A",
+          "total": 2112,
+          "boys": 1116
+        }
+      ]
+    },
+    "Elizabeth Forward": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 552,
+      "boys": 276,
+      "schools": [
+        {
+          "id": 11324,
+          "name": "Elizabeth Forward High School",
+          "football": "3A",
+          "total": 552,
+          "boys": 276
+        }
+      ]
+    },
+    "Elizabethtown Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1037,
+      "boys": 544,
+      "schools": [
+        {
+          "id": 11111,
+          "name": "Elizabethtown Area High School",
+          "football": "5A",
+          "total": 1037,
+          "boys": 544
+        }
+      ]
+    },
+    "Elk Lake": {
+      "piaa": 2,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 245,
+      "boys": 124,
+      "schools": [
+        {
+          "id": 11054,
+          "name": "Elk Lake High School",
+          "football": null,
+          "total": 245,
+          "boys": 124
+        }
+      ]
+    },
+    "Ellwood City Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 415,
+      "boys": 225,
+      "schools": [
+        {
+          "id": 11325,
+          "name": "Ellwood City Lincoln High School",
+          "football": "3A",
+          "total": 415,
+          "boys": 225
+        }
+      ]
+    },
+    "Ephrata Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1114,
+      "boys": 575,
+      "schools": [
+        {
+          "id": 11112,
+          "name": "Ephrata Area High School",
+          "football": "5A",
+          "total": 1114,
+          "boys": 575
+        }
+      ]
+    },
+    "Erie City": {
+      "piaa": 10,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2673,
+      "boys": 1359,
+      "schools": [
+        {
+          "id": 13596,
+          "name": "Erie High School",
+          "football": "6A",
+          "total": 2673,
+          "boys": 1359
+        }
+      ]
+    },
+    "Everett Area": {
+      "piaa": 5,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 292,
+      "boys": 153,
+      "schools": [
+        {
+          "id": 11224,
+          "name": "Everett Area High School",
+          "football": "2A",
+          "total": 292,
+          "boys": 153
+        }
+      ]
+    },
+    "Exeter Township": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1036,
+      "boys": 516,
+      "schools": [
+        {
+          "id": 11113,
+          "name": "Exeter Township High School",
+          "football": "5A",
+          "total": 1036,
+          "boys": 516
+        }
+      ]
+    },
+    "Fairfield Area": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 236,
+      "boys": 114,
+      "schools": [
+        {
+          "id": 11114,
+          "name": "Fairfield High School",
+          "football": null,
+          "total": 236,
+          "boys": 114
+        }
+      ]
+    },
+    "Fairview": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 471,
+      "boys": 250,
+      "schools": [
+        {
+          "id": 11454,
+          "name": "Fairview High School",
+          "football": "3A",
+          "total": 471,
+          "boys": 250
+        }
+      ]
+    },
+    "Fannett-Metal": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 87,
+      "boys": 41,
+      "schools": [
+        {
+          "id": 11225,
+          "name": "Fannett Metal High School",
+          "football": null,
+          "total": 87,
+          "boys": 41
+        }
+      ]
+    },
+    "Farrell Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 154,
+      "boys": 80,
+      "schools": [
+        {
+          "id": 11326,
+          "name": "Farrell High School",
+          "football": "2A",
+          "total": 154,
+          "boys": 80
+        }
+      ]
+    },
+    "Ferndale Area": {
+      "piaa": 6,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 134,
+      "boys": 70,
+      "schools": [
+        {
+          "id": 11249,
+          "name": "Ferndale Area Senior High School",
+          "football": null,
+          "total": 134,
+          "boys": 70
+        }
+      ]
+    },
+    "Fleetwood Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 582,
+      "boys": 287,
+      "schools": [
+        {
+          "id": 11115,
+          "name": "Fleetwood Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 582,
+          "boys": 287
+        }
+      ]
+    },
+    "Forbes Road": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 86,
+      "boys": 42,
+      "schools": [
+        {
+          "id": 11226,
+          "name": "Forbes Road High School",
+          "football": null,
+          "total": 86,
+          "boys": 42
+        }
+      ]
+    },
+    "Forest Area": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 77,
+      "boys": 40,
+      "schools": [
+        {
+          "id": 13688,
+          "name": "East Forest High School",
+          "football": null,
+          "total": 36,
+          "boys": 23
+        },
+        {
+          "id": 11441,
+          "name": "West Forest High School",
+          "football": null,
+          "total": 41,
+          "boys": 17
+        }
+      ]
+    },
+    "Forest City Regional": {
+      "piaa": 2,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 200,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11055,
+          "name": "Forest City Regional High School",
+          "football": null,
+          "total": 200,
+          "boys": 101
+        }
+      ]
+    },
+    "Forest Hills": {
+      "piaa": 6,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 407,
+      "boys": 190,
+      "schools": [
+        {
+          "id": 11250,
+          "name": "Forest Hills Senior High School",
+          "football": "4A",
+          "total": 407,
+          "boys": 190
+        }
+      ]
+    },
+    "Fort Cherry": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 242,
+      "boys": 123,
+      "schools": [
+        {
+          "id": 11327,
+          "name": "Fort Cherry High School",
+          "football": "1A",
+          "total": 242,
+          "boys": 123
+        }
+      ]
+    },
+    "Fort Leboeuf": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 491,
+      "boys": 242,
+      "schools": [
+        {
+          "id": 11455,
+          "name": "Fort LeBoeuf High School",
+          "football": "3A",
+          "total": 491,
+          "boys": 242
+        }
+      ]
+    },
+    "Fox Chapel Area": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1032,
+      "boys": 539,
+      "schools": [
+        {
+          "id": 11328,
+          "name": "Fox Chapel Area High School",
+          "football": "5A",
+          "total": 1032,
+          "boys": 539
+        }
+      ]
+    },
+    "Franklin Area": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 486,
+      "boys": 248,
+      "schools": [
+        {
+          "id": 11456,
+          "name": "Franklin Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 486,
+          "boys": 248
+        }
+      ]
+    },
+    "Franklin Regional": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 877,
+      "boys": 446,
+      "schools": [
+        {
+          "id": 11329,
+          "name": "Franklin Regional High School",
+          "football": "5A",
+          "total": 877,
+          "boys": 446
+        }
+      ]
+    },
+    "Frazier": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 261,
+      "boys": 135,
+      "schools": [
+        {
+          "id": 11330,
+          "name": "Frazier High School",
+          "football": "1A",
+          "total": 261,
+          "boys": 135
+        }
+      ]
+    },
+    "Freedom Area": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 289,
+      "boys": 151,
+      "schools": [
+        {
+          "id": 11331,
+          "name": "Freedom Area High School",
+          "football": "2A",
+          "total": 289,
+          "boys": 151
+        }
+      ]
+    },
+    "Freeport Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 471,
+      "boys": 243,
+      "schools": [
+        {
+          "id": 11332,
+          "name": "Freeport Area Senior High School",
+          "football": "3A",
+          "total": 471,
+          "boys": 243
+        }
+      ]
+    },
+    "Galeton Area": {
+      "piaa": 4,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 73,
+      "boys": 37,
+      "schools": [
+        {
+          "id": 11183,
+          "name": "Galeton High School",
+          "football": null,
+          "total": 73,
+          "boys": 37
+        }
+      ]
+    },
+    "Garnet Valley": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1096,
+      "boys": 555,
+      "schools": [
+        {
+          "id": 10997,
+          "name": "Garnet Valley High School",
+          "football": "5A",
+          "total": 1096,
+          "boys": 555
+        }
+      ]
+    },
+    "Gateway": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 943,
+      "boys": 479,
+      "schools": [
+        {
+          "id": 11333,
+          "name": "Gateway High School",
+          "football": "5A",
+          "total": 943,
+          "boys": 479
+        }
+      ]
+    },
+    "General McLane": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 559,
+      "boys": 294,
+      "schools": [
+        {
+          "id": 11457,
+          "name": "General McLane High School",
+          "football": "4A",
+          "total": 559,
+          "boys": 294
+        }
+      ]
+    },
+    "Gettysburg Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 836,
+      "boys": 457,
+      "schools": [
+        {
+          "id": 11116,
+          "name": "Gettysburg Area High School",
+          "football": "5A",
+          "coop": true,
+          "total": 836,
+          "boys": 457
+        }
+      ]
+    },
+    "Girard": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 338,
+      "boys": 183,
+      "schools": [
+        {
+          "id": 11458,
+          "name": "Girard High School",
+          "football": "2A",
+          "total": 338,
+          "boys": 183
+        }
+      ]
+    },
+    "Glendale": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 154,
+      "boys": 80,
+      "schools": [
+        {
+          "id": 11251,
+          "name": "Glendale High School",
+          "football": "1A",
+          "coop": true,
+          "total": 154,
+          "boys": 80
+        }
+      ]
+    },
+    "Governor Mifflin": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1079,
+      "boys": 554,
+      "schools": [
+        {
+          "id": 11117,
+          "name": "Governor Mifflin High School",
+          "football": "5A",
+          "total": 1079,
+          "boys": 554
+        }
+      ]
+    },
+    "Great Valley": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1094,
+      "boys": 556,
+      "schools": [
+        {
+          "id": 10998,
+          "name": "Great Valley High School",
+          "football": "5A",
+          "total": 1094,
+          "boys": 556
+        }
+      ]
+    },
+    "Greater Johnstown": {
+      "piaa": 6,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 752,
+      "boys": 390,
+      "schools": [
+        {
+          "id": 11252,
+          "name": "Greater Johnstown High School",
+          "football": "4A",
+          "total": 752,
+          "boys": 390
+        }
+      ]
+    },
+    "Greater Latrobe": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 852,
+      "boys": 472,
+      "schools": [
+        {
+          "id": 11334,
+          "name": "Greater Latrobe Senior High School",
+          "football": "5A",
+          "total": 852,
+          "boys": 472
+        }
+      ]
+    },
+    "Greater Nanticoke Area": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 617,
+      "boys": 316,
+      "schools": [
+        {
+          "id": 11056,
+          "name": "Greater Nanticoke Area High School",
+          "football": "4A",
+          "total": 617,
+          "boys": 316
+        }
+      ]
+    },
+    "Greencastle-Antrim": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 749,
+      "boys": 375,
+      "schools": [
+        {
+          "id": 11118,
+          "name": "Greencastle Antrim High School",
+          "football": "4A",
+          "total": 749,
+          "boys": 375
+        }
+      ]
+    },
+    "Greensburg Salem": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 580,
+      "boys": 281,
+      "schools": [
+        {
+          "id": 11335,
+          "name": "Greensburg Salem High School",
+          "football": "3A",
+          "total": 580,
+          "boys": 281
+        }
+      ]
+    },
+    "Greenville Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 304,
+      "boys": 148,
+      "schools": [
+        {
+          "id": 11459,
+          "name": "Greenville High School",
+          "football": "2A",
+          "total": 304,
+          "boys": 148
+        }
+      ]
+    },
+    "Greenwood": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 209,
+      "boys": 112,
+      "schools": [
+        {
+          "id": 11119,
+          "name": "Greenwood High School",
+          "football": null,
+          "total": 209,
+          "boys": 112
+        }
+      ]
+    },
+    "Grove City Area": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 441,
+      "boys": 225,
+      "schools": [
+        {
+          "id": 11460,
+          "name": "Grove City Area High School",
+          "football": "3A",
+          "total": 441,
+          "boys": 225
+        }
+      ]
+    },
+    "Halifax Area": {
+      "piaa": 3,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 247,
+      "boys": 126,
+      "schools": [
+        {
+          "id": 11120,
+          "name": "Halifax Area High School",
+          "football": "1A",
+          "coop": true,
+          "total": 247,
+          "boys": 126
+        }
+      ]
+    },
+    "Hamburg Area": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 547,
+      "boys": 267,
+      "schools": [
+        {
+          "id": 11121,
+          "name": "Hamburg Area High School",
+          "football": "3A",
+          "total": 547,
+          "boys": 267
+        }
+      ]
+    },
+    "Hampton Township": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 657,
+      "boys": 312,
+      "schools": [
+        {
+          "id": 11336,
+          "name": "Hampton High School",
+          "football": "4A",
+          "total": 657,
+          "boys": 312
+        }
+      ]
+    },
+    "Hanover Area": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 523,
+      "boys": 285,
+      "schools": [
+        {
+          "id": 11057,
+          "name": "Hanover Area High School",
+          "football": "4A",
+          "total": 523,
+          "boys": 285
+        }
+      ]
+    },
+    "Hanover Public": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 559,
+      "boys": 291,
+      "schools": [
+        {
+          "id": 11122,
+          "name": "Hanover High School",
+          "football": "4A",
+          "total": 559,
+          "boys": 291
+        }
+      ]
+    },
+    "Harbor Creek": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 562,
+      "boys": 282,
+      "schools": [
+        {
+          "id": 11461,
+          "name": "Harbor Creek High School",
+          "football": "4A",
+          "total": 562,
+          "boys": 282
+        }
+      ]
+    },
+    "Harmony Area": {
+      "piaa": 6,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 48,
+      "boys": 30,
+      "schools": [
+        {
+          "id": 11253,
+          "name": "Harmony Area Senior High School",
+          "football": null,
+          "total": 48,
+          "boys": 30
+        }
+      ]
+    },
+    "Harrisburg City": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1415,
+      "boys": 735,
+      "schools": [
+        {
+          "id": 11123,
+          "name": "Harrisburg High School",
+          "football": "6A",
+          "total": 1415,
+          "boys": 735
+        }
+      ]
+    },
+    "Hatboro-Horsham": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 940,
+      "boys": 475,
+      "schools": [
+        {
+          "id": 10999,
+          "name": "Hatboro Horsham High School",
+          "football": "5A",
+          "total": 940,
+          "boys": 475
+        }
+      ]
+    },
+    "Haverford Township": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1534,
+      "boys": 740,
+      "schools": [
+        {
+          "id": 11000,
+          "name": "Haverford High School",
+          "football": "6A",
+          "total": 1534,
+          "boys": 740
+        }
+      ]
+    },
+    "Hazleton Area": {
+      "piaa": 2,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 3355,
+      "boys": 1697,
+      "schools": [
+        {
+          "id": 11058,
+          "name": "Hazleton Area High School",
+          "football": "6A",
+          "coop": true,
+          "total": 3355,
+          "boys": 1697
+        }
+      ]
+    },
+    "Hempfield": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1795,
+      "boys": 927,
+      "schools": [
+        {
+          "id": 11124,
+          "name": "Hempfield High School",
+          "football": "6A",
+          "total": 1795,
+          "boys": 927
+        }
+      ]
+    },
+    "Hempfield Area": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1291,
+      "boys": 634,
+      "schools": [
+        {
+          "id": 11337,
+          "name": "Hempfield Area High School",
+          "football": "6A",
+          "total": 1291,
+          "boys": 634
+        }
+      ]
+    },
+    "Hermitage": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 446,
+      "boys": 222,
+      "schools": [
+        {
+          "id": 11462,
+          "name": "Hickory High School",
+          "football": "3A",
+          "total": 446,
+          "boys": 222
+        }
+      ]
+    },
+    "Highlands": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 450,
+      "boys": 240,
+      "schools": [
+        {
+          "id": 11338,
+          "name": "Highlands High School",
+          "football": "3A",
+          "total": 450,
+          "boys": 240
+        }
+      ]
+    },
+    "Hollidaysburg Area": {
+      "piaa": 6,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 866,
+      "boys": 454,
+      "schools": [
+        {
+          "id": 11254,
+          "name": "Hollidaysburg Area Senior High School",
+          "football": "5A",
+          "total": 866,
+          "boys": 454
+        }
+      ]
+    },
+    "Homer-Center": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 192,
+      "boys": 99,
+      "schools": [
+        {
+          "id": 11255,
+          "name": "Homer-Center Senior High School",
+          "football": "1A",
+          "total": 192,
+          "boys": 99
+        }
+      ]
+    },
+    "Hopewell Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 493,
+      "boys": 255,
+      "schools": [
+        {
+          "id": 11339,
+          "name": "Hopewell High School",
+          "football": "3A",
+          "total": 493,
+          "boys": 255
+        }
+      ]
+    },
+    "Huntingdon Area": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 460,
+      "boys": 270,
+      "schools": [
+        {
+          "id": 11256,
+          "name": "Huntingdon Area High School",
+          "football": "3A",
+          "total": 460,
+          "boys": 270
+        }
+      ]
+    },
+    "Indiana Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 730,
+      "boys": 363,
+      "schools": [
+        {
+          "id": 11340,
+          "name": "Indiana Area Senior High School",
+          "football": "4A",
+          "total": 730,
+          "boys": 363
+        }
+      ]
+    },
+    "Interboro": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 841,
+      "boys": 452,
+      "schools": [
+        {
+          "id": 11001,
+          "name": "Interboro High School",
+          "football": "5A",
+          "total": 841,
+          "boys": 452
+        }
+      ]
+    },
+    "Iroquois": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 295,
+      "boys": 161,
+      "schools": [
+        {
+          "id": 11463,
+          "name": "Iroquois High School",
+          "football": "2A",
+          "total": 295,
+          "boys": 161
+        }
+      ]
+    },
+    "Jamestown Area": {
+      "piaa": 10,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 106,
+      "boys": 59,
+      "schools": [
+        {
+          "id": 11464,
+          "name": "Jamestown Area High School",
+          "football": null,
+          "total": 106,
+          "boys": 59
+        }
+      ]
+    },
+    "Jeannette City": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 196,
+      "boys": 97,
+      "schools": [
+        {
+          "id": 11341,
+          "name": "Jeannette Senior High School",
+          "football": "1A",
+          "total": 196,
+          "boys": 97
+        }
+      ]
+    },
+    "Jefferson-Morgan": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 218,
+      "boys": 109,
+      "schools": [
+        {
+          "id": 11342,
+          "name": "Jefferson Morgan High School",
+          "football": "1A",
+          "total": 218,
+          "boys": 109
+        }
+      ]
+    },
+    "Jenkintown": {
+      "piaa": 1,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 162,
+      "boys": 80,
+      "schools": [
+        {
+          "id": 11002,
+          "name": "Jenkintown High School",
+          "football": "1A",
+          "total": 162,
+          "boys": 80
+        }
+      ]
+    },
+    "Jersey Shore Area": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 535,
+      "boys": 280,
+      "schools": [
+        {
+          "id": 11184,
+          "name": "Jersey Shore Area High School",
+          "football": "4A",
+          "total": 535,
+          "boys": 280
+        }
+      ]
+    },
+    "Jim Thorpe Area": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 502,
+      "boys": 262,
+      "schools": [
+        {
+          "id": 11498,
+          "name": "Jim Thorpe Area High School",
+          "football": "3A",
+          "total": 502,
+          "boys": 262
+        }
+      ]
+    },
+    "Johnsonburg Area": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 108,
+      "boys": 61,
+      "schools": [
+        {
+          "id": 11423,
+          "name": "Johnsonburg Area High School",
+          "football": null,
+          "total": 108,
+          "boys": 61
+        }
+      ]
+    },
+    "Juniata County": {
+      "piaa": 4,
+      "piaaAll": [4, 6],
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 642,
+      "boys": 334,
+      "schools": [
+        {
+          "id": 11175,
+          "name": "East Juniata High School",
+          "football": null,
+          "total": 245,
+          "boys": 115
+        },
+        {
+          "id": 11125,
+          "name": "Juniata High School",
+          "football": "3A",
+          "coop": true,
+          "total": 397,
+          "boys": 219
+        }
+      ]
+    },
+    "Juniata Valley": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 158,
+      "boys": 72,
+      "schools": [
+        {
+          "id": 11257,
+          "name": "Juniata Valley High School",
+          "football": "1A",
+          "coop": true,
+          "total": 158,
+          "boys": 72
+        }
+      ]
+    },
+    "Kane Area": {
+      "piaa": 9,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 239,
+      "boys": 130,
+      "schools": [
+        {
+          "id": 11424,
+          "name": "Kane Area High School",
+          "football": "2A",
+          "coop": true,
+          "total": 239,
+          "boys": 130
+        }
+      ]
+    },
+    "Karns City Area": {
+      "piaa": 9,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 323,
+      "boys": 168,
+      "schools": [
+        {
+          "id": 11425,
+          "name": "Karns City High School",
+          "football": "2A",
+          "total": 323,
+          "boys": 168
+        }
+      ]
+    },
+    "Kennett Consolidated": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 913,
+      "boys": 461,
+      "schools": [
+        {
+          "id": 11003,
+          "name": "Kennett High School",
+          "football": "5A",
+          "total": 913,
+          "boys": 461
+        }
+      ]
+    },
+    "Keystone": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 224,
+      "boys": 129,
+      "schools": [
+        {
+          "id": 11426,
+          "name": "Keystone High School",
+          "football": "1A",
+          "total": 224,
+          "boys": 129
+        }
+      ]
+    },
+    "Keystone Central": {
+      "piaa": 4,
+      "piaaAll": [4, 6],
+      "football": "4A",
+      "footballSchools": 2,
+      "enrollment": 773,
+      "boys": 429,
+      "schools": [
+        {
+          "id": 11217,
+          "name": "Bucktail Area High School",
+          "football": "1A",
+          "total": 71,
+          "boys": 44
+        },
+        {
+          "id": 11258,
+          "name": "Central Mountain High School",
+          "football": "4A",
+          "total": 702,
+          "boys": 385
+        }
+      ]
+    },
+    "Keystone Oaks": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 388,
+      "boys": 195,
+      "schools": [
+        {
+          "id": 11343,
+          "name": "Keystone Oaks High School",
+          "football": "2A",
+          "total": 388,
+          "boys": 195
+        }
+      ]
+    },
+    "Kiski Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 772,
+      "boys": 389,
+      "schools": [
+        {
+          "id": 11344,
+          "name": "Kiski Area High School",
+          "football": "4A",
+          "total": 772,
+          "boys": 389
+        }
+      ]
+    },
+    "Kutztown Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 337,
+      "boys": 177,
+      "schools": [
+        {
+          "id": 11126,
+          "name": "Kutztown Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 337,
+          "boys": 177
+        }
+      ]
+    },
+    "Lackawanna Trail": {
+      "piaa": 2,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 184,
+      "boys": 88,
+      "schools": [
+        {
+          "id": 11060,
+          "name": "Lackawanna Trail High School",
+          "football": "1A",
+          "total": 184,
+          "boys": 88
+        }
+      ]
+    },
+    "Lake-Lehman": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 414,
+      "boys": 211,
+      "schools": [
+        {
+          "id": 11061,
+          "name": "Lake Lehman High School",
+          "football": "3A",
+          "total": 414,
+          "boys": 211
+        }
+      ]
+    },
+    "Lakeland": {
+      "piaa": 2,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 363,
+      "boys": 191,
+      "schools": [
+        {
+          "id": 11059,
+          "name": "Lakeland High School",
+          "football": "2A",
+          "total": 363,
+          "boys": 191
+        }
+      ]
+    },
+    "Lakeview": {
+      "piaa": 10,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 213,
+      "boys": 113,
+      "schools": [
+        {
+          "id": 11465,
+          "name": "Lakeview High School",
+          "football": "1A",
+          "total": 213,
+          "boys": 113
+        }
+      ]
+    },
+    "Lampeter-Strasburg": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 746,
+      "boys": 397,
+      "schools": [
+        {
+          "id": 11127,
+          "name": "Lampeter Strasburg High School",
+          "football": "4A",
+          "total": 746,
+          "boys": 397
+        }
+      ]
+    },
+    "Lancaster": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2551,
+      "boys": 1289,
+      "schools": [
+        {
+          "id": 11128,
+          "name": "J P McCaskey High School",
+          "football": "6A",
+          "coop": true,
+          "total": 2551,
+          "boys": 1289
+        }
+      ]
+    },
+    "Laurel": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 260,
+      "boys": 133,
+      "schools": [
+        {
+          "id": 11345,
+          "name": "Laurel High School",
+          "football": "1A",
+          "total": 260,
+          "boys": 133
+        }
+      ]
+    },
+    "Laurel Highlands": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 687,
+      "boys": 346,
+      "schools": [
+        {
+          "id": 11346,
+          "name": "Laurel Highlands High School",
+          "football": "4A",
+          "total": 687,
+          "boys": 346
+        }
+      ]
+    },
+    "Lebanon": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1217,
+      "boys": 632,
+      "schools": [
+        {
+          "id": 11129,
+          "name": "Lebanon High School",
+          "football": "6A",
+          "total": 1217,
+          "boys": 632
+        }
+      ]
+    },
+    "Leechburg Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 159,
+      "boys": 82,
+      "schools": [
+        {
+          "id": 11347,
+          "name": "Leechburg Area High School",
+          "football": "1A",
+          "total": 159,
+          "boys": 82
+        }
+      ]
+    },
+    "Lehighton Area": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 579,
+      "boys": 296,
+      "schools": [
+        {
+          "id": 11499,
+          "name": "Lehighton Area High School",
+          "football": "4A",
+          "total": 579,
+          "boys": 296
+        }
+      ]
+    },
+    "Lewisburg Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 444,
+      "boys": 222,
+      "schools": [
+        {
+          "id": 11185,
+          "name": "Lewisburg Area High School",
+          "football": "3A",
+          "total": 444,
+          "boys": 222
+        }
+      ]
+    },
+    "Ligonier Valley": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 371,
+      "boys": 188,
+      "schools": [
+        {
+          "id": 11260,
+          "name": "Ligonier Valley High School",
+          "football": "2A",
+          "total": 371,
+          "boys": 188
+        }
+      ]
+    },
+    "Line Mountain": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 290,
+      "boys": 141,
+      "schools": [
+        {
+          "id": 11186,
+          "name": "Line Mountain Sr High School",
+          "football": "1A",
+          "total": 290,
+          "boys": 141
+        }
+      ]
+    },
+    "Littlestown Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 527,
+      "boys": 292,
+      "schools": [
+        {
+          "id": 11130,
+          "name": "Littlestown High School",
+          "football": "4A",
+          "total": 527,
+          "boys": 292
+        }
+      ]
+    },
+    "Lower Dauphin": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 998,
+      "boys": 516,
+      "schools": [
+        {
+          "id": 11131,
+          "name": "Lower Dauphin High School",
+          "football": "5A",
+          "total": 998,
+          "boys": 516
+        }
+      ]
+    },
+    "Lower Merion": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 2107,
+      "boys": 1064,
+      "schools": [
+        {
+          "id": 11004,
+          "name": "Harriton High School",
+          "football": null,
+          "total": 1016,
+          "boys": 509
+        },
+        {
+          "id": 11005,
+          "name": "Lower Merion High School",
+          "football": "5A",
+          "coop": true,
+          "total": 1091,
+          "boys": 555
+        }
+      ]
+    },
+    "Lower Moreland Township": {
+      "piaa": 1,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 663,
+      "boys": 349,
+      "schools": [
+        {
+          "id": 11006,
+          "name": "Lower Moreland High School",
+          "football": "4A",
+          "total": 663,
+          "boys": 349
+        }
+      ]
+    },
+    "Loyalsock Township": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 369,
+      "boys": 207,
+      "schools": [
+        {
+          "id": 11187,
+          "name": "Loyalsock Township High School",
+          "football": "3A",
+          "coop": true,
+          "total": 369,
+          "boys": 207
+        }
+      ]
+    },
+    "Mahanoy Area": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 313,
+      "boys": 156,
+      "schools": [
+        {
+          "id": 11500,
+          "name": "Mahanoy Area Senior High School",
+          "football": "2A",
+          "total": 313,
+          "boys": 156
+        }
+      ]
+    },
+    "Manheim Central": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 820,
+      "boys": 413,
+      "schools": [
+        {
+          "id": 11132,
+          "name": "Manheim Central High School",
+          "football": "5A",
+          "total": 820,
+          "boys": 413
+        }
+      ]
+    },
+    "Manheim Township": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1450,
+      "boys": 776,
+      "schools": [
+        {
+          "id": 11133,
+          "name": "Manheim Township High School",
+          "football": "6A",
+          "total": 1450,
+          "boys": 776
+        }
+      ]
+    },
+    "Marion Center Area": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 335,
+      "boys": 162,
+      "schools": [
+        {
+          "id": 11261,
+          "name": "Marion Center Area High School",
+          "football": "2A",
+          "total": 335,
+          "boys": 162
+        }
+      ]
+    },
+    "Marple Newtown": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 954,
+      "boys": 478,
+      "schools": [
+        {
+          "id": 11007,
+          "name": "Marple Newtown High School",
+          "football": "5A",
+          "total": 954,
+          "boys": 478
+        }
+      ]
+    },
+    "Mars Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 787,
+      "boys": 411,
+      "schools": [
+        {
+          "id": 11350,
+          "name": "Mars Area High School",
+          "football": "4A",
+          "total": 787,
+          "boys": 411
+        }
+      ]
+    },
+    "McKeesport Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 755,
+      "boys": 379,
+      "schools": [
+        {
+          "id": 11349,
+          "name": "McKeesport Area High School",
+          "football": "4A",
+          "total": 755,
+          "boys": 379
+        }
+      ]
+    },
+    "Mcguffey": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 372,
+      "boys": 188,
+      "schools": [
+        {
+          "id": 11348,
+          "name": "McGuffey High School",
+          "football": "2A",
+          "total": 372,
+          "boys": 188
+        }
+      ]
+    },
+    "Mechanicsburg Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1219,
+      "boys": 656,
+      "schools": [
+        {
+          "id": 11134,
+          "name": "Mechanicsburg Area Senior High School",
+          "football": "6A",
+          "total": 1219,
+          "boys": 656
+        }
+      ]
+    },
+    "Mercer Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 232,
+      "boys": 122,
+      "schools": [
+        {
+          "id": 11466,
+          "name": "Mercer Area High School",
+          "football": "2A",
+          "coop": true,
+          "total": 232,
+          "boys": 122
+        }
+      ]
+    },
+    "Methacton": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1077,
+      "boys": 539,
+      "schools": [
+        {
+          "id": 11008,
+          "name": "Methacton High School",
+          "football": "5A",
+          "total": 1077,
+          "boys": 539
+        }
+      ]
+    },
+    "Meyersdale Area": {
+      "piaa": 5,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 185,
+      "boys": 92,
+      "schools": [
+        {
+          "id": 11227,
+          "name": "Meyersdale Area High School",
+          "football": "1A",
+          "coop": true,
+          "total": 185,
+          "boys": 92
+        }
+      ]
+    },
+    "Mid Valley": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 469,
+      "boys": 245,
+      "schools": [
+        {
+          "id": 11062,
+          "name": "Mid Valley Secondary Center",
+          "football": "3A",
+          "total": 469,
+          "boys": 245
+        }
+      ]
+    },
+    "Midd-West": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 565,
+      "boys": 298,
+      "schools": [
+        {
+          "id": 11188,
+          "name": "Midd-West High School",
+          "football": "4A",
+          "total": 565,
+          "boys": 298
+        }
+      ]
+    },
+    "Middletown Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 602,
+      "boys": 316,
+      "schools": [
+        {
+          "id": 11135,
+          "name": "Middletown Area High School",
+          "football": "4A",
+          "total": 602,
+          "boys": 316
+        }
+      ]
+    },
+    "Mifflin County": {
+      "piaa": 6,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1015,
+      "boys": 519,
+      "schools": [
+        {
+          "id": 13476,
+          "name": "Mifflin County High School",
+          "football": "5A",
+          "coop": true,
+          "total": 1015,
+          "boys": 519
+        }
+      ]
+    },
+    "Mifflinburg Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 472,
+      "boys": 232,
+      "schools": [
+        {
+          "id": 11189,
+          "name": "Mifflinburg Area High School",
+          "football": "3A",
+          "total": 472,
+          "boys": 232
+        }
+      ]
+    },
+    "Millcreek Township": {
+      "piaa": 10,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1559,
+      "boys": 810,
+      "schools": [
+        {
+          "id": 11467,
+          "name": "McDowell High School",
+          "football": "6A",
+          "total": 1559,
+          "boys": 810
+        }
+      ]
+    },
+    "Millersburg Area": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 181,
+      "boys": 81,
+      "schools": [
+        {
+          "id": 11136,
+          "name": "Millersburg Area High School",
+          "football": null,
+          "total": 181,
+          "boys": 81
+        }
+      ]
+    },
+    "Millville Area": {
+      "piaa": 4,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 139,
+      "boys": 72,
+      "schools": [
+        {
+          "id": 11190,
+          "name": "Millville High School",
+          "football": null,
+          "total": 139,
+          "boys": 72
+        }
+      ]
+    },
+    "Milton Area": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 524,
+      "boys": 286,
+      "schools": [
+        {
+          "id": 11191,
+          "name": "Milton Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 524,
+          "boys": 286
+        }
+      ]
+    },
+    "Minersville Area": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 275,
+      "boys": 143,
+      "schools": [
+        {
+          "id": 11501,
+          "name": "Minersville Area High School",
+          "football": "2A",
+          "total": 275,
+          "boys": 143
+        }
+      ]
+    },
+    "Mohawk Area": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 354,
+      "boys": 179,
+      "schools": [
+        {
+          "id": 11351,
+          "name": "Mohawk Area High School",
+          "football": "2A",
+          "total": 354,
+          "boys": 179
+        }
+      ]
+    },
+    "Monessen City": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 129,
+      "boys": 69,
+      "schools": [
+        {
+          "id": 11353,
+          "name": "Monessen High School",
+          "football": "1A",
+          "total": 129,
+          "boys": 69
+        }
+      ]
+    },
+    "Moniteau": {
+      "piaa": 9,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 271,
+      "boys": 148,
+      "schools": [
+        {
+          "id": 11427,
+          "name": "Moniteau High School",
+          "football": "2A",
+          "total": 271,
+          "boys": 148
+        }
+      ]
+    },
+    "Montgomery Area": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 185,
+      "boys": 91,
+      "schools": [
+        {
+          "id": 11192,
+          "name": "Montgomery Area High School",
+          "football": "1A",
+          "total": 185,
+          "boys": 91
+        }
+      ]
+    },
+    "Montour": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 786,
+      "boys": 385,
+      "schools": [
+        {
+          "id": 11354,
+          "name": "Montour High School",
+          "football": "4A",
+          "total": 786,
+          "boys": 385
+        }
+      ]
+    },
+    "Montoursville Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 452,
+      "boys": 218,
+      "schools": [
+        {
+          "id": 11193,
+          "name": "Montoursville Area High School",
+          "football": "3A",
+          "total": 452,
+          "boys": 218
+        }
+      ]
+    },
+    "Montrose Area": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 388,
+      "boys": 198,
+      "schools": [
+        {
+          "id": 11063,
+          "name": "Montrose High School",
+          "football": "3A",
+          "coop": true,
+          "total": 388,
+          "boys": 198
+        }
+      ]
+    },
+    "Moon Area": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 952,
+      "boys": 506,
+      "schools": [
+        {
+          "id": 11355,
+          "name": "Moon Area High School",
+          "football": "5A",
+          "total": 952,
+          "boys": 506
+        }
+      ]
+    },
+    "Morrisville Borough": {
+      "piaa": 1,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 235,
+      "boys": 128,
+      "schools": [
+        {
+          "id": 11009,
+          "name": "Morrisville High School",
+          "football": "1A",
+          "total": 235,
+          "boys": 128
+        }
+      ]
+    },
+    "Moshannon Valley": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 185,
+      "boys": 97,
+      "schools": [
+        {
+          "id": 11264,
+          "name": "Moshannon Valley High School",
+          "football": "1A",
+          "total": 185,
+          "boys": 97
+        }
+      ]
+    },
+    "Mount Carmel Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 439,
+      "boys": 243,
+      "schools": [
+        {
+          "id": 11194,
+          "name": "Mount Carmel Area High School",
+          "football": "3A",
+          "coop": true,
+          "total": 439,
+          "boys": 243
+        }
+      ]
+    },
+    "Mount Pleasant Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 482,
+      "boys": 248,
+      "schools": [
+        {
+          "id": 11357,
+          "name": "Mount Pleasant Area High School",
+          "football": "3A",
+          "total": 482,
+          "boys": 248
+        }
+      ]
+    },
+    "Mount Union Area": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 307,
+      "boys": 182,
+      "schools": [
+        {
+          "id": 11265,
+          "name": "MOUNT UNION AREA HIGH SCHOOL",
+          "football": "2A",
+          "total": 307,
+          "boys": 182
+        }
+      ]
+    },
+    "Mountain View": {
+      "piaa": 2,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 254,
+      "boys": 126,
+      "schools": [
+        {
+          "id": 11064,
+          "name": "Mountain View High School",
+          "football": null,
+          "total": 254,
+          "boys": 126
+        }
+      ]
+    },
+    "Mt Lebanon": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1303,
+      "boys": 666,
+      "schools": [
+        {
+          "id": 11356,
+          "name": "Mount Lebanon High School",
+          "football": "6A",
+          "total": 1303,
+          "boys": 666
+        }
+      ]
+    },
+    "Muhlenberg": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1134,
+      "boys": 587,
+      "schools": [
+        {
+          "id": 11137,
+          "name": "Muhlenberg High School",
+          "football": "6A",
+          "coop": true,
+          "total": 1134,
+          "boys": 587
+        }
+      ]
+    },
+    "Muncy": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 251,
+      "boys": 135,
+      "schools": [
+        {
+          "id": 11195,
+          "name": "Muncy High School",
+          "football": "1A",
+          "total": 251,
+          "boys": 135
+        }
+      ]
+    },
+    "Nazareth Area": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1237,
+      "boys": 641,
+      "schools": [
+        {
+          "id": 11502,
+          "name": "Nazareth Area High School",
+          "football": "6A",
+          "total": 1237,
+          "boys": 641
+        }
+      ]
+    },
+    "Neshaminy": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2429,
+      "boys": 1210,
+      "schools": [
+        {
+          "id": 11010,
+          "name": "Neshaminy High School",
+          "football": "6A",
+          "total": 2429,
+          "boys": 1210
+        }
+      ]
+    },
+    "Neshannock Township": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 294,
+      "boys": 150,
+      "schools": [
+        {
+          "id": 11358,
+          "name": "Neshannock High School",
+          "football": "2A",
+          "total": 294,
+          "boys": 150
+        }
+      ]
+    },
+    "New Brighton Area": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 321,
+      "boys": 176,
+      "schools": [
+        {
+          "id": 11359,
+          "name": "New Brighton Area High School",
+          "football": "2A",
+          "total": 321,
+          "boys": 176
+        }
+      ]
+    },
+    "New Castle Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 772,
+      "boys": 366,
+      "schools": [
+        {
+          "id": 11360,
+          "name": "New Castle Area High School",
+          "football": "4A",
+          "total": 772,
+          "boys": 366
+        }
+      ]
+    },
+    "New Hope-Solebury": {
+      "piaa": 1,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 319,
+      "boys": 172,
+      "schools": [
+        {
+          "id": 11011,
+          "name": "New Hope-Solebury High School",
+          "football": "2A",
+          "total": 319,
+          "boys": 172
+        }
+      ]
+    },
+    "New Kensington-Arnold": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 518,
+      "boys": 271,
+      "schools": [
+        {
+          "id": 11361,
+          "name": "Valley Junior-Senior High School",
+          "football": "3A",
+          "total": 518,
+          "boys": 271
+        }
+      ]
+    },
+    "Newport": {
+      "piaa": 3,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 199,
+      "boys": 107,
+      "schools": [
+        {
+          "id": 11138,
+          "name": "Newport High School",
+          "football": "2A",
+          "coop": true,
+          "total": 199,
+          "boys": 107
+        }
+      ]
+    },
+    "Norristown Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1829,
+      "boys": 970,
+      "schools": [
+        {
+          "id": 11012,
+          "name": "Norristown Area High School",
+          "football": "6A",
+          "total": 1829,
+          "boys": 970
+        }
+      ]
+    },
+    "North Allegheny": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2130,
+      "boys": 1091,
+      "schools": [
+        {
+          "id": 11362,
+          "name": "North Allegheny High School",
+          "football": "6A",
+          "total": 2130,
+          "boys": 1091
+        }
+      ]
+    },
+    "North Clarion County": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 148,
+      "boys": 69,
+      "schools": [
+        {
+          "id": 11428,
+          "name": "North Clarion High School",
+          "football": null,
+          "total": 148,
+          "boys": 69
+        }
+      ]
+    },
+    "North East": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 387,
+      "boys": 211,
+      "schools": [
+        {
+          "id": 11468,
+          "name": "North East High School",
+          "football": "3A",
+          "total": 387,
+          "boys": 211
+        }
+      ]
+    },
+    "North Hills": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1064,
+      "boys": 548,
+      "schools": [
+        {
+          "id": 11364,
+          "name": "North Hills High School",
+          "football": "5A",
+          "total": 1064,
+          "boys": 548
+        }
+      ]
+    },
+    "North Penn": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 3393,
+      "boys": 1755,
+      "schools": [
+        {
+          "id": 11013,
+          "name": "North Penn High School",
+          "football": "6A",
+          "total": 3393,
+          "boys": 1755
+        }
+      ]
+    },
+    "North Pocono": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 729,
+      "boys": 362,
+      "schools": [
+        {
+          "id": 11065,
+          "name": "North Pocono High School",
+          "football": "4A",
+          "total": 729,
+          "boys": 362
+        }
+      ]
+    },
+    "North Schuylkill": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 593,
+      "boys": 313,
+      "schools": [
+        {
+          "id": 11505,
+          "name": "North Schuylkill High School",
+          "football": "4A",
+          "total": 593,
+          "boys": 313
+        }
+      ]
+    },
+    "North Star": {
+      "piaa": 5,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 254,
+      "boys": 143,
+      "schools": [
+        {
+          "id": 11228,
+          "name": "North Star High School",
+          "football": "2A",
+          "total": 254,
+          "boys": 143
+        }
+      ]
+    },
+    "Northampton Area": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1507,
+      "boys": 792,
+      "schools": [
+        {
+          "id": 11503,
+          "name": "Northampton Area High School",
+          "football": "6A",
+          "total": 1507,
+          "boys": 792
+        }
+      ]
+    },
+    "Northeast Bradford": {
+      "piaa": 4,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 152,
+      "boys": 82,
+      "schools": [
+        {
+          "id": 11196,
+          "name": "Northeast Bradford High School",
+          "football": null,
+          "total": 152,
+          "boys": 82
+        }
+      ]
+    },
+    "Northeastern York": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1008,
+      "boys": 541,
+      "schools": [
+        {
+          "id": 11139,
+          "name": "Northeastern High School",
+          "football": "5A",
+          "total": 1008,
+          "boys": 541
+        }
+      ]
+    },
+    "Northern Bedford": {
+      "piaa": 5,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 179,
+      "boys": 89,
+      "schools": [
+        {
+          "id": 11229,
+          "name": "Northern Bedford County High School",
+          "football": "1A",
+          "total": 179,
+          "boys": 89
+        }
+      ]
+    },
+    "Northern Cambria": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 200,
+      "boys": 92,
+      "schools": [
+        {
+          "id": 11266,
+          "name": "Northern Cambria High School",
+          "football": "1A",
+          "total": 200,
+          "boys": 92
+        }
+      ]
+    },
+    "Northern Lebanon": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 599,
+      "boys": 332,
+      "schools": [
+        {
+          "id": 11140,
+          "name": "Northern Lebanon High School",
+          "football": "4A",
+          "total": 599,
+          "boys": 332
+        }
+      ]
+    },
+    "Northern Lehigh": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 368,
+      "boys": 193,
+      "schools": [
+        {
+          "id": 11504,
+          "name": "Northern Lehigh High School",
+          "football": "2A",
+          "total": 368,
+          "boys": 193
+        }
+      ]
+    },
+    "Northern Potter": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 139,
+      "boys": 71,
+      "schools": [
+        {
+          "id": 11429,
+          "name": "Northern Potter High School",
+          "football": null,
+          "total": 139,
+          "boys": 71
+        }
+      ]
+    },
+    "Northern Tioga": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 489,
+      "boys": 272,
+      "schools": [
+        {
+          "id": 11197,
+          "name": "Cowanesque Valley High School",
+          "football": "3A",
+          "coop": true,
+          "total": 209,
+          "boys": 111
+        },
+        {
+          "id": 11199,
+          "name": "Williamson High School",
+          "football": null,
+          "total": 280,
+          "boys": 161
+        }
+      ]
+    },
+    "Northern York County": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 928,
+      "boys": 503,
+      "schools": [
+        {
+          "id": 11141,
+          "name": "Northern York High School",
+          "football": "5A",
+          "total": 928,
+          "boys": 503
+        }
+      ]
+    },
+    "Northgate": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 230,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11363,
+          "name": "Northgate High School",
+          "football": "1A",
+          "total": 230,
+          "boys": 101
+        }
+      ]
+    },
+    "Northwest Area": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 262,
+      "boys": 128,
+      "schools": [
+        {
+          "id": 11066,
+          "name": "Northwest Area High School",
+          "football": "1A",
+          "total": 262,
+          "boys": 128
+        }
+      ]
+    },
+    "Northwestern": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 343,
+      "boys": 182,
+      "schools": [
+        {
+          "id": 11469,
+          "name": "Northwestern Senior High School",
+          "football": "2A",
+          "total": 343,
+          "boys": 182
+        }
+      ]
+    },
+    "Northwestern Lehigh": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 536,
+      "boys": 269,
+      "schools": [
+        {
+          "id": 11506,
+          "name": "Northwestern Lehigh High School",
+          "football": "3A",
+          "total": 536,
+          "boys": 269
+        }
+      ]
+    },
+    "Norwin": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1300,
+      "boys": 676,
+      "schools": [
+        {
+          "id": 11365,
+          "name": "Norwin High School",
+          "football": "6A",
+          "total": 1300,
+          "boys": 676
+        }
+      ]
+    },
+    "Octorara Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 568,
+      "boys": 310,
+      "schools": [
+        {
+          "id": 11014,
+          "name": "Octorara Area High School",
+          "football": "4A",
+          "total": 568,
+          "boys": 310
+        }
+      ]
+    },
+    "Oil City Area": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 499,
+      "boys": 247,
+      "schools": [
+        {
+          "id": 11470,
+          "name": "Oil City Area Senior High School",
+          "football": "4A",
+          "coop": true,
+          "total": 499,
+          "boys": 247
+        }
+      ]
+    },
+    "Old Forge": {
+      "piaa": 2,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 241,
+      "boys": 117,
+      "schools": [
+        {
+          "id": 11067,
+          "name": "Old Forge High School",
+          "football": "1A",
+          "total": 241,
+          "boys": 117
+        }
+      ]
+    },
+    "Oley Valley": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 454,
+      "boys": 240,
+      "schools": [
+        {
+          "id": 11142,
+          "name": "Oley Valley High School",
+          "football": null,
+          "total": 454,
+          "boys": 240
+        }
+      ]
+    },
+    "Oswayo Valley": {
+      "piaa": 9,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 93,
+      "boys": 48,
+      "schools": [
+        {
+          "id": 11430,
+          "name": "Oswayo Valley High School",
+          "football": null,
+          "total": 93,
+          "boys": 48
+        }
+      ]
+    },
+    "Otto-Eldred": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 127,
+      "boys": 68,
+      "schools": [
+        {
+          "id": 11431,
+          "name": "Otto-Eldred High School",
+          "football": "1A",
+          "coop": true,
+          "total": 127,
+          "boys": 68
+        }
+      ]
+    },
+    "Owen J Roberts": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1406,
+      "boys": 728,
+      "schools": [
+        {
+          "id": 11015,
+          "name": "Owen J Roberts High School",
+          "football": "6A",
+          "total": 1406,
+          "boys": 728
+        }
+      ]
+    },
+    "Oxford Area": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 958,
+      "boys": 469,
+      "schools": [
+        {
+          "id": 11016,
+          "name": "Oxford Area High School",
+          "football": "5A",
+          "total": 958,
+          "boys": 469
+        }
+      ]
+    },
+    "Palisades": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 380,
+      "boys": 192,
+      "schools": [
+        {
+          "id": 11507,
+          "name": "Palisades High School",
+          "football": "2A",
+          "total": 380,
+          "boys": 192
+        }
+      ]
+    },
+    "Palmerton Area": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 448,
+      "boys": 240,
+      "schools": [
+        {
+          "id": 11508,
+          "name": "Palmerton Area High School",
+          "football": "3A",
+          "total": 448,
+          "boys": 240
+        }
+      ]
+    },
+    "Palmyra Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 957,
+      "boys": 468,
+      "schools": [
+        {
+          "id": 11143,
+          "name": "Palmyra Area High School",
+          "football": "5A",
+          "total": 957,
+          "boys": 468
+        }
+      ]
+    },
+    "Panther Valley": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 521,
+      "boys": 278,
+      "schools": [
+        {
+          "id": 11509,
+          "name": "Panther Valley High School",
+          "football": "3A",
+          "total": 521,
+          "boys": 278
+        }
+      ]
+    },
+    "Parkland": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2485,
+      "boys": 1254,
+      "schools": [
+        {
+          "id": 11510,
+          "name": "Parkland High School",
+          "football": "6A",
+          "total": 2485,
+          "boys": 1254
+        }
+      ]
+    },
+    "Pen Argyl Area": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 398,
+      "boys": 203,
+      "schools": [
+        {
+          "id": 11511,
+          "name": "Pen Argyl Area High School",
+          "football": "3A",
+          "total": 398,
+          "boys": 203
+        }
+      ]
+    },
+    "Penn Cambria": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 388,
+      "boys": 181,
+      "schools": [
+        {
+          "id": 11267,
+          "name": "Penn Cambria High School",
+          "football": "3A",
+          "total": 388,
+          "boys": 181
+        }
+      ]
+    },
+    "Penn Hills": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 915,
+      "boys": 437,
+      "schools": [
+        {
+          "id": 11366,
+          "name": "Penn Hills High School",
+          "football": "5A",
+          "coop": true,
+          "total": 915,
+          "boys": 437
+        }
+      ]
+    },
+    "Penn Manor": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1398,
+      "boys": 698,
+      "schools": [
+        {
+          "id": 11144,
+          "name": "Penn Manor High School",
+          "football": "6A",
+          "coop": true,
+          "total": 1398,
+          "boys": 698
+        }
+      ]
+    },
+    "Penn-Delco": {
+      "piaa": 1,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 791,
+      "boys": 383,
+      "schools": [
+        {
+          "id": 11017,
+          "name": "Sun Valley High School",
+          "football": "4A",
+          "total": 791,
+          "boys": 383
+        }
+      ]
+    },
+    "Penn-Trafford": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 844,
+      "boys": 434,
+      "schools": [
+        {
+          "id": 11367,
+          "name": "Penn-Trafford High School",
+          "football": "5A",
+          "total": 844,
+          "boys": 434
+        }
+      ]
+    },
+    "Penncrest": {
+      "piaa": 10,
+      "football": "1A",
+      "footballSchools": 3,
+      "enrollment": 628,
+      "boys": 344,
+      "schools": [
+        {
+          "id": 11471,
+          "name": "Cambridge Springs High School",
+          "football": "1A",
+          "total": 188,
+          "boys": 96
+        },
+        {
+          "id": 11472,
+          "name": "Maplewood High School",
+          "football": "1A",
+          "total": 223,
+          "boys": 125
+        },
+        {
+          "id": 11473,
+          "name": "Saegertown High School",
+          "football": "1A",
+          "total": 217,
+          "boys": 123
+        }
+      ]
+    },
+    "Pennridge": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1619,
+      "boys": 812,
+      "schools": [
+        {
+          "id": 11018,
+          "name": "Pennridge High School",
+          "football": "6A",
+          "total": 1619,
+          "boys": 812
+        }
+      ]
+    },
+    "Penns Manor Area": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 190,
+      "boys": 91,
+      "schools": [
+        {
+          "id": 11268,
+          "name": "Penns Manor Area High School",
+          "football": "1A",
+          "total": 190,
+          "boys": 91
+        }
+      ]
+    },
+    "Penns Valley Area": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 295,
+      "boys": 156,
+      "schools": [
+        {
+          "id": 11269,
+          "name": "Penns Valley Area High School",
+          "football": "2A",
+          "total": 295,
+          "boys": 156
+        }
+      ]
+    },
+    "Pennsbury": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2372,
+      "boys": 1194,
+      "schools": [
+        {
+          "id": 11019,
+          "name": "Pennsbury High School",
+          "football": "6A",
+          "total": 2372,
+          "boys": 1194
+        }
+      ]
+    },
+    "Pequea Valley": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 428,
+      "boys": 224,
+      "schools": [
+        {
+          "id": 11145,
+          "name": "Pequea Valley High School",
+          "football": "3A",
+          "coop": true,
+          "total": 428,
+          "boys": 224
+        }
+      ]
+    },
+    "Perkiomen Valley": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1189,
+      "boys": 613,
+      "schools": [
+        {
+          "id": 11020,
+          "name": "Perkiomen Valley High School",
+          "football": "6A",
+          "total": 1189,
+          "boys": 613
+        }
+      ]
+    },
+    "Peters Township": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1014,
+      "boys": 516,
+      "schools": [
+        {
+          "id": 11368,
+          "name": "Peters Township High School",
+          "football": "5A",
+          "total": 1014,
+          "boys": 516
+        }
+      ]
+    },
+    "Philadelphia City": {
+      "piaa": 12,
+      "football": "6A",
+      "footballSchools": 20,
+      "enrollment": 26712,
+      "boys": 13628,
+      "schools": [
+        {
+          "id": 12430,
+          "name": "A. Philip Randolph Career Academy",
+          "football": null,
+          "total": 350,
+          "boys": 235
+        },
+        {
+          "id": 11548,
+          "name": "Abraham Lincoln High School",
+          "football": "6A",
+          "total": 1867,
+          "boys": 1068
+        },
+        {
+          "id": 12518,
+          "name": "Academy at Palumbo High School",
+          "football": "5A",
+          "coop": true,
+          "total": 910,
+          "boys": 425
+        },
+        {
+          "id": 13464,
+          "name": "Arts Academy at Benjamin Rush",
+          "football": null,
+          "total": 471,
+          "boys": 108
+        },
+        {
+          "id": 11538,
+          "name": "Benjamin Franklin High School",
+          "football": "4A",
+          "coop": true,
+          "total": 415,
+          "boys": 234
+        },
+        {
+          "id": 11533,
+          "name": "Central High School",
+          "football": "6A",
+          "total": 1718,
+          "boys": 777
+        },
+        {
+          "id": 13442,
+          "name": "Constitution High School",
+          "football": null,
+          "total": 296,
+          "boys": 131
+        },
+        {
+          "id": 11537,
+          "name": "Frankford High School",
+          "football": "5A",
+          "coop": true,
+          "total": 773,
+          "boys": 432
+        },
+        {
+          "id": 11539,
+          "name": "Franklin Learning Center",
+          "football": null,
+          "total": 807,
+          "boys": 358
+        },
+        {
+          "id": 11531,
+          "name": "G. W. Carver High School of Engineering & Science",
+          "football": null,
+          "total": 630,
+          "boys": 360
+        },
+        {
+          "id": 11562,
+          "name": "George Washington High School",
+          "football": "6A",
+          "coop": true,
+          "total": 1402,
+          "boys": 820
+        },
+        {
+          "id": 11541,
+          "name": "Girard Academic Music Program",
+          "football": null,
+          "total": 153,
+          "boys": 67
+        },
+        {
+          "id": 13523,
+          "name": "Hill Freedman World Academy",
+          "football": null,
+          "total": 260,
+          "boys": 156
+        },
+        {
+          "id": 13604,
+          "name": "Horace Furness High School",
+          "football": null,
+          "total": 625,
+          "boys": 384
+        },
+        {
+          "id": 11528,
+          "name": "John Bartram High School",
+          "football": "3A",
+          "coop": true,
+          "total": 438,
+          "boys": 240
+        },
+        {
+          "id": 11549,
+          "name": "Jules E. Mastbaum Area Vocational Technical School",
+          "football": null,
+          "total": 567,
+          "boys": 314
+        },
+        {
+          "id": 11550,
+          "name": "Julia R. Masterman High School",
+          "football": null,
+          "total": 432,
+          "boys": 213
+        },
+        {
+          "id": 11545,
+          "name": "Kensington Multiplex",
+          "football": "6A",
+          "coop": true,
+          "total": 1118,
+          "boys": 577
+        },
+        {
+          "id": 13518,
+          "name": "Lankenau High School",
+          "football": null,
+          "total": 149,
+          "boys": 83
+        },
+        {
+          "id": 11546,
+          "name": "Martin Luther King High School",
+          "football": "5A",
+          "coop": true,
+          "total": 477,
+          "boys": 255
+        },
+        {
+          "id": 13490,
+          "name": "Motivation High School",
+          "football": null,
+          "total": 95,
+          "boys": 44
+        },
+        {
+          "id": 11534,
+          "name": "Murrell Dobbins CTE High School",
+          "football": "2A",
+          "total": 416,
+          "boys": 164
+        },
+        {
+          "id": 11551,
+          "name": "Northeast High School",
+          "football": "6A",
+          "total": 2480,
+          "boys": 1339
+        },
+        {
+          "id": 13491,
+          "name": "Olney High School",
+          "football": "4A",
+          "total": 870,
+          "boys": 411
+        },
+        {
+          "id": 11553,
+          "name": "Overbrook High School",
+          "football": "2A",
+          "coop": true,
+          "total": 364,
+          "boys": 190
+        },
+        {
+          "id": 11554,
+          "name": "Parkway Center City Middle College",
+          "football": null,
+          "total": 342,
+          "boys": 125
+        },
+        {
+          "id": 12499,
+          "name": "Parkway Northwest",
+          "football": null,
+          "total": 191,
+          "boys": 87
+        },
+        {
+          "id": 11575,
+          "name": "Parkway West High School",
+          "football": null,
+          "total": 88,
+          "boys": 39
+        },
+        {
+          "id": 11573,
+          "name": "Paul Robeson High School For Human Services",
+          "football": null,
+          "total": 232,
+          "boys": 105
+        },
+        {
+          "id": 13517,
+          "name": "Penn Treaty School",
+          "football": null,
+          "total": 201,
+          "boys": 107
+        },
+        {
+          "id": 11532,
+          "name": "Philadelphia High School for Creative & Performing Arts",
+          "football": null,
+          "total": 409,
+          "boys": 106
+        },
+        {
+          "id": 11543,
+          "name": "Philadelphia High School For Girls",
+          "football": null,
+          "total": 408,
+          "boys": 0
+        },
+        {
+          "id": 12522,
+          "name": "Philadelphia Military Academy",
+          "football": null,
+          "total": 227,
+          "boys": 145
+        },
+        {
+          "id": 11556,
+          "name": "Roxborough High School",
+          "football": "4A",
+          "coop": true,
+          "total": 538,
+          "boys": 271
+        },
+        {
+          "id": 11536,
+          "name": "Samuel S. Fels High School",
+          "football": "5A",
+          "total": 857,
+          "boys": 464
+        },
+        {
+          "id": 12500,
+          "name": "School of the Future",
+          "football": "4A",
+          "coop": true,
+          "total": 526,
+          "boys": 302
+        },
+        {
+          "id": 13444,
+          "name": "Science Leadership Academy",
+          "football": null,
+          "total": 376,
+          "boys": 205
+        },
+        {
+          "id": 13550,
+          "name": "Science Leadership Academy - Beeber Campus",
+          "football": null,
+          "total": 207,
+          "boys": 103
+        },
+        {
+          "id": 13489,
+          "name": "South Philadelphia High School",
+          "football": "6A",
+          "coop": true,
+          "total": 458,
+          "boys": 258
+        },
+        {
+          "id": 11559,
+          "name": "Strawberry Mansion High School",
+          "football": null,
+          "total": 208,
+          "boys": 103
+        },
+        {
+          "id": 11560,
+          "name": "Swenson Arts And Technology High School",
+          "football": null,
+          "total": 635,
+          "boys": 409
+        },
+        {
+          "id": 11535,
+          "name": "Thomas A. Edison High School",
+          "football": "5A",
+          "total": 810,
+          "boys": 421
+        },
+        {
+          "id": 13614,
+          "name": "VAUX BIG PICTURE HIGH SCHOOL",
+          "football": "3A",
+          "coop": true,
+          "total": 279,
+          "boys": 148
+        },
+        {
+          "id": 11557,
+          "name": "W. B. Saul High School",
+          "football": null,
+          "total": 302,
+          "boys": 133
+        },
+        {
+          "id": 11563,
+          "name": "West Philadelphia High School",
+          "football": "5A",
+          "coop": true,
+          "total": 553,
+          "boys": 306
+        },
+        {
+          "id": 12431,
+          "name": "William L. Sayre High School",
+          "football": null,
+          "total": 332,
+          "boys": 195
+        },
+        {
+          "id": 11529,
+          "name": "William W. Bodine High School for International Affairs",
+          "football": null,
+          "total": 450,
+          "boys": 211
+        }
+      ]
+    },
+    "Philipsburg-Osceola Area": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 403,
+      "boys": 223,
+      "schools": [
+        {
+          "id": 11270,
+          "name": "Philipsburg Osceola Area High School",
+          "football": "3A",
+          "total": 403,
+          "boys": 223
+        }
+      ]
+    },
+    "Phoenixville Area": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 962,
+      "boys": 510,
+      "schools": [
+        {
+          "id": 11021,
+          "name": "Phoenixville Area High School",
+          "football": "5A",
+          "total": 962,
+          "boys": 510
+        }
+      ]
+    },
+    "Pine Grove Area": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 396,
+      "boys": 196,
+      "schools": [
+        {
+          "id": 11512,
+          "name": "Pine Grove Area High School",
+          "football": "4A",
+          "coop": true,
+          "total": 396,
+          "boys": 196
+        }
+      ]
+    },
+    "Pine-Richland": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1125,
+      "boys": 569,
+      "schools": [
+        {
+          "id": 11294,
+          "name": "Pine-Richland High School",
+          "football": "5A",
+          "total": 1125,
+          "boys": 569
+        }
+      ]
+    },
+    "Pittsburgh": {
+      "piaa": 8,
+      "football": "6A",
+      "footballSchools": 6,
+      "enrollment": 3203,
+      "boys": 1668,
+      "schools": [
+        {
+          "id": 11402,
+          "name": "Brashear High School",
+          "football": "4A",
+          "total": 649,
+          "boys": 374
+        },
+        {
+          "id": 11403,
+          "name": "Carrick High School",
+          "football": "3A",
+          "total": 420,
+          "boys": 210
+        },
+        {
+          "id": 13452,
+          "name": "Obama Academy",
+          "football": null,
+          "total": 310,
+          "boys": 128
+        },
+        {
+          "id": 11407,
+          "name": "Perry Traditional Academy",
+          "football": "2A",
+          "total": 335,
+          "boys": 163
+        },
+        {
+          "id": 11401,
+          "name": "Taylor Allderdice High School",
+          "football": "6A",
+          "total": 1077,
+          "boys": 581
+        },
+        {
+          "id": 13453,
+          "name": "University Prep Margaret Milliones",
+          "football": "4A",
+          "coop": true,
+          "total": 124,
+          "boys": 64
+        },
+        {
+          "id": 11410,
+          "name": "Westinghouse High School",
+          "football": "2A",
+          "total": 288,
+          "boys": 148
+        }
+      ]
+    },
+    "Pittston Area": {
+      "piaa": 2,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 815,
+      "boys": 417,
+      "schools": [
+        {
+          "id": 11068,
+          "name": "Pittston Area High School",
+          "football": "5A",
+          "total": 815,
+          "boys": 417
+        }
+      ]
+    },
+    "Pleasant Valley": {
+      "piaa": 11,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 935,
+      "boys": 487,
+      "schools": [
+        {
+          "id": 11513,
+          "name": "Pleasant Valley High School",
+          "football": "5A",
+          "total": 935,
+          "boys": 487
+        }
+      ]
+    },
+    "Plum Borough": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 838,
+      "boys": 454,
+      "schools": [
+        {
+          "id": 11369,
+          "name": "Plum High School",
+          "football": "5A",
+          "total": 838,
+          "boys": 454
+        }
+      ]
+    },
+    "Pocono Mountain": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 2257,
+      "boys": 1125,
+      "schools": [
+        {
+          "id": 11514,
+          "name": "Pocono Mountain East High School",
+          "football": "5A",
+          "total": 992,
+          "boys": 521
+        },
+        {
+          "id": 11486,
+          "name": "Pocono Mountain West High School",
+          "football": "6A",
+          "total": 1265,
+          "boys": 604
+        }
+      ]
+    },
+    "Port Allegany": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 215,
+      "boys": 108,
+      "schools": [
+        {
+          "id": 11432,
+          "name": "Port Allegany High School",
+          "football": "1A",
+          "total": 215,
+          "boys": 108
+        }
+      ]
+    },
+    "Portage Area": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 184,
+      "boys": 90,
+      "schools": [
+        {
+          "id": 11271,
+          "name": "Portage Area High School",
+          "football": "1A",
+          "total": 184,
+          "boys": 90
+        }
+      ]
+    },
+    "Pottsgrove": {
+      "piaa": 1,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 771,
+      "boys": 360,
+      "schools": [
+        {
+          "id": 11022,
+          "name": "Pottsgrove High School",
+          "football": "4A",
+          "total": 771,
+          "boys": 360
+        }
+      ]
+    },
+    "Pottstown": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 823,
+      "boys": 434,
+      "schools": [
+        {
+          "id": 11023,
+          "name": "Pottstown High School",
+          "football": "5A",
+          "total": 823,
+          "boys": 434
+        }
+      ]
+    },
+    "Pottsville Area": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 784,
+      "boys": 407,
+      "schools": [
+        {
+          "id": 11515,
+          "name": "Pottsville Area High School",
+          "football": "4A",
+          "total": 784,
+          "boys": 407
+        }
+      ]
+    },
+    "Punxsutawney Area": {
+      "piaa": 9,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 506,
+      "boys": 267,
+      "schools": [
+        {
+          "id": 11433,
+          "name": "Punxsutawney Area High School",
+          "football": "3A",
+          "total": 506,
+          "boys": 267
+        }
+      ]
+    },
+    "Purchase Line": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 220,
+      "boys": 119,
+      "schools": [
+        {
+          "id": 11272,
+          "name": "Purchase Line High School",
+          "football": "1A",
+          "total": 220,
+          "boys": 119
+        }
+      ]
+    },
+    "Quaker Valley": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 406,
+      "boys": 195,
+      "schools": [
+        {
+          "id": 11370,
+          "name": "Quaker Valley High School",
+          "football": "2A",
+          "total": 406,
+          "boys": 195
+        }
+      ]
+    },
+    "Quakertown Community": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1283,
+      "boys": 635,
+      "schools": [
+        {
+          "id": 11024,
+          "name": "Quakertown Community High School",
+          "football": "6A",
+          "total": 1283,
+          "boys": 635
+        }
+      ]
+    },
+    "Radnor Township": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 863,
+      "boys": 420,
+      "schools": [
+        {
+          "id": 11025,
+          "name": "Radnor High School",
+          "football": "5A",
+          "total": 863,
+          "boys": 420
+        }
+      ]
+    },
+    "Reading": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 4560,
+      "boys": 2351,
+      "schools": [
+        {
+          "id": 11146,
+          "name": "Reading High School",
+          "football": "6A",
+          "coop": true,
+          "total": 4560,
+          "boys": 2351
+        }
+      ]
+    },
+    "Red Lion Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1208,
+      "boys": 590,
+      "schools": [
+        {
+          "id": 11147,
+          "name": "Red Lion Area High School",
+          "football": "6A",
+          "total": 1208,
+          "boys": 590
+        }
+      ]
+    },
+    "Redbank Valley": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 262,
+      "boys": 130,
+      "schools": [
+        {
+          "id": 11434,
+          "name": "Redbank Valley High School",
+          "football": "1A",
+          "total": 262,
+          "boys": 130
+        }
+      ]
+    },
+    "Reynolds": {
+      "piaa": 10,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 239,
+      "boys": 125,
+      "schools": [
+        {
+          "id": 11474,
+          "name": "Reynolds High School",
+          "football": "1A",
+          "total": 239,
+          "boys": 125
+        }
+      ]
+    },
+    "Richland": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 342,
+      "boys": 186,
+      "schools": [
+        {
+          "id": 11273,
+          "name": "Richland High School",
+          "football": "2A",
+          "total": 342,
+          "boys": 186
+        }
+      ]
+    },
+    "Ridgway Area": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 178,
+      "boys": 92,
+      "schools": [
+        {
+          "id": 11435,
+          "name": "Ridgway Area High School",
+          "football": "1A",
+          "coop": true,
+          "total": 178,
+          "boys": 92
+        }
+      ]
+    },
+    "Ridley": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1363,
+      "boys": 704,
+      "schools": [
+        {
+          "id": 11026,
+          "name": "Ridley High School",
+          "football": "6A",
+          "total": 1363,
+          "boys": 704
+        }
+      ]
+    },
+    "Ringgold": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 572,
+      "boys": 305,
+      "schools": [
+        {
+          "id": 11371,
+          "name": "Ringgold High School",
+          "football": "4A",
+          "total": 572,
+          "boys": 305
+        }
+      ]
+    },
+    "Riverside": {
+      "piaa": 2,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 330,
+      "boys": 162,
+      "schools": [
+        {
+          "id": 11069,
+          "name": "Riverside Senior High School",
+          "football": "2A",
+          "total": 330,
+          "boys": 162
+        }
+      ]
+    },
+    "Riverside Beaver County": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 360,
+      "boys": 178,
+      "schools": [
+        {
+          "id": 11372,
+          "name": "Riverside High School",
+          "football": "2A",
+          "total": 360,
+          "boys": 178
+        }
+      ]
+    },
+    "Riverview": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 218,
+      "boys": 106,
+      "schools": [
+        {
+          "id": 11373,
+          "name": "Riverview High School",
+          "football": "1A",
+          "total": 218,
+          "boys": 106
+        }
+      ]
+    },
+    "Rochester Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 178,
+      "boys": 105,
+      "schools": [
+        {
+          "id": 11374,
+          "name": "Rochester Area High School",
+          "football": "1A",
+          "total": 178,
+          "boys": 105
+        }
+      ]
+    },
+    "Rockwood Area": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 163,
+      "boys": 76,
+      "schools": [
+        {
+          "id": 11230,
+          "name": "Rockwood Area High School",
+          "football": null,
+          "total": 163,
+          "boys": 76
+        }
+      ]
+    },
+    "Rose Tree Media": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 943,
+      "boys": 477,
+      "schools": [
+        {
+          "id": 11027,
+          "name": "Penncrest High School",
+          "football": "5A",
+          "total": 943,
+          "boys": 477
+        }
+      ]
+    },
+    "Saint Marys Area": {
+      "piaa": 9,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 440,
+      "boys": 243,
+      "schools": [
+        {
+          "id": 11436,
+          "name": "Saint Marys Area High School",
+          "football": "3A",
+          "coop": true,
+          "total": 440,
+          "boys": 243
+        }
+      ]
+    },
+    "Salisbury Township": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 453,
+      "boys": 230,
+      "schools": [
+        {
+          "id": 11516,
+          "name": "Salisbury High School",
+          "football": "3A",
+          "total": 453,
+          "boys": 230
+        }
+      ]
+    },
+    "Salisbury-Elk Lick": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 69,
+      "boys": 32,
+      "schools": [
+        {
+          "id": 11231,
+          "name": "Salisbury Elk Lick High School",
+          "football": null,
+          "total": 69,
+          "boys": 32
+        }
+      ]
+    },
+    "Saucon Valley": {
+      "piaa": 11,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 596,
+      "boys": 312,
+      "schools": [
+        {
+          "id": 11517,
+          "name": "Saucon Valley High School",
+          "football": "4A",
+          "total": 596,
+          "boys": 312
+        }
+      ]
+    },
+    "Sayre Area": {
+      "piaa": 4,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 194,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11200,
+          "name": "Sayre Area High School",
+          "football": "1A",
+          "total": 194,
+          "boys": 101
+        }
+      ]
+    },
+    "Schuylkill Haven Area": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 292,
+      "boys": 151,
+      "schools": [
+        {
+          "id": 11518,
+          "name": "Schuylkill Haven Area High School",
+          "football": "2A",
+          "total": 292,
+          "boys": 151
+        }
+      ]
+    },
+    "Schuylkill Valley": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 605,
+      "boys": 281,
+      "schools": [
+        {
+          "id": 11148,
+          "name": "Schuylkill Valley High School",
+          "football": "3A",
+          "total": 605,
+          "boys": 281
+        }
+      ]
+    },
+    "Scranton": {
+      "piaa": 2,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 2586,
+      "boys": 1297,
+      "schools": [
+        {
+          "id": 11070,
+          "name": "Scranton High School",
+          "football": "6A",
+          "total": 1416,
+          "boys": 676
+        },
+        {
+          "id": 11071,
+          "name": "West Scranton High School",
+          "football": "6A",
+          "total": 1170,
+          "boys": 621
+        }
+      ]
+    },
+    "Selinsgrove Area": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 587,
+      "boys": 305,
+      "schools": [
+        {
+          "id": 11201,
+          "name": "Selinsgrove Area High School",
+          "football": "4A",
+          "total": 587,
+          "boys": 305
+        }
+      ]
+    },
+    "Seneca Valley": {
+      "piaa": 7,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1798,
+      "boys": 933,
+      "schools": [
+        {
+          "id": 11384,
+          "name": "Seneca Valley High School",
+          "football": "6A",
+          "total": 1798,
+          "boys": 933
+        }
+      ]
+    },
+    "Shade-Central City": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 71,
+      "boys": 29,
+      "schools": [
+        {
+          "id": 11232,
+          "name": "Shade High School",
+          "football": null,
+          "total": 71,
+          "boys": 29
+        }
+      ]
+    },
+    "Shaler Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 862,
+      "boys": 412,
+      "schools": [
+        {
+          "id": 11375,
+          "name": "Shaler Area High School",
+          "football": "4A",
+          "total": 862,
+          "boys": 412
+        }
+      ]
+    },
+    "Shamokin Area": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 629,
+      "boys": 319,
+      "schools": [
+        {
+          "id": 11202,
+          "name": "Shamokin Area High School",
+          "football": "4A",
+          "total": 629,
+          "boys": 319
+        }
+      ]
+    },
+    "Shanksville-Stonycreek": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 68,
+      "boys": 37,
+      "schools": [
+        {
+          "id": 11233,
+          "name": "Shanksville Stonycreek High School",
+          "football": null,
+          "total": 68,
+          "boys": 37
+        }
+      ]
+    },
+    "Sharon City": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 469,
+      "boys": 221,
+      "schools": [
+        {
+          "id": 11475,
+          "name": "Sharon High School",
+          "football": "3A",
+          "total": 469,
+          "boys": 221
+        }
+      ]
+    },
+    "Sharpsville Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 246,
+      "boys": 129,
+      "schools": [
+        {
+          "id": 11476,
+          "name": "Sharpsville Area High School",
+          "football": "2A",
+          "coop": true,
+          "total": 246,
+          "boys": 129
+        }
+      ]
+    },
+    "Shenandoah Valley": {
+      "piaa": 11,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 319,
+      "boys": 167,
+      "schools": [
+        {
+          "id": 11519,
+          "name": "Shenandoah Valley High School",
+          "football": "2A",
+          "total": 319,
+          "boys": 167
+        }
+      ]
+    },
+    "Shenango Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 255,
+      "boys": 125,
+      "schools": [
+        {
+          "id": 11376,
+          "name": "Shenango High School",
+          "football": "1A",
+          "total": 255,
+          "boys": 125
+        }
+      ]
+    },
+    "Shikellamy": {
+      "piaa": 4,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 758,
+      "boys": 400,
+      "schools": [
+        {
+          "id": 11203,
+          "name": "Shikellamy High School",
+          "football": "4A",
+          "total": 758,
+          "boys": 400
+        }
+      ]
+    },
+    "Shippensburg Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 808,
+      "boys": 426,
+      "schools": [
+        {
+          "id": 11149,
+          "name": "Shippensburg Area High School",
+          "football": "5A",
+          "total": 808,
+          "boys": 426
+        }
+      ]
+    },
+    "Slippery Rock Area": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 519,
+      "boys": 258,
+      "schools": [
+        {
+          "id": 11477,
+          "name": "Slippery Rock Area High School",
+          "football": "3A",
+          "total": 519,
+          "boys": 258
+        }
+      ]
+    },
+    "Smethport Area": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 198,
+      "boys": 116,
+      "schools": [
+        {
+          "id": 11437,
+          "name": "Smethport Area High School",
+          "football": "1A",
+          "total": 198,
+          "boys": 116
+        }
+      ]
+    },
+    "Solanco": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 839,
+      "boys": 433,
+      "schools": [
+        {
+          "id": 11150,
+          "name": "Solanco High School",
+          "football": "5A",
+          "total": 839,
+          "boys": 433
+        }
+      ]
+    },
+    "Somerset Area": {
+      "piaa": 5,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 510,
+      "boys": 256,
+      "schools": [
+        {
+          "id": 11274,
+          "name": "Somerset Area High School",
+          "football": "3A",
+          "total": 510,
+          "boys": 256
+        }
+      ]
+    },
+    "Souderton Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1774,
+      "boys": 891,
+      "schools": [
+        {
+          "id": 11028,
+          "name": "Souderton Area High School",
+          "football": "6A",
+          "total": 1774,
+          "boys": 891
+        }
+      ]
+    },
+    "South Allegheny": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 378,
+      "boys": 198,
+      "schools": [
+        {
+          "id": 11377,
+          "name": "South Allegheny High School",
+          "football": "2A",
+          "total": 378,
+          "boys": 198
+        }
+      ]
+    },
+    "South Butler County": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 549,
+      "boys": 259,
+      "schools": [
+        {
+          "id": 11378,
+          "name": "Knoch High School",
+          "football": "3A",
+          "total": 549,
+          "boys": 259
+        }
+      ]
+    },
+    "South Eastern": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 615,
+      "boys": 291,
+      "schools": [
+        {
+          "id": 11151,
+          "name": "Kennard Dale High School",
+          "football": "4A",
+          "total": 615,
+          "boys": 291
+        }
+      ]
+    },
+    "South Fayette Township": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 839,
+      "boys": 408,
+      "schools": [
+        {
+          "id": 11380,
+          "name": "South Fayette High School",
+          "football": "4A",
+          "total": 839,
+          "boys": 408
+        }
+      ]
+    },
+    "South Middleton": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 585,
+      "boys": 303,
+      "schools": [
+        {
+          "id": 11152,
+          "name": "Boiling Springs High School",
+          "football": "4A",
+          "total": 585,
+          "boys": 303
+        }
+      ]
+    },
+    "South Park": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 406,
+      "boys": 204,
+      "schools": [
+        {
+          "id": 11382,
+          "name": "South Park High School",
+          "football": "3A",
+          "total": 406,
+          "boys": 204
+        }
+      ]
+    },
+    "South Side Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 219,
+      "boys": 119,
+      "schools": [
+        {
+          "id": 11383,
+          "name": "South Side High School",
+          "football": "1A",
+          "total": 219,
+          "boys": 119
+        }
+      ]
+    },
+    "South Western": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1085,
+      "boys": 562,
+      "schools": [
+        {
+          "id": 11153,
+          "name": "South Western High School",
+          "football": "5A",
+          "total": 1085,
+          "boys": 562
+        }
+      ]
+    },
+    "South Williamsport Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 290,
+      "boys": 163,
+      "schools": [
+        {
+          "id": 11204,
+          "name": "South Williamsport Area High School",
+          "football": "2A",
+          "total": 290,
+          "boys": 163
+        }
+      ]
+    },
+    "Southeast Delco": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 892,
+      "boys": 494,
+      "schools": [
+        {
+          "id": 11029,
+          "name": "Academy Park High School",
+          "football": "5A",
+          "total": 892,
+          "boys": 494
+        }
+      ]
+    },
+    "Southeastern Greene": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 128,
+      "boys": 74,
+      "schools": [
+        {
+          "id": 11379,
+          "name": "Mapletown High School",
+          "football": "1A",
+          "total": 128,
+          "boys": 74
+        }
+      ]
+    },
+    "Southern Columbia Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 267,
+      "boys": 147,
+      "schools": [
+        {
+          "id": 11205,
+          "name": "Southern Columbia Area High School",
+          "football": "2A",
+          "total": 267,
+          "boys": 147
+        }
+      ]
+    },
+    "Southern Fulton": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 205,
+      "boys": 107,
+      "schools": [
+        {
+          "id": 11234,
+          "name": "Southern Fulton High School",
+          "football": null,
+          "total": 205,
+          "boys": 107
+        }
+      ]
+    },
+    "Southern Huntingdon County": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 277,
+      "boys": 153,
+      "schools": [
+        {
+          "id": 11275,
+          "name": "Southern Huntingdon County Senior High School",
+          "football": "2A",
+          "total": 277,
+          "boys": 153
+        }
+      ]
+    },
+    "Southern Lehigh": {
+      "piaa": 11,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 807,
+      "boys": 415,
+      "schools": [
+        {
+          "id": 11520,
+          "name": "Southern Lehigh High School",
+          "football": "5A",
+          "total": 807,
+          "boys": 415
+        }
+      ]
+    },
+    "Southern Tioga": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 447,
+      "boys": 231,
+      "schools": [
+        {
+          "id": 11206,
+          "name": "North Penn-Liberty High School",
+          "football": null,
+          "total": 162,
+          "boys": 91
+        },
+        {
+          "id": 11207,
+          "name": "North Penn-Mansfield Senior High School",
+          "football": "2A",
+          "coop": true,
+          "total": 285,
+          "boys": 140
+        }
+      ]
+    },
+    "Southern York County": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 661,
+      "boys": 331,
+      "schools": [
+        {
+          "id": 11154,
+          "name": "Susquehannock High School",
+          "football": "4A",
+          "total": 661,
+          "boys": 331
+        }
+      ]
+    },
+    "Southmoreland": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 406,
+      "boys": 214,
+      "schools": [
+        {
+          "id": 11381,
+          "name": "Southmoreland High School",
+          "football": "3A",
+          "coop": true,
+          "total": 406,
+          "boys": 214
+        }
+      ]
+    },
+    "Spring Cove": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 427,
+      "boys": 228,
+      "schools": [
+        {
+          "id": 11276,
+          "name": "Central High School Martinsburg",
+          "football": "3A",
+          "total": 427,
+          "boys": 228
+        }
+      ]
+    },
+    "Spring Grove Area": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1013,
+      "boys": 532,
+      "schools": [
+        {
+          "id": 11155,
+          "name": "Spring Grove Area High School",
+          "football": "5A",
+          "total": 1013,
+          "boys": 532
+        }
+      ]
+    },
+    "Spring-Ford Area": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2034,
+      "boys": 1040,
+      "schools": [
+        {
+          "id": 11032,
+          "name": "Spring-Ford High School",
+          "football": "6A",
+          "total": 2034,
+          "boys": 1040
+        }
+      ]
+    },
+    "Springfield": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1130,
+      "boys": 552,
+      "schools": [
+        {
+          "id": 11030,
+          "name": "Springfield (Delco) High School",
+          "football": "5A",
+          "total": 1130,
+          "boys": 552
+        }
+      ]
+    },
+    "Springfield Township": {
+      "piaa": 1,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 576,
+      "boys": 308,
+      "schools": [
+        {
+          "id": 11031,
+          "name": "Springfield Township High School",
+          "football": "4A",
+          "total": 576,
+          "boys": 308
+        }
+      ]
+    },
+    "State College Area": {
+      "piaa": 6,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1668,
+      "boys": 833,
+      "schools": [
+        {
+          "id": 11277,
+          "name": "State College Area High School",
+          "football": "6A",
+          "total": 1668,
+          "boys": 833
+        }
+      ]
+    },
+    "Steel Valley": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 331,
+      "boys": 173,
+      "schools": [
+        {
+          "id": 11385,
+          "name": "Steel Valley High School",
+          "football": "2A",
+          "total": 331,
+          "boys": 173
+        }
+      ]
+    },
+    "Steelton-Highspire": {
+      "piaa": 3,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 241,
+      "boys": 119,
+      "schools": [
+        {
+          "id": 11156,
+          "name": "Steelton Highspire High School",
+          "football": "1A",
+          "total": 241,
+          "boys": 119
+        }
+      ]
+    },
+    "Sto-Rox": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 222,
+      "boys": 114,
+      "schools": [
+        {
+          "id": 11386,
+          "name": "Sto-Rox Jr. Sr. High School",
+          "football": "1A",
+          "total": 222,
+          "boys": 114
+        }
+      ]
+    },
+    "Stroudsburg Area": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1153,
+      "boys": 614,
+      "schools": [
+        {
+          "id": 11521,
+          "name": "Stroudsburg High School",
+          "football": "6A",
+          "total": 1153,
+          "boys": 614
+        }
+      ]
+    },
+    "Sullivan County": {
+      "piaa": 4,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 152,
+      "boys": 79,
+      "schools": [
+        {
+          "id": 11209,
+          "name": "Sullivan County High School",
+          "football": null,
+          "total": 152,
+          "boys": 79
+        }
+      ]
+    },
+    "Susquehanna Community": {
+      "piaa": 2,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 216,
+      "boys": 104,
+      "schools": [
+        {
+          "id": 11072,
+          "name": "Susquehanna Community High School",
+          "football": "2A",
+          "coop": true,
+          "total": 216,
+          "boys": 104
+        }
+      ]
+    },
+    "Susquehanna Township": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 780,
+      "boys": 385,
+      "schools": [
+        {
+          "id": 11157,
+          "name": "Susquehanna Township High School",
+          "football": "4A",
+          "total": 780,
+          "boys": 385
+        }
+      ]
+    },
+    "Susquenita": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 512,
+      "boys": 272,
+      "schools": [
+        {
+          "id": 11158,
+          "name": "Susquenita High School",
+          "football": "3A",
+          "total": 512,
+          "boys": 272
+        }
+      ]
+    },
+    "Tamaqua Area": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 440,
+      "boys": 218,
+      "schools": [
+        {
+          "id": 11522,
+          "name": "Tamaqua Area High School",
+          "football": "3A",
+          "total": 440,
+          "boys": 218
+        }
+      ]
+    },
+    "Titusville Area": {
+      "piaa": 10,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 495,
+      "boys": 241,
+      "schools": [
+        {
+          "id": 11478,
+          "name": "Titusville High School",
+          "football": "3A",
+          "total": 495,
+          "boys": 241
+        }
+      ]
+    },
+    "Towanda Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 392,
+      "boys": 199,
+      "schools": [
+        {
+          "id": 11210,
+          "name": "Towanda Area High School",
+          "football": "2A",
+          "total": 392,
+          "boys": 199
+        }
+      ]
+    },
+    "Tredyffrin-Easttown": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1688,
+      "boys": 862,
+      "schools": [
+        {
+          "id": 11033,
+          "name": "Conestoga High School",
+          "football": "6A",
+          "total": 1688,
+          "boys": 862
+        }
+      ]
+    },
+    "Tri-Valley": {
+      "piaa": 11,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 254,
+      "boys": 141,
+      "schools": [
+        {
+          "id": 11523,
+          "name": "Tri-Valley High School",
+          "football": "1A",
+          "total": 254,
+          "boys": 141
+        }
+      ]
+    },
+    "Trinity Area": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 862,
+      "boys": 468,
+      "schools": [
+        {
+          "id": 11387,
+          "name": "Trinity Area High School",
+          "football": "5A",
+          "total": 862,
+          "boys": 468
+        }
+      ]
+    },
+    "Troy Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 363,
+      "boys": 191,
+      "schools": [
+        {
+          "id": 11211,
+          "name": "Troy Junior / Senior High School",
+          "football": "2A",
+          "total": 363,
+          "boys": 191
+        }
+      ]
+    },
+    "Tulpehocken Area": {
+      "piaa": 3,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 424,
+      "boys": 212,
+      "schools": [
+        {
+          "id": 11159,
+          "name": "Tulpehocken High School",
+          "football": null,
+          "total": 424,
+          "boys": 212
+        }
+      ]
+    },
+    "Tunkhannock Area": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 501,
+      "boys": 260,
+      "schools": [
+        {
+          "id": 11073,
+          "name": "Tunkhannock Area High School",
+          "football": "3A",
+          "total": 501,
+          "boys": 260
+        }
+      ]
+    },
+    "Turkeyfoot Valley Area": {
+      "piaa": 5,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 59,
+      "boys": 35,
+      "schools": [
+        {
+          "id": 11235,
+          "name": "Turkeyfoot Valley Area High School",
+          "football": null,
+          "total": 59,
+          "boys": 35
+        }
+      ]
+    },
+    "Tuscarora": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 524,
+      "boys": 289,
+      "schools": [
+        {
+          "id": 11160,
+          "name": "James Buchanan High School",
+          "football": "4A",
+          "total": 524,
+          "boys": 289
+        }
+      ]
+    },
+    "Tussey Mountain": {
+      "piaa": 5,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 197,
+      "boys": 100,
+      "schools": [
+        {
+          "id": 11236,
+          "name": "Tussey Mountain High School",
+          "football": "1A",
+          "coop": true,
+          "total": 197,
+          "boys": 100
+        }
+      ]
+    },
+    "Twin Valley": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 778,
+      "boys": 416,
+      "schools": [
+        {
+          "id": 11161,
+          "name": "Twin Valley High School",
+          "football": "5A",
+          "total": 778,
+          "boys": 416
+        }
+      ]
+    },
+    "Tyrone Area": {
+      "piaa": 6,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 425,
+      "boys": 225,
+      "schools": [
+        {
+          "id": 11278,
+          "name": "Tyrone Area High School",
+          "football": "3A",
+          "total": 425,
+          "boys": 225
+        }
+      ]
+    },
+    "Union": {
+      "piaa": 9,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 132,
+      "boys": 76,
+      "schools": [
+        {
+          "id": 11438,
+          "name": "Union High School",
+          "football": "1A",
+          "coop": true,
+          "total": 132,
+          "boys": 76
+        }
+      ]
+    },
+    "Union Area": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 195,
+      "boys": 103,
+      "schools": [
+        {
+          "id": 11389,
+          "name": "Union Area High School",
+          "football": "1A",
+          "total": 195,
+          "boys": 103
+        }
+      ]
+    },
+    "Union City Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 243,
+      "boys": 142,
+      "schools": [
+        {
+          "id": 11479,
+          "name": "Union City Area High School",
+          "football": "2A",
+          "total": 243,
+          "boys": 142
+        }
+      ]
+    },
+    "Uniontown Area": {
+      "piaa": 7,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 705,
+      "boys": 355,
+      "schools": [
+        {
+          "id": 11388,
+          "name": "Uniontown Area High School",
+          "football": "4A",
+          "total": 705,
+          "boys": 355
+        }
+      ]
+    },
+    "Unionville-Chadds Ford": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 923,
+      "boys": 506,
+      "schools": [
+        {
+          "id": 11034,
+          "name": "Unionville High School",
+          "football": "5A",
+          "total": 923,
+          "boys": 506
+        }
+      ]
+    },
+    "United": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 234,
+      "boys": 109,
+      "schools": [
+        {
+          "id": 11279,
+          "name": "United High School",
+          "football": "2A",
+          "coop": true,
+          "total": 234,
+          "boys": 109
+        }
+      ]
+    },
+    "Upper Adams": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 419,
+      "boys": 216,
+      "schools": [
+        {
+          "id": 11162,
+          "name": "Biglerville High School",
+          "football": "3A",
+          "total": 419,
+          "boys": 216
+        }
+      ]
+    },
+    "Upper Darby": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 3019,
+      "boys": 1554,
+      "schools": [
+        {
+          "id": 11035,
+          "name": "Upper Darby High School",
+          "football": "6A",
+          "total": 3019,
+          "boys": 1554
+        }
+      ]
+    },
+    "Upper Dauphin Area": {
+      "piaa": 3,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 256,
+      "boys": 132,
+      "schools": [
+        {
+          "id": 11163,
+          "name": "Upper Dauphin Area High School",
+          "football": "2A",
+          "coop": true,
+          "total": 256,
+          "boys": 132
+        }
+      ]
+    },
+    "Upper Dublin": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 944,
+      "boys": 469,
+      "schools": [
+        {
+          "id": 11036,
+          "name": "Upper Dublin High School",
+          "football": "5A",
+          "total": 944,
+          "boys": 469
+        }
+      ]
+    },
+    "Upper Merion Area": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1070,
+      "boys": 542,
+      "schools": [
+        {
+          "id": 11037,
+          "name": "Upper Merion Area High School",
+          "football": "5A",
+          "total": 1070,
+          "boys": 542
+        }
+      ]
+    },
+    "Upper Moreland Township": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 888,
+      "boys": 442,
+      "schools": [
+        {
+          "id": 11038,
+          "name": "Upper Moreland High School",
+          "football": "5A",
+          "total": 888,
+          "boys": 442
+        }
+      ]
+    },
+    "Upper Perkiomen": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 854,
+      "boys": 478,
+      "schools": [
+        {
+          "id": 11039,
+          "name": "Upper Perkiomen High School",
+          "football": "5A",
+          "total": 854,
+          "boys": 478
+        }
+      ]
+    },
+    "Upper Saint Clair": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 968,
+      "boys": 483,
+      "schools": [
+        {
+          "id": 11390,
+          "name": "Upper Saint Clair High School",
+          "football": "5A",
+          "total": 968,
+          "boys": 483
+        }
+      ]
+    },
+    "Valley Grove": {
+      "piaa": 10,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 193,
+      "boys": 88,
+      "schools": [
+        {
+          "id": 11442,
+          "name": "Rocky Grove Senior High School",
+          "football": null,
+          "total": 193,
+          "boys": 88
+        }
+      ]
+    },
+    "Valley View": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 588,
+      "boys": 295,
+      "schools": [
+        {
+          "id": 11074,
+          "name": "Valley View High School",
+          "football": "4A",
+          "total": 588,
+          "boys": 295
+        }
+      ]
+    },
+    "Wallenpaupack Area": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 693,
+      "boys": 354,
+      "schools": [
+        {
+          "id": 11075,
+          "name": "Wallenpaupack Area High School",
+          "football": "4A",
+          "total": 693,
+          "boys": 354
+        }
+      ]
+    },
+    "Wallingford-Swarthmore": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 909,
+      "boys": 466,
+      "schools": [
+        {
+          "id": 11040,
+          "name": "Strath Haven High School",
+          "football": "5A",
+          "total": 909,
+          "boys": 466
+        }
+      ]
+    },
+    "Warren County": {
+      "piaa": 10,
+      "football": "4A",
+      "footballSchools": 2,
+      "enrollment": 1001,
+      "boys": 523,
+      "schools": [
+        {
+          "id": 11480,
+          "name": "Eisenhower High School",
+          "football": "2A",
+          "total": 335,
+          "boys": 175
+        },
+        {
+          "id": 11481,
+          "name": "Warren Area High School",
+          "football": "4A",
+          "total": 666,
+          "boys": 348
+        }
+      ]
+    },
+    "Warrior Run": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 303,
+      "boys": 165,
+      "schools": [
+        {
+          "id": 11212,
+          "name": "Warrior Run High School",
+          "football": "2A",
+          "total": 303,
+          "boys": 165
+        }
+      ]
+    },
+    "Warwick": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 902,
+      "boys": 481,
+      "schools": [
+        {
+          "id": 11164,
+          "name": "Warwick High School",
+          "football": "5A",
+          "total": 902,
+          "boys": 481
+        }
+      ]
+    },
+    "Washington": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 283,
+      "boys": 131,
+      "schools": [
+        {
+          "id": 11391,
+          "name": "Washington High School",
+          "football": "1A",
+          "total": 283,
+          "boys": 131
+        }
+      ]
+    },
+    "Wattsburg Area": {
+      "piaa": 10,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 289,
+      "boys": 147,
+      "schools": [
+        {
+          "id": 11483,
+          "name": "Seneca High School",
+          "football": "2A",
+          "total": 289,
+          "boys": 147
+        }
+      ]
+    },
+    "Wayne Highlands": {
+      "piaa": 2,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 580,
+      "boys": 305,
+      "schools": [
+        {
+          "id": 11076,
+          "name": "Honesdale High School",
+          "football": "4A",
+          "total": 580,
+          "boys": 305
+        }
+      ]
+    },
+    "Waynesboro Area": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1199,
+      "boys": 616,
+      "schools": [
+        {
+          "id": 11165,
+          "name": "Waynesboro Area High School",
+          "football": "6A",
+          "total": 1199,
+          "boys": 616
+        }
+      ]
+    },
+    "Weatherly Area": {
+      "piaa": 11,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 119,
+      "boys": 72,
+      "schools": [
+        {
+          "id": 11524,
+          "name": "Weatherly Area High School",
+          "football": null,
+          "total": 119,
+          "boys": 72
+        }
+      ]
+    },
+    "Wellsboro Area": {
+      "piaa": 4,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 438,
+      "boys": 211,
+      "schools": [
+        {
+          "id": 11213,
+          "name": "Wellsboro Area High School",
+          "football": "3A",
+          "total": 438,
+          "boys": 211
+        }
+      ]
+    },
+    "West Allegheny": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 810,
+      "boys": 430,
+      "schools": [
+        {
+          "id": 11392,
+          "name": "West Allegheny High School",
+          "football": "5A",
+          "total": 810,
+          "boys": 430
+        }
+      ]
+    },
+    "West Branch Area": {
+      "piaa": 6,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 210,
+      "boys": 111,
+      "schools": [
+        {
+          "id": 11280,
+          "name": "West Branch High School",
+          "football": "1A",
+          "total": 210,
+          "boys": 111
+        }
+      ]
+    },
+    "West Chester Area": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 3,
+      "enrollment": 2917,
+      "boys": 1515,
+      "schools": [
+        {
+          "id": 11041,
+          "name": "West Chester East High School",
+          "football": "5A",
+          "total": 939,
+          "boys": 499
+        },
+        {
+          "id": 11042,
+          "name": "West Chester Henderson",
+          "football": "5A",
+          "total": 1085,
+          "boys": 566
+        },
+        {
+          "id": 12424,
+          "name": "West Chester Rustin High School",
+          "football": "5A",
+          "total": 893,
+          "boys": 450
+        }
+      ]
+    },
+    "West Greene": {
+      "piaa": 7,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 159,
+      "boys": 86,
+      "schools": [
+        {
+          "id": 11394,
+          "name": "West Greene High School",
+          "football": "1A",
+          "total": 159,
+          "boys": 86
+        }
+      ]
+    },
+    "West Jefferson Hills": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 831,
+      "boys": 453,
+      "schools": [
+        {
+          "id": 11395,
+          "name": "Thomas Jefferson High School",
+          "football": "5A",
+          "total": 831,
+          "boys": 453
+        }
+      ]
+    },
+    "West Middlesex Area": {
+      "piaa": 10,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 194,
+      "boys": 96,
+      "schools": [
+        {
+          "id": 11484,
+          "name": "West Middlesex High School",
+          "football": null,
+          "total": 194,
+          "boys": 96
+        }
+      ]
+    },
+    "West Mifflin Area": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 545,
+      "boys": 270,
+      "schools": [
+        {
+          "id": 11396,
+          "name": "West Mifflin Area High School",
+          "football": "3A",
+          "total": 545,
+          "boys": 270
+        }
+      ]
+    },
+    "West Perry": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 613,
+      "boys": 314,
+      "schools": [
+        {
+          "id": 11166,
+          "name": "West Perry High School",
+          "football": "4A",
+          "total": 613,
+          "boys": 314
+        }
+      ]
+    },
+    "West Shore": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 2,
+      "enrollment": 2080,
+      "boys": 1098,
+      "schools": [
+        {
+          "id": 11167,
+          "name": "Cedar Cliff High School",
+          "football": "6A",
+          "total": 1159,
+          "boys": 614
+        },
+        {
+          "id": 11168,
+          "name": "Red Land High School",
+          "football": "5A",
+          "total": 921,
+          "boys": 484
+        }
+      ]
+    },
+    "West York Area": {
+      "piaa": 3,
+      "football": "4A",
+      "footballSchools": 1,
+      "enrollment": 721,
+      "boys": 381,
+      "schools": [
+        {
+          "id": 11169,
+          "name": "West York Area High School",
+          "football": "4A",
+          "total": 721,
+          "boys": 381
+        }
+      ]
+    },
+    "Western Beaver County": {
+      "piaa": 7,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 169,
+      "boys": 93,
+      "schools": [
+        {
+          "id": 11393,
+          "name": "Western Beaver High School",
+          "football": "2A",
+          "coop": true,
+          "total": 169,
+          "boys": 93
+        }
+      ]
+    },
+    "Western Wayne": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 465,
+      "boys": 258,
+      "schools": [
+        {
+          "id": 11077,
+          "name": "Western Wayne High School",
+          "football": "3A",
+          "total": 465,
+          "boys": 258
+        }
+      ]
+    },
+    "Westmont Hilltop": {
+      "piaa": 6,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 368,
+      "boys": 185,
+      "schools": [
+        {
+          "id": 11281,
+          "name": "Westmont Hilltop High School",
+          "football": "2A",
+          "total": 368,
+          "boys": 185
+        }
+      ]
+    },
+    "Whitehall-Coplay": {
+      "piaa": 11,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1183,
+      "boys": 619,
+      "schools": [
+        {
+          "id": 11525,
+          "name": "Whitehall High School",
+          "football": "6A",
+          "total": 1183,
+          "boys": 619
+        }
+      ]
+    },
+    "Wilkes-Barre Area": {
+      "piaa": 2,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 2131,
+      "boys": 1097,
+      "schools": [
+        {
+          "id": 13629,
+          "name": "Wilkes-Barre Area Senior High School",
+          "football": "6A",
+          "total": 2131,
+          "boys": 1097
+        }
+      ]
+    },
+    "William Penn": {
+      "piaa": 1,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1160,
+      "boys": 592,
+      "schools": [
+        {
+          "id": 11043,
+          "name": "Penn Wood High School",
+          "football": "6A",
+          "total": 1160,
+          "boys": 592
+        }
+      ]
+    },
+    "Williams Valley": {
+      "piaa": 11,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 196,
+      "boys": 101,
+      "schools": [
+        {
+          "id": 11526,
+          "name": "Williams Valley High School",
+          "football": "1A",
+          "total": 196,
+          "boys": 101
+        }
+      ]
+    },
+    "Williamsburg Community": {
+      "piaa": 6,
+      "football": null,
+      "footballSchools": 0,
+      "enrollment": 119,
+      "boys": 63,
+      "schools": [
+        {
+          "id": 11282,
+          "name": "Williamsburg Senior High School",
+          "football": null,
+          "total": 119,
+          "boys": 63
+        }
+      ]
+    },
+    "Williamsport Area": {
+      "piaa": 4,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1202,
+      "boys": 621,
+      "schools": [
+        {
+          "id": 11214,
+          "name": "Williamsport Area High School",
+          "football": "6A",
+          "total": 1202,
+          "boys": 621
+        }
+      ]
+    },
+    "Wilmington Area": {
+      "piaa": 10,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 265,
+      "boys": 126,
+      "schools": [
+        {
+          "id": 11485,
+          "name": "Wilmington Area High School",
+          "football": "1A",
+          "total": 265,
+          "boys": 126
+        }
+      ]
+    },
+    "Wilson": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1656,
+      "boys": 850,
+      "schools": [
+        {
+          "id": 11170,
+          "name": "Wilson High School",
+          "football": "6A",
+          "total": 1656,
+          "boys": 850
+        }
+      ]
+    },
+    "Wilson Area": {
+      "piaa": 11,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 544,
+      "boys": 271,
+      "schools": [
+        {
+          "id": 11527,
+          "name": "Wilson Area High School",
+          "football": "3A",
+          "total": 544,
+          "boys": 271
+        }
+      ]
+    },
+    "Windber Area": {
+      "piaa": 5,
+      "football": "1A",
+      "footballSchools": 1,
+      "enrollment": 251,
+      "boys": 124,
+      "schools": [
+        {
+          "id": 11237,
+          "name": "Windber Area High School",
+          "football": "1A",
+          "total": 251,
+          "boys": 124
+        }
+      ]
+    },
+    "Wissahickon": {
+      "piaa": 1,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 1099,
+      "boys": 578,
+      "schools": [
+        {
+          "id": 11044,
+          "name": "Wissahickon High School",
+          "football": "5A",
+          "total": 1099,
+          "boys": 578
+        }
+      ]
+    },
+    "Woodland Hills": {
+      "piaa": 7,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 824,
+      "boys": 421,
+      "schools": [
+        {
+          "id": 11398,
+          "name": "Woodland Hills High School",
+          "football": "5A",
+          "coop": true,
+          "total": 824,
+          "boys": 421
+        }
+      ]
+    },
+    "Wyalusing Area": {
+      "piaa": 4,
+      "football": "2A",
+      "footballSchools": 1,
+      "enrollment": 337,
+      "boys": 164,
+      "schools": [
+        {
+          "id": 11215,
+          "name": "Wyalusing Valley High School",
+          "football": "2A",
+          "total": 337,
+          "boys": 164
+        }
+      ]
+    },
+    "Wyoming Area": {
+      "piaa": 2,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 543,
+      "boys": 270,
+      "schools": [
+        {
+          "id": 11081,
+          "name": "Wyoming Area High School",
+          "football": "3A",
+          "total": 543,
+          "boys": 270
+        }
+      ]
+    },
+    "Wyoming Valley West": {
+      "piaa": 2,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1244,
+      "boys": 640,
+      "schools": [
+        {
+          "id": 11082,
+          "name": "Wyoming Valley West High School",
+          "football": "6A",
+          "total": 1244,
+          "boys": 640
+        }
+      ]
+    },
+    "Wyomissing Area": {
+      "piaa": 3,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 550,
+      "boys": 279,
+      "schools": [
+        {
+          "id": 11171,
+          "name": "Wyomissing Area High School",
+          "football": "3A",
+          "total": 550,
+          "boys": 279
+        }
+      ]
+    },
+    "York City": {
+      "piaa": 3,
+      "football": "6A",
+      "footballSchools": 1,
+      "enrollment": 1361,
+      "boys": 681,
+      "schools": [
+        {
+          "id": 11172,
+          "name": "William Penn High School",
+          "football": "6A",
+          "coop": true,
+          "total": 1361,
+          "boys": 681
+        }
+      ]
+    },
+    "York Suburban": {
+      "piaa": 3,
+      "football": "5A",
+      "footballSchools": 1,
+      "enrollment": 863,
+      "boys": 456,
+      "schools": [
+        {
+          "id": 11173,
+          "name": "York Suburban High School",
+          "football": "5A",
+          "total": 863,
+          "boys": 456
+        }
+      ]
+    },
+    "Yough": {
+      "piaa": 7,
+      "football": "3A",
+      "footballSchools": 1,
+      "enrollment": 485,
+      "boys": 250,
+      "schools": [
+        {
+          "id": 11399,
+          "name": "Yough Senior High School",
+          "football": "3A",
+          "total": 485,
+          "boys": 250
+        }
+      ]
+    }
+  }
+}

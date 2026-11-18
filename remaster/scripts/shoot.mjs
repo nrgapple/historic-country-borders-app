@@ -22,6 +22,10 @@ const WIKI = {
     'The Ottoman Empire controlled much of Southeast Europe, West Asia and North Africa from the 14th to the early 20th century. It was founded at the end of the 13th century in northwestern Anatolia by the Turkoman tribal leader Osman I. After 1354 the Ottomans crossed into Europe, and with the conquest of the Balkans the beylik became a transcontinental empire.',
   'State College Area School District':
     'The State College Area School District is a public school district in Centre County, Pennsylvania. It serves the borough of State College and the surrounding townships of College, Ferguson, Halfmoon, Harris and Patton. (Design-review fixture text, not fetched from Wikipedia.)',
+  'Pittsburgh Public Schools':
+    'Pittsburgh Public Schools is the public school district serving the city of Pittsburgh, Pennsylvania. (Design-review fixture text, not fetched from Wikipedia.)',
+  'Carlisle Area School District':
+    'The Carlisle Area School District is a public school district in Cumberland County, Pennsylvania. (Design-review fixture text, not fetched from Wikipedia.)',
   'Camp Hill School District':
     'The Camp Hill School District is a small public school district in Cumberland County, Pennsylvania, serving the borough of Camp Hill. (Design-review fixture text, not fetched from Wikipedia.)',
 };
@@ -132,6 +136,37 @@ const SHOTS = [
     url: '/pa/school-districts',
     width: 1440,
     height: 900,
+  },
+  // "Colour districts by" (src/pa/colourBy.ts), with the key open: the whole
+  // state on desktop and phone, then a multi-school district selected.
+  ...['football', 'piaa', 'enrollment'].flatMap((colour) =>
+    [
+      [1440, 900],
+      [390, 844],
+    ].map(([width, height]) => ({
+      name: `pa-colour-${colour}-${width}x${height}`,
+      url: `/pa/school-districts?colour=${colour}`,
+      width,
+      height,
+      touch: width < 1100,
+      key: 'open',
+    })),
+  ),
+  {
+    name: 'pa-colour-football-pittsburgh-1440x900',
+    url: '/pa/school-districts?colour=football&place=Pittsburgh',
+    width: 1440,
+    height: 900,
+    key: 'open',
+    wiki: 'Pittsburgh Public Schools',
+  },
+  {
+    name: 'pa-colour-football-carlisle-390x844',
+    url: '/pa/school-districts?colour=football&place=Carlisle%20Area',
+    width: 390,
+    height: 844,
+    touch: true,
+    wiki: 'Carlisle Area School District',
   },
 ];
 

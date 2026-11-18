@@ -6,6 +6,12 @@
 //   public/data/pa/districts.<hash>.json            every district's properties, bounds, label point
 //   src/data/pa.json                                URLs, coverage and provenance the page bundles
 //
+// PIAA sports facts (data/pa-sports.json, joined by PASDA district name; see
+// docs/PA_SCHOOL_DISTRICTS.md "High-school sports") go into both: tile
+// properties `f` (largest football class 1–6, 0 none), `p` (PIAA district
+// 1–12, 0 unknown) and `e` (grade 9–11 enrollment, 0 unknown) for
+// "Colour districts by", and a `sports` record per district in the index.
+//
 // District format (measured with `yarn data:measure:pa-districts`, see
 // docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"): a z11 tile tree at
 // extent 8192 (a ~1.8 m grid at 41° N, full source vertices at z11) plus a
@@ -22,13 +28,16 @@ import {
   bboxOf,
   coverageRuns,
   districtWashes,
+  piaaLabelPoints,
 } from './pa-lib.mjs';
 
 const require = createRequire(import.meta.url);
 const vtpbf = require(path.join(REPO, 'node_modules/vt-pbf'));
 
 /** Bump when the district tiling below changes. */
-const DISTRICT_RECIPE = 1;
+const DISTRICT_RECIPE = 2;
+
+const CLASS_RANK = { '1A': 1, '2A': 2, '3A': 3, '4A': 4, '5A': 5, '6A': 6 };
 
 /* ---- T8 street basemap ------------------------------------------------- */
 
@@ -51,9 +60,25 @@ const labels = artifact.data.labels.features;
 if (features.length !== artifact.validation.districtCount)
   throw new Error('pa: the artifact and its validation record disagree');
 
+const sportsBytes = fs.readFileSync(path.join(REPO, 'data/pa-sports.json'));
+const sportsData = JSON.parse(sportsBytes);
+if (sportsData.schemaVersion !== 1)
+  throw new Error('pa: data/pa-sports.json has an unknown schema');
+const sportsOf = (f) => sportsData.districts[f.properties.NAME] ?? null;
+/** Per-district values the colour modes read (the tiles' `f`, `p`, `e`). */
+const colourValues = (f) => {
+  const s = sportsOf(f);
+  return {
+    f: CLASS_RANK[s?.football] ?? 0,
+    p: s?.piaa ?? 0,
+    e: s?.enrollment ?? 0,
+  };
+};
+
 const hash = hash16(
   Buffer.concat([
     artifactBytes,
+    sportsBytes,
     Buffer.from(JSON.stringify({ DISTRICT_RECIPE, DISTRICT_TILES })),
   ]),
 );
@@ -67,7 +92,7 @@ if (!fs.existsSync(path.join(cacheDir, '.complete'))) {
       features: features.map((f, id) => ({
         type: 'Feature',
         id,
-        properties: { c: washes[id] },
+        properties: { c: washes[id], ...colourValues(f) },
         geometry: f.geometry,
       })),
     },
@@ -125,11 +150,22 @@ const districts = features.map((f, id) => ({
   km2: Math.round(f.properties.AREA / 1e4) / 100,
   bbox: bboxOf(f.geometry),
   label: labels[id].geometry.coordinates.map((v) => Math.round(v * 1e5) / 1e5),
+  sports: sportsOf(f),
 }));
+const sportsSource = {
+  publisher: sportsData.source.publisher,
+  url: sportsData.source.url,
+  season: sportsData.source.season,
+  enrollmentDate: sportsData.source.enrollmentDate,
+  enrollmentBasis: sportsData.source.enrollmentBasis,
+  retrievedAt: sportsData.source.retrievedAt,
+};
 const indexDoc = {
   schemaVersion: 2,
   source: artifact.source,
   validation: artifact.validation,
+  sportsSource,
+  piaaLabels: piaaLabelPoints(districts),
   districts,
 };
 const indexUrl = `/data/pa/districts.${hash}.json`;
@@ -144,6 +180,13 @@ writeFile(
     districtCount: artifact.validation.districtCount,
     vintage: artifact.source.vintage,
     metadataUrl: artifact.source.metadataUrl,
+    sports: {
+      season: sportsSource.season,
+      enrollmentDate: sportsSource.enrollmentDate,
+      url: sportsSource.url,
+      districtsWithFootball: sportsData.coverage.districtsWithFootball,
+      districtsWithPiaa: sportsData.coverage.districtsWithPiaaDistrict,
+    },
     districtTiles: {
       url: `/tiles/pa-districts/${hash}/{z}/{x}/{y}.pbf`,
       sourceLayer: 'districts',

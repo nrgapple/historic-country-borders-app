@@ -17,6 +17,7 @@ import {
 } from '../lib/scaleBar';
 import { eraOf, formatYear } from '../lib/years';
 import { COLOR, ERA_TINTS, type EraId } from '../styles/tokens';
+import type { ColourLegend } from '../pa/colourBy';
 import './MapKey.css';
 
 /** The visitor's last choice on a wide screen (a per-viewer convenience). */
@@ -57,6 +58,11 @@ export interface MapKeyProps {
   onLayout?: () => void;
   /** A bottom sheet (Settings) is open: on phones the key steps aside. */
   underSheet?: boolean;
+  /**
+   * A legend set by the page (Pennsylvania's "Colour districts by"). When
+   * given, it replaces the legend read from the map's drawn classes.
+   */
+  legend?: ColourLegend | null;
 }
 
 /**
@@ -78,6 +84,7 @@ export default function MapKeySlot({
   lowPower = false,
   onLayout,
   underSheet = false,
+  legend: pageLegend = null,
 }: MapKeyProps) {
   const era = year === undefined ? null : eraOf(year);
   const accent = era
@@ -202,7 +209,8 @@ export default function MapKeySlot({
             </div>
           )}
         </div>
-        {legend.length > 0 && (
+        {pageLegend && <PageLegend legend={pageLegend} />}
+        {!pageLegend && legend.length > 0 && (
           <ul className="map-key__legend" aria-label="Legend">
             {legend.map((entry) => (
               <li key={entry.id} className="map-key__item">
@@ -276,6 +284,48 @@ export default function MapKeySlot({
         </button>
       </div>
     </section>
+  );
+}
+
+/** A page-supplied legend: a title, swatches with counts, and a note. */
+function PageLegend({ legend }: { legend: ColourLegend }) {
+  return (
+    <div className="map-key__page-legend" data-testid="map-key-legend">
+      <p className="map-key__legend-title">{legend.title}</p>
+      <ul
+        className="map-key__legend"
+        aria-label={legend.title}
+        data-columns={legend.columns}
+        style={
+          legend.columns
+            ? { gridTemplateColumns: `repeat(${legend.columns}, auto)` }
+            : undefined
+        }
+      >
+        {legend.entries.map((entry) => (
+          <li key={entry.id} className="map-key__item">
+            <span
+              className="map-key__swatch"
+              aria-hidden="true"
+              style={{
+                backgroundColor: entry.fill,
+                borderColor: entry.edge,
+                backgroundImage: entry.hatch
+                  ? `repeating-linear-gradient(135deg, ${entry.hatch} 0 1px, transparent 1px 5px)`
+                  : undefined,
+              }}
+            />
+            <span>
+              {entry.label}
+              {entry.count && (
+                <span className="map-key__count"> · {entry.count}</span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {legend.note && <p className="map-key__legend-note">{legend.note}</p>}
+    </div>
   );
 }
 

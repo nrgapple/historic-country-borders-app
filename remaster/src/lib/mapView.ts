@@ -66,7 +66,7 @@ export const mapViewSearch = (search: string, view: MapView): string => {
 };
 
 /** Replaces the query string without a navigation, keeping Next's history state. */
-const replaceSearch = (nextSearch: string) => {
+export const replaceSearch = (nextSearch: string) => {
   const { pathname, hash } = window.location;
   const next = `${pathname}${nextSearch}${hash}`;
   const state = window.history.state;

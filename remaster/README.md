@@ -91,5 +91,5 @@ Notes:
 
 ## Left for later milestones
 
-- **PA school districts (P5).** Ported: `/pa/school-districts` is an Astro page over the same store and chrome, with T8's street basemap and a district tile tree (docs/PA_BASEMAP.md, docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"). The PA page uses T7's map key with a "Commonwealth of Pennsylvania" plate; a PA-specific legend (washes, streets, county lines) and the PA scale bar are still to do. Check budgets with `yarn size:check --remaster`.
+- **PA school districts (P5).** Ported: `/pa/school-districts` is an Astro page over the same store and chrome, with T8's street basemap and a district tile tree (docs/PA_BASEMAP.md, docs/PA_SCHOOL_DISTRICTS.md "Remaster data format"). The PA page uses T7's map key with a "Commonwealth of Pennsylvania" plate. Its "Colour districts by" setting (`src/pa/colourBy.ts`: football class, PIAA district or enrollment, shared as `?colour=`) passes the key a legend through `MapKeySlot`'s `legend` prop; see docs/PA_SCHOOL_DISTRICTS.md "High-school sports". A legend for the default washes, streets and county lines is still to do. Check budgets with `yarn size:check --remaster`.
 - **React Compiler.** Not enabled yet; the ported components keep their hand-written memo hooks.

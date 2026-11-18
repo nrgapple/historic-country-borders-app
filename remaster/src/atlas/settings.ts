@@ -1,4 +1,5 @@
 import { FONT_CSS } from '../adapters/glyphs';
+import { isColourBy, type ColourBy } from '../pa/colourBy';
 
 /**
  * Map display settings: the values, their validation, and persistence.
@@ -22,6 +23,8 @@ export interface Settings {
    * label sizes: for projectors and low vision (plan §2.1, item 3).
    */
   projectorText: boolean;
+  /** Pennsylvania page only: what the district fills show (src/pa/colourBy.ts). */
+  paColourBy: ColourBy;
 }
 
 export const STORAGE_KEY = 'historic-borders-settings';
@@ -33,6 +36,7 @@ export const DEFAULT_SETTINGS: Settings = {
   borderThickness: 2,
   showLabels: true,
   projectorText: false,
+  paColourBy: 'default',
 };
 
 const inRange = (value: unknown, min: number, max: number) =>
@@ -65,6 +69,9 @@ export const sanitizeSettings = (value: unknown): Settings => {
       typeof raw.projectorText === 'boolean'
         ? raw.projectorText
         : DEFAULT_SETTINGS.projectorText,
+    paColourBy: isColourBy(raw.paColourBy)
+      ? raw.paColourBy
+      : DEFAULT_SETTINGS.paColourBy,
   };
 };
 

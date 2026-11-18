@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, type ReactNode } from 'react';
 import Dialog from './Dialog';
 import { useChrome, useSettings } from '../atlas/hooks';
 import type { TextSize } from '../atlas/settings';
@@ -84,7 +84,8 @@ function Range({
   );
 }
 
-export default function SettingsPanel() {
+/** `children`: page-specific fields shown first (Pennsylvania's "Colour districts by"). */
+export default function SettingsPanel({ children }: { children?: ReactNode }) {
   const { settings, updateSettings, resetToDefaults } = useSettings();
   const { overlay, closeOverlay } = useChrome();
   const sizeGroupId = useId();
@@ -97,6 +98,8 @@ export default function SettingsPanel() {
       modal={false}
       className="settings-panel"
     >
+      {children}
+
       <Switch
         label="Labels"
         description="Territory and city names"

@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COLOR, CONTRAST_PAIRS, ERA_TINTS, WASHES } from './tokens';
+import { COLOUR_BY_CONTRAST_PAIRS } from '../pa/colourBy';
 
 /** WCAG 2.2 relative luminance and contrast ratio (as design/living-atlas/tools/contrast.cjs). */
 const luminance = (hex: string) => {
@@ -31,6 +32,11 @@ describe('Direction A tokens', () => {
   });
 
   it.each(CONTRAST_PAIRS)('%s passes WCAG AA', (_name, fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // Pennsylvania's "Colour districts by" palettes carry district names too.
+  it.each(COLOUR_BY_CONTRAST_PAIRS)('%s passes WCAG AA', (_name, fg, bg) => {
     expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
   });
 
