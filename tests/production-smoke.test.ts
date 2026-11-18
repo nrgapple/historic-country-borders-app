@@ -53,6 +53,33 @@ describe('production static smoke checks', () => {
     ]);
   });
 
+  it('expects an immutable cache on the remaster district index', async () => {
+    await expect(
+      runProductionSmoke({
+        baseUrl: 'https://historicborders.app',
+        historicalAssetPath: '/data/historical/1994.polygons.hash.json',
+        schoolAssetPath: '/data/pa/districts.hash.json',
+        fetchImpl: successfulFetch,
+      }),
+    ).rejects.toThrow('/data/pa/districts.hash.json: unexpected cache-control');
+
+    const immutableFetch = vi.fn(async (input: URL, options?: RequestInit) =>
+      input.pathname.startsWith('/data/pa/')
+        ? new Response('', {
+            headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+          })
+        : successfulFetch(input, options),
+    );
+    await expect(
+      runProductionSmoke({
+        baseUrl: 'https://historicborders.app',
+        historicalAssetPath: '/data/historical/1994.polygons.hash.json',
+        schoolAssetPath: '/data/pa/districts.hash.json',
+        fetchImpl: immutableFetch,
+      }),
+    ).resolves.toHaveLength(9);
+  });
+
   it('rejects compute markers and incorrect cache policy', async () => {
     const computeFetch = vi.fn(
       async () =>

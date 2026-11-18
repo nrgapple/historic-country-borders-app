@@ -2,7 +2,7 @@
 
 Read the repository `AGENTS.md`, `docs/product/REMASTER_PLAN.md` and `remaster/README.md` first.
 
-- **Two stacks coexist until P4.** Production is the Next.js app at the repository root (`out/`, `wrangler.toml`). This directory is the Astro remaster; do not edit the root app from remaster work, and do not point `wrangler.toml` here before the P4 cutover.
+- **This is production.** Since the P4 cutover (2026-11-18), `wrangler.toml` serves `remaster/dist/` and the Deploy workflow builds it. The root Next.js app is legacy and no longer deployed; do not edit it from remaster work.
 - **One lockfile.** `remaster/` is a nohoisted Yarn workspace of the root `package.json`. Add dependencies with `yarn workspace historic-borders-remaster add <pkg>@<exact>`; never create a second lockfile. Use Node ≥ 22.23.4.
 - **Static only.** Pages are prerendered; the only Worker route stays `/api/feedback`. No request-time compute, no Mapbox, no third-party map hosts.
 - **One store, one URL contract** (`src/atlas/store.ts`). React reads it with `useAtlas`; the MapLibre controller subscribes directly. Do not add a router or a second state library.

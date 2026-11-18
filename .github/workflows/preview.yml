@@ -23,7 +23,6 @@ jobs:
     timeout-minutes: 20
     env:
       NEXT_TELEMETRY_DISABLED: '1'
-      NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,15 +36,15 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$NEXT_PUBLIC_MAPBOX_TOKEN" ]; then
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
             echo "ok=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::Preview skipped: CLOUDFLARE_API_TOKEN or NEXT_PUBLIC_MAPBOX_TOKEN is not set."
+            echo "::notice::Preview skipped: CLOUDFLARE_API_TOKEN is not set."
           fi
       - if: steps.configured.outputs.ok == 'true'
-        run: yarn build
+        run: yarn remaster:build
       - if: steps.configured.outputs.ok == 'true'
-        run: yarn static:validate
+        run: node scripts/validate-remaster-dist.js
       - name: Deploy preview Worker
         if: steps.configured.outputs.ok == 'true'
         id: upload

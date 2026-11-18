@@ -154,6 +154,14 @@ Observed: the remaster's Classic-atlas design (plan §2.1) uses Alegreya, Alegre
 
 Decision: the fonts are self-hosted OFL WOFF2s from pinned `@fontsource` packages, plus a HarfBuzz subset of the full Noto Sans pinned by `google/fonts` commit and SHA-256. They ship with their license copies and content-hashed names. An explicit build step, `yarn data:refresh:fonts`, renders SDF glyph PBFs for seven fixed fontstacks into a content-addressed `/glyphs/<buildId>/` tree. It emits only the 256-codepoint ranges that published names use, and merges Noto fallbacks into each stack. Alias `@font-face` rules named after the fontstacks keep MapLibre's locally drawn grapheme clusters in the same fonts. `_headers` serves glyphs as immutable `application/x-protobuf`. `yarn data:validate:fonts` fails when any published codepoint lacks a glyph in any stack, when files drift from `data/map-fonts.json`, or when a license copy is missing. The style uses PBF glyphs, not `font-faces`, because main-thread time on Chromebooks matters more than about 250 KB of cacheable glyph bytes. See `docs/FONTS.md`.
 
+### Production cut over to the remaster (P4, 2026-11-18)
+
+Observed: the owner asked for the remaster to replace production directly, with no staged or parallel release; traffic is low.
+
+Decision: `wrangler.toml` and `wrangler.preview.toml` serve `remaster/dist/`. Deploy and Preview build it with `yarn remaster:build` and check it with `scripts/validate-remaster-dist.js` (required pages, Cloudflare Free file limits). The production smoke test reads the remaster's split 1994 polygons and hashed PA district index. The Mapbox token is no longer used or required. The `/api/feedback` Worker and its Durable Object are unchanged. The plan's temporary legacy PA asset directory was not needed because the PA page was remastered first.
+
+Rollback: revert the cutover commit on `main`; Deploy rebuilds and redeploys the Next.js export.
+
 ## Deferred
 
 ### Domain cutover

@@ -1,5 +1,5 @@
 # Remaster build (dist/). Mirrors the repository's public/_headers for the
-# paths this build serves. Not deployed until P4 (plan §9.2).
+# paths this build serves. Production since the P4 cutover (plan §9.2).
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

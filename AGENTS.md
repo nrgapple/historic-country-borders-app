@@ -58,7 +58,7 @@ Use `yarn type-check`, `yarn test`, `yarn build`, and `yarn test:e2e` for narrow
 
 ## Remaster app
 
-The Astro 7 remaster lives in `remaster/` (a nohoisted Yarn workspace of this `package.json`, one `yarn.lock`). Read `remaster/AGENTS.md` and `remaster/README.md` before working there. It is not deployed: production stays the Next.js app and `out/` until the P4 cutover. Use `yarn remaster:build`, `yarn remaster:preview`, `yarn remaster:test` and `yarn remaster:test:e2e`.
+The Astro 7 remaster lives in `remaster/` (a nohoisted Yarn workspace of this `package.json`, one `yarn.lock`). Read `remaster/AGENTS.md` and `remaster/README.md` before working there. It is production: `wrangler.toml` serves `remaster/dist/` (P4 cutover, 2026-11-18). The root Next.js app is legacy and no longer deployed. Use `yarn remaster:build`, `yarn remaster:preview`, `yarn remaster:test` and `yarn remaster:test:e2e`.
 
 ## Relay execution
 
