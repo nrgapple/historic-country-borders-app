@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { welcomeKey } from '../src/lib/welcome';
 
 /**
  * Critical journeys, ported from the current app's e2e/critical-journeys.spec.ts
@@ -95,6 +96,15 @@ const fixtures = {
 };
 
 test.beforeEach(async ({ page }) => {
+  // The one-time welcome has its own spec (welcome.spec.ts); on phones its
+  // sheet would cover the map these journeys tap.
+  await page.addInitScript((key) => {
+    try {
+      localStorage.setItem(key, new Date(0).toISOString());
+    } catch {
+      // Storage blocked: the welcome then never opens by itself.
+    }
+  }, welcomeKey());
   await page.route('**/data/historical/*.json', (route) => {
     const url = route.request().url();
     if (url.includes('.polygons.'))
@@ -398,28 +408,30 @@ test('the map key scale bar is true at the centre latitude from z2 to z8', async
     );
     // Measure the drawn bar on the live map: unproject its length around the
     // centre and take the great-circle distance (haversine, mean radius).
-    const { km, measured } = await page.evaluate(() => {
-      const map = (window as never as { __atlasMap: import('maplibre-gl').Map })
-        .__atlasMap;
-      const scale = document.querySelector<HTMLElement>('.scalebar')!;
-      const width = document
-        .querySelector<HTMLElement>('.scalebar__bar')!
-        .getBoundingClientRect().width;
-      const c = map.project(map.getCenter());
-      const a = map.unproject([c.x - width / 2, c.y]);
-      const b = map.unproject([c.x + width / 2, c.y]);
-      const rad = (d: number) => (d * Math.PI) / 180;
-      const h =
-        Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
-        Math.cos(rad(a.lat)) *
-          Math.cos(rad(b.lat)) *
-          Math.sin(rad(b.lng - a.lng) / 2) ** 2;
-      return {
-        km: Number(scale.dataset.km),
-        measured: 2 * 6371.0088 * Math.asin(Math.sqrt(h)),
-      };
-    });
-    expect(Math.abs(measured - km) / km, `z${zoom}`).toBeLessThan(0.02);
+    // The key re-renders after moveend, so poll until it has caught up.
+    const error = () =>
+      page.evaluate(() => {
+        const map = (
+          window as never as { __atlasMap: import('maplibre-gl').Map }
+        ).__atlasMap;
+        const scale = document.querySelector<HTMLElement>('.scalebar')!;
+        const width = document
+          .querySelector<HTMLElement>('.scalebar__bar')!
+          .getBoundingClientRect().width;
+        const c = map.project(map.getCenter());
+        const a = map.unproject([c.x - width / 2, c.y]);
+        const b = map.unproject([c.x + width / 2, c.y]);
+        const rad = (d: number) => (d * Math.PI) / 180;
+        const h =
+          Math.sin(rad(b.lat - a.lat) / 2) ** 2 +
+          Math.cos(rad(a.lat)) *
+            Math.cos(rad(b.lat)) *
+            Math.sin(rad(b.lng - a.lng) / 2) ** 2;
+        const km = Number(scale.dataset.km);
+        const measured = 2 * 6371.0088 * Math.asin(Math.sqrt(h));
+        return Math.abs(measured - km) / km;
+      });
+    await expect.poll(error, { message: `z${zoom}` }).toBeLessThan(0.02);
     expect((await bar.boundingBox())!.width).toBeGreaterThan(20);
   }
 });
