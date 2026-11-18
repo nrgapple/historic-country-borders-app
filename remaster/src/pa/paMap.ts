@@ -39,6 +39,8 @@ import {
   type PaStyleOptions,
 } from './paStyle';
 import { loadDistrictIndex, type DistrictIndex } from './usePASchoolDistricts';
+import { HATCH_IMAGE, hatchImage, piaaName, ROMAN } from './colourBy';
+import { sportsLabelLines } from './districts';
 
 setWorkerUrl(workerUrl);
 
@@ -148,6 +150,11 @@ export function mountPaMap(container: HTMLElement): MapHandle {
     fadeDuration: 150,
   });
   map.touchZoomRotate.disableRotation();
+  // The "no PIAA football" hatch is generated here, not loaded from a sprite.
+  map.on('styleimagemissing', (event: { id: string }) => {
+    if (event.id === HATCH_IMAGE && !map.hasImage(HATCH_IMAGE))
+      map.addImage(HATCH_IMAGE, hatchImage(), { pixelRatio: 2 });
+  });
   map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right');
   // ODbL: the OpenStreetMap credit stays expanded (compact only on phones,
   // where MapLibre opens it on load and the visitor may close it).
@@ -220,8 +227,23 @@ export function mountPaMap(container: HTMLElement): MapHandle {
           features: loaded.districts.map((d) => ({
             type: 'Feature',
             id: d.id,
-            properties: { id: d.id, n: d.NAME, a: d.km2 },
+            properties: {
+              id: d.id,
+              n: d.NAME,
+              a: d.km2,
+              ...sportsLabelLines(d.sports),
+            },
             geometry: { type: 'Point', coordinates: d.label },
+          })),
+        });
+        void (
+          map.getSource(PA_SOURCE.piaaLabels) as GeoJSONSource | undefined
+        )?.setData({
+          type: 'FeatureCollection',
+          features: (loaded.piaaLabels ?? []).map((p) => ({
+            type: 'Feature',
+            properties: { n: piaaName(p.piaa), r: ROMAN[p.piaa - 1] },
+            geometry: { type: 'Point', coordinates: p.label },
           })),
         });
         const place = getState().place;

@@ -8,6 +8,11 @@
  * - `districts`: the 500 PASDA districts as vector tiles (`c` = wash index,
  *   feature id = index into the district list), also through the protocol.
  * - `district-labels`: one point per district, set from the property index.
+ * - `piaa-labels`: one point per PIAA district (I–XII), shown while the
+ *   districts are coloured by PIAA district.
+ *
+ * "Colour districts by" (src/pa/colourBy.ts) swaps the district fill, its
+ * edge band and the names' second line; the default keeps the washes.
  *
  * Draw order: paper → district washes → water → streets → county and state
  * lines → district edge bands, borders and selection → street, water and
@@ -24,6 +29,13 @@ import pa from '../data/pa.json';
 import { COLOR, WASHES } from '../styles/tokens';
 import { FONTSTACK, GLYPHS_URL } from '../adapters/glyphs';
 import type { Settings } from '../atlas/settings';
+import {
+  edgeColour,
+  fillColour,
+  HATCH_IMAGE,
+  NO_FOOTBALL_FILTER,
+  SECOND_LINE,
+} from './colourBy';
 
 type Expr = ExpressionSpecification;
 
@@ -33,6 +45,7 @@ export const PA_SOURCE = {
   basemap: 'pa-basemap',
   districts: 'districts',
   labels: 'district-labels',
+  piaaLabels: 'piaa-labels',
 } as const;
 
 export const DISTRICT_SOURCE_LAYER = pa.districtTiles.sourceLayer;
@@ -40,6 +53,7 @@ export const DISTRICT_SOURCE_LAYER = pa.districtTiles.sourceLayer;
 export const PA_LAYER = {
   paper: 'paper',
   districtFill: 'district-fill',
+  districtHatch: 'district-hatch',
   water: 'water',
   waterLines: 'water-lines',
   roadMinor: 'road-minor',
@@ -65,6 +79,7 @@ export const PA_LAYER = {
   cities: 'city-labels',
   regions: 'region-labels',
   districtLabels: 'district-labels',
+  piaaLabels: 'piaa-labels',
 } as const;
 
 /** Layers a click can select. */
@@ -183,6 +198,13 @@ const fonts = (s: Settings) =>
 export const districtFillOpacity = (s: Settings) =>
   round(clamp(s.countryOpacity, 0.1, 1) * (0.62 / 0.7) * 0.55);
 
+/**
+ * A data colouring must read at a glance, so it is drawn stronger: 0.8 at the
+ * default setting. Streets, water and names are drawn above it.
+ */
+export const thematicFillOpacity = (s: Settings) =>
+  round(clamp(clamp(s.countryOpacity, 0.1, 1) * (0.8 / 0.7), 0.1, 0.92));
+
 const washFill: Expr = [
   'match',
   ['get', 'c'],
@@ -242,15 +264,58 @@ export const dynamicProperties = (o: PaStyleOptions) => {
     11,
     ['case', sel, size(s, 21), byArea(15, 17, 19)] as unknown as number,
   );
+  const mode = s.paColourBy;
+  const thematic = fillColour(mode);
+  const second = mode === 'default' ? null : SECOND_LINE[mode];
+  // From z8 a coloured map adds the value under each name: "6A", "District III".
+  const nameField = second
+    ? [
+        'step',
+        zoom,
+        ['format', ['get', 'n'], {}],
+        8,
+        [
+          'format',
+          ['get', 'n'],
+          {},
+          ['case', ['has', second], '\n', ''],
+          {},
+          ['coalesce', ['get', second], ''],
+          { 'font-scale': 0.82 },
+        ],
+      ]
+    : ['get', 'n'];
   return {
     [PA_LAYER.districtFill]: {
       paint: {
-        'fill-opacity': [
+        // A data colouring keeps its colour when selected; the outline marks it.
+        'fill-color': thematic ?? [
           'case',
           isSelected,
-          round(Math.min(1, districtFillOpacity(s) + 0.35)),
-          districtFillOpacity(s),
+          PA_COLOR.selectedFill,
+          washFill,
         ],
+        'fill-opacity': thematic
+          ? thematicFillOpacity(s)
+          : [
+              'case',
+              isSelected,
+              round(Math.min(1, districtFillOpacity(s) + 0.35)),
+              districtFillOpacity(s),
+            ],
+      },
+    },
+    [PA_LAYER.districtHatch]: {
+      layout: { visibility: mode === 'football' ? 'visible' : 'none' },
+    },
+    [PA_LAYER.districtBand]: {
+      paint: { 'line-color': edgeColour(mode) ?? washEdge },
+    },
+    [PA_LAYER.piaaLabels]: {
+      layout: {
+        visibility: mode === 'piaa' ? 'visible' : 'none',
+        'text-font': font(f.selected),
+        'text-size': ramp(5, size(s, 15), 8, size(s, 22)),
       },
     },
     [PA_LAYER.districtBorder]: {
@@ -262,6 +327,7 @@ export const dynamicProperties = (o: PaStyleOptions) => {
     [PA_LAYER.districtLabels]: {
       layout: {
         visibility: s.showLabels || o.selectedId !== null ? 'visible' : 'none',
+        'text-field': nameField,
         'text-font': [
           'case',
           selectedLabel(o),
@@ -279,12 +345,10 @@ export const dynamicProperties = (o: PaStyleOptions) => {
         ],
       },
       paint: {
-        'text-color': [
-          'case',
-          selectedLabel(o),
-          PA_COLOR.selectedInk,
-          PA_COLOR.ink,
-        ],
+        // The madder ink is too dark on a data colouring's darkest steps.
+        'text-color': thematic
+          ? PA_COLOR.ink
+          : ['case', selectedLabel(o), PA_COLOR.selectedInk, PA_COLOR.ink],
       },
       // Without "show labels" only the selected district keeps its name.
       filter: s.showLabels ? null : selectedLabel(o),
@@ -379,9 +443,14 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       id: PA_LAYER.districtFill,
       type: 'fill',
       ...dist,
-      paint: {
-        'fill-color': ['case', isSelected, PA_COLOR.selectedFill, washFill],
-      },
+    },
+    {
+      // "No PIAA football" while coloured by football class.
+      id: PA_LAYER.districtHatch,
+      type: 'fill',
+      ...dist,
+      filter: NO_FOOTBALL_FILTER,
+      paint: { 'fill-pattern': HATCH_IMAGE },
     },
     {
       id: PA_LAYER.water,
@@ -520,7 +589,6 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       minzoom: 7,
       layout: { 'line-join': 'round' },
       paint: {
-        'line-color': washEdge,
         'line-width': ramp(7, 2, 12, 6),
         // Tile rings (geojson-vt via vt-pbf) put the inside on the right: positive is inward.
         'line-offset': ramp(7, 1, 12, 3),
@@ -707,13 +775,30 @@ export function paLayers(o: PaStyleOptions): LayerSpecification[] {
       source: PA_SOURCE.labels,
       minzoom: 6.5,
       layout: {
-        'text-field': ['get', 'n'],
         'text-max-width': 7,
         'text-padding': 4,
       },
       paint: {
         'text-halo-color': PA_COLOR.halo,
         'text-halo-width': 1.8,
+      },
+    },
+    {
+      // Last, so the region numbers claim their space before district names.
+      id: PA_LAYER.piaaLabels,
+      type: 'symbol',
+      source: PA_SOURCE.piaaLabels,
+      maxzoom: 9,
+      layout: {
+        // The state view on a phone fits only the numerals: "III".
+        'text-field': ['step', zoom, ['get', 'r'], 6.5, ['get', 'n']],
+        'text-letter-spacing': 0.08,
+        'text-padding': 2,
+      },
+      paint: {
+        'text-color': PA_COLOR.ink,
+        'text-halo-color': PA_COLOR.halo,
+        'text-halo-width': 2.2,
       },
     },
   ];
@@ -766,6 +851,10 @@ export function createPaStyle(
         attribution: DISTRICT_ATTRIBUTION,
       },
       [PA_SOURCE.labels]: {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+      [PA_SOURCE.piaaLabels]: {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
       },

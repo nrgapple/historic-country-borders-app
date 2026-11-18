@@ -98,6 +98,47 @@
   border: 2px solid;
 }
 
+/* A page's own legend (Pennsylvania's "Colour districts by"). */
+.map-key__page-legend {
+  margin: 8px 0 0;
+  padding: 7px 0 0;
+  border-top: 3px double var(--hair);
+}
+
+.map-key__page-legend .map-key__legend {
+  margin: 4px 0 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.map-key__page-legend .map-key__legend[data-columns] {
+  column-gap: 10px;
+}
+
+/* A last odd entry ("Unknown") takes the whole row. */
+.map-key__page-legend
+  .map-key__legend[data-columns]
+  .map-key__item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.map-key__legend-title {
+  margin: 0;
+  font: 700 13px/1.2 var(--font-sc);
+  letter-spacing: 0.06em;
+}
+
+.map-key__count {
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.map-key__legend-note {
+  margin: 5px 0 0;
+  font: italic 400 13px/1.25 var(--font-serif);
+  color: var(--ink-2);
+}
+
 .map-key__icon {
   display: block;
 }

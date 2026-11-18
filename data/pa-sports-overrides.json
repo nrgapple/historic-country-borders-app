@@ -1,0 +1,14 @@
+{
+  "description": "Reviewed matches of PIAA 'School District' names that do not match a PASDA district name. A value is the PASDA district NAME; null excludes the name deliberately (a county career-technical school, which belongs to no single district).",
+  "schoolDistricts": {
+    "Center Area": "Central Valley",
+    "East Stroudsburg Area 1": "East Stroudsburg Area",
+    "Lampeter-Straburg": "Lampeter-Strasburg",
+    "Northeast Bradford County": "Northeast Bradford",
+    "South Huntingdon County": "Southern Huntingdon County",
+    "Southside Area": "South Side Area",
+    "Vo-Tech": null,
+    "Vocational Technical School": null,
+    "West Shore (2)": "West Shore"
+  }
+}

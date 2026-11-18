@@ -10,10 +10,18 @@ import ProjectorCaption from '../components/ProjectorCaption';
 import MapKeySlot from '../components/MapKeySlot';
 import type { PlaceOption } from '../lib/places';
 import { trackEvent } from '../lib/analytics';
-import { actions, InitialYear, useAtlas, YEARS } from '../atlas/store';
+import {
+  actions,
+  getState,
+  InitialYear,
+  useAtlas,
+  YEARS,
+} from '../atlas/store';
 import type { MapHandle } from '../atlas/mapController';
 import pa from '../data/pa.json';
 import {
+  CLASS_PREFIX,
+  classRank,
   COUNTY_PREFIX,
   countyBounds,
   countyName,
@@ -21,13 +29,26 @@ import {
   districtFullName,
   finderOptions,
   formatVintage,
+  groupMembers,
+  PIAA_PREFIX,
+  sportsFacts,
   text,
   titleCase,
+  unionBounds,
 } from './districts';
+import { replaceSearch } from '../lib/mapView';
+import {
+  colourLegend,
+  colourSearch,
+  parseColourBy,
+  piaaName,
+} from './colourBy';
+import ColourByField from './ColourByField';
 import {
   STALE_AFTER_MONTHS,
   usePASchoolDistricts,
   type District,
+  type DistrictSports,
 } from './usePASchoolDistricts';
 import './pa.css';
 
@@ -41,6 +62,18 @@ export const PA_STORE_YEAR = YEARS[YEARS.length - 1];
 
 const DISTRICT_COUNT = pa.districtCount;
 const PASDA_HOME = 'https://www.pasda.psu.edu/';
+const SPORTS = pa.sports;
+const PIAA_HOME = SPORTS.url;
+
+let sharedColourApplied = false;
+/** A shared `?colour=` link wins over the stored choice, once per page load. */
+const applySharedColour = () => {
+  if (sharedColourApplied) return;
+  sharedColourApplied = true;
+  const shared = parseColourBy(window.location.search);
+  if (shared && shared !== getState().settings.paColourBy)
+    actions.updateSettings({ paColourBy: shared });
+};
 
 const SHORTCUTS = [
   {
@@ -53,7 +86,10 @@ const SHORTCUTS = [
 
 /** The atlas island for /pa/school-districts, over the same store as the year pages. */
 export default function SchoolDistrictsAtlas() {
-  if (typeof window !== 'undefined') actions.init(PA_STORE_YEAR);
+  if (typeof window !== 'undefined') {
+    actions.init(PA_STORE_YEAR);
+    applySharedColour();
+  }
   return (
     <InitialYear.Provider value={PA_STORE_YEAR}>
       <PaApp />
@@ -69,6 +105,7 @@ function PaApp() {
   const focusMode = useAtlas((s) => s.focusMode);
   const webgl = useAtlas((s) => s.webgl);
   const projectorText = useAtlas((s) => s.settings.projectorText);
+  const colourBy = useAtlas((s) => s.settings.paColourBy);
   const { data, isLoading, isEmpty, isError, isStale, retry } =
     usePASchoolDistricts();
 
@@ -80,6 +117,25 @@ function PaApp() {
     () => (districts ? finderOptions(districts) : []),
     [districts],
   );
+  const legend = useMemo(
+    () =>
+      colourLegend(
+        colourBy,
+        (districts ?? []).map((d) => ({
+          f: classRank(d.sports?.football),
+          p: d.sports?.piaa ?? 0,
+          e: d.sports?.enrollment ?? 0,
+        })),
+        data?.sportsSource?.season ?? SPORTS.season,
+      ),
+    [colourBy, districts, data],
+  );
+
+  // The colouring is shareable: mirror it to `?colour=` (absent for the default).
+  useEffect(() => {
+    const next = colourSearch(window.location.search, colourBy);
+    if (next !== window.location.search) replaceSearch(next);
+  }, [colourBy]);
 
   const handleFind = useCallback(
     (option: PlaceOption) => {
@@ -89,6 +145,20 @@ function PaApp() {
           districts,
           option.name.slice(COUNTY_PREFIX.length),
         );
+        if (bounds) actions.frame(bounds);
+        return;
+      }
+      // "PIAA District III" or "6A football": frame the group, colour by it.
+      if (
+        option.name.startsWith(PIAA_PREFIX) ||
+        option.name.startsWith(CLASS_PREFIX)
+      ) {
+        const bounds = unionBounds(
+          groupMembers(districts, option.name).map((d) => d.bbox),
+        );
+        actions.updateSettings({
+          paColourBy: option.name.startsWith(PIAA_PREFIX) ? 'piaa' : 'football',
+        });
         if (bounds) actions.frame(bounds);
         return;
       }
@@ -112,6 +182,7 @@ function PaApp() {
           ? 'ready'
           : 'unavailable';
   const vintage = data && !isEmpty ? data.source.vintage : undefined;
+  const sportsSource = data?.sportsSource ?? SPORTS;
   const metadataUrl = data?.source.metadataUrl ?? pa.metadataUrl;
   const fullName = selection ? districtFullName(selection) : undefined;
   const panelOpen = !focusMode && Boolean(selection);
@@ -162,7 +233,9 @@ function PaApp() {
               </div>
             </div>
           </div>
-          <SettingsPanel />
+          <SettingsPanel>
+            <ColourByField />
+          </SettingsPanel>
           {isStale && vintage && (
             <p className="pa-banner" role="note">
               These boundaries are from {formatVintage(vintage)}, more than{' '}
@@ -201,6 +274,7 @@ function PaApp() {
             map={mapHandle?.map}
             lowPower={mapHandle?.lowPower}
             underSheet={overlay === 'settings'}
+            legend={legend}
             plate={{
               kicker: 'Commonwealth of',
               title: 'Pennsylvania',
@@ -212,8 +286,8 @@ function PaApp() {
         {!focusMode && (
           <p className="credit">
             Boundaries are for reference only; confirm a home’s school with the
-            district. Districts: PennDOT via PASDA · Streets and places: ©
-            OpenStreetMap contributors (ODbL), Protomaps
+            district. Districts: PennDOT via PASDA · Sports: PIAA · Streets and
+            places: © OpenStreetMap contributors (ODbL), Protomaps
           </p>
         )}
 
@@ -247,10 +321,20 @@ function PaApp() {
             name={fullName}
             subtitle={districtSubtitle(selection)}
             factsTitle="District"
-            facts={districtFacts(selection)}
+            facts={[
+              ...districtFacts(selection),
+              ...sportsFacts(selection.sports, sportsSource),
+            ]}
             wikiQuery={`${fullName} Pennsylvania`}
             onClose={closePanel}
           >
+            {selection.sports !== undefined && (
+              <SportsSection
+                sports={selection.sports}
+                season={sportsSource.season}
+                enrollmentDate={sportsSource.enrollmentDate}
+              />
+            )}
             <section
               className="place-panel__section pa-provenance"
               aria-labelledby="pa-provenance-title"
@@ -316,6 +400,11 @@ function PaApp() {
               {DISTRICT_COUNT} public school districts. Select a district to see
               its county, intermediate unit, and career and technical school.
             </p>
+            <p>
+              With “Colour districts by” in Settings, the map can also show each
+              district’s PIAA football class, its PIAA district, or the size of
+              its high schools.
+            </p>
             <p className="about__caveat">
               Boundaries are for reference only. To confirm which school a home
               is assigned to, contact the school district.
@@ -339,6 +428,16 @@ function PaApp() {
               . {data?.source.disclaimer}
             </p>
             <p>
+              High-school sports: PIAA football classifications for{' '}
+              {sportsSource.season}, PIAA districts and grade 9–11 enrollment
+              (reported {sportsSource.enrollmentDate}) from the{' '}
+              <a href={PIAA_HOME} target="_blank" rel="noreferrer">
+                Pennsylvania Interscholastic Athletic Association
+              </a>
+              , matched to districts by name. Conferences and leagues are not
+              shown.
+            </p>
+            <p>
               Streets, water and place names: ©{' '}
               <a
                 href="https://www.openstreetmap.org/copyright"
@@ -357,6 +456,61 @@ function PaApp() {
         }
       />
     </div>
+  );
+}
+
+/**
+ * The district's PIAA high schools, each with its football class and
+ * enrollment, and the source. Shown for every district PIAA lists.
+ */
+function SportsSection({
+  sports,
+  season,
+  enrollmentDate,
+}: {
+  sports: DistrictSports | null;
+  season: string;
+  enrollmentDate: string;
+}) {
+  const fmt = (n: number | null) =>
+    n === null ? '–' : n.toLocaleString('en-US');
+  return (
+    <section
+      className="place-panel__section pa-schools"
+      aria-labelledby="pa-schools-title"
+    >
+      <h3 className="section-label" id="pa-schools-title">
+        High-school sports
+      </h3>
+      {sports && sports.schools.length > 0 && (
+        <ul aria-label="PIAA high schools">
+          {sports.schools.map((school) => (
+            <li key={school.id}>
+              <span>{school.name}</span>
+              <span className="pa-schools__class">
+                {school.football
+                  ? `${school.football}${school.coop ? ' co-op' : ''}`
+                  : 'No football'}
+              </span>
+              <span className="pa-schools__meta">
+                {fmt(school.total)} students in grades 9–11
+                {school.boys !== null ? ` · ${fmt(school.boys)} boys` : ''}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p>
+        {sports?.piaa ? `${piaaName(sports.piaa)} runs its playoffs. ` : ''}
+        PIAA football classes for {season}, from enrollment reported in{' '}
+        {enrollmentDate}. A school may play up a class by choice or under PIAA’s
+        competition rule, and co-op teams combine schools. Confirm with{' '}
+        <a href={PIAA_HOME} target="_blank" rel="noreferrer">
+          PIAA
+        </a>
+        .
+      </p>
+    </section>
   );
 }
 

@@ -86,3 +86,35 @@ export const coverageRuns = (tiles) => {
   }
   return out;
 };
+
+/**
+ * One label point per PIAA district (I–XII): the member district label point
+ * nearest the members' area-weighted centre, so it always lies inside the
+ * region. Districts with no PIAA district are skipped.
+ */
+export function piaaLabelPoints(districts) {
+  const groups = new Map();
+  for (const d of districts) {
+    const p = d.sports?.piaa;
+    if (!p) continue;
+    if (!groups.has(p)) groups.set(p, []);
+    groups.get(p).push(d);
+  }
+  return [...groups.keys()]
+    .sort((a, b) => a - b)
+    .map((p) => {
+      const members = groups.get(p);
+      const weight = members.reduce((n, d) => n + d.km2, 0);
+      const cx = members.reduce((n, d) => n + d.label[0] * d.km2, 0) / weight;
+      const cy = members.reduce((n, d) => n + d.label[1] * d.km2, 0) / weight;
+      const k = Math.cos((cy * Math.PI) / 180);
+      const nearest = members.reduce(
+        (best, d) => {
+          const dist = ((d.label[0] - cx) * k) ** 2 + (d.label[1] - cy) ** 2;
+          return dist < best.dist ? { d, dist } : best;
+        },
+        { d: members[0], dist: Infinity },
+      ).d;
+      return { piaa: p, districts: members.length, label: nearest.label };
+    });
+}

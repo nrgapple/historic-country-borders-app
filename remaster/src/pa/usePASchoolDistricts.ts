@@ -23,6 +23,45 @@ export interface SchoolDistrictSource {
   sha256: string;
 }
 
+/** One PIAA member high school of a district (data/pa-sports.json). */
+export interface SportsSchool {
+  /** PIAA directory id (`/schools/directory/details.aspx?ID=`). */
+  id: number;
+  name: string;
+  /** PIAA football class "1A"–"6A", or null without a PIAA football team. */
+  football: string | null;
+  /** The football team is a cooperative sponsorship with another school. */
+  coop?: boolean;
+  /** PIAA classification enrollment, grades 9–11. */
+  total: number | null;
+  boys: number | null;
+}
+
+/** PIAA facts for a district; null when PIAA lists none of its schools. */
+export interface DistrictSports {
+  /** PIAA district 1–12 (most of its schools'). */
+  piaa: number | null;
+  /** Every PIAA district its schools play in, when they differ. */
+  piaaAll?: number[];
+  /** The largest football class among its schools. */
+  football: string | null;
+  footballSchools: number;
+  enrollment: number | null;
+  boys: number | null;
+  schools: SportsSchool[];
+}
+
+export interface SportsSource {
+  publisher: string;
+  url: string;
+  /** "2026-27 and 2027-28". */
+  season: string;
+  /** "October 2025". */
+  enrollmentDate: string;
+  enrollmentBasis: string;
+  retrievedAt: string;
+}
+
 export interface District {
   /** Feature id in the district tiles and index into `districts`. */
   id: number;
@@ -40,6 +79,8 @@ export interface District {
   bbox: [number, number, number, number];
   /** Interior label point [lng, lat]. */
   label: [number, number];
+  /** PIAA sports facts (absent in an index built before them). */
+  sports?: DistrictSports | null;
 }
 
 export interface DistrictIndex {
@@ -50,6 +91,13 @@ export interface DistrictIndex {
     geometryCounts: { Polygon: number; MultiPolygon: number };
     requiredProperties: string[];
   };
+  sportsSource?: SportsSource;
+  /** One label point per PIAA district. */
+  piaaLabels?: Array<{
+    piaa: number;
+    districts: number;
+    label: [number, number];
+  }>;
   districts: District[];
 }
 
