@@ -77,8 +77,10 @@ export default function PlacePanel({
   }, [onClose]);
 
   return (
+    // Explicit role (implicit for <aside>) so layout tests can select it with CSS.
     <aside
       className="place-panel paper-grain"
+      role="complementary"
       aria-labelledby="place-panel-title"
     >
       <span className="place-panel__handle" aria-hidden="true" />

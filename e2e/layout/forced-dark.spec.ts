@@ -156,7 +156,11 @@ for (const target of PAGES) {
       const lightColors = await computedColors(light);
 
       expect(darkColors.meta, '<meta name="color-scheme">').toBe('only light');
-      expect(darkColors.colorScheme, ':root color-scheme').toBe('only light');
+      // Browsers serialize the computed value canonically: Chromium and
+      // WebKit both report \`only light\` as "light only".
+      expect(['only light', 'light only'], ':root color-scheme').toContain(
+        darkColors.colorScheme,
+      );
       expect(darkColors.topBar, 'top bar is present').not.toBeNull();
       if (target.panel) {
         expect(darkColors.panel, 'place panel is open').not.toBeNull();
