@@ -1,0 +1,51 @@
+{
+  "title": "Natural Earth physical basemap sources",
+  "publisher": "Natural Earth (naturalearthdata.com), vectors from nvkelso/natural-earth-vector",
+  "naturalEarthVersion": "5.1.2",
+  "license": "Public domain. Natural Earth terms of use: https://www.naturalearthdata.com/about/terms-of-use/ (credit optional; kept).",
+  "licenseUrl": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "retrievedAt": "2026-11-17",
+  "files": {
+    "ne_50m_land": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_land.geojson",
+      "sha256": "e874b27a51d146452be360cafb3cc50c86001074a67d534113e6534682f9826b",
+      "bytes": 1636166
+    },
+    "ne_50m_lakes": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_lakes.geojson",
+      "sha256": "d350b75978b26fe839b797c2c529b2fb8f47fb3983c03f4964e36d5df9378a52",
+      "bytes": 876018
+    },
+    "ne_50m_rivers_lake_centerlines": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_rivers_lake_centerlines.geojson",
+      "sha256": "f286e0ce978fde999ca2d7a78c764be08542e19b63cded52b05c12d5173ccc51",
+      "bytes": 827318
+    },
+    "ne_50m_geography_marine_polys": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_geography_marine_polys.geojson",
+      "sha256": "6fe58083e0cc5c7fad9e396970e28a8580bbd8770cfa4d1d7b5a34423e912f97",
+      "bytes": 1163418
+    },
+    "ne_110m_land": {
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_land.geojson",
+      "sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+      "bytes": 138160
+    },
+    "GRAY_50M_SR": {
+      "url": "https://naciscdn.org/naturalearth/50m/raster/GRAY_50M_SR.zip",
+      "sha256": "4e6ff23dec315c00c018c030250ea3157630f83cabb0ff4bee0ebade8647bd6d",
+      "bytes": 18279677,
+      "note": "Natural Earth 1:50m Gray Earth shaded relief, raster version 2.0.0 per GRAY_50M_SR.VERSION.txt; the naciscdn URL is not versioned, so the sha256 is the pin."
+    }
+  },
+  "recipe": {
+    "marineMaxRank": 4
+  },
+  "labelOverrides": {
+    "North Atlantic Ocean": {
+      "name": "Atlantic Ocean",
+      "coordinates": [-19, 46],
+      "reason": "Design spike: move the Atlantic name into the European view."
+    }
+  }
+}
