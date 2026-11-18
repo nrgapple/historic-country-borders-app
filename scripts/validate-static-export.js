@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const historicalManifest = require('../data/historical-manifest.json');
 const historicalAssets = require('../data/historical-assets.json');
+const historicalContext = require('../data/historical-context.json');
 
 const ROOT = path.join(__dirname, '..');
 const OUT = path.join(ROOT, 'out');
@@ -40,6 +41,9 @@ function main() {
   Object.values(historicalAssets.assets).forEach((asset) =>
     requireFile(asset.url.replace(/^\//, '')),
   );
+  Object.values(historicalContext.years).forEach((url) =>
+    requireFile(url.replace(/^\//, '')),
+  );
   requireFile('data/pa-school-districts.json');
 
   const wrangler = fs.readFileSync(path.join(ROOT, 'wrangler.toml'), 'utf8');
@@ -70,6 +74,7 @@ function main() {
   if (
     !headers.includes('/_next/static/*') ||
     !headers.includes('/data/historical/*') ||
+    !headers.includes('/data/context/*') ||
     !headers.includes('max-age=31536000, immutable')
   ) {
     fail('static immutable cache headers are missing');

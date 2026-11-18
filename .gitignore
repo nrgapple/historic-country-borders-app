@@ -39,3 +39,6 @@ yarn-error.log*
 .wrangler/
 tsconfig.tsbuildinfo
 .env*.local
+
+# local Wikidata/Wikipedia response cache for data:refresh:context
+/.cache/
