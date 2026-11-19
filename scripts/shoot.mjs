@@ -93,6 +93,20 @@ const SHOTS = [
     width: 1440,
     height: 900,
   },
+  // Palette review (territory washes against water): the Caspian, Black Sea
+  // and Persian Gulf around Safavid Persia, and the coasts of 1914 Europe.
+  {
+    name: '1600-caspian-1024x700',
+    url: '/year/1600?lng=50&lat=36&zoom=3.6',
+    width: 1024,
+    height: 700,
+  },
+  {
+    name: '1914-europe-1024x700',
+    url: '/year/1914?lng=15&lat=50&zoom=3.2',
+    width: 1024,
+    height: 700,
+  },
   // The year page at the PA phone size, with the same iPhone insets.
   {
     name: '1492-ottoman-insets-390x844',

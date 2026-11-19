@@ -218,6 +218,27 @@ Constraints kept: free (GA4 standard), no request-time compute, nothing sent wit
 
 Rollback: delete the repository variable (nothing loads) or revert the commit.
 
+### Territory colours that read as water (2026-11-18)
+
+Observed: territories painted in the blue-ish palette slots read as sea or lakes, for example Safavid Persia in 1600 as part of the Caspian in Classic atlas. Measured as CIEDE2000 ΔE from each style's water colour: Classic's verditer `#B5CFD3` 3.3 and smalt `#BBC7DE` 12.6; Modern textbook's aqua `#9FD7D3` 11.0 and cornflower `#B3CBEF` 10.5, while B's other pastels sit 18.8–34.7 from water. The owner approved replacing those four.
+
+Decision (same slots, so the data and every overlord wash are unchanged):
+
+| Style | Slot | Was        | Now (fill / edge)                 | ΔE to water | Nearest other wash |
+| ----- | ---- | ---------- | --------------------------------- | ----------- | ------------------ |
+| A     | 4    | verditer   | purple lake `#E1BBDB` / `#9A5B92` | 24.7        | mauve 7.6          |
+| A     | 9    | smalt      | vermilion `#F3BDB2` / `#AF5C4D`   | 28.4        | madder 7.7         |
+| B     | 4    | aqua       | olive `#CFCB8E` / `#727501`       | 28.2        | lime 8.6           |
+| B     | 9    | cornflower | heather `#D7B9C6` / `#895C71`     | 28.5        | orchid 7.7         |
+
+Classic's new pigments are period watercolour colours that fill the empty red and red-violet parts of A's hue circle at its lightness (L\* 80–81) and chroma (22, inside A's 9–32): a pale vermilion wash is the traditional atlas tint for the British Empire, and wash 9 is the United Kingdom's in 1914, so British colonies now take the conventional pink-red. Both are further from their nearest wash than A's closest existing pair (sap green–olive, 4.4); B's are further than its closest (sand–apricot, 5.75). Each edge is derived the same way for all four: the fill's CIE L\* lowered by the palette's mean fill-to-edge drop (A 32.5, B 33.4) and its chroma scaled by the palette's mean ratio (A 1.81, B 1.69), keeping the hue, clipped to sRGB (this rule reproduces the existing edges within ΔE 3–4 on average). Ink names stay AA on every new fill (9.2–9.9:1).
+
+Guard: `src/styles/washes.test.ts` holds every fill in both styles at least ΔE 15 from its water, dependency tints and the fallback at least 11, and every pair of washes apart; Classic's map now imports its washes from `src/styles/tokens.ts` instead of a second copy. Known gap: A's sap green `#BFD3B2` is 11.7 from water (a yellow-green, not reported as reading as water); it is listed as the test's only exception rather than lowering the bar.
+
+Pennsylvania: the default district fills read the theme washes, so they change with them. The "Colour districts by → PIAA district" palettes are a separate categorical scheme and keep their blues; heather there would sit ΔE 3.1 from District XII.
+
+Rollback: revert the commit (no data or persisted keys change).
+
 ## Deferred
 
 ### Domain cutover
