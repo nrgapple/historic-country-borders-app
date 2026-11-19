@@ -39,7 +39,7 @@ describe('ChangesSummary', () => {
       />,
     );
 
-    const toggle = screen.getByText('What changed since 1914');
+    const toggle = screen.getByText('Changes since 1914');
     const details = toggle.closest('details');
     expect(details).not.toHaveAttribute('open');
     // jsdom cannot toggle <details> from the keyboard; the browser journey
@@ -93,9 +93,7 @@ describe('ChangesSummary', () => {
         })}
       />,
     );
-    const details = screen
-      .getByText('What changed since 1914')
-      .closest('details');
+    const details = screen.getByText('Changes since 1914').closest('details');
     expect(details).toHaveAttribute('aria-busy', 'true');
   });
 });

@@ -2,6 +2,10 @@
 
 ## Accepted
 
+### Compact timeline for short historical map viewports
+
+The iPhone Duo screenshot puts about 31% of the available Safari page above the map. WebKit documents a 382 × 580 CSS px outer portrait viewport and similar dimensions for inner split windows. Move the year stepper, search, and a More disclosure into one row on narrow, short viewports, with a full-width ruler underneath. Keep the same year picker, navigation, and map state as the viewport resizes. The regression target leaves at most 110 CSS px above the map in the Duo layouts without injected safe-area insets. [WebKit viewport dimensions](https://webkit.org/blog/18486/webkit-features-for-safari-27-1/)
+
 ### Static-first Cloudflare deployment
 
 Normal pages and map assets will not invoke request-time compute. Cloudflare is the target because its static asset delivery fits the free-only constraint and its bot controls address crawler amplification. Dynamic compute is restricted to justified, bounded endpoints.

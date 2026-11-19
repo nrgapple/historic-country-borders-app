@@ -328,7 +328,7 @@ test('the year summary lists what changed and opens from the keyboard', async ({
   await page.goto('/year/1994');
   await expectReadyMap(mapOf(page));
 
-  const toggle = page.getByText('What changed since 1993');
+  const toggle = page.getByText('Changes since 1993');
   await expect(toggle).toBeVisible();
   await expect(page.getByText('Former Fixture')).toBeHidden();
   await toggle.focus();

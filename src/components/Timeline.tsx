@@ -377,7 +377,7 @@ export default function Timeline({
         event.ctrlKey ||
         event.metaKey ||
         isEditableTarget(event.target) ||
-        document.querySelector('dialog[open]')
+        document.querySelector('dialog[open], .toolbar__overflow[data-open]')
       ) {
         return;
       }

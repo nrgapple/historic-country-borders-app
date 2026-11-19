@@ -69,7 +69,10 @@ export default function PlacePanel({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !document.querySelector('dialog[open]'))
+      if (
+        event.key === 'Escape' &&
+        !document.querySelector('dialog[open], .toolbar__overflow[data-open]')
+      )
         onClose();
     };
     document.addEventListener('keydown', onKeyDown);

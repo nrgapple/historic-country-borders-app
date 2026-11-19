@@ -34,12 +34,37 @@ type State = {
 
 const isMapPage = (target: LayoutPage) => target.kind !== 'static';
 
+const revealMapTools = async (page: Page) => {
+  const more = page.getByRole('button', { name: 'More map tools' });
+  if (await more.isVisible()) await more.click();
+};
+
+const openSettings = async (page: Page) => {
+  await revealMapTools(page);
+  await page.getByRole('button', { name: 'Map settings' }).click();
+  await expect(page.getByRole('dialog').first()).toBeVisible();
+};
+
+const expandFinder = async (page: Page) => {
+  const field = page.getByRole('combobox', { name: /find a/i }).first();
+  if (!(await field.isVisible())) {
+    await page
+      .getByRole('button', { name: /find a/i })
+      .first()
+      .click();
+  }
+  await expect(field).toBeVisible();
+  await field.fill('a');
+  await expect(page.getByRole('listbox').first()).toBeVisible();
+};
+
 const STATES: State[] = [
   { name: 'default', appliesTo: () => true, enter: async () => undefined },
   {
     name: 'projector mode',
     appliesTo: isMapPage,
     enter: async (page) => {
+      await revealMapTools(page);
       await page
         .getByRole('button', { name: /hide controls|projector|focus/i })
         .first()
@@ -52,26 +77,12 @@ const STATES: State[] = [
   {
     name: 'settings open',
     appliesTo: isMapPage,
-    enter: async (page) => {
-      await page.getByRole('button', { name: 'Map settings' }).click();
-      await expect(page.getByRole('dialog').first()).toBeVisible();
-    },
+    enter: openSettings,
   },
   {
     name: 'place finder expanded',
     appliesTo: isMapPage,
-    enter: async (page) => {
-      const field = page.getByRole('combobox', { name: /find a/i }).first();
-      if (!(await field.isVisible())) {
-        await page
-          .getByRole('button', { name: /find a/i })
-          .first()
-          .click();
-      }
-      await expect(field).toBeVisible();
-      await field.fill('a');
-      await expect(page.getByRole('listbox').first()).toBeVisible();
-    },
+    enter: expandFinder,
   },
 ];
 
@@ -199,3 +210,90 @@ for (const size of WIDTHS) {
     }
   });
 }
+
+const DUO_VIEWPORTS = [
+  { width: 382, height: 580 },
+  { width: 382, height: 618 },
+  { width: 594, height: 368 },
+  { width: 385, height: 571 },
+];
+
+for (const size of DUO_VIEWPORTS) {
+  test.describe(`Duo ${size.width}×${size.height}`, () => {
+    test.use({ viewport: size, hasTouch: true, isMobile: true });
+
+    test('keeps the year, search and map tools reachable', async ({
+      page,
+      context,
+      baseURL,
+    }, testInfo) => {
+      await interceptThirdParty(context, baseURL!);
+      const target = LAYOUT_PAGES[0];
+      await page.goto(target.path);
+      await settle(page);
+      const year = page.getByRole('combobox', { name: 'Choose a year' });
+      const previous = page.getByRole('button', { name: /^Previous year:/ });
+      const next = page.getByRole('button', { name: /^Next year:/ });
+      const search = page.getByRole('button', { name: /find a place/i });
+      const more = page.getByRole('button', { name: 'More map tools' });
+      for (const control of [year, previous, next, search, more]) {
+        await expect(control).toBeVisible();
+        const box = (await control.boundingBox())!;
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+      const map = await page.getByRole('main').boundingBox();
+      expect(map!.height).toBeGreaterThanOrEqual(size.height - 110);
+      expect(await layoutProblems(page, target)).toEqual([]);
+      await attachScreenshot(page, testInfo, 'compact-timeline');
+
+      await more.click();
+      await expect(
+        page.getByRole('button', { name: 'About this map' }),
+      ).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(
+        page.getByRole('button', { name: 'About this map' }),
+      ).toBeHidden();
+      await openSettings(page);
+      expect(await layoutProblems(page, target)).toEqual([]);
+      await page.getByRole('button', { name: 'Close map settings' }).click();
+      await expandFinder(page);
+      expect(await layoutProblems(page, target)).toEqual([]);
+    });
+  });
+}
+
+test('retains the selected place and camera when the Duo viewport changes', async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  await interceptThirdParty(context, baseURL!);
+  const target = LAYOUT_PAGES[2];
+  await page.setViewportSize(DUO_VIEWPORTS[0]);
+  await page.goto(`${target.path}&lng=16.3700&lat=48.2100&zoom=4.00`);
+  await settle(page);
+  const title = page.getByRole('heading', { name: 'Austro-Hungarian Empire' });
+  await expect(title).toBeInViewport();
+  const initial = page.url();
+  const more = page.getByRole('button', { name: 'More map tools' });
+  const about = page.getByRole('button', { name: 'About this map' });
+  await more.click();
+  await expect(about).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(about).toBeHidden();
+  await expect(title).toBeInViewport();
+  await more.click();
+  await page.setViewportSize({ width: 669, height: 867 });
+  await expect(more).toBeHidden();
+  await expect(title).toBeInViewport();
+  await page.setViewportSize(DUO_VIEWPORTS[0]);
+  await expect(more).toBeVisible();
+  await expect(about).toBeHidden();
+  await expect(title).toBeInViewport();
+  await expect(
+    page.getByRole('combobox', { name: 'Choose a year' }),
+  ).toHaveValue('1914');
+  await expect(page).toHaveURL(initial);
+});
