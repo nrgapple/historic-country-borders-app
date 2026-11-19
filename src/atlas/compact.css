@@ -5,8 +5,10 @@
 }
 
 @supports selector(:popover-open) {
-  @media (370px <= width <= 400px) and (max-height: 640px),
-    (370px <= width <= 600px) and (max-height: 420px) {
+  /* Keep the compact row stable across the Duo toolbar states. The 393px
+     iPhone 15 Pro retains its two rows when Safari expands its toolbar. */
+  @media (370px <= width <= 390px) and (max-height: 640px),
+    (500px <= width <= 600px) and (max-height: 420px) {
     :root .atlas.atlas--history .timeline__head {
       grid-template-columns: minmax(0, 1fr) auto;
       grid-template-areas: 'step trail';
@@ -158,6 +160,10 @@
     :root .atlas.atlas--history .map-key__toggle {
       min-height: 44px;
       background: var(--sheet);
+    }
+
+    .atlas--history .map-key[data-under-sheet] {
+      display: none;
     }
 
     .atlas--history .changes-summary {
