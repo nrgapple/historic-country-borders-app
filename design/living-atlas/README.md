@@ -90,7 +90,7 @@ Per-direction differences are listed under each direction.
 | Land | `#F1E8D0` | Unclaimed land | – |
 | Selected fill and label | `#E4ADA0`, `#6E1F1F` | Selected territory | 5.7:1 |
 
-The map palette is 12 hand-tinted washes (madder, sap green, gamboge, lilac, verditer, rose, umber, olive, orange ochre, smalt, mauve, straw). Each wash is paired with a darker edge of the same pigment.
+The map palette is 12 hand-tinted washes (madder, sap green, gamboge, lilac, verditer, rose, umber, olive, orange ochre, smalt, mauve, straw). Each wash is paired with a darker edge of the same pigment. _Changed on 2026-11-18:_ verditer and smalt read as water and were replaced by purple lake and vermilion (docs/product/DECISIONS.md "Territory colours that read as water"); the mock keeps the original values.
 
 ### Type
 
@@ -138,7 +138,7 @@ The paper timeline extends under the island. The phone sheet has a cream ground 
 | Land | `#F4F1EA` | – |
 | Focus ring | `#F2A900`, 3 px | – |
 
-The map palette is 12 bright textbook pastels (coral, leaf, sunflower, iris, aqua, pink, sand, lime, apricot, cornflower, orchid, sage) at 92% opacity, each with a same-hue darker border.
+The map palette is 12 bright textbook pastels (coral, leaf, sunflower, iris, aqua, pink, sand, lime, apricot, cornflower, orchid, sage) at 92% opacity, each with a same-hue darker border. _Changed on 2026-11-18:_ aqua and cornflower read as water and were replaced by olive and heather (same decision); the mock keeps the original values.
 
 ### Type
 

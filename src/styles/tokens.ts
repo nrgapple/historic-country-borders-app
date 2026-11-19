@@ -70,18 +70,22 @@ export const COLOR = {
  * The 12 hand-tinted map washes, each with a darker edge of the same pigment.
  * The year data's colour slot `c` (0-29, legacy source colours) folds onto
  * them with `c % 12`; slot 30 (unknown) uses `FALLBACK_WASH`.
+ *
+ * No wash may read as water: `washes.test.ts` keeps every fill a minimum
+ * CIEDE2000 distance from `COLOR.water` (verditer and smalt were replaced on
+ * 2026-11-18, docs/product/DECISIONS.md "Territory colours that read as water").
  */
 export const WASHES = [
   { name: 'madder', fill: '#E3B9A0', edge: '#A2573A' },
   { name: 'sap green', fill: '#BFD3B2', edge: '#5E7F4C' },
   { name: 'gamboge', fill: '#E8CF95', edge: '#A07A27' },
   { name: 'lilac', fill: '#C9C0DC', edge: '#6E5E95' },
-  { name: 'verditer', fill: '#B5CFD3', edge: '#4E7D86' },
+  { name: 'purple lake', fill: '#E1BBDB', edge: '#9A5B92' },
   { name: 'rose', fill: '#E6BFC6', edge: '#A05866' },
   { name: 'umber', fill: '#D7C7A4', edge: '#86714A' },
   { name: 'olive', fill: '#C4D7A6', edge: '#6F8B3D' },
   { name: 'orange ochre', fill: '#EBC79F', edge: '#AE7135' },
-  { name: 'smalt', fill: '#BBC7DE', edge: '#55688F' },
+  { name: 'vermilion', fill: '#F3BDB2', edge: '#AF5C4D' },
   { name: 'mauve', fill: '#DCC9D9', edge: '#866083' },
   { name: 'straw green', fill: '#D9DBA8', edge: '#868A3C' },
 ] as const;
@@ -170,18 +174,22 @@ export const TEXTBOOK_LINE_STRONG = '#9AA6B2';
 /** The map accent: selection hatch, outline, label and capital star (Medieval blue). */
 export const TEXTBOOK_MAP_ACCENT = '#1B5CA6';
 
-/** The 12 textbook pastels, each with a darker border of the same hue. */
+/**
+ * The 12 textbook pastels, each with a darker border of the same hue. As in
+ * A, none may read as water (`washes.test.ts`; aqua and cornflower were
+ * replaced on 2026-11-18).
+ */
 export const TEXTBOOK_WASHES = [
   { name: 'coral', fill: '#F6B9A6', edge: '#B4553A' },
   { name: 'leaf', fill: '#B4DDA4', edge: '#4E8A3A' },
   { name: 'sunflower', fill: '#F5D77E', edge: '#9C7A12' },
   { name: 'iris', fill: '#C8BCEB', edge: '#6A58A8' },
-  { name: 'aqua', fill: '#9FD7D3', edge: '#2F8580' },
+  { name: 'olive', fill: '#CFCB8E', edge: '#727501' },
   { name: 'pink', fill: '#F3B3C8', edge: '#B2486D' },
   { name: 'sand', fill: '#E9CBA1', edge: '#9A6E33' },
   { name: 'lime', fill: '#D2E79A', edge: '#7A9330' },
   { name: 'apricot', fill: '#F8C590', edge: '#B86A1E' },
-  { name: 'cornflower', fill: '#B3CBEF', edge: '#4C6FA8' },
+  { name: 'heather', fill: '#D7B9C6', edge: '#895C71' },
   { name: 'orchid', fill: '#E3BFE3', edge: '#93529A' },
   { name: 'sage', fill: '#CFE3C4', edge: '#5F8A50' },
 ] as const;

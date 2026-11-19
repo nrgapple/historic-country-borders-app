@@ -3,6 +3,10 @@
  * and `a-classic-atlas.html`. UI tokens (paper, sheet, era pigments) belong to
  * the app shell; only colours the map draws are here.
  */
+import {
+  FALLBACK_WASH as UI_FALLBACK_WASH,
+  WASHES as UI_WASHES,
+} from '../../styles/tokens';
 
 export interface Wash {
   /** Pigment name, for docs and the legend. */
@@ -12,28 +16,13 @@ export interface Wash {
   edge: string;
 }
 
-/** The 12 hand-tinted washes, each paired with a darker edge. */
-export const WASHES: readonly Wash[] = [
-  { name: 'madder', fill: '#E3B9A0', edge: '#A2573A' },
-  { name: 'sap green', fill: '#BFD3B2', edge: '#5E7F4C' },
-  { name: 'gamboge', fill: '#E8CF95', edge: '#A07A27' },
-  { name: 'lilac', fill: '#C9C0DC', edge: '#6E5E95' },
-  { name: 'verditer', fill: '#B5CFD3', edge: '#4E7D86' },
-  { name: 'rose', fill: '#E6BFC6', edge: '#A05866' },
-  { name: 'umber', fill: '#D7C7A4', edge: '#86714A' },
-  { name: 'olive', fill: '#C4D7A6', edge: '#6F8B3D' },
-  { name: 'orange ochre', fill: '#EBC79F', edge: '#AE7135' },
-  { name: 'smalt', fill: '#BBC7DE', edge: '#55688F' },
-  { name: 'mauve', fill: '#DCC9D9', edge: '#866083' },
-  { name: 'straw green', fill: '#D9DBA8', edge: '#868A3C' },
-];
-
-/** Used for a missing or out-of-range wash index. */
-export const FALLBACK_WASH: Wash = {
-  name: 'unknown',
-  fill: '#E2D8C0',
-  edge: '#9C8B66',
-};
+/**
+ * The 12 hand-tinted washes, each paired with a darker edge, and the wash for
+ * a missing or out-of-range index: the same values as the UI tokens (one
+ * source, so the map, the legend and the CSS cannot drift).
+ */
+export const WASHES: readonly Wash[] = UI_WASHES;
+export const FALLBACK_WASH: Wash = UI_FALLBACK_WASH;
 
 /** T1 publishes the wash index `c` (and `oc`) as 0–11, one per wash. */
 export const WASH_SLOTS = WASHES.length;
