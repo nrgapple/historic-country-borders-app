@@ -86,7 +86,7 @@ const STATES: State[] = [
   },
 ];
 
-const layoutProblems = async (page: Page, target: LayoutPage) => {
+const layoutProblems = async (page: Page, target: Pick<LayoutPage, 'kind'>) => {
   const m = await measure(page);
   const { width } = m.viewport;
   const problems: string[] = [];
@@ -228,7 +228,7 @@ for (const size of DUO_VIEWPORTS) {
       baseURL,
     }, testInfo) => {
       await interceptThirdParty(context, baseURL!);
-      const target = LAYOUT_PAGES[0];
+      const target = { path: '/year/1783', kind: 'year' } as const;
       await page.goto(target.path);
       await settle(page);
       const year = page.getByRole('combobox', { name: 'Choose a year' });
@@ -256,6 +256,9 @@ for (const size of DUO_VIEWPORTS) {
         page.getByRole('button', { name: 'About this map' }),
       ).toBeHidden();
       await openSettings(page);
+      await expect(
+        page.getByRole('button', { name: 'Key', exact: true }),
+      ).toBeHidden();
       expect(await layoutProblems(page, target)).toEqual([]);
       await page.getByRole('button', { name: 'Close map settings' }).click();
       await expandFinder(page);
