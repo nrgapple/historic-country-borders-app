@@ -72,8 +72,14 @@ export default function FeedbackDialog({
     event.preventDefault();
     if ((!rating && !hasMessage) || !visitorId) return;
     setStatus({ kind: 'sending' });
+    const sent = {
+      rating: rating ?? 'none',
+      has_message: hasMessage,
+      has_email: email.trim() !== '',
+    };
+    let response: Response;
     try {
-      const response = await fetch('/api/feedback', {
+      response = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -84,31 +90,41 @@ export default function FeedbackDialog({
           metadata: { page: window.location.pathname },
         }),
       });
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw new Error(
-          typeof body?.message === 'string'
-            ? body.message
-            : `Feedback failed (HTTP ${response.status}).`,
-        );
-      }
+    } catch {
       track('feedback_submit', {
-        rating: rating ?? 'none',
-        has_message: hasMessage,
+        ...sent,
+        outcome: 'failed',
+        reason: 'network',
       });
-      setRating(null);
-      setMessage('');
-      setEmail('');
-      setStatus({ kind: 'sent' });
-    } catch (error) {
+      setStatus({ kind: 'error', message: 'Feedback could not be sent.' });
+      return;
+    }
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      track('feedback_submit', {
+        ...sent,
+        outcome: 'failed',
+        reason:
+          response.status === 429
+            ? 'rate_limited'
+            : response.status >= 500
+              ? 'server'
+              : 'rejected',
+      });
       setStatus({
         kind: 'error',
         message:
-          error instanceof Error
-            ? error.message
-            : 'Feedback could not be sent.',
+          typeof body?.message === 'string'
+            ? body.message
+            : `Feedback failed (HTTP ${response.status}).`,
       });
+      return;
     }
+    track('feedback_submit', { ...sent, outcome: 'sent' });
+    setRating(null);
+    setMessage('');
+    setEmail('');
+    setStatus({ kind: 'sent' });
   };
 
   return (
