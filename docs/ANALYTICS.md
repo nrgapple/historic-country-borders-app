@@ -1,0 +1,72 @@
+# Analytics
+
+Historic Borders measures use with Google Analytics 4 to make product and debugging decisions. Everything lives in `src/lib/analytics.ts`; the event vocabulary is typed there (`Events`), so a call with the wrong name or parameters fails `yarn type-check`.
+
+## Setup
+
+| What                 | Value                                                                                                                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GA4 account          | `historic-borders`                                                                                                                                                                                                                          |
+| GA4 property         | `history-borders`, ID `260086892`                                                                                                                                                                                                           |
+| Measurement ID       | `G-P1R4GR83SN` (public; it ships in the page)                                                                                                                                                                                               |
+| Build variable       | `PUBLIC_GA_FOUR`, set in CI from the repository variable `NEXT_PUBLIC_GA_FOUR`. Only the build that ships (a push to `main`) gets it; pull-request builds and their browser tests have none. Without it nothing loads and calls are no-ops. |
+| Read access (agents) | Google's `analytics-mcp` server, read-only, with a dedicated service account (below)                                                                                                                                                        |
+
+The GA script loads only when the page is idle after `load`, so it never competes with the map. Events before then are queued (at most 60) and flushed.
+
+## Privacy rules
+
+The audience includes school students.
+
+- No user ids, accounts, names of people, or anything a visitor types (search queries, feedback messages). Territory, district and setting names are fine.
+- Every event's `page_location` is `origin + pathname`: the camera (`lng`, `lat`, `zoom`) and `place` in the query never reach GA.
+- `allow_google_signals: false` and `allow_ad_personalization_signals: false` in code; Google signals is also off in the property.
+- Errors are reported as at most 100 characters of message with URLs replaced by `<url>`, the file name and line; never a stack. At most five per page, deduplicated.
+- About → Privacy tells visitors what is counted.
+- EU consent is not handled (no banner, no consent mode). Decide before targeting EU schools.
+
+## Page views
+
+The app sends its own `page_view`: one per page load, and one per year shown on the year pages (after the title changes). GA's own history-based page views must stay **off** in the web stream's Enhanced measurement settings: the camera is written to the URL with `replaceState`, so they would count every pan and send the query.
+
+## Events
+
+Common parameters: `page_location` (no query); `debug_mode` with `?ga_debug=1` (see DebugView).
+
+| Event                    | When                                                                     | Parameters                                                                                                          | Answers                                                     |
+| ------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `page_view`              | Page load; each year shown                                               | `page_type` (`year`, `pa`), `year`, `page_title`                                                                    | Which years and pages people see                            |
+| `map_ready`              | First map drawn on a page                                                | `page_type`, `year`, `load_ms` (from navigation), `theme`, `low_power`                                              | Time to a usable map; device mix                            |
+| `year_loaded`            | Each later year drawn                                                    | `year`, `load_ms` (from the year change), `animated`                                                                | Year-change speed                                           |
+| `year_change`            | Year changed                                                             | `year`, `from_year`, `method` (`step`, `track`, `keyboard`, `select`; Back/Forward is not counted), `steps`         | How people move through time (years explored per visit)     |
+| `border_animation`       | A change animated, was skipped, interrupted or failed                    | `outcome`, `reason` (skip reason), `from_year`, `to_year`, `prepare_ms`, `frames`, `slow_frames`                    | Whether the animation runs smoothly and how often it is off |
+| `country_select`         | A territory selected                                                     | `name`, `year`, `source` (`map`, `finder`)                                                                          | What people look up, and how                                |
+| `district_select`        | A PA district selected                                                   | `name`, `source`                                                                                                    | PA map use                                                  |
+| `changes_open`           | "What changed since …" opened                                            | `year`                                                                                                              | Whether the comparison is used                              |
+| `wiki_summary`           | A Wikipedia summary fetch finished                                       | `outcome` (`loaded`, `missing`, `error`)                                                                            | Summary coverage and Wikipedia failures                     |
+| `link_copy`              | Copy link                                                                | `outcome` (`copied`, `manual`)                                                                                      | Sharing                                                     |
+| `overlay_open`           | Settings, About, Feedback, Welcome opened                                | `overlay`, `view`, `auto`                                                                                           | Feature use                                                 |
+| `setting_changed`        | A setting or the map style changed                                       | `setting`, `value`                                                                                                  | Preferences (map style, labels, animation off…)             |
+| `settings_reset`         | Reset to defaults                                                        | –                                                                                                                   |                                                             |
+| `focus_mode`             | Projector/focus mode toggled                                             | `enabled`                                                                                                           | Classroom use                                               |
+| `feedback_submit`        | Feedback sent                                                            | `rating`, `has_message` (never the message)                                                                         |                                                             |
+| `timeline_gesture`       | A touch or pen press on the timeline ended, or any press was cancelled   | `outcome` (`committed`, `tap`, `cancelled`, `lost_capture`), `pointer`, `years_moved`                               | Whether timeline dragging works on touch devices            |
+| `timeline_press_ignored` | A press was ignored because an earlier press never ended (once per page) | `pointer`, `stale_ms`                                                                                               | The iPad "can't drag the timeline" report                   |
+| `map_unavailable`        | No WebGL 2, or the map failed to mount                                   | `page_type`, `reason`                                                                                               | How many visitors get the fallback                          |
+| `data_error`             | Year index or tiles failed                                               | `page_type`, `what`, `year`                                                                                         | Data/hosting failures                                       |
+| `js_error`               | Uncaught error or rejection, a MapLibre error, an animation failure      | `message`, `file`, `line`, `kind`                                                                                   | Production bugs                                             |
+| `web_vitals`             | Page hidden (once)                                                       | `page_type`, `lcp_ms`, `inp_ms`, `cls_x1000` (omitted where the browser lacks the API, e.g. Safari for CLS and INP) | Real-user speed                                             |
+
+### Custom definitions to register in GA
+
+Parameters appear in reports only once registered (Admin → Custom definitions). Event-scoped dimensions: `page_type`, `year`, `from_year`, `to_year`, `method`, `source`, `outcome`, `reason`, `pointer`, `theme`, `low_power`, `animated`, `overlay`, `view`, `setting`, `value`, `name`, `what`, `message`, `file`, `kind`, `rating`. Custom metrics: `load_ms`, `prepare_ms`, `stale_ms`, `lcp_ms`, `inp_ms` (milliseconds), `frames`, `slow_frames`, `steps`, `years_moved`, `cls_x1000` (standard).
+
+## Reading the data (agents)
+
+Claude Code and Codex on the owner's machine have Google's read-only GA MCP server (`analytics-mcp`) in their user config. It authenticates as the service account `analytics-mcp@historic-borders-analytics.iam.gserviceaccount.com` (Google Cloud project `historic-borders-analytics`, no Cloud roles), which is a **Viewer** on the property. Its key is at `~/.config/analytics-mcp/service-account.json` (mode 600, never in a repository). To revoke: remove the user in GA (Property access management) and delete the key (`gcloud iam service-accounts keys list/delete --iam-account …`).
+
+Useful tools: `run_report` (e.g. `eventName` × `eventCount`, `customEvent:outcome` for `border_animation`), `run_realtime_report` (check a deploy), `get_custom_dimensions_and_metrics`.
+
+## Testing
+
+`src/lib/__tests__/analytics.test.ts` mocks `react-ga4`. To check real beacons locally: build with a fake ID (`PUBLIC_GA_FOUR=G-ZZZTEST000 yarn build`), serve `dist/`, and route `google-analytics.com/g/collect` in Playwright to read and drop the hits. Never test with the production ID.

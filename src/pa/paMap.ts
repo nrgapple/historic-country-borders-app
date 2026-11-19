@@ -18,7 +18,7 @@ import {
   addTextbookImages,
   TEXTBOOK_IMAGE_PREFIX,
 } from '../adapters/textbookStyle';
-import { trackEvent } from '../lib/analytics';
+import { track } from '../lib/analytics';
 import { hasMapView, parseMapView } from '../lib/mapView';
 import { focusPadding } from '../lib/places';
 import {
@@ -284,7 +284,7 @@ export function mountPaMap(container: HTMLElement): MapHandle {
     })[0];
     const id = typeof hit?.id === 'number' ? hit.id : undefined;
     const name = id !== undefined ? index?.districts[id]?.NAME : undefined;
-    if (name) trackEvent('district_select', { name });
+    if (name) track('district_select', { name, source: 'map' });
     actions.select(name ?? null);
   });
   for (const layer of PA_INTERACTIVE_LAYERS) {

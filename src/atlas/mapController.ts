@@ -49,6 +49,7 @@ import {
   type Bbox,
 } from './store';
 import { collapseAttributionOnIdle } from './attribution';
+import { reportError, track } from '../lib/analytics';
 import { skipReason } from './transition/plan';
 import type { BorderTransitions } from './transition';
 
@@ -160,6 +161,10 @@ export function mountMap(container: HTMLElement): MapHandle {
   let bordersYear = initial.year;
   let transitions: BorderTransitions | null = null;
   let transitionsLoad: Promise<BorderTransitions | null> | null = null;
+  // Analytics: when the first map drew, and when the last year change began.
+  let mapReadySent = false;
+  let yearRequestedAt = 0;
+  let yearAnimated = false;
   let index: YearIndex | null = null;
   let names = new Map<string, number>();
   let dataRequested = false;
@@ -347,6 +352,7 @@ export function mountMap(container: HTMLElement): MapHandle {
 
   /** Shows a new year: animated when allowed, otherwise at once (as before). */
   const changeYear = (year: number, reload: boolean) => {
+    yearRequestedAt = performance.now();
     // The year on screen is drawn, or a change is already under way (it is
     // then retargeted or snapped, never queued).
     const drawn =
@@ -367,6 +373,14 @@ export function mountMap(container: HTMLElement): MapHandle {
       reload,
       moving: map.isMoving(),
     });
+    yearAnimated = !reason;
+    if (reason && reason !== 'same-year')
+      track('border_animation', {
+        outcome: 'skipped',
+        reason,
+        from_year: bordersYear,
+        to_year: year,
+      });
     if (reason) {
       transitions?.abort();
       setYearData(year);
@@ -421,7 +435,10 @@ export function mountMap(container: HTMLElement): MapHandle {
         applySelection();
       },
       () => {
-        if (!destroyed && year === getState().year) actions.setStatus('error');
+        if (!destroyed && year === getState().year) {
+          actions.setStatus('error');
+          track('data_error', { page_type: 'year', what: 'index', year });
+        }
       },
     );
   };
@@ -466,6 +483,28 @@ export function mountMap(container: HTMLElement): MapHandle {
     const state = getState();
     if (!dataRequested || loadedYear !== state.year) return;
     if (bordersYear !== state.year || transitions?.running) return;
+    if (!container.hasAttribute('data-loaded')) {
+      // Time to a drawn map: from navigation for the first, from the year
+      // change for later ones (performance.now() starts at navigation).
+      const now = performance.now();
+      if (!mapReadySent) {
+        mapReadySent = true;
+        track('map_ready', {
+          page_type: 'year',
+          year: state.year,
+          load_ms: Math.round(now),
+          theme: state.theme,
+          low_power: lowPower,
+        });
+      } else if (yearRequestedAt) {
+        track('year_loaded', {
+          year: state.year,
+          load_ms: Math.round(now - yearRequestedAt),
+          animated: yearAnimated,
+        });
+      }
+      yearRequestedAt = 0;
+    }
     container.setAttribute('data-loaded', '');
     if (state.status !== 'loading' || !index) return;
     actions.setStatus('ready');
@@ -482,10 +521,18 @@ export function mountMap(container: HTMLElement): MapHandle {
   });
   map.on('error', (event) => {
     const sourceId = (event as { sourceId?: string }).sourceId;
-    if (sourceId === SOURCE.borders || sourceId === SOURCE.labels)
+    if (sourceId === SOURCE.borders || sourceId === SOURCE.labels) {
       actions.setStatus('error');
-    // A listener replaces MapLibre's own logging; keep other errors visible.
-    else console.error(event.error);
+      track('data_error', {
+        page_type: 'year',
+        what: sourceId,
+        year: getState().year,
+      });
+    } else {
+      // A listener replaces MapLibre's own logging; keep other errors visible.
+      console.error(event.error);
+      reportError('map', event.error, sourceId ?? 'maplibre');
+    }
   });
 
   // The map fills a container whose size changes with the panel, focus mode

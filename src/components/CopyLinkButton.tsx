@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { track } from '../lib/analytics';
 import Icon from './Icon';
 
 /** Resolves to false when the Clipboard API is missing or refuses. */
@@ -46,10 +47,12 @@ export default function CopyLinkButton({
     const href = getUrl();
     clearTimeout(timer.current);
     if (await copyText(href)) {
+      track('link_copy', { outcome: 'copied' });
       setState('copied');
       timer.current = setTimeout(() => setState('idle'), COPIED_MS);
     } else {
       setUrl(href);
+      track('link_copy', { outcome: 'manual' });
       setState('manual');
     }
   };

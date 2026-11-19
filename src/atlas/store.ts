@@ -1,6 +1,6 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import historicalManifest from '@repo/data/historical-manifest.json';
-import { trackEvent } from '../lib/analytics';
+import { track } from '../lib/analytics';
 import {
   parsePlace,
   writeMapView,
@@ -190,16 +190,28 @@ export const actions = {
   /** A year change pushes a history entry so Back steps through visited years. */
   setYear(year: number, method: YearChangeMethod = 'select') {
     if (year === state.year || !YEARS.includes(year)) return;
-    trackEvent('year_change', { year, method });
+    track('year_change', {
+      year,
+      from_year: state.year,
+      method,
+      steps: Math.abs(YEARS.indexOf(year) - YEARS.indexOf(state.year)),
+    });
     const { search, hash } = window.location;
     window.history.pushState(null, '', `${yearPath(year)}${search}${hash}`);
     set({ year, status: 'loading' });
   },
 
   /** Selects a territory (or clears with null) and mirrors it to `?place=`. */
-  select(place: string | null, { track = false }: { track?: boolean } = {}) {
+  select(
+    place: string | null,
+    {
+      track: report = false,
+      source = 'map',
+    }: { track?: boolean; source?: 'map' | 'finder' } = {},
+  ) {
     const name = place?.trim() || null;
-    if (name && track) trackEvent('country_select', { name, year: state.year });
+    if (name && report)
+      track('country_select', { name, year: state.year, source });
     writePlace(name ?? undefined);
     set({ place: name });
   },
@@ -233,7 +245,7 @@ export const actions = {
     storeSettings(next);
     set({ settings: next });
     Object.entries(changes).forEach(([name, value]) =>
-      trackEvent('setting_changed', { name, value: String(value) }),
+      track('setting_changed', { setting: name, value: String(value) }),
     );
   },
 
@@ -242,7 +254,7 @@ export const actions = {
     if (theme === state.theme) return;
     storeTheme(themeScope, theme);
     set({ theme });
-    trackEvent('setting_changed', { name: 'theme', value: theme });
+    track('setting_changed', { setting: 'theme', value: theme });
   },
 
   /** Restores the default settings and this page family's default map style. */
@@ -250,18 +262,18 @@ export const actions = {
     storeSettings(DEFAULT_SETTINGS);
     storeTheme(themeScope, THEME_DEFAULTS[themeScope]);
     set({ settings: DEFAULT_SETTINGS, theme: THEME_DEFAULTS[themeScope] });
-    trackEvent('settings_reset');
+    track('settings_reset', {});
   },
 
   openOverlay(overlay: Exclude<Overlay, null>) {
     set({ overlay: state.overlay === overlay ? null : overlay });
-    trackEvent('overlay_open', { overlay });
+    track('overlay_open', { overlay });
   },
 
   /** Opens the welcome card (src/components/Welcome.tsx) on a given page. */
   openWelcome(view: WelcomeView = 'notes', { auto = false } = {}) {
     set({ overlay: 'welcome', welcomeView: view, welcomeAuto: auto });
-    trackEvent('overlay_open', { overlay: 'welcome', view, auto });
+    track('overlay_open', { overlay: 'welcome', view, auto });
   },
 
   setWelcomeView(view: WelcomeView) {
@@ -273,7 +285,7 @@ export const actions = {
   },
 
   toggleFocusMode() {
-    trackEvent('focus_mode', { enabled: !state.focusMode });
+    track('focus_mode', { enabled: !state.focusMode });
     set({ focusMode: !state.focusMode, overlay: null });
   },
 };

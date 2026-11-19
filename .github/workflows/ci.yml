@@ -108,8 +108,11 @@ jobs:
     timeout-minutes: 30
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
-      # Optional Google Analytics ID, baked into the static bundle.
-      PUBLIC_GA_FOUR: ${{ vars.NEXT_PUBLIC_GA_FOUR }}
+      # Google Analytics ID, baked into the static bundle: only for the build
+      # that ships (a push to main). Pull-request builds have none, so the
+      # browser tests load no third-party script and can never send test
+      # traffic to the production property (docs/ANALYTICS.md).
+      PUBLIC_GA_FOUR: ${{ github.event_name == 'push' && vars.NEXT_PUBLIC_GA_FOUR || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

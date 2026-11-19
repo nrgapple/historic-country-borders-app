@@ -19,6 +19,7 @@ import {
   formatYearLong,
   yearParts,
 } from '../lib/years';
+import { track } from '../lib/analytics';
 
 export type TimelineChangeMethod = 'step' | 'track' | 'keyboard' | 'select';
 
@@ -142,7 +143,14 @@ interface Press {
   index: number;
   /** Whether the pointer has travelled at least DRAG_THRESHOLD_PX. */
   moved: boolean;
+  /** For analytics: the input type, start time and starting year index. */
+  pointer: string;
+  startedAt: number;
+  startIndex: number;
 }
+
+/** One report per page of a press ignored because another stayed open. */
+let reportedIgnoredPress = false;
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -220,7 +228,19 @@ export default function Timeline({
   // release, so the map loads one year rather than every year passed over.
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-    if (event.isPrimary === false || pressRef.current) return;
+    if (event.isPrimary === false) return;
+    if (pressRef.current) {
+      // A press that never ended blocks the timeline: report it (debugging
+      // touch gestures on iPad and iPhone, docs/ANALYTICS.md).
+      if (!reportedIgnoredPress) {
+        reportedIgnoredPress = true;
+        track('timeline_press_ignored', {
+          pointer: event.pointerType || 'unknown',
+          stale_ms: Math.round(performance.now() - pressRef.current.startedAt),
+        });
+      }
+      return;
+    }
     try {
       event.currentTarget.setPointerCapture?.(event.pointerId);
     } catch {
@@ -236,6 +256,9 @@ export default function Timeline({
       labelIndex,
       index,
       moved: false,
+      pointer: event.pointerType || 'unknown',
+      startedAt: performance.now(),
+      startIndex: selectedIndex,
     };
     setHoverIndex(null);
     setDragIndex(index);
@@ -261,10 +284,28 @@ export default function Timeline({
     setDragIndex(press.index);
   };
 
-  const endPress = (press: Press, index: number | null) => {
+  const endPress = (
+    press: Press,
+    index: number | null,
+    lostCapture = false,
+  ) => {
     if (pressRef.current !== press) return;
     pressRef.current = null;
     setDragIndex(null);
+    // Mouse clicks are already counted as year changes; touch and pen
+    // gestures, and every cancelled press, are reported for debugging.
+    if (press.pointer !== 'mouse' || index === null)
+      track('timeline_gesture', {
+        outcome: lostCapture
+          ? 'lost_capture'
+          : index === null
+            ? 'cancelled'
+            : press.moved
+              ? 'committed'
+              : 'tap',
+        pointer: press.pointer,
+        years_moved: index === null ? 0 : Math.abs(index - press.startIndex),
+      });
     if (index !== null) commit(index, 'track');
   };
 
@@ -294,7 +335,7 @@ export default function Timeline({
     const press = pressRef.current;
     if (!press || press.pointerId !== event.pointerId) return;
     window.setTimeout(
-      () => endPress(press, press.moved ? press.index : null),
+      () => endPress(press, press.moved ? press.index : null, true),
       0,
     );
   };
