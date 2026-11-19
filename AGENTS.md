@@ -19,6 +19,7 @@ Historic Borders helps people explore how political borders changed over time. I
 - Use Node 22 (`.nvmrc`; ≥ 22.23.4).
 - Use Yarn Classic and the committed `yarn.lock`; never use npm or pnpm. The repository is one package: add dependencies at an exact version with `yarn add <pkg>@<exact>` (or `yarn add -D`).
 - Install with `yarn install --frozen-lockfile`.
+- CI runs browser tests in `mcr.microsoft.com/playwright:v<version>-noble` (`ci.yml` e2e, `layout.yml`); when you bump `@playwright/test`, bump that image tag to the same version.
 - Do not commit `.env*`, credentials, `node_modules`, build output, coverage, or browser-test artifacts.
 
 ## Required workflow

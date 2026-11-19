@@ -69,8 +69,7 @@ jobs:
       - run: yarn dist:validate
       - run: yarn cloudflare:check
       - run: yarn size:check
-      - name: Keep the build for the deploy job
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Keep the build for the e2e and deploy jobs
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -81,9 +80,31 @@ jobs:
       - run: yarn type-check
       # App, data-script and Worker unit tests (vitest.config.ts projects).
       - run: yarn test
-      # apt has hung this step for 20+ minutes on GitHub runners.
-      - run: yarn playwright install --with-deps chromium firefox webkit
-        timeout-minutes: 8
+
+  e2e:
+    # Browser journeys against the app job's build, inside Microsoft's
+    # Playwright image: browsers and their system packages are preinstalled,
+    # so there is no `playwright install --with-deps` (its apt step hung for
+    # 8-30 minutes three times on 2026-11-18). The image tag must match
+    # @playwright/test in package.json.
+    needs: [app]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - run: corepack enable
+      - run: yarn install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
       - run: yarn test:e2e
       - name: Upload browser-test artifacts
         if: failure()
@@ -97,12 +118,13 @@ jobs:
           retention-days: 7
 
   deploy:
-    # Production: ships the app job's tested build as soon as it passes.
+    # Production: ships the app job's tested build as soon as it and the
+    # browser journeys pass.
     # It does not wait for `checks` (reported separately) and the layout
     # suites run in their own workflow (layout.yml), so neither can hold a
     # release. Rebuilding here would add minutes for nothing.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [app]
+    needs: [app, e2e]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:

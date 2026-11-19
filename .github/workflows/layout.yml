@@ -26,6 +26,11 @@ jobs:
     name: layout (${{ matrix.shard }}/6)
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Browsers and their system packages come preinstalled; the tag must
+    # match @playwright/test in package.json.
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
+      options: --user 1001
     strategy:
       fail-fast: false
       matrix:
@@ -41,14 +46,11 @@ jobs:
       - run: corepack enable
       - run: yarn install --frozen-lockfile
       - run: yarn build
-      # apt has hung this step for 20+ minutes on GitHub runners.
-      - run: yarn playwright install --with-deps chromium webkit
-        timeout-minutes: 8
       - name: Serve the build
         run: |
           node scripts/serve.mjs dist 4410 > serve.log 2>&1 &
-          for attempt in $(seq 1 30); do
-            curl -sf http://127.0.0.1:4410/ > /dev/null && exit 0
+          for _ in $(seq 1 30); do
+            node -e "fetch('http://127.0.0.1:4410/').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))" && exit 0
             sleep 1
           done
           cat serve.log
