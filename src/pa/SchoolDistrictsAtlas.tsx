@@ -317,11 +317,8 @@ function PaApp() {
 
         {panelOpen && selection && fullName && (
           <PlacePanel
-            eyebrow={
-              vintage
-                ? `School district · Boundaries ${formatVintage(vintage, 'short')}`
-                : 'School district'
-            }
+            // The top bar and the Boundary source section carry the vintage.
+            eyebrow="School district"
             name={fullName}
             subtitle={districtSubtitle(selection)}
             factsTitle="District"
