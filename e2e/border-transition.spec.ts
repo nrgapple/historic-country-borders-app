@@ -150,9 +150,13 @@ test.beforeEach(async ({ page, context }) => {
 
 const mapOf = (page: Page) => page.getByTestId('map-container');
 
-/** Opens 1914 and waits for its borders; skips without WebGL 2. */
+/**
+ * Opens 1914 and waits for its borders; skips without WebGL 2. `lowPower=0`
+ * keeps the animation on where WebGL runs in software (CI's Chromium), which
+ * the app otherwise treats as a low-power device and skips.
+ */
 async function openReady(page: Page) {
-  await page.goto('/year/1914?lng=1.0000&lat=0.5000&zoom=7.00');
+  await page.goto('/year/1914?lng=1.0000&lat=0.5000&zoom=7.00&lowPower=0');
   const map = mapOf(page);
   await expect(map).toHaveAttribute('data-data-state', 'ready', {
     timeout: 30_000,
