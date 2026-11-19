@@ -64,7 +64,14 @@ export interface Events {
   changes_open: { year: number };
   wiki_summary: { outcome: 'loaded' | 'missing' | 'error' };
   link_copy: { outcome: 'copied' | 'manual' };
-  feedback_submit: { rating: string; has_message: boolean };
+  /** Every send attempt: `sent`, or `failed` with why (never the text). */
+  feedback_submit: {
+    outcome: 'sent' | 'failed';
+    reason?: 'rate_limited' | 'rejected' | 'server' | 'network';
+    rating: string;
+    has_message: boolean;
+    has_email: boolean;
+  };
   timeline_gesture: {
     outcome: 'committed' | 'tap' | 'cancelled' | 'lost_capture';
     pointer: string;

@@ -22,6 +22,11 @@ import { useChrome, useSettings, type Overlay } from '../../atlas/hooks';
 import { __resetStore } from '../../atlas/store';
 import { sanitizeSettings } from '../../atlas/settings';
 import { __resetWikiCache } from '../../hooks/useWiki';
+import { track } from '../../lib/analytics';
+vi.mock('../../lib/analytics', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/analytics')>()),
+  track: vi.fn(),
+}));
 vi.mock('../../hooks/useFingerPrint', () => ({
   useFingerPrint: (enabled: boolean) => (enabled ? 'visitor-1' : null),
 }));
@@ -275,7 +280,16 @@ describe('Animate border changes', () => {
 });
 
 describe('FeedbackDialog', () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.mocked(track).mockClear();
+  });
+
+  const feedbackEvents = () =>
+    vi
+      .mocked(track)
+      .mock.calls.filter(([name]) => name === 'feedback_submit')
+      .map(([, params]) => params);
 
   const openFeedback = () =>
     render(
@@ -316,6 +330,9 @@ describe('FeedbackDialog', () => {
       visitorId: 'visitor-1',
       metadata: { page: '/' },
     });
+    expect(feedbackEvents()).toEqual([
+      { outcome: 'sent', rating: 'nice', has_message: true, has_email: false },
+    ]);
   });
 
   it('sends a message without a rating', async () => {
@@ -395,6 +412,50 @@ describe('FeedbackDialog', () => {
         'Feedback is temporarily unavailable',
       ),
     );
+    expect(feedbackEvents()).toEqual([
+      {
+        outcome: 'failed',
+        reason: 'server',
+        rating: 'meh',
+        has_message: false,
+        has_email: false,
+      },
+    ]);
+  });
+
+  it.each([
+    [{ ok: false, status: 429, json: async () => ({}) }, 'rate_limited'],
+    [{ ok: false, status: 400, json: async () => ({}) }, 'rejected'],
+  ])('reports a failed send (%#) without the message', async (res, reason) => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(res));
+    openFeedback();
+    fireEvent.change(
+      screen.getByLabelText('What did you notice on this map?'),
+      { target: { value: 'private words' } },
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Send feedback' }));
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
+    expect(feedbackEvents()).toEqual([
+      expect.objectContaining({ outcome: 'failed', reason, has_message: true }),
+    ]);
+    expect(JSON.stringify(vi.mocked(track).mock.calls)).not.toContain(
+      'private words',
+    );
+  });
+
+  it('reports a network failure', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('offline')));
+    openFeedback();
+    fireEvent.click(screen.getByRole('radio', { name: 'Good' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send feedback' }));
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Feedback could not be sent.',
+      ),
+    );
+    expect(feedbackEvents()).toEqual([
+      expect.objectContaining({ outcome: 'failed', reason: 'network' }),
+    ]);
   });
 });
 
