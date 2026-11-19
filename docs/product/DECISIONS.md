@@ -212,11 +212,21 @@ Rollback: revert `.github/workflows/ci.yml` and `layout.yml`; branch protection 
 
 Observed: since the Astro app went live, Google Analytics sent nothing. `initAnalytics()` was never called and the build had no measurement ID (the CI variable `NEXT_PUBLIC_GA_FOUR` was unset). GA showed 20 page views in 90 days, all from the old app. The event set was small (year, place, settings) and nothing reported load times, failures or touch problems, such as the iPad "can't drag the timeline" report that could not be reproduced in emulation.
 
-Decision: one typed event vocabulary in `src/lib/analytics.ts` (docs/ANALYTICS.md): page views sent by the app (one per year shown, GA's history page views off because `replaceState` writes the camera), map load times, year-change speed, the border animation's outcome and frame stats, place selection source, "What changed", Wikipedia outcomes, sharing, timeline gesture outcomes (including presses ignored because an earlier one never ended), map and data failures, script errors and Core Web Vitals. The GA script loads when the page is idle. Privacy: no free text, no user ids, no URL query on any event, Google signals and ad personalization off, short capped error messages; About says what is counted. The measurement ID is set in the repository variable. Agents read the data through Google's read-only `analytics-mcp` server with a Viewer-only service account.
+Decision: one typed event vocabulary in `src/lib/analytics.ts` (docs/ANALYTICS.md): page views sent by the app (one per year shown, GA's history page views off because `replaceState` writes the camera), map load times, year-change speed, the border animation's outcome and frame stats, place selection source, "What changed", Wikipedia outcomes, sharing, timeline gesture outcomes (including stale presses replaced because an earlier one never ended, and gestures the Touch Events fallback drove), map and data failures, script errors and Core Web Vitals. The GA script loads when the page is idle. Privacy: no free text, no user ids, no URL query on any event, Google signals and ad personalization off, short capped error messages; About says what is counted. The measurement ID is set in the repository variable. Agents read the data through Google's read-only `analytics-mcp` server with a Viewer-only service account.
 
 Constraints kept: free (GA4 standard), no request-time compute, nothing sent without a measurement ID, no effect on map load (idle loading). Open: EU consent handling.
 
 Rollback: delete the repository variable (nothing loads) or revert the commit.
+
+### Timeline presses recover from a lost gesture end (2026-11-18)
+
+Observed: the owner's iPad cannot drag the year-page timeline; Chromium touch emulation works at every size in both styles, and no iOS device was available. The ruler ignored every new press while it still remembered one, so a gesture whose end never arrived blocked it until reload.
+
+Assumption (unconfirmed): Safari sometimes drops a gesture's end, or a touch's pointer events, on iPad.
+
+Decision: a new press replaces a stale one without committing it; the tracked pointer's end anywhere on the page, window blur and a hidden page end a press; a Touch Events fallback drives touches whose pointer events never reach the ruler, with one event source per gesture. Analytics confirm or refute it: `timeline_press_replaced` (once per page) shows lost ends, and `timeline_gesture` with `pointer: 'touch-events'` shows drags the fallback carried (docs/ANALYTICS.md).
+
+Rollback: revert the commit; the earlier behaviour returns with its `timeline_press_ignored` report.
 
 ## Deferred
 

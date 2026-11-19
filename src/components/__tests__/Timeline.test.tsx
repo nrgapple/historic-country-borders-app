@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import historicalManifest from '@repo/data/historical-manifest.json';
 import Timeline, {
@@ -7,22 +7,60 @@ import Timeline, {
   formatRulerLabel,
 } from '../Timeline';
 import { eraSpans } from '../../lib/years';
+import { track } from '../../lib/analytics';
+
+vi.mock('../../lib/analytics', () => ({ track: vi.fn() }));
+const trackMock = vi.mocked(track);
 
 // jsdom lacks PointerEvent; a MouseEvent subclass carries clientX and pointerId.
 if (typeof window.PointerEvent === 'undefined') {
   class PointerEventPolyfill extends MouseEvent {
     pointerId: number;
     pointerType: string;
+    isPrimary: boolean;
     constructor(type: string, init: PointerEventInit = {}) {
       super(type, init);
       this.pointerId = init.pointerId ?? 1;
       this.pointerType = init.pointerType ?? 'mouse';
+      this.isPrimary = init.isPrimary ?? true;
     }
   }
   window.PointerEvent = PointerEventPolyfill as unknown as typeof PointerEvent;
 }
 
 const years = [-500, -1, 100, 1492, 1500, 1914];
+
+/**
+ * A Touch Events event (jsdom's TouchEvent wants real Touch objects): the
+ * ruler reads only touches, changedTouches, identifier, clientX and target.
+ */
+const touchEvent = (
+  target: Element,
+  type: 'touchstart' | 'touchmove' | 'touchend' | 'touchcancel',
+  clientX: number,
+  { id = 3, others = 0 }: { id?: number; others?: number } = {},
+) => {
+  const touch = { identifier: id, clientX, clientY: 8, target };
+  const event = new Event(type, { bubbles: true, cancelable: true });
+  const ended = type === 'touchend' || type === 'touchcancel';
+  const rest = Array.from({ length: others }, (_, i) => ({
+    identifier: 90 + i,
+    clientX: 0,
+    clientY: 0,
+    target,
+  }));
+  Object.defineProperties(event, {
+    touches: { value: ended ? rest : [touch, ...rest] },
+    changedTouches: { value: [touch] },
+  });
+  act(() => {
+    target.dispatchEvent(event);
+  });
+  return event;
+};
+
+const nextTask = () =>
+  act(() => new Promise((resolve) => setTimeout(resolve, 0)));
 
 const renderTimeline = (value = 1492) => {
   const onChange = vi.fn();
@@ -176,12 +214,375 @@ describe('Timeline', () => {
     it('ignores a second finger', () => {
       const { onChange, slider, touch } = setup();
       fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
-      fireEvent.pointerDown(slider, { pointerId: 8, clientX: 50 });
+      fireEvent.pointerDown(slider, {
+        pointerId: 8,
+        pointerType: 'touch',
+        isPrimary: false,
+        clientX: 50,
+      });
       fireEvent.pointerUp(slider, { pointerId: 8, clientX: 50 });
       expect(onChange).not.toHaveBeenCalled();
       fireEvent.pointerUp(slider, { ...touch, clientX: 450 });
       expect(onChange).toHaveBeenCalledWith(1500, 'track');
     });
+
+    describe('a gesture whose end never arrives', () => {
+      it('lets the next press replace it without committing it', () => {
+        const { onChange, slider, heading, touch } = setup();
+        // A drag whose pointerup and pointercancel are both lost.
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        fireEvent.pointerMove(slider, { ...touch, clientX: 50 });
+        expect(heading()).toBe('500');
+        // The next drag, with a new pointer id, works at once.
+        fireEvent.pointerDown(slider, {
+          pointerId: 9,
+          pointerType: 'touch',
+          clientX: 250,
+        });
+        fireEvent.pointerMove(slider, {
+          pointerId: 9,
+          pointerType: 'touch',
+          clientX: 450,
+        });
+        fireEvent.pointerUp(slider, {
+          pointerId: 9,
+          pointerType: 'touch',
+          clientX: 450,
+        });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(1500, 'track');
+        // The stale pointer's late events change nothing.
+        fireEvent.pointerUp(slider, { ...touch, clientX: 50 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+      });
+
+      it('lets a press with the same pointer id replace it', () => {
+        const { onChange, slider, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 50 });
+        fireEvent.pointerMove(slider, { ...touch, clientX: 150 });
+        fireEvent.pointerDown(slider, { ...touch, clientX: 550 });
+        fireEvent.pointerUp(slider, { ...touch, clientX: 550 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+      });
+
+      it('commits when the pointerup lands outside the ruler', () => {
+        const { onChange, slider, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        fireEvent.pointerMove(slider, { ...touch, clientX: 150 });
+        // Capture failed: the finger lifts over the map.
+        fireEvent.pointerUp(document.body, { ...touch, clientX: 150 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-1, 'track');
+        expect(document.querySelector('.timeline')).not.toHaveAttribute(
+          'data-dragging',
+        );
+      });
+
+      it('keeps a real drag when the pointercancel lands outside the ruler', () => {
+        const { onChange, slider, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        fireEvent.pointerMove(slider, { ...touch, clientX: 50 });
+        fireEvent.pointerCancel(document.body, { ...touch, clientX: 50 });
+        expect(onChange).toHaveBeenCalledWith(-500, 'track');
+      });
+
+      it('ignores the end of other pointers outside the ruler', () => {
+        const { onChange, slider, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        fireEvent.pointerUp(document.body, { pointerId: 40, clientX: 50 });
+        expect(document.querySelector('.timeline')).toHaveAttribute(
+          'data-dragging',
+          'true',
+        );
+        fireEvent.pointerUp(slider, { ...touch, clientX: 550 });
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+      });
+
+      it.each([
+        ['the window loses focus', () => fireEvent.blur(window)],
+        [
+          'the page is hidden',
+          () => {
+            Object.defineProperty(document, 'visibilityState', {
+              configurable: true,
+              get: () => 'hidden',
+            });
+            fireEvent(document, new Event('visibilitychange'));
+            delete (document as { visibilityState?: string }).visibilityState;
+          },
+        ],
+      ])('forgets a drag when %s', (_, lose) => {
+        const { onChange, slider, heading, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        fireEvent.pointerMove(slider, { ...touch, clientX: 50 });
+        act(lose);
+        expect(onChange).not.toHaveBeenCalled();
+        expect(heading()).toBe('1492');
+        expect(document.querySelector('.timeline')).not.toHaveAttribute(
+          'data-dragging',
+        );
+        // Its late pointerup is ignored; the next press works.
+        fireEvent.pointerUp(slider, { ...touch, clientX: 50 });
+        expect(onChange).not.toHaveBeenCalled();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 550 });
+        fireEvent.pointerUp(slider, { ...touch, clientX: 550 });
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+      });
+    });
+
+    describe('Touch Events fallback', () => {
+      it('drives a drag and commits once when no pointer events arrive', () => {
+        const { onChange, ruler, slider, heading } = setup();
+        const start = touchEvent(slider, 'touchstart', 350);
+        expect(start.defaultPrevented).toBe(true);
+        const move = touchEvent(slider, 'touchmove', 450);
+        expect(move.defaultPrevented).toBe(true);
+        touchEvent(slider, 'touchmove', 150);
+        expect(heading()).toBe('1');
+        expect(ruler.closest('.timeline')).toHaveAttribute(
+          'data-dragging',
+          'true',
+        );
+        expect(onChange).not.toHaveBeenCalled();
+        const end = touchEvent(slider, 'touchend', 150);
+        expect(end.defaultPrevented).toBe(true);
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-1, 'track');
+      });
+
+      it('jumps to a tapped printed year and discards a cancelled tap', () => {
+        const { onChange, slider } = setup();
+        touchEvent(slider, 'touchstart', 550);
+        touchEvent(slider, 'touchend', 550);
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+        onChange.mockClear();
+        touchEvent(slider, 'touchstart', 50);
+        touchEvent(slider, 'touchcancel', 51);
+        expect(onChange).not.toHaveBeenCalled();
+      });
+
+      it('ignores a second finger and a lost touch never blocks the next', () => {
+        const { onChange, slider } = setup();
+        touchEvent(slider, 'touchstart', 350, { id: 1 });
+        // A second finger joins: ignored.
+        touchEvent(slider, 'touchstart', 50, { id: 2, others: 1 });
+        touchEvent(slider, 'touchmove', 450, { id: 1 });
+        // The first gesture's touchend is lost; a new touch replaces it.
+        touchEvent(slider, 'touchstart', 50, { id: 4 });
+        touchEvent(slider, 'touchmove', 150, { id: 4 });
+        touchEvent(slider, 'touchend', 150, { id: 4 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-1, 'track');
+      });
+
+      it('commits once when pointer and touch events both arrive', async () => {
+        const { onChange, slider, ruler, touch } = setup();
+        // Pointer events first (Safari and Chrome order): they drive it.
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        const start = touchEvent(slider, 'touchstart', 350);
+        expect(start.defaultPrevented).toBe(false);
+        fireEvent.pointerMove(ruler, { ...touch, clientX: 150 });
+        // A touchmove for the same finger at another x is not applied.
+        touchEvent(slider, 'touchmove', 550);
+        expect(document.querySelector('[data-year-heading]')?.textContent).toBe(
+          '1',
+        );
+        fireEvent.pointerUp(ruler, { ...touch, clientX: 150 });
+        touchEvent(slider, 'touchend', 150);
+        await nextTask();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-1, 'track');
+      });
+
+      it('commits once when touch events arrive before pointer events', async () => {
+        const { onChange, slider, ruler, touch } = setup();
+        touchEvent(slider, 'touchstart', 350);
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        touchEvent(slider, 'touchmove', 550);
+        fireEvent.pointerMove(ruler, { ...touch, clientX: 150 });
+        touchEvent(slider, 'touchend', 550);
+        fireEvent.pointerUp(ruler, { ...touch, clientX: 150 });
+        await nextTask();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+      });
+
+      it('ends a pointer drag from its touchend when the pointerup is lost', async () => {
+        const { onChange, slider, ruler, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        touchEvent(slider, 'touchstart', 350);
+        fireEvent.pointerMove(ruler, { ...touch, clientX: 50 });
+        touchEvent(slider, 'touchend', 50);
+        expect(onChange).not.toHaveBeenCalled();
+        await nextTask();
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-500, 'track');
+      });
+
+      it('does not take a later touch for the twin of a stale pointer press', () => {
+        const { onChange, slider, ruler, touch } = setup();
+        const now = vi.spyOn(performance, 'now').mockReturnValue(1000);
+        // A touch's pointerdown whose touchstart never came, and no end.
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        now.mockReturnValue(5000);
+        // Seconds later, a touch-only drag: it replaces the stale press.
+        touchEvent(slider, 'touchstart', 350, { id: 6 });
+        touchEvent(slider, 'touchmove', 50, { id: 6 });
+        expect(document.querySelector('[data-year-heading]')?.textContent).toBe(
+          '500',
+        );
+        touchEvent(slider, 'touchend', 50, { id: 6 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(-500, 'track');
+        // The stale pointer's late events change nothing.
+        fireEvent.pointerUp(ruler, { ...touch, clientX: 550 });
+        expect(onChange).toHaveBeenCalledTimes(1);
+        now.mockRestore();
+      });
+
+      it('hands a drag to touch events when pointers cancel before it moves', () => {
+        const { onChange, slider, ruler, touch } = setup();
+        fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+        touchEvent(slider, 'touchstart', 350);
+        fireEvent.pointerCancel(ruler, { ...touch, clientX: 350 });
+        touchEvent(slider, 'touchmove', 450);
+        touchEvent(slider, 'touchmove', 550);
+        expect(onChange).not.toHaveBeenCalled();
+        touchEvent(slider, 'touchend', 550);
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenCalledWith(1914, 'track');
+      });
+    });
+  });
+});
+
+describe('Timeline gesture analytics', () => {
+  const touch = { pointerId: 7, pointerType: 'touch' };
+  const gestures = () =>
+    trackMock.mock.calls.filter(([name]) => name === 'timeline_gesture');
+
+  // Fresh module per test: the replaced-press report is once per page.
+  const setup = async () => {
+    trackMock.mockClear();
+    vi.resetModules();
+    const { default: FreshTimeline } = await import('../Timeline');
+    const onChange = vi.fn();
+    render(<FreshTimeline years={years} value={1492} onChange={onChange} />);
+    const slider = screen.getByRole('slider');
+    slider.getBoundingClientRect = () =>
+      ({ left: 0, width: 600, top: 0, height: 16 }) as DOMRect;
+    const ruler = slider.closest('.timeline__ruler') as HTMLElement;
+    const { track: freshTrack } = await import('../../lib/analytics');
+    return { onChange, slider, ruler, track: vi.mocked(freshTrack) };
+  };
+
+  it('reports a pointer touch drag once, even when touch events also fire', async () => {
+    const { slider, ruler, track } = await setup();
+    fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+    touchEvent(slider, 'touchstart', 350);
+    fireEvent.pointerMove(ruler, { ...touch, clientX: 150 });
+    touchEvent(slider, 'touchmove', 150);
+    fireEvent.pointerUp(ruler, { ...touch, clientX: 150 });
+    touchEvent(slider, 'touchend', 150);
+    await nextTask();
+    const calls = track.mock.calls.filter(([n]) => n === 'timeline_gesture');
+    expect(calls).toEqual([
+      [
+        'timeline_gesture',
+        { outcome: 'committed', pointer: 'touch', years_moved: 2 },
+      ],
+    ]);
+  });
+
+  it("reports a drag driven by the Touch Events fallback as 'touch-events'", async () => {
+    const { slider, track } = await setup();
+    touchEvent(slider, 'touchstart', 350);
+    touchEvent(slider, 'touchmove', 50);
+    touchEvent(slider, 'touchend', 50);
+    expect(track).toHaveBeenCalledWith('timeline_gesture', {
+      outcome: 'committed',
+      pointer: 'touch-events',
+      years_moved: 3,
+    });
+  });
+
+  it("reports a drag handed over to touch events as 'touch-events'", async () => {
+    const { slider, ruler, track } = await setup();
+    fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+    touchEvent(slider, 'touchstart', 350);
+    fireEvent.pointerCancel(ruler, { ...touch, clientX: 350 });
+    touchEvent(slider, 'touchmove', 550);
+    touchEvent(slider, 'touchend', 550);
+    expect(track.mock.calls.filter(([n]) => n === 'timeline_gesture')).toEqual([
+      [
+        'timeline_gesture',
+        { outcome: 'committed', pointer: 'touch-events', years_moved: 2 },
+      ],
+    ]);
+  });
+
+  it('still reports a lost capture', async () => {
+    const { slider, ruler, track } = await setup();
+    fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+    fireEvent.pointerMove(slider, { ...touch, clientX: 150 });
+    fireEvent.lostPointerCapture(ruler, touch);
+    await nextTask();
+    expect(track).toHaveBeenCalledWith('timeline_gesture', {
+      outcome: 'lost_capture',
+      pointer: 'touch',
+      years_moved: 2,
+    });
+  });
+
+  it('reports a replaced stale press once per page', async () => {
+    const { onChange, slider, ruler, track } = await setup();
+    // A finger's pointer and touch events, then both ends are lost.
+    fireEvent.pointerDown(slider, { ...touch, clientX: 350 });
+    touchEvent(slider, 'touchstart', 350, { id: 4 });
+    fireEvent.pointerMove(ruler, { ...touch, clientX: 50 });
+    // The stale press is replaced, not reported as a gesture.
+    touchEvent(slider, 'touchstart', 550, { id: 5 });
+    touchEvent(slider, 'touchend', 550, { id: 5 });
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const replaced = track.mock.calls.filter(
+      ([n]) => n === 'timeline_press_replaced',
+    );
+    expect(replaced).toEqual([
+      [
+        'timeline_press_replaced',
+        { pointer: 'touch-events', stale_ms: expect.any(Number) },
+      ],
+    ]);
+    expect(track.mock.calls.filter(([n]) => n === 'timeline_gesture')).toEqual([
+      [
+        'timeline_gesture',
+        { outcome: 'tap', pointer: 'touch-events', years_moved: 2 },
+      ],
+    ]);
+
+    // A second stale press on the same page is replaced silently.
+    fireEvent.pointerDown(slider, {
+      pointerId: 9,
+      pointerType: 'pen',
+      clientX: 50,
+    });
+    fireEvent.pointerDown(slider, {
+      pointerId: 10,
+      pointerType: 'pen',
+      clientX: 150,
+    });
+    expect(
+      track.mock.calls.filter(([n]) => n === 'timeline_press_replaced'),
+    ).toHaveLength(1);
+  });
+
+  it('does not report mouse clicks that change the year', async () => {
+    const { slider, track } = await setup();
+    fireEvent.pointerDown(slider, { button: 0, clientX: 550, pointerId: 1 });
+    fireEvent.pointerUp(slider, { clientX: 550, pointerId: 1 });
+    expect(gestures()).toHaveLength(0);
+    expect(track).not.toHaveBeenCalled();
   });
 });
 

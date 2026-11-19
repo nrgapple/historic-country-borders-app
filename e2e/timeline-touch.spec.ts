@@ -17,6 +17,10 @@ import { welcomeKey } from '../src/lib/welcome';
  * here is desktop WebKit with touch emulation: Playwright can only tap with
  * it, so its drags are dispatched pointer events. Firefox has no mobile
  * emulation. Year data is a one-territory fixture; third parties are blocked.
+ *
+ * iPad Safari reports (unreproduced) led to two defensive paths tested here
+ * with synthetic events: Touch Events drive a drag whose pointer events never
+ * arrive, and a gesture whose end is lost never blocks the next one.
  */
 
 const square = {
@@ -34,7 +38,11 @@ const square = {
   ],
 };
 
-/** Year tokens of the polygon files requested, in order. */
+/**
+ * Year tokens of the polygon files the map fetched, in order. The idle
+ * `<link rel="prefetch">` of neighbouring years is not counted: it can land
+ * mid-drag on a slow run and is not the map loading a year.
+ */
 let yearRequests: string[] = [];
 
 test.beforeEach(async ({ page }) => {
@@ -55,7 +63,8 @@ test.beforeEach(async ({ page }) => {
       ? -Number(token.slice(2))
       : Number(token);
     if (url.includes('.polygons.')) {
-      yearRequests.push(token);
+      if (['fetch', 'xhr'].includes(route.request().resourceType()))
+        yearRequests.push(token);
       return route.fulfill({
         json: {
           type: 'FeatureCollection',
@@ -106,6 +115,12 @@ const VIEWPORTS = [
   { width: 844, height: 390 },
   { width: 1024, height: 768 },
   { width: 1366, height: 1024 },
+];
+/** iPad sizes: landscape with Safari's tab bar, and two landscape screens. */
+const IPAD_VIEWPORTS = [
+  { width: 1000, height: 560 },
+  { width: 1024, height: 768 },
+  { width: 1180, height: 820 },
 ];
 
 const slider = (page: Page) => page.getByRole('slider', { name: 'Map year' });
@@ -179,6 +194,68 @@ const pointer = (
     clientY: y,
     button: 0,
   });
+
+/**
+ * Synthetic Touch Events with no pointer events, as a WebKit that never
+ * delivers a touch's pointer events would send them. Later events go to the
+ * element the touch started on, as browsers do. Returns whether the ruler
+ * called preventDefault.
+ */
+const touchOnly = (
+  page: Page,
+  type: 'touchstart' | 'touchmove' | 'touchend' | 'touchcancel',
+  x: number,
+  y: number,
+  id = 21,
+) =>
+  page.evaluate(
+    ({ type, x, y, id }) => {
+      const store = window as unknown as { __touchTarget?: Element | null };
+      if (type === 'touchstart')
+        store.__touchTarget = document.elementFromPoint(x, y);
+      const target = store.__touchTarget;
+      if (!target) throw new Error(`nothing at ${x}, ${y}`);
+      const ended = type === 'touchend' || type === 'touchcancel';
+      const init = { identifier: id, target, clientX: x, clientY: y };
+      let event: Event;
+      try {
+        const touch = new Touch(init);
+        event = new TouchEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          touches: ended ? [] : [touch],
+          targetTouches: ended ? [] : [touch],
+          changedTouches: [touch],
+        });
+      } catch {
+        // No Touch constructor (desktop WebKit): the same fields by hand.
+        event = new Event(type, { bubbles: true, cancelable: true });
+        Object.defineProperties(event, {
+          touches: { value: ended ? [] : [init] },
+          changedTouches: { value: [init] },
+        });
+      }
+      target.dispatchEvent(event);
+      return event.defaultPrevented;
+    },
+    { type, x, y, id },
+  );
+
+/** Asserts that every sampled point of the ruler hits the ruler itself. */
+const expectRulerUncovered = async (page: Page) => {
+  const ruler = page.locator('.timeline__ruler');
+  const rulerBox = (await ruler.boundingBox())!;
+  expect(rulerBox.height).toBeGreaterThanOrEqual(44);
+  for (const fy of [0.05, 0.3, 0.5, 0.75, 0.95])
+    for (const fx of [0.02, 0.5, 0.98]) {
+      const covered = await page.evaluate(
+        ([x, y]) =>
+          !document.elementFromPoint(x, y)?.closest('.timeline__ruler'),
+        [rulerBox.x + rulerBox.width * fx, rulerBox.y + rulerBox.height * fy],
+      );
+      expect(covered, `ruler covered at ${fx}, ${fy}`).toBe(false);
+    }
+};
 
 test.use({ hasTouch: true, isMobile: true });
 
@@ -285,6 +362,46 @@ for (const theme of THEMES) {
       await expect(page).toHaveURL(new RegExp(`/year/${target}$`));
     });
 
+    for (const viewport of IPAD_VIEWPORTS) {
+      test(`nothing covers the ruler at ${viewport.width}×${viewport.height} with the welcome card and map key open`, async ({
+        page,
+      }) => {
+        await page.addInitScript(
+          ([welcome, key]) => {
+            try {
+              localStorage.removeItem(welcome);
+              localStorage.setItem(key, '1');
+            } catch {
+              // Storage blocked: the welcome opens by itself anyway.
+            }
+          },
+          [welcomeKey(), 'hb:map-key-open'],
+        );
+        await page.setViewportSize(viewport);
+        await open(page, theme);
+        await expect(
+          page.getByRole('dialog', { name: 'Historic Borders is back' }),
+        ).toBeVisible();
+        await expectRulerUncovered(page);
+
+        // A drag still works with them open.
+        const track = (await slider(page).boundingBox())!;
+        const y = track.y + track.height / 2;
+        const endX = track.x + track.width * 0.3;
+        const target = await yearAt(page, endX);
+        const ruler = page.locator('.timeline__ruler');
+        await pointer(
+          slider(page),
+          'pointerdown',
+          track.x + track.width * 0.9,
+          y,
+        );
+        await pointer(ruler, 'pointermove', endX, y);
+        await pointer(ruler, 'pointerup', endX, y);
+        await expect(page).toHaveURL(new RegExp(`/year/${target}$`));
+      });
+    }
+
     for (const viewport of VIEWPORTS) {
       test(`taps jump to an era, a track slot or a printed year at ${viewport.width}×${viewport.height}`, async ({
         page,
@@ -294,21 +411,7 @@ for (const theme of THEMES) {
 
         // The whole ruler is one hit area, at least 44 px tall, and nothing
         // covers it.
-        const ruler = page.locator('.timeline__ruler');
-        const rulerBox = (await ruler.boundingBox())!;
-        expect(rulerBox.height).toBeGreaterThanOrEqual(44);
-        for (const fy of [0.05, 0.3, 0.5, 0.75, 0.95])
-          for (const fx of [0.02, 0.5, 0.98]) {
-            const covered = await page.evaluate(
-              ([x, y]) =>
-                !document.elementFromPoint(x, y)?.closest('.timeline__ruler'),
-              [
-                rulerBox.x + rulerBox.width * fx,
-                rulerBox.y + rulerBox.height * fy,
-              ],
-            );
-            expect(covered, `ruler covered at ${fx}, ${fy}`).toBe(false);
-          }
+        await expectRulerUncovered(page);
 
         // An era band (its middle).
         const medieval = await centre(
@@ -341,3 +444,111 @@ for (const theme of THEMES) {
     }
   });
 }
+
+test.describe('gestures Safari may deliver differently', () => {
+  test.skip(
+    ({ browserName }) => browserName === 'firefox',
+    'Firefox has no mobile touch emulation in Playwright.',
+  );
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await open(page, 'classic');
+  });
+
+  test('Touch Events alone (no pointer events) drag and load the map once', async ({
+    page,
+  }) => {
+    const track = (await slider(page).boundingBox())!;
+    const y = track.y + track.height / 2;
+    const startX = track.x + track.width * 0.9;
+    const endX = track.x + track.width * 0.35;
+    const target = await yearAt(page, endX);
+    const historyBefore = await page.evaluate(() => history.length);
+    const requestsBefore = yearRequests.length;
+
+    // preventDefault on start and move keeps the page from scrolling or zooming.
+    expect(await touchOnly(page, 'touchstart', startX, y)).toBe(true);
+    for (let i = 1; i <= 6; i += 1)
+      expect(
+        await touchOnly(
+          page,
+          'touchmove',
+          startX + ((endX - startX) * i) / 6,
+          y,
+        ),
+      ).toBe(true);
+    await expect(page.locator('.timeline')).toHaveAttribute(
+      'data-dragging',
+      'true',
+    );
+    await expect(heading(page)).not.toHaveText('1914');
+    expect(urlYear(page)).toBe(1914);
+    expect(yearRequests.length).toBe(requestsBefore);
+
+    await touchOnly(page, 'touchend', endX, y);
+    await expect(page).toHaveURL(new RegExp(`/year/${target}$`));
+    await expect(page.locator('.timeline')).not.toHaveAttribute(
+      'data-dragging',
+    );
+    expect(await page.evaluate(() => history.length)).toBe(historyBefore + 1);
+  });
+
+  test('a drag whose pointerup is lost does not block the next drag', async ({
+    page,
+  }) => {
+    const track = (await slider(page).boundingBox())!;
+    const y = track.y + track.height / 2;
+    const ruler = page.locator('.timeline__ruler');
+    // The first drag's end never arrives (lifted off the bar, a system
+    // gesture): no pointerup, pointercancel or lostpointercapture.
+    await pointer(slider(page), 'pointerdown', track.x + track.width * 0.9, y);
+    await pointer(ruler, 'pointermove', track.x + track.width * 0.7, y);
+    await expect(page.locator('.timeline')).toHaveAttribute(
+      'data-dragging',
+      'true',
+    );
+    expect(urlYear(page)).toBe(1914);
+
+    // The next drag (a new finger, so a new pointer id) works.
+    const endX = track.x + track.width * 0.2;
+    const target = await yearAt(page, endX);
+    const second = (
+      type: 'pointerdown' | 'pointermove' | 'pointerup',
+      x: number,
+    ) =>
+      (type === 'pointerdown' ? slider(page) : ruler).dispatchEvent(type, {
+        pointerId: 12,
+        pointerType: 'touch',
+        isPrimary: true,
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+      });
+    await second('pointerdown', track.x + track.width * 0.5);
+    await second('pointermove', endX);
+    await second('pointerup', endX);
+    await expect(page).toHaveURL(new RegExp(`/year/${target}$`));
+    await expect(page.locator('.timeline')).not.toHaveAttribute(
+      'data-dragging',
+    );
+  });
+
+  test('a touch whose touchend is lost does not block the next touch drag', async ({
+    page,
+  }) => {
+    const track = (await slider(page).boundingBox())!;
+    const y = track.y + track.height / 2;
+    await touchOnly(page, 'touchstart', track.x + track.width * 0.9, y, 31);
+    await touchOnly(page, 'touchmove', track.x + track.width * 0.6, y, 31);
+
+    const endX = track.x + track.width * 0.25;
+    const target = await yearAt(page, endX);
+    await touchOnly(page, 'touchstart', track.x + track.width * 0.5, y, 32);
+    await touchOnly(page, 'touchmove', endX, y, 32);
+    await touchOnly(page, 'touchend', endX, y, 32);
+    await expect(page).toHaveURL(new RegExp(`/year/${target}$`));
+  });
+});

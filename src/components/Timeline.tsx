@@ -133,8 +133,39 @@ export const ERA_RANGES: Record<string, string> = {
  */
 const DRAG_THRESHOLD_PX = 4;
 
+/**
+ * A touch's pointerdown and touchstart arrive together. Only within this
+ * window does one count as the other's twin; later, the earlier press is a
+ * stale one whose end was lost, and the new press replaces it.
+ */
+const TWIN_WINDOW_MS = 300;
+
+const isTwinOf = (press: Press | null, family: PressSource) =>
+  press !== null &&
+  press.source !== family &&
+  press.twin === null &&
+  press.pointerType === 'touch' &&
+  performance.now() - press.startedAt < TWIN_WINDOW_MS;
+
+/**
+ * Which event family drives a press. Pointer events are preferred; Touch
+ * Events take a touch only when its pointerdown never reached the ruler
+ * (seen on iPad Safari reports), so one gesture is never handled twice.
+ */
+type PressSource = 'pointer' | 'touch';
+
 interface Press {
-  pointerId: number;
+  source: PressSource;
+  /** pointerId, or Touch.identifier for a touch-driven press. */
+  id: number;
+  /** The pointerType of a pointer press ('touch' for a touch press). */
+  pointerType: string;
+  /**
+   * The same finger's id in the other event family, once its first event
+   * arrived: those events are then ignored (one source per gesture), except
+   * that a touchend backstops a pointerup that never comes.
+   */
+  twin: number | null;
   /** clientX at the press. */
   x: number;
   /** The printed year pressed, until the press becomes a drag. */
@@ -143,14 +174,25 @@ interface Press {
   index: number;
   /** Whether the pointer has travelled at least DRAG_THRESHOLD_PX. */
   moved: boolean;
-  /** For analytics: the input type, start time and starting year index. */
+  /**
+   * For analytics: the input ('mouse', 'touch', 'pen', or 'touch-events'
+   * for the Touch Events fallback), start time and starting year index.
+   */
   pointer: string;
   startedAt: number;
   startIndex: number;
 }
 
-/** One report per page of a press ignored because another stayed open. */
-let reportedIgnoredPress = false;
+/** One report per page of a stale press replaced by a new one. */
+let reportedReplacedPress = false;
+
+/** The touch with this identifier in a TouchList (or an array in tests). */
+const findTouch = (list: TouchList | undefined, id: number | null) => {
+  if (!list || id === null) return null;
+  for (let i = 0; i < list.length; i += 1)
+    if (list[i]?.identifier === id) return list[i];
+  return null;
+};
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -169,6 +211,7 @@ export default function Timeline({
   trailing,
 }: TimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const rulerRef = useRef<HTMLDivElement>(null);
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -226,37 +269,43 @@ export default function Timeline({
   // The era row, the track, and the printed years all share one hit area.
   // Touch and mouse go through the same path; the year is committed once, on
   // release, so the map loads one year rather than every year passed over.
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    if (event.isPrimary === false) return;
-    if (pressRef.current) {
-      // A press that never ended blocks the timeline: report it (debugging
-      // touch gestures on iPad and iPhone, docs/ANALYTICS.md).
-      if (!reportedIgnoredPress) {
-        reportedIgnoredPress = true;
-        track('timeline_press_ignored', {
-          pointer: event.pointerType || 'unknown',
-          stale_ms: Math.round(performance.now() - pressRef.current.startedAt),
-        });
-      }
-      return;
-    }
-    try {
-      event.currentTarget.setPointerCapture?.(event.pointerId);
-    } catch {
-      // A synthetic or already-released pointer: the ruler still receives
-      // its events while the finger stays over it.
+  //
+  // A new press always replaces whatever press the ruler still remembers,
+  // without committing it: if a browser ever drops the end of a gesture (a
+  // finger lifted off the bar, a system gesture, an edge swipe), the next
+  // drag still works instead of being ignored until the page reloads.
+  const beginPress = (
+    source: PressSource,
+    id: number,
+    pointerType: string,
+    clientX: number,
+    target: EventTarget | null,
+  ) => {
+    const stale = pressRef.current;
+    const pointer =
+      source === 'touch' ? 'touch-events' : pointerType || 'unknown';
+    if (stale && !reportedReplacedPress) {
+      // An earlier press never ended; before it was replaced it blocked
+      // the timeline until reload (the iPad report, docs/ANALYTICS.md).
+      reportedReplacedPress = true;
+      track('timeline_press_replaced', {
+        pointer,
+        stale_ms: Math.round(performance.now() - stale.startedAt),
+      });
     }
     trackRef.current?.focus({ preventScroll: true });
-    const labelIndex = labelIndexOf(event.target);
-    const index = labelIndex ?? indexFromPointer(event.clientX);
+    const labelIndex = labelIndexOf(target);
+    const index = labelIndex ?? indexFromPointer(clientX);
     pressRef.current = {
-      pointerId: event.pointerId,
-      x: event.clientX,
+      source,
+      id,
+      pointerType,
+      twin: null,
+      x: clientX,
       labelIndex,
       index,
       moved: false,
-      pointer: event.pointerType || 'unknown',
+      pointer,
       startedAt: performance.now(),
       startIndex: selectedIndex,
     };
@@ -264,15 +313,9 @@ export default function Timeline({
     setDragIndex(index);
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    const press = pressRef.current;
-    if (!press || press.pointerId !== event.pointerId) {
-      if (!press && event.pointerType === 'mouse')
-        setHoverIndex(indexFromPointer(event.clientX));
-      return;
-    }
+  const movePress = (press: Press, clientX: number) => {
     if (!press.moved) {
-      if (Math.abs(event.clientX - press.x) < DRAG_THRESHOLD_PX) {
+      if (Math.abs(clientX - press.x) < DRAG_THRESHOLD_PX) {
         // A press on a printed year keeps that year until it becomes a drag.
         if (press.labelIndex != null) return;
       } else {
@@ -280,7 +323,7 @@ export default function Timeline({
       }
     }
     press.labelIndex = null;
-    press.index = indexFromPointer(event.clientX);
+    press.index = indexFromPointer(clientX);
     setDragIndex(press.index);
   };
 
@@ -293,7 +336,8 @@ export default function Timeline({
     pressRef.current = null;
     setDragIndex(null);
     // Mouse clicks are already counted as year changes; touch and pen
-    // gestures, and every cancelled press, are reported for debugging.
+    // gestures (including the Touch Events fallback's, pointer
+    // 'touch-events'), and every cancelled press, are reported for debugging.
     if (press.pointer !== 'mouse' || index === null)
       track('timeline_gesture', {
         outcome: lostCapture
@@ -309,19 +353,94 @@ export default function Timeline({
     if (index !== null) commit(index, 'track');
   };
 
-  const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    const press = pressRef.current;
-    if (!press || press.pointerId !== event.pointerId) return;
-    endPress(press, press.labelIndex ?? indexFromPointer(event.clientX));
-  };
+  const releasePress = (press: Press, clientX: number) =>
+    endPress(press, press.labelIndex ?? indexFromPointer(clientX));
 
   // The browser took the gesture (a scroll, a system gesture, an incoming
   // call). After a real horizontal drag the visitor was choosing a year, so
   // the year last shown is kept; a press that had not moved is discarded.
-  const cancelDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+  const cancelPress = (press: Press, lostCapture = false) =>
+    endPress(press, press.moved ? press.index : null, lostCapture);
+
+  // A finger's pointer stream ended before it moved while its touch events
+  // still come (a WebKit pointercancel or lost capture at the very start of
+  // a drag): the touch events carry on with the same press. A real system
+  // gesture also sends touchcancel, which then discards it.
+  const cancelPointerPress = (press: Press, lostCapture = false) => {
+    if (pressRef.current !== press) return;
+    if (!press.moved && press.pointerType === 'touch' && press.twin !== null) {
+      pressRef.current = {
+        ...press,
+        source: 'touch',
+        id: press.twin,
+        twin: press.id,
+        pointer: 'touch-events',
+      };
+      return;
+    }
+    cancelPress(press, lostCapture);
+  };
+
+  /** Forgets the press without choosing a year (the page lost focus). */
+  const abandonPress = () => {
     const press = pressRef.current;
-    if (!press || press.pointerId !== event.pointerId) return;
-    endPress(press, press.moved ? press.index : null);
+    if (press) endPress(press, null);
+  };
+
+  const pointerPress = (event: React.PointerEvent | PointerEvent) => {
+    const press = pressRef.current;
+    return press?.source === 'pointer' && press.id === event.pointerId
+      ? press
+      : null;
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (event.isPrimary === false) return;
+    const current = pressRef.current;
+    if (
+      current &&
+      event.pointerType === 'touch' &&
+      isTwinOf(current, 'pointer')
+    ) {
+      // The Touch Events fallback already drives this finger.
+      current.twin = event.pointerId;
+      return;
+    }
+    try {
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    } catch {
+      // A synthetic or already-released pointer: the ruler still receives
+      // its events while the finger stays over it, and the document-level
+      // listeners below still see its end.
+    }
+    beginPress(
+      'pointer',
+      event.pointerId,
+      event.pointerType,
+      event.clientX,
+      event.target,
+    );
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const press = pointerPress(event);
+    if (!press) {
+      if (!pressRef.current && event.pointerType === 'mouse')
+        setHoverIndex(indexFromPointer(event.clientX));
+      return;
+    }
+    movePress(press, event.clientX);
+  };
+
+  const finishDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const press = pointerPress(event);
+    if (press) releasePress(press, event.clientX);
+  };
+
+  const cancelDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const press = pointerPress(event);
+    if (press) cancelPointerPress(press);
   };
 
   // Lost capture without a pointerup or pointercancel (the ruler was hidden
@@ -332,13 +451,129 @@ export default function Timeline({
     event: React.PointerEvent<HTMLDivElement>,
   ) => {
     if (event.target !== event.currentTarget) return;
-    const press = pressRef.current;
-    if (!press || press.pointerId !== event.pointerId) return;
-    window.setTimeout(
-      () => endPress(press, press.moved ? press.index : null, true),
-      0,
-    );
+    const press = pointerPress(event);
+    if (!press) return;
+    window.setTimeout(() => cancelPointerPress(press, true), 0);
   };
+
+  // Touch Events, for a touch whose pointer events do not reach the ruler.
+  // A touch that follows its own pointerdown is that pointer's twin and is
+  // ignored, except that its end also ends the press a task later if the
+  // pointerup never came (capture failed and it landed elsewhere).
+  const handleTouchStart = (event: TouchEvent) => {
+    // A second finger, like a non-primary pointer, is ignored.
+    if (event.touches.length !== 1) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const current = pressRef.current;
+    if (current && isTwinOf(current, 'touch')) {
+      current.twin = touch.identifier;
+      return;
+    }
+    // Stops the page scrolling, zooming or starting a text selection.
+    if (event.cancelable) event.preventDefault();
+    beginPress('touch', touch.identifier, 'touch', touch.clientX, touch.target);
+  };
+
+  const handleTouchMove = (event: TouchEvent) => {
+    const press = pressRef.current;
+    if (!press) return;
+    const touch = findTouch(
+      event.changedTouches,
+      press.source === 'touch' ? press.id : press.twin,
+    );
+    if (!touch) return;
+    if (event.cancelable) event.preventDefault();
+    if (press.source === 'touch') movePress(press, touch.clientX);
+  };
+
+  const handleTouchEnd = (event: TouchEvent) => {
+    const press = pressRef.current;
+    if (!press) return;
+    const cancelled = event.type === 'touchcancel';
+    if (press.source === 'touch') {
+      const touch = findTouch(event.changedTouches, press.id);
+      if (!touch) return;
+      // No emulated mouse events or click after a timeline drag.
+      if (event.cancelable) event.preventDefault();
+      if (cancelled) cancelPress(press);
+      else releasePress(press, touch.clientX);
+      return;
+    }
+    const touch = findTouch(event.changedTouches, press.twin);
+    if (!touch) return;
+    const x = touch.clientX;
+    window.setTimeout(() => {
+      if (pressRef.current !== press) return;
+      if (cancelled) cancelPress(press);
+      else releasePress(press, x);
+    }, 0);
+  };
+
+  // Native listeners read the latest handlers through a ref: React's own
+  // touch listeners are passive, so they could not stop the page scrolling.
+  const latest = useRef({
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    pointerPress,
+    releasePress,
+    cancelPointerPress,
+    abandonPress,
+  });
+  latest.current = {
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    pointerPress,
+    releasePress,
+    cancelPointerPress,
+    abandonPress,
+  };
+
+  useEffect(() => {
+    const ruler = rulerRef.current;
+    if (!ruler) return;
+    const start = (event: TouchEvent) => latest.current.handleTouchStart(event);
+    const move = (event: TouchEvent) => latest.current.handleTouchMove(event);
+    const end = (event: TouchEvent) => latest.current.handleTouchEnd(event);
+    const options = { passive: false } as const;
+    ruler.addEventListener('touchstart', start, options);
+    ruler.addEventListener('touchmove', move, options);
+    ruler.addEventListener('touchend', end, options);
+    ruler.addEventListener('touchcancel', end, options);
+
+    // Backstops so a press can never stay stuck: the end of the tracked
+    // pointer anywhere on the page (it bubbles here after the ruler's own
+    // handler, which has then already ended the press), and the page losing
+    // focus or being hidden mid-drag.
+    const pointerUp = (event: PointerEvent) => {
+      const press = latest.current.pointerPress(event);
+      if (press) latest.current.releasePress(press, event.clientX);
+    };
+    const pointerCancel = (event: PointerEvent) => {
+      const press = latest.current.pointerPress(event);
+      if (press) latest.current.cancelPointerPress(press);
+    };
+    const abandon = () => latest.current.abandonPress();
+    const visibility = () => {
+      if (document.visibilityState === 'hidden') abandon();
+    };
+    document.addEventListener('pointerup', pointerUp);
+    document.addEventListener('pointercancel', pointerCancel);
+    document.addEventListener('visibilitychange', visibility);
+    window.addEventListener('blur', abandon);
+    return () => {
+      ruler.removeEventListener('touchstart', start);
+      ruler.removeEventListener('touchmove', move);
+      ruler.removeEventListener('touchend', end);
+      ruler.removeEventListener('touchcancel', end);
+      document.removeEventListener('pointerup', pointerUp);
+      document.removeEventListener('pointercancel', pointerCancel);
+      document.removeEventListener('visibilitychange', visibility);
+      window.removeEventListener('blur', abandon);
+    };
+  }, []);
 
   const step = useCallback(
     (delta: number, method: TimelineChangeMethod) =>
@@ -499,6 +734,7 @@ export default function Timeline({
       </div>
 
       <div
+        ref={rulerRef}
         className="timeline__ruler"
         style={{ '--years': years.length } as CSSProperties}
         onPointerDown={handlePointerDown}
