@@ -166,13 +166,13 @@ On year pages a year change (step buttons, timeline drag release or tap, keyboar
 
 ## Deployment
 
-**In production** since the P4 cutover (2026-11-18). The app builds into `dist/`, which `wrangler.toml` serves with the `/api/feedback` Worker. CI's `deploy` job ships the `app` job's tested build (artifact `dist`) as soon as that job passes, then runs the production smoke test. The `checks` job and the layout suites (their own `Layout` workflow) report without gating the deploy. The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back with a Cloudflare Worker-version rollback, then revert the commit on `main` (docs/CLOUDFLARE_DEPLOYMENT.md).
+**In production** since the P4 cutover (2026-11-18). The app builds into `dist/`, which `wrangler.toml` serves with the `/api/feedback` Worker. Every change ships through a pull request with auto-merge: the PR runs the whole gate in parallel (`checks`, `app`, one browser-test job per engine), and the merge to `main` only builds, deploys and smoke-tests (see [docs/RELEASE.md](docs/RELEASE.md)). The Deploy workflow is a manual, rebuild-from-source redeploy. Roll back with a Cloudflare Worker-version rollback, then revert the commit on `main` (docs/CLOUDFLARE_DEPLOYMENT.md).
 
 ## Contributing
 
 1. Create a focused branch.
 2. Add or update tests with behavior changes.
-3. Run `yarn validate`.
+3. Open a pull request with auto-merge on; CI runs the full gate (docs/RELEASE.md). Locally, run only the checks you need.
 4. Submit a pull request with data provenance and uncertainty changes called out explicitly.
 
 ## License

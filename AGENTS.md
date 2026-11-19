@@ -27,7 +27,7 @@ Historic Borders helps people explore how political borders changed over time. I
 1. Start from a user problem and define acceptance criteria.
 2. Add or update tests before considering the change complete.
 3. Run the narrowest relevant tests while iterating.
-4. Run `yarn validate` before merge.
+4. Ship through a pull request with auto-merge (`gh pr merge --auto --squash`); CI runs the full gate on the PR and the merge deploys (docs/RELEASE.md). Run only narrow checks locally; `yarn validate` remains available.
 5. For map-data changes, also run `yarn data:validate`.
 6. For critical journeys, run `yarn test:e2e`; for layout changes, `yarn test:layout`.
 7. Update product/architecture decisions when behavior or constraints change.

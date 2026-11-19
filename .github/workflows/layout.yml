@@ -2,14 +2,19 @@ name: Layout
 
 # Safe-area (iPhone insets), responsive widths and forced-dark suites from
 # playwright.layout.config.ts, run against the production build.
-# A report, not a deploy gate. It lives apart from CI on purpose: CI runs on
-# main queue per ref and never cancel, so a stuck layout shard there would
-# delay the next push's deploy. Here every new push to the same ref cancels
-# the run in progress.
+# A report on pull requests, not a merge or deploy gate (docs/RELEASE.md).
+# It lives apart from CI on purpose: CI runs on main queue per ref and never
+# cancel, so a stuck layout shard there would delay the next push's deploy.
+# Here every new push to the same ref cancels the run in progress. Merges to
+# main do not run it again (the pull request did); run it by hand from the
+# Actions tab when needed.
 on:
   pull_request:
-  push:
-    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'design/**'
+      - '**/*.md'
+  workflow_dispatch:
 
 permissions:
   contents: read

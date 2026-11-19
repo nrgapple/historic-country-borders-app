@@ -1,5 +1,15 @@
 name: CI
 
+# Release process (docs/RELEASE.md):
+# - Pull requests run the whole gate in parallel: `checks`, `app` (build and
+#   unit tests) and one browser-test job per engine. Auto-merge waits for the
+#   required checks `checks`, `app` and `browser tests`. Documentation-only
+#   pull requests skip the build and the browsers.
+# - A push to main ships: build, validate, deploy, smoke test. The tests do
+#   not run again for a merged pull request (they just passed on it), so a
+#   flaky browser test can never hold a release. A direct push to main that
+#   did not come through a pull request still runs every test first.
+
 on:
   pull_request:
   push:
@@ -15,6 +25,46 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  scope:
+    # What this run must do. On a pull request: whether anything but
+    # documentation changed. On a push: whether the commit came from a merged
+    # pull request (already tested) or was pushed directly.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      app: ${{ steps.scope.outputs.app }}
+      tested: ${{ steps.scope.outputs.tested }}
+    steps:
+      - id: scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "${{ github.event_name }}" = pull_request ]; then
+            files=$(gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '.[].filename')
+            # Anything outside docs/, design/ and Markdown needs the app gate.
+            if printf '%s\n' "$files" | grep -qvE '^(docs/|design/)|\.md$'; then
+              echo "app=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "app=false" >> "$GITHUB_OUTPUT"
+            fi
+            echo "tested=false" >> "$GITHUB_OUTPUT"
+          else
+            merged=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq '[.[] | select(.merged_at != null)] | length')
+            echo "app=true" >> "$GITHUB_OUTPUT"
+            if [ "$merged" -gt 0 ]; then
+              echo "tested=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "tested=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          cat "$GITHUB_OUTPUT"
+
   dependency-review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -34,7 +84,8 @@ jobs:
 
   checks:
     # Formatting and offline validation of every committed data artifact.
-    # A report, not a deploy gate.
+    # Required on pull requests; never holds a deploy.
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -49,10 +100,12 @@ jobs:
       - run: yarn data:validate
 
   app:
-    # The production app (Astro + MapLibre). Its tested build is the
-    # artifact the deploy job ships.
+    # The production app (Astro + MapLibre): the build the browser tests and
+    # the deploy use, plus type-check and unit tests where they are needed.
+    needs: [scope]
+    if: needs.scope.outputs.app == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 30
     env:
       ASTRO_TELEMETRY_DISABLED: '1'
       # Optional Google Analytics ID, baked into the static bundle.
@@ -69,7 +122,7 @@ jobs:
       - run: yarn dist:validate
       - run: yarn cloudflare:check
       - run: yarn size:check
-      - name: Keep the build for the e2e and deploy jobs
+      - name: Keep the build for the browser tests and the deploy
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -77,19 +130,27 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
+      # Cheap guard against a semantic conflict between two merged PRs.
       - run: yarn type-check
       # App, data-script and Worker unit tests (vitest.config.ts projects).
-      - run: yarn test
+      - if: needs.scope.outputs.tested != 'true'
+        run: yarn test
 
   e2e:
-    # Browser journeys against the app job's build, inside Microsoft's
-    # Playwright image: browsers and their system packages are preinstalled,
-    # so there is no `playwright install --with-deps` (its apt step hung for
-    # 8-30 minutes three times on 2026-11-18). The image tag must match
-    # @playwright/test in package.json.
-    needs: [app]
+    # Browser journeys against the app job's build, one job per engine so
+    # they run side by side, inside Microsoft's Playwright image: browsers
+    # and their system packages are preinstalled (`playwright install
+    # --with-deps` hung for 8-30 minutes three times on 2026-11-18). The image
+    # tag must match @playwright/test in package.json.
+    name: e2e (${{ matrix.browser }})
+    needs: [scope, app]
+    if: needs.app.result == 'success' && needs.scope.outputs.tested != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
     container:
       image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --user 1001
@@ -105,26 +166,44 @@ jobs:
         with:
           name: dist
           path: dist/
-      - run: yarn test:e2e
+      - run: yarn test:e2e --project=${{ matrix.browser }}
       - name: Upload browser-test artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/
           if-no-files-found: ignore
           retention-days: 7
 
+  browser-tests:
+    # The one required browser check: it passes when every engine passed or
+    # the journeys were not needed (documentation, an already-tested merge),
+    # so branch protection never waits for a matrix job that did not run.
+    name: browser tests
+    needs: [e2e]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: |
+          echo "e2e: ${{ needs.e2e.result }}"
+          case "${{ needs.e2e.result }}" in
+            success|skipped) exit 0 ;;
+            *) exit 1 ;;
+          esac
+
   deploy:
-    # Production: ships the app job's tested build as soon as it and the
-    # browser journeys pass.
-    # It does not wait for `checks` (reported separately) and the layout
-    # suites run in their own workflow (layout.yml), so neither can hold a
-    # release. Rebuilding here would add minutes for nothing.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [app, e2e]
+    # Production: ships the app job's build as soon as it (and, for a direct
+    # push, the browser journeys) pass. `checks` and the layout suites never
+    # hold a release.
+    needs: [app, browser-tests]
+    if: >-
+      always() &&
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      needs.app.result == 'success' && needs.browser-tests.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
