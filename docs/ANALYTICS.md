@@ -4,13 +4,13 @@ Historic Borders measures use with Google Analytics 4 to make product and debugg
 
 ## Setup
 
-| What                 | Value                                                                                                                          |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| GA4 account          | `historic-borders`                                                                                                             |
-| GA4 property         | `history-borders`, ID `260086892`                                                                                              |
-| Measurement ID       | `G-P1R4GR83SN` (public; it ships in the page)                                                                                  |
-| Build variable       | `PUBLIC_GA_FOUR`, set in CI from the repository variable `NEXT_PUBLIC_GA_FOUR`. Without it nothing loads and calls are no-ops. |
-| Read access (agents) | Google's `analytics-mcp` server, read-only, with a dedicated service account (below)                                           |
+| What                 | Value                                                                                                                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GA4 account          | `historic-borders`                                                                                                                                                                                                                          |
+| GA4 property         | `history-borders`, ID `260086892`                                                                                                                                                                                                           |
+| Measurement ID       | `G-P1R4GR83SN` (public; it ships in the page)                                                                                                                                                                                               |
+| Build variable       | `PUBLIC_GA_FOUR`, set in CI from the repository variable `NEXT_PUBLIC_GA_FOUR`. Only the build that ships (a push to `main`) gets it; pull-request builds and their browser tests have none. Without it nothing loads and calls are no-ops. |
+| Read access (agents) | Google's `analytics-mcp` server, read-only, with a dedicated service account (below)                                                                                                                                                        |
 
 The GA script loads only when the page is idle after `load`, so it never competes with the map. Events before then are queued (at most 60) and flushed.
 
