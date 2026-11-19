@@ -204,6 +204,16 @@ Decision: tests run once, on the pull request, in parallel (`checks`, `app`, `e2
 
 Rollback: revert `.github/workflows/ci.yml` and `layout.yml`; branch protection and auto-merge are repository settings.
 
+### Analytics restored and made useful (2026-11-18)
+
+Observed: since the Astro app went live, Google Analytics sent nothing. `initAnalytics()` was never called and the build had no measurement ID (the CI variable `NEXT_PUBLIC_GA_FOUR` was unset). GA showed 20 page views in 90 days, all from the old app. The event set was small (year, place, settings) and nothing reported load times, failures or touch problems, such as the iPad "can't drag the timeline" report that could not be reproduced in emulation.
+
+Decision: one typed event vocabulary in `src/lib/analytics.ts` (docs/ANALYTICS.md): page views sent by the app (one per year shown, GA's history page views off because `replaceState` writes the camera), map load times, year-change speed, the border animation's outcome and frame stats, place selection source, "What changed", Wikipedia outcomes, sharing, timeline gesture outcomes (including presses ignored because an earlier one never ended), map and data failures, script errors and Core Web Vitals. The GA script loads when the page is idle. Privacy: no free text, no user ids, no URL query on any event, Google signals and ad personalization off, short capped error messages; About says what is counted. The measurement ID is set in the repository variable. Agents read the data through Google's read-only `analytics-mcp` server with a Viewer-only service account.
+
+Constraints kept: free (GA4 standard), no request-time compute, nothing sent without a measurement ID, no effect on map load (idle loading). Open: EU consent handling.
+
+Rollback: delete the repository variable (nothing loads) or revert the commit.
+
 ## Deferred
 
 ### Domain cutover

@@ -1,4 +1,5 @@
 import type { TerritoryChange, YearContext } from '../lib/yearContext';
+import { track } from '../lib/analytics';
 import { formatYear } from '../lib/years';
 
 /** Names listed per group before "and N more". */
@@ -52,6 +53,9 @@ export default function ChangesSummary({ context, year }: ChangesSummaryProps) {
   return (
     <details
       className="changes-summary"
+      onToggle={(event) => {
+        if (event.currentTarget.open) track('changes_open', { year });
+      }}
       data-map-obstacle
       aria-busy={stale || undefined}
       data-stale={stale || undefined}

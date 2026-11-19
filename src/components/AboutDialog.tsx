@@ -113,6 +113,15 @@ export default function AboutDialog({
       )}
 
       <section className="about__section">
+        <h3>Privacy</h3>
+        <p>
+          To improve the map, Historic Borders counts visits and which features
+          are used with Google Analytics: no names or accounts, no advertising
+          features, and nothing you type is sent.
+        </p>
+      </section>
+
+      <section className="about__section">
         <h3>More</h3>
         <ul className="link-list">
           <li>

@@ -32,6 +32,7 @@ import type { YearIndex } from '../../adapters/yearData';
 import type { YearGeometry } from './geometry';
 import type { GeometryRequest } from './geometry.worker';
 import { TransitionRenderer, type GpuGeometry } from './gl';
+import { reportError, track } from '../../lib/analytics';
 import { buildPalette, type PaintSource } from './paint';
 import {
   fieldSize,
@@ -435,6 +436,11 @@ export function createBorderTransitions(
     private fadeOutAt: number | null = null;
     private shown = false;
     private shownAt = 0;
+    // Analytics (no allocation per frame): frames drawn, frames over 25 ms.
+    private frames = 0;
+    private slowFrames = 0;
+    private lastFrameAt = 0;
+    private prepareMs = 0;
     private drawnAt = 0;
     private ended = false;
     private failed = false;
@@ -570,9 +576,11 @@ export function createBorderTransitions(
           steps: jumpSteps(field.width, field.height),
           reach: 0.12 * Math.min(field.width, field.height),
         });
+        this.prepareMs = performance.now() - started;
         performance.measure?.('border-transition:prepare', { start: started });
       } catch (error) {
         this.failed = true;
+        reportError('border_animation', error, 'transition/gl');
         if (import.meta.env.DEV) console.warn('Border animation off:', error);
       }
     }
@@ -592,6 +600,9 @@ export function createBorderTransitions(
       const now = performance.now();
       this.start ??= now;
       const elapsed = now - this.start;
+      if (this.lastFrameAt && now - this.lastFrameAt > 25) this.slowFrames++;
+      this.lastFrameAt = now;
+      this.frames++;
       let frame = frameAt(elapsed, this.fadeOutAt);
       if (frame.phase !== 'fade-in' && !this.shown) {
         // Under the now opaque overlay, the vector map takes the new year.
@@ -649,6 +660,14 @@ export function createBorderTransitions(
     end(finished: boolean) {
       if (this.ended) return;
       this.ended = true;
+      track('border_animation', {
+        outcome: this.failed ? 'failed' : finished ? 'played' : 'interrupted',
+        from_year: this.from,
+        to_year: this.to,
+        prepare_ms: Math.round(this.prepareMs),
+        frames: this.frames,
+        slow_frames: this.slowFrames,
+      });
       if (!this.shown) {
         this.shown = true;
         host.showYear(this.to);

@@ -27,9 +27,9 @@ Open <http://127.0.0.1:4321>. The app is Astro 7 static pages with one React 19 
 
 ### Environment variables
 
-| Variable         | Exposure | Purpose                     |
-| ---------------- | -------- | --------------------------- |
-| `PUBLIC_GA_FOUR` | Browser  | Optional GA4 measurement ID |
+| Variable         | Exposure | Purpose                                                                                                                          |
+| ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_GA_FOUR` | Browser  | Optional GA4 measurement ID (CI reads the repository variable `NEXT_PUBLIC_GA_FOUR`); see [docs/ANALYTICS.md](docs/ANALYTICS.md) |
 
 Feedback secrets are configured only on the isolated Cloudflare Worker, never in the static build. A variable prefixed with `PUBLIC_` is baked into the browser bundle and must never contain a secret. See [docs/FEEDBACK_SETUP.md](docs/FEEDBACK_SETUP.md) and [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
 

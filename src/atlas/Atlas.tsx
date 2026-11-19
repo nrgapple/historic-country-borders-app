@@ -3,6 +3,7 @@ import Timeline, { type TimelineChangeMethod } from '../components/Timeline';
 import Toolbar, { Brand, RestoreControlsButton } from '../components/Toolbar';
 import PlacePanel from '../components/PlacePanel';
 import SettingsPanel from '../components/SettingsPanel';
+import { initAnalytics, track, trackPageview } from '../lib/analytics';
 import AboutDialog from '../components/AboutDialog';
 import FeedbackDialog from '../components/FeedbackDialog';
 import MapStatus from '../components/MapStatus';
@@ -72,7 +73,11 @@ const territoryOption = (t: Territory): PlaceOption => {
 
 /** The atlas island: one React tree over the store, rendered into /year/[year]. */
 export default function Atlas({ initialYear }: { initialYear: number }) {
-  if (typeof window !== 'undefined') actions.init(initialYear);
+  if (typeof window !== 'undefined') {
+    actions.init(initialYear);
+    // Idempotent; GA itself loads when the page is idle.
+    initAnalytics('year');
+  }
   return (
     <InitialYear.Provider value={initialYear}>
       <AtlasApp />
@@ -99,7 +104,9 @@ function AtlasApp() {
 
   useEffect(() => {
     document.title = `World borders in ${yearLabel} · Historic Borders`;
-  }, [yearLabel]);
+    // One page view per year shown (src/lib/analytics.ts).
+    trackPageview(year);
+  }, [yearLabel, year]);
 
   // Without WebGL the map never reports; the index decides the status.
   useEffect(() => {
@@ -124,7 +131,7 @@ function AtlasApp() {
     (option: PlaceOption) => {
       const match = territories?.find((t) => t.NAME === option.name);
       if (!match) return;
-      actions.select(match.NAME, { track: true });
+      actions.select(match.NAME, { track: true, source: 'finder' });
       actions.frame(framingBounds(match.bbox));
     },
     [territories],
@@ -354,6 +361,7 @@ function MapView({
         if (cancelled || !ref.current) return;
         if (!supportsWebGL2()) {
           actions.setWebgl(false);
+          track('map_unavailable', { page_type: 'year', reason: 'no_webgl2' });
           return;
         }
         handle = mountMap(ref.current);
@@ -362,7 +370,13 @@ function MapView({
           handle.map;
         onMount(handle);
       })
-      .catch(() => actions.setWebgl(false));
+      .catch((error) => {
+        actions.setWebgl(false);
+        track('map_unavailable', {
+          page_type: 'year',
+          reason: error instanceof Error ? error.name : 'mount_failed',
+        });
+      });
     return () => {
       cancelled = true;
       onMount(null);

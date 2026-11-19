@@ -1,4 +1,5 @@
 import { createResource, useResource } from '../lib/resource';
+import { track } from '../lib/analytics';
 
 const API_URL = 'https://en.wikipedia.org/w/api.php';
 const MAX_NAME_LENGTH = 160;
@@ -109,8 +110,10 @@ export const fetchWikiSummary = async (
       !page.extract.trim() ||
       typeof page.title !== 'string'
     ) {
+      track('wiki_summary', { outcome: 'missing' });
       return null;
     }
+    track('wiki_summary', { outcome: 'loaded' });
     const thumbnail = page.thumbnail;
     return {
       title: page.title,
@@ -131,6 +134,7 @@ export const fetchWikiSummary = async (
           : undefined,
     };
   } catch (error) {
+    if (!signal.aborted) track('wiki_summary', { outcome: 'error' });
     if (timeout.signal.aborted && !signal.aborted) {
       throw new Error('Wikipedia took too long to respond.');
     }

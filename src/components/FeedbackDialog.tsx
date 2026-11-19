@@ -8,7 +8,7 @@ import {
 import Dialog from './Dialog';
 import { useChrome } from '../atlas/hooks';
 import { useFingerPrint } from '../hooks/useFingerPrint';
-import { trackEvent } from '../lib/analytics';
+import { track } from '../lib/analytics';
 
 type Rating = 'bad' | 'meh' | 'nice';
 
@@ -92,7 +92,7 @@ export default function FeedbackDialog({
             : `Feedback failed (HTTP ${response.status}).`,
         );
       }
-      trackEvent('feedback_submit', {
+      track('feedback_submit', {
         rating: rating ?? 'none',
         has_message: hasMessage,
       });

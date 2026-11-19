@@ -9,7 +9,7 @@ import PlaceFinder from '../components/PlaceFinder';
 import ProjectorCaption from '../components/ProjectorCaption';
 import MapKeySlot from '../components/MapKeySlot';
 import type { PlaceOption } from '../lib/places';
-import { trackEvent } from '../lib/analytics';
+import { initAnalytics, track, trackPageview } from '../lib/analytics';
 import {
   actions,
   getState,
@@ -89,6 +89,7 @@ export default function SchoolDistrictsAtlas() {
   if (typeof window !== 'undefined') {
     actions.init(PA_STORE_YEAR, { themeScope: 'pa' });
     applySharedColour();
+    initAnalytics('pa');
   }
   return (
     <InitialYear.Provider value={PA_STORE_YEAR}>
@@ -100,6 +101,7 @@ export default function SchoolDistrictsAtlas() {
 function PaApp() {
   // The controller's handle, for the map key (globe and scale bar).
   const [mapHandle, setMapHandle] = useState<MapHandle | null>(null);
+  useEffect(() => trackPageview(), []);
   const place = useAtlas((s) => s.place);
   const overlay = useAtlas((s) => s.overlay);
   const focusMode = useAtlas((s) => s.focusMode);
@@ -166,7 +168,7 @@ function PaApp() {
       }
       const match = districts.find((d) => d.NAME === option.name);
       if (!match) return;
-      trackEvent('district_select', { name: match.NAME });
+      track('district_select', { name: match.NAME, source: 'finder' });
       actions.select(match.NAME);
       actions.frame(match.bbox);
     },
@@ -538,6 +540,7 @@ function PaMapView({
         if (cancelled || !ref.current) return;
         if (!supportsWebGL2()) {
           actions.setWebgl(false);
+          track('map_unavailable', { page_type: 'pa', reason: 'no_webgl2' });
           return;
         }
         handle = mountPaMap(ref.current);
@@ -545,7 +548,13 @@ function PaMapView({
           handle.map;
         onMount(handle);
       })
-      .catch(() => actions.setWebgl(false));
+      .catch((error) => {
+        actions.setWebgl(false);
+        track('map_unavailable', {
+          page_type: 'pa',
+          reason: error instanceof Error ? error.name : 'mount_failed',
+        });
+      });
     return () => {
       cancelled = true;
       handle?.destroy();
