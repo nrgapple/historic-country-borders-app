@@ -89,8 +89,18 @@ function Range({
   );
 }
 
-/** `children`: page-specific fields shown after Map style (Pennsylvania's "Colour districts by"). */
-export default function SettingsPanel({ children }: { children?: ReactNode }) {
+/**
+ * `children`: page-specific fields shown after Map style (Pennsylvania's
+ * "Colour districts by"). `animation`: the year pages' "Animate border
+ * changes" switch (the Pennsylvania map has a single vintage).
+ */
+export default function SettingsPanel({
+  children,
+  animation = false,
+}: {
+  children?: ReactNode;
+  animation?: boolean;
+}) {
   const { settings, theme, setTheme, updateSettings, resetToDefaults } =
     useSettings();
   const { overlay, closeOverlay } = useChrome();
@@ -181,6 +191,15 @@ export default function SettingsPanel({ children }: { children?: ReactNode }) {
           updateSettings({ textCase: upper ? 'upper' : 'regular' })
         }
       />
+
+      {animation && (
+        <Switch
+          label="Animate border changes"
+          description="Borders flow from one year to the next. Off when your device asks for reduced motion."
+          checked={settings.animateBorders}
+          onChange={(animateBorders) => updateSettings({ animateBorders })}
+        />
+      )}
 
       <Range
         label="Fill opacity"

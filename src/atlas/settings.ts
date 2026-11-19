@@ -23,6 +23,12 @@ export interface Settings {
    * label sizes: for projectors and low vision (plan §2.1, item 3).
    */
   projectorText: boolean;
+  /**
+   * Year pages: borders flow from one year to the next instead of switching
+   * at once (src/atlas/transition/). Skipped anyway for reduced motion and
+   * low-power devices.
+   */
+  animateBorders: boolean;
   /** Pennsylvania page only: what the district fills show (src/pa/colourBy.ts). */
   paColourBy: ColourBy;
 }
@@ -36,6 +42,7 @@ export const DEFAULT_SETTINGS: Settings = {
   borderThickness: 2,
   showLabels: true,
   projectorText: false,
+  animateBorders: true,
   paColourBy: 'default',
 };
 
@@ -69,6 +76,10 @@ export const sanitizeSettings = (value: unknown): Settings => {
       typeof raw.projectorText === 'boolean'
         ? raw.projectorText
         : DEFAULT_SETTINGS.projectorText,
+    animateBorders:
+      typeof raw.animateBorders === 'boolean'
+        ? raw.animateBorders
+        : DEFAULT_SETTINGS.animateBorders,
     paColourBy: isColourBy(raw.paColourBy)
       ? raw.paColourBy
       : DEFAULT_SETTINGS.paColourBy,

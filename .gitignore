@@ -40,3 +40,6 @@ tsconfig.tsbuildinfo
 
 # local Wikidata/Wikipedia response cache for data:refresh:context
 /.cache/
+
+# local evidence (screen recordings, frame strips)
+/private/

@@ -51,6 +51,7 @@
     "@astrojs/react": "7.1.9",
     "@fingerprintjs/fingerprintjs": "3.4.2",
     "astro": "7.4.12",
+    "earcut": "3.2.4",
     "maplibre-gl": "6.19.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",

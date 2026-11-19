@@ -49,6 +49,8 @@ import {
   type Bbox,
 } from './store';
 import { collapseAttributionOnIdle } from './attribution';
+import { skipReason } from './transition/plan';
+import type { BorderTransitions } from './transition';
 
 setWorkerUrl(workerUrl);
 
@@ -153,6 +155,11 @@ export function mountMap(container: HTMLElement): MapHandle {
   collapseAttributionOnIdle(map, container);
 
   let loadedYear = initial.year;
+  // The year the borders source holds. During a border animation it lags
+  // `loadedYear` until the overlay is opaque (src/atlas/transition/).
+  let bordersYear = initial.year;
+  let transitions: BorderTransitions | null = null;
+  let transitionsLoad: Promise<BorderTransitions | null> | null = null;
   let index: YearIndex | null = null;
   let names = new Map<string, number>();
   let dataRequested = false;
@@ -243,6 +250,7 @@ export function mountMap(container: HTMLElement): MapHandle {
       GeoJSONSource | undefined;
     if (!borders || !labels) return;
     container.removeAttribute('data-loaded');
+    bordersYear = year;
     map.removeFeatureState({ source: SOURCE.borders });
     labelInfo = new Map();
     showAnchors(EMPTY_ANCHORS);
@@ -297,6 +305,9 @@ export function mountMap(container: HTMLElement): MapHandle {
    */
   const applySelection = () => {
     if (!map.getSource(SOURCE.borders)) return;
+    // The index is a year ahead of the borders while an animation prepares:
+    // its ids would mark the wrong territories. setYearData re-applies.
+    if (index && index.year !== bordersYear) return;
     const state = getState();
     applyDynamic(
       map,
@@ -306,6 +317,66 @@ export function mountMap(container: HTMLElement): MapHandle {
       anchors,
       state.theme,
     );
+    // The theme's line and label opacities are back: keep them faded.
+    transitions?.reassert();
+  };
+
+  /** Loads the animation module once, on the first animated year change. */
+  const loadTransitions = () => {
+    transitionsLoad ??= import('./transition').then(
+      ({ createBorderTransitions }) => {
+        if (destroyed) return null;
+        transitions = createBorderTransitions({
+          map,
+          container,
+          polygonsUrl: mapUrl,
+          index: loadYearIndex,
+          place: () => getState().place,
+          showYear: (year) => {
+            if (!destroyed) setYearData(year);
+          },
+          bordersYear: () => bordersYear,
+          settled: () => map.triggerRepaint(),
+        });
+        return transitions;
+      },
+      () => null,
+    );
+    return transitionsLoad;
+  };
+
+  /** Shows a new year: animated when allowed, otherwise at once (as before). */
+  const changeYear = (year: number, reload: boolean) => {
+    // The year on screen is drawn, or a change is already under way (it is
+    // then retargeted or snapped, never queued).
+    const drawn =
+      container.hasAttribute('data-loaded') ||
+      Boolean(transitions?.busy) ||
+      Boolean(transitionsLoad && !transitions);
+    container.removeAttribute('data-loaded');
+    const reason = skipReason({
+      enabled: getState().settings.animateBorders,
+      reducedMotion: prefersReducedMotion(),
+      lowPower,
+      webgl2: map.getCanvas().getContext('webgl2') !== null,
+      projection: projectionType(map),
+      hidden: document.visibilityState === 'hidden',
+      shown: drawn,
+      from: bordersYear,
+      to: year,
+      reload,
+      moving: map.isMoving(),
+    });
+    if (reason) {
+      transitions?.abort();
+      setYearData(year);
+      return;
+    }
+    void loadTransitions().then((t) => {
+      if (destroyed || getState().year !== year) return;
+      if (t) t.request(bordersYear, year);
+      else setYearData(year);
+    });
   };
 
   const fit = (bounds: Bbox) => {
@@ -394,6 +465,7 @@ export function mountMap(container: HTMLElement): MapHandle {
   map.on('idle', () => {
     const state = getState();
     if (!dataRequested || loadedYear !== state.year) return;
+    if (bordersYear !== state.year || transitions?.running) return;
     container.setAttribute('data-loaded', '');
     if (state.status !== 'loading' || !index) return;
     actions.setStatus('ready');
@@ -428,16 +500,19 @@ export function mountMap(container: HTMLElement): MapHandle {
   const unsubscribe = subscribe(() => {
     const state = getState();
     if (state.year !== loadedYear || state.reload !== last.reload) {
+      const reload = state.reload !== last.reload;
       loadedYear = state.year;
       index = null;
       names = new Map();
-      setYearData(state.year);
+      changeYear(state.year, reload);
       loadIndex(state.year);
     } else if (state.place !== last.place) {
       applySelection();
       // The panel opens or closes over the map: re-check names under it.
       relabel();
     } else if (state.settings !== last.settings || state.theme !== last.theme) {
+      // The overlay's colours were read from the old style: finish now.
+      transitions?.snap();
       // A theme switch sets the other theme's paint and layout on the same
       // layers: camera, sources, selection and anchors are untouched.
       applySelection();
@@ -453,12 +528,20 @@ export function mountMap(container: HTMLElement): MapHandle {
     refreshLabels: relabel,
     destroy() {
       destroyed = true;
+      transitions?.destroy();
       unsubscribe();
       cleanups.forEach((cleanup) => cleanup());
       resizer?.disconnect();
       map.remove();
     },
   };
+}
+
+/** The map's projection type; MapLibre reports none for the default Mercator. */
+function projectionType(map: MapLibreMap): string {
+  const type = (map.getProjection?.() as { type?: unknown } | undefined)?.type;
+  if (type === undefined) return 'mercator';
+  return typeof type === 'string' ? type : 'expression';
 }
 
 export const supportsWebGL2 = () => {

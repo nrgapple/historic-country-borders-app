@@ -33,6 +33,9 @@ export default defineConfig({
       ],
   use: {
     baseURL,
+    // Year changes then switch at once, as before the border animation
+    // (src/atlas/transition/); border-transition.spec.ts turns motion back on.
+    contextOptions: { reducedMotion: 'reduce' },
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

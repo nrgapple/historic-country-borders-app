@@ -157,7 +157,7 @@ function AtlasApp() {
               </div>
             }
           />
-          <SettingsPanel />
+          <SettingsPanel animation />
         </header>
       )}
 
@@ -300,6 +300,12 @@ function AtlasApp() {
                 Report a border error to the map data project
               </a>
               .
+            </p>
+            <p>
+              When you change the year, the borders flow from one map to the
+              next. The animation only shows where the borders ended up; it does
+              not show the order in which events happened. Turn it off in Map
+              settings.
             </p>
             <p>
               Coastlines, lakes, rivers and relief come from{' '}

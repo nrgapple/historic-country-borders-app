@@ -20,6 +20,7 @@ import {
 } from '../../atlas/facts';
 import { useChrome, useSettings, type Overlay } from '../../atlas/hooks';
 import { __resetStore } from '../../atlas/store';
+import { sanitizeSettings } from '../../atlas/settings';
 import { __resetWikiCache } from '../../hooks/useWiki';
 vi.mock('../../hooks/useFingerPrint', () => ({
   useFingerPrint: (enabled: boolean) => (enabled ? 'visitor-1' : null),
@@ -216,6 +217,60 @@ describe('Toolbar and settings', () => {
     expect(
       JSON.parse(screen.getByTestId('settings').textContent!).showLabels,
     ).toBe(true);
+  });
+});
+
+describe('Animate border changes', () => {
+  beforeEach(() => localStorage.clear());
+
+  const open = (animation: boolean) => {
+    render(
+      withProviders(
+        <>
+          <Toolbar />
+          <SettingsPanel animation={animation} />
+          <SettingsProbe />
+        </>,
+      ),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Map settings' }));
+  };
+
+  it('is on by default and persists when turned off', () => {
+    open(true);
+    const toggle = screen.getByRole('switch', {
+      name: 'Animate border changes',
+    });
+    expect(toggle).toBeChecked();
+    fireEvent.click(toggle);
+    expect(
+      JSON.parse(screen.getByTestId('settings').textContent!).animateBorders,
+    ).toBe(false);
+    expect(
+      JSON.parse(localStorage.getItem('historic-borders-settings')!)
+        .animateBorders,
+    ).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset to defaults' }));
+    expect(
+      JSON.parse(screen.getByTestId('settings').textContent!).animateBorders,
+    ).toBe(true);
+  });
+
+  it('is not offered on a single-vintage map (Pennsylvania)', () => {
+    open(false);
+    expect(
+      screen.queryByRole('switch', { name: 'Animate border changes' }),
+    ).toBeNull();
+  });
+
+  it('keeps a stored choice and ignores a malformed one', () => {
+    expect(sanitizeSettings({ animateBorders: false }).animateBorders).toBe(
+      false,
+    );
+    expect(sanitizeSettings({ animateBorders: 'no' }).animateBorders).toBe(
+      true,
+    );
+    expect(sanitizeSettings({}).animateBorders).toBe(true);
   });
 });
 
