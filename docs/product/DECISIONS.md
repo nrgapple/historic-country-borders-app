@@ -182,6 +182,20 @@ Observed: the build has the same 6,590 deployable files as before; data, tiles, 
 
 Rollback: revert this commit.
 
+### Borders flow between years (2026-11-18)
+
+Observed: a year change swapped every border at once, so students had to compare two maps from memory to see what changed, which is the product's core job ("help me move through time and notice meaningful changes"). The owner approved an animated change as the default.
+
+Decision: animate year changes on the year pages with a GPU distance-field "growth" transition (`src/atlas/transition/`): both years are rasterized into id textures with the map's camera, a jump flood gives each changing pixel its distance to the new owner's old land and to the region's far side, and a per-pixel switch time `d1 / (d1 + d2)` lets every region, a sliver or half a continent, finish in the same ~1 s. New territories swell from deep points of their own parts. Territories are compared by name only; no shape matching, no precomputed morphs, no new data files. The overlay is a MapLibre custom layer under relief, water and labels, reads its colours from the live style (both map styles), fades the vector lines and labels with paint transitions, and hands over to the new year's vector layers once they are drawn.
+
+Alternatives rejected: a cross-fade (shows no direction of change), vector morphing (needs territory correspondences and topology the data does not have), and precomputed per-pair animations (53² pairs, data budget). A second canvas over the map was rejected because water, coasts and labels must stay above the borders.
+
+Constraints kept: static-only and free-tier (no request-time compute or new requests: the polygon URL is immutable and shared with MapLibre through the HTTP cache), lazy code (24 KB module, 9.5 KB worker on the first animated change), and accessibility: skipped for reduced motion, low power, no WebGL 2, the first load and when Settings → Animate border changes is off (default on, persisted). About states that the animation shows where borders ended up, not the order of events, so it does not imply a historical sequence.
+
+Measured (Chromium, Apple M4 GPU, 1024×700 at DPR 2): 1914→1920 and 1492→1600 in both styles ran at a 16.7 ms median frame, 0–7 frames over 20 ms per change (those coincide with MapLibre ingesting the new year's tiles under the overlay); one-time CPU prepare 2–4 ms. With 4× CPU throttling the overlay's own frames stayed at a 16.7 ms median, and the year change without animation showed as many long frames (14–16 over 20 ms, max 133–150 ms), so the long frames come from the year change itself. Not yet measured on an iPad or phone.
+
+Rollback: Settings off per visitor; for everyone, revert the commit (or make `skipReason` always return a reason).
+
 ## Deferred
 
 ### Domain cutover
