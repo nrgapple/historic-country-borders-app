@@ -77,8 +77,11 @@ export interface Events {
     pointer: string;
     years_moved: number;
   };
-  /** A press on the timeline was ignored because another was still open. */
-  timeline_press_ignored: { pointer: string; stale_ms: number };
+  /**
+   * A new press on the timeline replaced one that never ended (which, before
+   * the replacement, blocked the timeline until reload). Once per page.
+   */
+  timeline_press_replaced: { pointer: string; stale_ms: number };
   js_error: { message: string; file: string; line: number; kind: string };
   web_vitals: {
     page_type: PageType;
