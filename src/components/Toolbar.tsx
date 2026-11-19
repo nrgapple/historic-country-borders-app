@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import Icon, { BrandMark, type IconName } from './Icon';
 import './Toolbar.css';
 import { useChrome, type Overlay } from '../atlas/hooks';
@@ -52,11 +52,27 @@ const ITEMS: Array<{
   { overlay: 'feedback', icon: 'message', label: 'Feedback' },
 ];
 
-export default function Toolbar() {
+export default function Toolbar({ overflow = false }: { overflow?: boolean }) {
   const { overlay, openOverlay, toggleFocusMode } = useChrome();
+  const overflowId = useId();
+  const more = useRef<HTMLButtonElement>(null);
+  const popover = useRef<HTMLDivElement>(null);
 
-  return (
-    <div className="toolbar" role="toolbar" aria-label="Map tools">
+  useEffect(() => {
+    if (!overflow) return;
+    const closeWhenWide = () => {
+      if (
+        popover.current?.hasAttribute('data-open') &&
+        !more.current?.offsetWidth
+      )
+        popover.current.hidePopover();
+    };
+    window.addEventListener('resize', closeWhenWide);
+    return () => window.removeEventListener('resize', closeWhenWide);
+  }, [overflow]);
+
+  const tools = (inOverflow = false) => (
+    <>
       {ITEMS.map((item) => (
         <button
           key={item.overlay}
@@ -67,9 +83,13 @@ export default function Toolbar() {
           aria-haspopup="dialog"
           aria-expanded={overlay === item.overlay}
           title={item.label}
-          onClick={() => openOverlay(item.overlay)}
+          onClick={() => {
+            if (inOverflow) popover.current?.hidePopover();
+            openOverlay(item.overlay);
+          }}
         >
           <Icon name={item.icon} />
+          {inOverflow && item.label}
         </button>
       ))}
       <button
@@ -77,11 +97,53 @@ export default function Toolbar() {
         className="icon-button"
         aria-label="Present to class: hide controls"
         title="Present to class: hide controls"
-        onClick={toggleFocusMode}
+        onClick={() => {
+          if (inOverflow) popover.current?.hidePopover();
+          toggleFocusMode();
+        }}
       >
         <Icon name="present" />
+        {inOverflow && 'Present to class'}
       </button>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      <div className="toolbar" role="toolbar" aria-label="Map tools">
+        {tools()}
+      </div>
+      {overflow && (
+        <>
+          <button
+            ref={more}
+            type="button"
+            className="icon-button toolbar__more"
+            popoverTarget={overflowId}
+            aria-label="More map tools"
+            title="More map tools"
+          >
+            <Icon name="more" />
+          </button>
+          <div
+            className="toolbar__overflow"
+            id={overflowId}
+            ref={popover}
+            popover="auto"
+            onBeforeToggle={(event) =>
+              event.currentTarget.toggleAttribute(
+                'data-open',
+                event.newState === 'open',
+              )
+            }
+            role="group"
+            aria-label="Map tools"
+          >
+            {tools(true)}
+          </div>
+        </>
+      )}
+    </>
   );
 }
 

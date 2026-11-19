@@ -1,0 +1,178 @@
+/* Use the space available to Safari, including narrow split windows. */
+.toolbar__more.icon-button,
+.toolbar__overflow {
+  display: none;
+}
+
+@supports selector(:popover-open) {
+  @media (370px <= width <= 400px) and (max-height: 640px),
+    (370px <= width <= 600px) and (max-height: 420px) {
+    :root .atlas.atlas--history .timeline__head {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: 'step trail';
+      gap: 4px;
+    }
+
+    .atlas--history .timeline__leading,
+    .atlas--history .toolbar {
+      display: none;
+    }
+
+    .atlas--history .timeline__stepper {
+      justify-self: start;
+      gap: 2px;
+    }
+
+    .atlas--history .timeline__current {
+      display: grid;
+      align-items: center;
+      min-height: 44px;
+      padding-inline: 3px;
+    }
+
+    .atlas--history .timeline__current-value {
+      font-size: 28px;
+    }
+
+    :root .atlas.atlas--history .timeline__current-suffix {
+      margin-left: 3px;
+      vertical-align: 3px;
+      font-size: 13px;
+    }
+
+    :root .atlas.atlas--history .timeline__current-era {
+      margin-top: 0;
+      line-height: 1;
+    }
+
+    :root .atlas.atlas--history .timeline__current-era-name {
+      padding: 0;
+      background: transparent;
+      color: var(--ink-2);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    :root .atlas.atlas--history .timeline__eras {
+      height: 10px;
+    }
+
+    .atlas--history .timeline__era-label {
+      display: none;
+    }
+
+    .atlas--history .timeline__ruler {
+      min-height: 44px;
+      padding-bottom: 0;
+    }
+
+    .atlas--history .topbar__tools {
+      gap: 2px;
+    }
+
+    .atlas--history .toolbar__more.icon-button {
+      display: inline-grid;
+    }
+
+    .atlas--history .topbar__tools .icon-button {
+      width: 44px;
+      height: 44px;
+    }
+
+    .atlas--history .toolbar__overflow:popover-open {
+      display: block;
+      position: fixed;
+      inset: calc(var(--safe-top) + 56px) calc(var(--safe-right) + 12px) auto
+        auto;
+      width: max-content;
+      max-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 68px);
+      margin: 0;
+      padding: 4px;
+      overflow: auto;
+      border: 1px solid var(--hair);
+      background: var(--sheet);
+      color: var(--ink);
+      box-shadow: 0 4px 12px rgb(0 0 0 / 16%);
+    }
+
+    .atlas--history .toolbar__overflow .icon-button {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      width: 100%;
+      padding-inline: 12px;
+      border-radius: 0;
+      font: 600 15px/1 var(--font-sc);
+    }
+
+    .atlas--history .place-finder[data-expanded] .place-finder__field {
+      top: calc(100% + 4px);
+    }
+
+    .atlas--history .place-finder[data-expanded] .place-finder__list,
+    .atlas--history .place-finder[data-expanded] .place-finder__empty {
+      top: calc(100% + 54px);
+      max-height: 26dvh;
+    }
+
+    .atlas--history:has(.place-finder[data-expanded]) .changes-summary {
+      display: none;
+    }
+
+    :root .atlas.atlas--history .map-key:not([data-open]) {
+      border: 0;
+      outline: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .atlas--history .map-key:not([data-open]) .map-key__bar {
+      align-items: flex-end;
+      gap: 6px;
+      padding: 0;
+    }
+
+    .atlas--history .map-key:not([data-open]) .map-key__north,
+    .atlas--history .map-key:not([data-open]) .scalebar__caption,
+    .atlas--history
+      .map-key:not([data-open])
+      .scalebar__nums
+      span:nth-child(2) {
+      display: none;
+    }
+
+    .atlas--history .map-key:not([data-open]) .scalebar {
+      padding: 4px 32px 0 5px;
+      background: var(--sheet);
+      border: 1px solid var(--hair);
+    }
+
+    .atlas--history
+      .map-key:not([data-open])
+      .scalebar__nums
+      span:last-child::after {
+      content: ' km';
+    }
+
+    :root .atlas.atlas--history .map-key__toggle {
+      min-height: 44px;
+      background: var(--sheet);
+    }
+
+    .atlas--history .changes-summary {
+      max-height: max(48px, calc(100% - var(--safe-bottom) - 76px));
+    }
+
+    .atlas--history .stage:has(.map-key[data-open]) .changes-summary {
+      max-height: max(48px, calc(100% - var(--safe-bottom) - 272px));
+    }
+
+    :root .atlas.atlas--history .changes-summary__toggle {
+      min-height: 44px;
+      padding: 12px 10px;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+  }
+}

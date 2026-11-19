@@ -4,6 +4,7 @@ const PATHS = {
   chevronRight: <path d="M9 18l6-6-6-6" />,
   chevronDown: <path d="M6 9l6 6 6-6" />,
   close: <path d="M18 6L6 18M6 6l12 12" />,
+  more: <path d="M5 12h.01M12 12h.01M19 12h.01" strokeWidth="3" />,
   sliders: (
     <>
       <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />

@@ -27,6 +27,7 @@ import { panelFacts, territorySubtitle } from './facts';
 import { actions, InitialYear, useAtlas, YEARS } from './store';
 import { useWelcome } from './useWelcome';
 import type { MapHandle } from './mapController';
+import './compact.css';
 
 // Start fetching MapLibre (its own chunk) as soon as the island's module
 // runs, in parallel with hydration, instead of after the first effect.
@@ -55,10 +56,14 @@ const sourceDate = new Date(sources.historical.commitDate);
 const closeWelcome = () => {
   const hadFocus = document.activeElement?.closest('.welcome');
   actions.closeOverlay();
-  if (hadFocus)
-    document
-      .querySelector<HTMLElement>('.toolbar [aria-label="About this map"]')
-      ?.focus();
+  if (hadFocus) {
+    const more = document.querySelector<HTMLElement>('.toolbar__more');
+    if (more?.getClientRects().length) more.focus();
+    else
+      document
+        .querySelector<HTMLElement>('.toolbar [aria-label="About this map"]')
+        ?.focus();
+  }
 };
 
 const territoryOption = (t: Territory): PlaceOption => {
@@ -142,7 +147,7 @@ function AtlasApp() {
   const loading = status === 'loading';
 
   return (
-    <div className="atlas" data-focus={focusMode || undefined}>
+    <div className="atlas atlas--history" data-focus={focusMode || undefined}>
       <h1 className="visually-hidden">Political borders in {yearLabel}</h1>
 
       {!focusMode && (
@@ -160,7 +165,7 @@ function AtlasApp() {
                   placeholder={`Find a place in ${yearLabel.replace(/ AD$/, '')}`}
                   collapsible
                 />
-                <Toolbar />
+                <Toolbar overflow />
               </div>
             }
           />

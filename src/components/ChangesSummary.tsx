@@ -39,7 +39,7 @@ function Group({ title, items }: { title: string; items: string[] }) {
 }
 
 /**
- * "What changed since <previous year>": names that appear, disappear, or
+ * "Changes since <previous year>": names that appear, disappear, or
  * change overlord between two published maps. Collapsed by default so the
  * map stays uncluttered; a native <details> keeps it keyboard accessible.
  */
@@ -61,7 +61,7 @@ export default function ChangesSummary({ context, year }: ChangesSummaryProps) {
       data-stale={stale || undefined}
     >
       <summary className="changes-summary__toggle">
-        What changed since {formatYear(previousYear)}
+        Changes since {formatYear(previousYear)}
       </summary>
       <div className="changes-summary__body">
         <Group title="New on the map" items={appeared} />
