@@ -196,6 +196,14 @@ Measured (Chromium, Apple M4 GPU, 1024×700 at DPR 2): 1914→1920 and 1492→16
 
 Rollback: Settings off per visitor; for everyone, revert the commit (or make `skipReason` always return a reason).
 
+### Release through auto-merged pull requests (2026-11-18)
+
+Observed: each merge re-ran the full suite on `main` before deploying (10–13 minutes, three browsers in one serial job), flaky browser tests blocked two deploys whose PRs had passed, and there was no branch protection or auto-merge.
+
+Decision: tests run once, on the pull request, in parallel (`checks`, `app`, `e2e` per engine, aggregated as `browser tests`); `main` requires those three checks and the repository auto-merges and deletes merged branches. A merge to `main` builds, type-checks, deploys and smoke-tests without re-running the tests (about 4–5 minutes); a direct push that did not come through a PR runs every test first. Documentation-only PRs skip the build and browsers. The layout suites report on PRs only. Branches need not be up to date with `main` (no forced rebases for a solo owner); the type-check on `main` is the guard against semantic merge conflicts. See docs/RELEASE.md.
+
+Rollback: revert `.github/workflows/ci.yml` and `layout.yml`; branch protection and auto-merge are repository settings.
+
 ## Deferred
 
 ### Domain cutover
